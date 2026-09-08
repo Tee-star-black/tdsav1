@@ -7,11 +7,56 @@
     style.id = 'tds-nav-fix-styles';
     style.textContent = `
       body.tds-nav-open { overflow: hidden !important; }
+
+      /* Keep the primary navigation above every page section. */
+      nav:not(.tds-mobile-nav) {
+        z-index: 2147483000 !important;
+      }
+
+      /* Desktop What We Offer panel must sit above hero/content layers. */
+      nav:not(.tds-mobile-nav) .side-panel-overlay {
+        position: fixed !important;
+        inset: 0 !important;
+        width: 100vw !important;
+        height: 100dvh !important;
+        background: rgba(15, 23, 42, .62) !important;
+        backdrop-filter: blur(5px) !important;
+        -webkit-backdrop-filter: blur(5px) !important;
+        z-index: 2147483001 !important;
+      }
+
+      nav:not(.tds-mobile-nav) .dropdown-content {
+        z-index: 2147483002 !important;
+        background: #fff !important;
+        isolation: isolate !important;
+      }
+
+      nav:not(.tds-mobile-nav) .dropdown-content.active {
+        right: 0 !important;
+      }
+
+      @media (min-width: 901px) {
+        nav:not(.tds-mobile-nav) .dropdown-content {
+          width: min(520px, 42vw) !important;
+          max-width: 520px !important;
+          height: 100dvh !important;
+          overflow-y: auto !important;
+          overscroll-behavior: contain !important;
+          box-shadow: -24px 0 64px rgba(15, 23, 42, .22) !important;
+        }
+
+        nav:not(.tds-mobile-nav) .dropdown-content .mega-menu-item {
+          position: relative !important;
+          z-index: 1 !important;
+          background: #fff !important;
+        }
+      }
+
       @media (max-width: 900px) {
         nav:not(.tds-mobile-nav) .hamburger {
           display: flex !important;
           position: relative !important;
-          z-index: 1402 !important;
+          z-index: 2147483004 !important;
         }
         nav:not(.tds-mobile-nav) .nav-links {
           display: flex !important;
@@ -32,7 +77,7 @@
           visibility: hidden !important;
           opacity: 0 !important;
           pointer-events: none !important;
-          z-index: 1401 !important;
+          z-index: 2147483003 !important;
           transition: right .28s ease, opacity .2s ease, visibility 0s linear .28s !important;
         }
         nav:not(.tds-mobile-nav) .nav-links.active {
@@ -59,6 +104,7 @@
           position: static !important;
           right: auto !important;
           width: 100% !important;
+          max-width: none !important;
           height: auto !important;
           max-height: none !important;
           margin: 8px 0 12px !important;
@@ -77,10 +123,10 @@
           inset: 0 !important;
           width: 100vw !important;
           height: 100dvh !important;
-          background: rgba(15,23,42,.52) !important;
-          backdrop-filter: blur(3px) !important;
-          -webkit-backdrop-filter: blur(3px) !important;
-          z-index: 1400 !important;
+          background: rgba(15,23,42,.56) !important;
+          backdrop-filter: blur(4px) !important;
+          -webkit-backdrop-filter: blur(4px) !important;
+          z-index: 2147483001 !important;
           opacity: 0 !important;
           visibility: hidden !important;
           pointer-events: none !important;
@@ -161,6 +207,9 @@
       nav.querySelectorAll('.dropdown-content.active').forEach(function (panel) {
         panel.classList.remove('active');
       });
+      nav.querySelectorAll('.side-panel-overlay.active').forEach(function (panelOverlay) {
+        panelOverlay.classList.remove('active');
+      });
     }
 
     function openMenu() {
@@ -217,9 +266,14 @@
     });
 
     document.addEventListener('keydown', function (event) {
-      if (event.key === 'Escape' && menuOpen()) {
-        closeMenu();
-        button.focus();
+      if (event.key === 'Escape') {
+        if (menuOpen()) {
+          closeMenu();
+          button.focus();
+        } else {
+          closeDropdowns();
+          document.body.classList.remove('tds-nav-open');
+        }
       }
     });
 
