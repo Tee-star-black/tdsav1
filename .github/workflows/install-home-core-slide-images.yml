@@ -1,0 +1,52 @@
+name: Install homepage core slide images
+
+on:
+  push:
+    paths:
+      - '.github/workflows/install-home-core-slide-images.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  install-script:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current site
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Add homepage image script
+        shell: python
+        run: |
+          from pathlib import Path
+
+          path = Path('index.html')
+          text = path.read_text(encoding='utf-8-sig')
+          tag = '<script src="scripts/home-core-slide-images.js"></script>'
+
+          if tag not in text:
+              if '</body>' not in text:
+                  raise SystemExit('index.html has no closing body tag')
+              text = text.replace('</body>', f'    {tag}\n</body>', 1)
+              path.write_text(text, encoding='utf-8')
+              print('Installed homepage care slider image script')
+          else:
+              print('Script already installed')
+
+      - name: Commit installation
+        shell: bash
+        run: |
+          set -e
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "No changes needed."
+            exit 0
+          fi
+          git commit -m "feat: wire images into homepage care slider"
+          git push
