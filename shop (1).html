@@ -1,0 +1,664 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeleDoctorSA Health Shop | Coming Soon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-orange: #FFA366;
+            --orange-dark: #FF8844;
+            --deep-navy: #0F172A;
+            --slate-gray: #64748B;
+            --white: #F8F9FA;
+            --border: #E2E8F0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--deep-navy);
+            background:
+                radial-gradient(circle at 15% 20%, rgba(255, 163, 102, 0.22), transparent 38%),
+                radial-gradient(circle at 85% 80%, rgba(15, 23, 42, 0.12), transparent 46%),
+                linear-gradient(145deg, #fffaf6 0%, #f6f9ff 55%, #ffffff 100%);
+            min-height: 100vh;
+            padding: 96px 24px 24px;
+        }
+
+        .page-shell {
+            width: 100%;
+            min-height: calc(100vh - 120px);
+            display: grid;
+            place-items: center;
+        }
+
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 7%;
+            background: rgba(255, 255, 255, 0.95);
+            border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 1000;
+        }
+
+        .top-nav-brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--deep-navy);
+            font-weight: 800;
+            font-size: 1.05rem;
+        }
+
+        .top-nav-brand img {
+            width: 34px;
+            height: 34px;
+            object-fit: contain;
+        }
+
+        .top-nav-links {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .top-nav-links a {
+            text-decoration: none;
+            color: var(--deep-navy);
+            font-size: 0.88rem;
+            font-weight: 700;
+            padding: 8px 10px;
+            border-radius: 8px;
+        }
+
+        .top-nav-links a:hover {
+            color: var(--orange-dark);
+            background: rgba(255, 163, 102, 0.12);
+        }
+
+        .coming-card {
+            width: min(1120px, 100%);
+            border: 1px solid rgba(255, 163, 102, 0.35);
+            background: rgba(255, 255, 255, 0.96);
+            box-shadow: 0 24px 60px rgba(15, 23, 42, 0.14);
+            border-radius: 20px;
+            padding: 40px 32px;
+        }
+
+        .top-logo-wrap {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 14px;
+        }
+
+        .top-logo {
+            width: 92px;
+            height: 92px;
+            object-fit: contain;
+            filter: drop-shadow(0 8px 20px rgba(15, 23, 42, 0.18));
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: var(--orange-dark);
+            background: rgba(255, 163, 102, 0.15);
+            border: 1px solid rgba(255, 163, 102, 0.4);
+            border-radius: 999px;
+            padding: 6px 12px;
+            margin-bottom: 16px;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+            line-height: 1.15;
+            margin-bottom: 14px;
+        }
+
+        .subtitle {
+            color: var(--slate-gray);
+            font-size: 1.02rem;
+            max-width: 720px;
+            margin-bottom: 24px;
+        }
+
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            margin-bottom: 26px;
+        }
+
+        .preview-item {
+            border: 1px solid var(--border);
+            background: #fff;
+            border-radius: 12px;
+            padding: 14px 12px;
+        }
+
+        .preview-item h3 {
+            font-size: 0.95rem;
+            margin-bottom: 6px;
+        }
+
+        .preview-item p {
+            font-size: 0.84rem;
+            color: var(--slate-gray);
+            line-height: 1.5;
+        }
+
+        .soon-products-title {
+            margin: 4px 0 14px;
+            font-size: 1.05rem;
+            color: var(--deep-navy);
+            font-weight: 800;
+            letter-spacing: 0.2px;
+        }
+
+        .soon-products-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .product-preview {
+            border: 1px solid var(--border);
+            background: #fff;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+        }
+
+        .product-preview img {
+            width: 100%;
+            height: 170px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .product-preview-body {
+            padding: 12px;
+        }
+
+        .product-tag {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+            color: var(--orange-dark);
+            background: rgba(255, 163, 102, 0.14);
+            border: 1px solid rgba(255, 163, 102, 0.34);
+            border-radius: 999px;
+            padding: 4px 8px;
+            margin-bottom: 8px;
+        }
+
+        .product-preview h4 {
+            font-size: 0.95rem;
+            line-height: 1.35;
+            margin-bottom: 4px;
+        }
+
+        .product-preview p {
+            font-size: 0.82rem;
+            color: var(--slate-gray);
+            line-height: 1.5;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .btn {
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-orange), var(--orange-dark));
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgba(255, 163, 102, 0.35);
+        }
+
+        .btn-secondary {
+            border-color: var(--border);
+            color: var(--deep-navy);
+            background: #fff;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary-orange);
+            color: var(--orange-dark);
+        }
+
+        .enquire-wrap {
+            display: flex;
+            justify-content: center;
+        }
+
+        .btn-whatsapp {
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: min(420px, 100%);
+            background: #25D366;
+            color: #fff;
+            border: 1px solid #1fb558;
+            border-radius: 10px;
+            padding: 13px 16px;
+            font-size: 0.92rem;
+            font-weight: 800;
+            transition: all 0.2s ease;
+        }
+
+        .btn-whatsapp:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgba(37, 211, 102, 0.34);
+            background: #1fb558;
+        }
+
+        .tds-mobile-nav,
+        .tds-offer-sheet,
+        .tds-offer-sheet-backdrop {
+            display: none;
+        }
+
+        @media (max-width: 800px) {
+            body {
+                padding: 84px 16px 16px;
+            }
+
+            .top-nav {
+                height: 64px;
+                padding: 10px 16px;
+            }
+
+            .top-nav-links {
+                display: none;
+            }
+
+            .coming-card {
+                padding: 28px 18px;
+            }
+
+            .preview-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .soon-products-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 767px) {
+            body {
+                padding-bottom: calc(94px + env(safe-area-inset-bottom, 0px));
+            }
+
+            .tds-mobile-nav,
+            .tds-offer-sheet,
+            .tds-offer-sheet-backdrop {
+                display: block;
+            }
+
+            .tds-mobile-nav {
+                position: fixed;
+                left: 50%;
+                bottom: 12px;
+                transform: translateX(-50%);
+                width: min(94vw, 420px);
+                background: rgba(255, 255, 255, 0.96);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                border: 1px solid rgba(15, 23, 42, 0.1);
+                border-radius: 20px;
+                box-shadow: 0 14px 30px rgba(15, 23, 42, 0.16);
+                z-index: 1200;
+                padding: 8px 8px calc(10px + env(safe-area-inset-bottom, 0px));
+            }
+
+            .tds-mobile-nav__row {
+                display: grid;
+                grid-template-columns: repeat(5, 1fr);
+                gap: 4px;
+            }
+
+            .tds-mnav-item {
+                min-height: 48px;
+                text-decoration: none;
+                color: rgba(15, 23, 42, 0.78);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 4px;
+                font-size: 9.5px;
+                font-weight: 700;
+                border-radius: 14px;
+            }
+
+            button.tds-mnav-item {
+                border: 0;
+                background: transparent;
+                cursor: pointer;
+                padding: 0;
+                font: inherit;
+            }
+
+            .tds-mnav-item svg {
+                width: 19px;
+                height: 19px;
+            }
+
+            .tds-mnav-item[aria-current="page"] {
+                color: #fff;
+                background: linear-gradient(135deg, var(--primary-orange), var(--orange-dark));
+                box-shadow: 0 8px 18px rgba(255, 136, 68, 0.35);
+            }
+
+            .tds-mnav-item:focus-visible,
+            .tds-sheet-card:focus-visible,
+            [data-tds-offer-open]:focus-visible {
+                outline: 2px solid var(--orange-dark);
+                outline-offset: 2px;
+            }
+
+            .tds-offer-sheet-backdrop {
+                position: fixed;
+                inset: 0;
+                background: rgba(2, 6, 23, 0.45);
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity .22s ease;
+                z-index: 1201;
+            }
+
+            .tds-offer-sheet {
+                position: fixed;
+                left: 50%;
+                bottom: 0;
+                transform: translateX(-50%) translateY(102%);
+                width: min(96vw, 560px);
+                background: rgba(255, 255, 255, 0.98);
+                border: 1px solid rgba(15, 23, 42, 0.10);
+                border-bottom: 0;
+                border-radius: 18px 18px 0 0;
+                box-shadow: 0 20px 40px rgba(15, 23, 42, 0.2);
+                transition: transform .24s ease;
+                z-index: 1202;
+                padding: 14px 14px calc(16px + env(safe-area-inset-bottom, 0px));
+            }
+
+            .tdsui-offer-sheet-open .tds-offer-sheet-backdrop { opacity: 1; pointer-events: auto; }
+            .tdsui-offer-sheet-open .tds-offer-sheet { transform: translateX(-50%) translateY(0); }
+
+            .tds-sheet-title {
+                font-weight: 800;
+                margin-bottom: 10px;
+                text-align: center;
+            }
+
+            .tds-sheet-grid {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .tds-sheet-card {
+                text-decoration: none;
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 10px 12px;
+                color: var(--deep-navy);
+                min-height: 48px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                background: #fff;
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+                .tds-mobile-nav,
+                .tds-offer-sheet,
+                .tds-offer-sheet-backdrop,
+                .tds-mnav-item,
+                .btn,
+                .btn-whatsapp {
+                    animation: none !important;
+                    transition: none !important;
+                    scroll-behavior: auto !important;
+                }
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="top-nav">
+        <a class="top-nav-brand" href="index.html">
+            <img src="images/TDSA-Logo.png" alt="TeleDoctorSA logo">
+            <span>TeleDoctorSA</span>
+        </a>
+        <div class="top-nav-links">
+            <a href="index.html">Home</a>
+            <a href="about-us.html">About</a>
+            <a href="our-services.html">Services</a>
+            <a href="contact-us.html">Contact</a>
+        </div>
+    </nav>
+
+    <div class="page-shell">
+    <main class="coming-card">
+        <div class="top-logo-wrap">
+            <img class="top-logo" src="images/TDSA-Logo.png" alt="TeleDoctorSA logo">
+        </div>
+        <div class="badge">Coming Soon</div>
+        <h1>TeleDoctorSA Secondary Shop Is On The Way</h1>
+        <p class="subtitle">
+            We are preparing a dedicated secondary shop experience focused on smoother navigation, curated bundles, and role-based discovery for doctors, nurses, and patients.
+        </p>
+
+        <section class="preview-grid" aria-label="Coming soon features">
+            <article class="preview-item">
+                <h3>Role-based product lanes</h3>
+                <p>Faster browsing paths for clinical teams and patients with fewer clicks.</p>
+            </article>
+            <article class="preview-item">
+                <h3>Better bundle offers</h3>
+                <p>Curated packages for home monitoring, ECG247, and practice equipment.</p>
+            </article>
+            <article class="preview-item">
+                <h3>Improved checkout flow</h3>
+                <p>Simpler steps and clearer order tracking for a smoother purchase journey.</p>
+            </article>
+        </section>
+
+        <h2 class="soon-products-title">Products You Can Look Forward To (Launching Soon)</h2>
+        <section class="soon-products-grid" aria-label="Upcoming products preview">
+            <article class="product-preview">
+                <img src="images/PMD1.png" alt="Home monitoring device preview">
+                <div class="product-preview-body">
+                    <span class="product-tag">Home Monitoring</span>
+                    <h4>Digital Pulse Oximeters</h4>
+                    <p>Reliable oxygen saturation and pulse monitoring for home care and follow-up.</p>
+                </div>
+            </article>
+
+            <article class="product-preview">
+                <img src="images/PMD2.png" alt="Home monitoring device range preview">
+                <div class="product-preview-body">
+                    <span class="product-tag">Home Monitoring</span>
+                    <h4>Smart Home Monitoring Devices</h4>
+                    <p>Connected BP, glucose, and vitals tracking designed for ongoing remote care.</p>
+                </div>
+            </article>
+
+            <article class="product-preview">
+                <img src="https://images.unsplash.com/photo-1530497610245-94d3c16cda28?auto=format&fit=crop&w=900&q=80" alt="Clinical ECG monitoring equipment">
+                <div class="product-preview-body">
+                    <span class="product-tag">ECG247</span>
+                    <h4>ECG247 Monitoring Range</h4>
+                    <p>Wireless monitors, sensors, and clinical accessories for continuous heart rhythm tracking.</p>
+                </div>
+            </article>
+
+            <article class="product-preview">
+                <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=900&q=80" alt="Nurse using digital tools on a tablet">
+                <div class="product-preview-body">
+                    <span class="product-tag">73 Health</span>
+                    <h4>73 Health Subscriptions</h4>
+                    <p>Nursing-focused subscriptions for patient management, follow-up workflows, and digital care tools.</p>
+                </div>
+            </article>
+
+            <article class="product-preview">
+                <img src="images/HPE1.png" alt="Health practice equipment preview">
+                <div class="product-preview-body">
+                    <span class="product-tag">Practice Equipment</span>
+                    <h4>Health Practice Equipment</h4>
+                    <p>Professional tools for clinics and practitioners, including connected diagnostic equipment.</p>
+                </div>
+            </article>
+
+            <article class="product-preview">
+                <img src="images/HPE2.png" alt="Clinic setup essentials preview">
+                <div class="product-preview-body">
+                    <span class="product-tag">Practice Equipment</span>
+                    <h4>Clinic Setup Essentials</h4>
+                    <p>Examination lights and practical setup items to support quality in-person and hybrid care.</p>
+                </div>
+            </article>
+        </section>
+
+        <div class="actions">
+            <a class="btn btn-primary" href="shop.html">Go to Main Shop</a>
+            <a class="btn btn-secondary" href="index.html">Back to Homepage</a>
+        </div>
+        <div class="enquire-wrap">
+            <a class="btn-whatsapp" href="https://api.whatsapp.com/send/?phone=27780336394&text=Hello%20TeleDoctorSA%2C%20I%27m%20interested%20in%20the%20upcoming%20shop%20products%20%28Oximeters%2C%20Home%20Monitoring%20Devices%2C%20ECG247%2C%2073%20Health%2C%20and%20Health%20Practice%20Equipment%29.%20Please%20share%20more%20information.&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer">
+                Enquire More on WhatsApp
+            </a>
+        </div>
+    </main>
+    </div>
+
+    <div class="tds-offer-sheet-backdrop" data-tds-offer-close aria-hidden="true"></div>
+    <section class="tds-offer-sheet" id="tds-offer-sheet" role="dialog" aria-modal="false" aria-label="What we offer">
+      <h3 class="tds-sheet-title">What we offer</h3>
+      <div class="tds-sheet-grid">
+        <a class="tds-sheet-card" href="ehr.html">Electronic Health Records</a>
+        <a class="tds-sheet-card" href="teledoctorsa-app.html">TeleDoctorSA App</a>
+        <a class="tds-sheet-card" href="ecg247.html">ECG247 Monitoring</a>
+        <a class="tds-sheet-card" href="virtual-consultations.html">Virtual Consultations</a>
+      </div>
+    </section>
+
+    <nav class="tds-mobile-nav" aria-label="Bottom navigation">
+      <div class="tds-mobile-nav__row">
+        <a class="tds-mnav-item" href="index.html" data-page="home">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          <span>Home</span>
+        </a>
+        <a class="tds-mnav-item" href="about-us.html" data-page="about">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/><path d="M12 17v-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M12 8h.01" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+          <span>About</span>
+        </a>
+        <button class="tds-mnav-item" type="button" data-page="offer" data-tds-offer-open aria-label="What we offer" aria-haspopup="dialog" aria-controls="tds-offer-sheet">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h16M12 4v16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <span>Offer</span>
+        </button>
+        <a class="tds-mnav-item" href="shop.html" data-page="shop">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 6h18l-2 12H5L3 6z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 10V4h6v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <span>Shop</span>
+        </a>
+        <a class="tds-mnav-item" href="contact-us.html" data-page="contact">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16v10H4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 8l8 6 8-6" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          <span>Contact</span>
+        </a>
+      </div>
+    </nav>
+
+    <script>
+    (function(){
+      var root = document.documentElement;
+      var body = document.body;
+      var sheet = document.querySelector('.tds-offer-sheet');
+      var lastFocusedEl = null;
+      function setBodyLock(locked){
+        if(locked){ body.dataset.prevOverflow = body.style.overflow || ''; body.style.overflow = 'hidden'; }
+        else { body.style.overflow = body.dataset.prevOverflow || ''; delete body.dataset.prevOverflow; }
+      }
+      function setOfferExpanded(expanded){
+        document.querySelectorAll('[data-tds-offer-open]').forEach(function(el){
+          el.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+        });
+      }
+      function openSheet(){ lastFocusedEl = document.activeElement; root.classList.add('tdsui-offer-sheet-open'); setOfferExpanded(true); setBodyLock(true); }
+      function closeSheet(){ root.classList.remove('tdsui-offer-sheet-open'); setOfferExpanded(false); setBodyLock(false); if(lastFocusedEl && lastFocusedEl.focus){ lastFocusedEl.focus(); } }
+      document.querySelectorAll('[data-tds-offer-open]').forEach(function(el){ el.setAttribute('aria-expanded','false'); el.addEventListener('click', openSheet); });
+      document.querySelectorAll('[data-tds-offer-close]').forEach(function(el){ el.addEventListener('click', closeSheet); });
+      document.querySelectorAll('.tds-offer-sheet a').forEach(function(el){ el.addEventListener('click', closeSheet); });
+      document.addEventListener('keydown', function(e){ if(e.key === 'Escape'){ closeSheet(); } });
+
+      function syncActiveTab(){
+        var path = (location.pathname || '').split('/').pop() || 'shop.html';
+        path = path.toLowerCase();
+        var map = { 'index.html':'home', 'about-us.html':'about', 'shop.html':'shop', 'contact-us.html':'contact' };
+        var key = map[path] || '';
+        document.querySelectorAll('.tds-mnav-item').forEach(function(el){
+          var p = el.getAttribute('data-page') || '';
+          if(p && p === key){ el.setAttribute('aria-current','page'); }
+          else { el.removeAttribute('aria-current'); }
+        });
+      }
+      syncActiveTab();
+      window.addEventListener('popstate', syncActiveTab);
+      window.addEventListener('pageshow', syncActiveTab);
+
+      if(sheet){
+        var startY = 0;
+        sheet.addEventListener('touchstart', function(e){ startY = (e.touches && e.touches[0]) ? e.touches[0].clientY : 0; }, {passive:true});
+        sheet.addEventListener('touchend', function(e){ var endY = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0].clientY : startY; if(endY - startY > 60){ closeSheet(); } }, {passive:true});
+      }
+    })();
+    </script>
+</body>
+</html>
+

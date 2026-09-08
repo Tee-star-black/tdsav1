@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeledoctorSA QR Library</title>
+    <meta name="description" content="QR code library for TeledoctorSA service pages.">
+    <meta name="robots" content="noindex, follow">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-orange: #FFA366;
+            --orange-dark: #FF8844;
+            --orange-soft: #FFF4ED;
+            --deep-navy: #0F172A;
+            --slate-gray: #64748B;
+            --white: #F8F9FA;
+            --border: #E2E8F0;
+            --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.08);
+            --shadow-strong: 0 24px 60px rgba(15, 23, 42, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--deep-navy);
+            background: linear-gradient(180deg, #ffffff 0%, #fff8f2 42%, #f7fbfd 100%);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(circle at top left, rgba(255, 163, 102, 0.18), transparent 28%),
+                radial-gradient(circle at bottom right, rgba(15, 23, 42, 0.06), transparent 24%);
+            pointer-events: none;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        img {
+            display: block;
+            max-width: 100%;
+        }
+
+        .shell {
+            width: min(680px, calc(100% - 24px));
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .topbar {
+            padding: 14px 0 10px;
+        }
+
+        .topbar-inner,
+        .hero,
+        .qr-card,
+        .note-card {
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.95);
+            border-radius: 26px;
+            box-shadow: var(--shadow-soft);
+            backdrop-filter: blur(18px);
+        }
+
+        .topbar-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 14px 16px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .brand-badge {
+            width: 46px;
+            height: 46px;
+            padding: 8px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, var(--orange-soft), #fff);
+            border: 1px solid rgba(255, 163, 102, 0.24);
+        }
+
+        .brand-badge img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .brand-copy strong,
+        h1,
+        h2,
+        h3 {
+            display: block;
+            letter-spacing: -0.03em;
+        }
+
+        .brand-copy strong {
+            font-size: 1rem;
+            font-weight: 800;
+        }
+
+        .brand-copy span {
+            display: block;
+            margin-top: 4px;
+            font-size: 0.82rem;
+            color: var(--slate-gray);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 999px;
+            background: var(--orange-soft);
+            border: 1px solid rgba(255, 163, 102, 0.18);
+            font-size: 0.78rem;
+            font-weight: 800;
+            color: var(--orange-dark);
+            white-space: nowrap;
+        }
+
+        .badge::before,
+        .eyebrow::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-orange), var(--orange-dark));
+            box-shadow: 0 0 0 5px rgba(255, 163, 102, 0.12);
+        }
+
+        main {
+            padding-bottom: 36px;
+        }
+
+        .hero {
+            padding: 24px 20px;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 13px;
+            border-radius: 999px;
+            background: var(--orange-soft);
+            border: 1px solid rgba(255, 163, 102, 0.16);
+            font-size: 0.74rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--orange-dark);
+        }
+
+        h1 {
+            margin: 18px 0 12px;
+            font-size: clamp(2.2rem, 10vw, 3.6rem);
+            font-weight: 800;
+            line-height: 0.97;
+            max-width: 10ch;
+        }
+
+        .hero p,
+        .qr-copy p,
+        .note-card p,
+        .url {
+            margin: 0;
+            color: var(--slate-gray);
+        }
+
+        .hero p {
+            font-size: 1rem;
+            line-height: 1.74;
+            max-width: 52ch;
+        }
+
+        .qr-list {
+            display: grid;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .qr-card {
+            padding: 18px;
+        }
+
+        .qr-copy {
+            margin-bottom: 18px;
+        }
+
+        .service-tag {
+            display: inline-flex;
+            padding: 8px 10px;
+            border-radius: 999px;
+            background: var(--orange-soft);
+            border: 1px solid rgba(255, 163, 102, 0.16);
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--orange-dark);
+        }
+
+        h2 {
+            margin: 14px 0 10px;
+            font-size: 1.55rem;
+            font-weight: 800;
+            line-height: 1.08;
+        }
+
+        .qr-visual {
+            padding: 16px;
+            border-radius: 22px;
+            background: linear-gradient(180deg, #ffffff 0%, #fff8f2 100%);
+            border: 1px solid var(--border);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+        }
+
+        .qr-visual img {
+            width: min(100%, 260px);
+            margin: 0 auto;
+        }
+
+        .url {
+            margin-top: 14px;
+            font-size: 0.92rem;
+            word-break: break-all;
+        }
+
+        .actions {
+            display: grid;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 54px;
+            padding: 0 18px;
+            border-radius: 18px;
+            font-size: 0.98rem;
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            border: 1px solid transparent;
+            transition: transform 0.22s ease, box-shadow 0.22s ease;
+        }
+
+        .btn:hover,
+        .btn:focus-visible {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-orange), var(--orange-dark));
+            color: var(--deep-navy);
+            box-shadow: 0 16px 30px rgba(255, 136, 68, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+        }
+
+        .btn-secondary {
+            background: #fff;
+            color: var(--deep-navy);
+            border-color: var(--border);
+            box-shadow: 0 12px 24px rgba(15, 23, 42, 0.06);
+        }
+
+        .note-card {
+            margin-top: 16px;
+            padding: 20px;
+        }
+
+        .note-card h3 {
+            margin: 0 0 8px;
+            font-size: 1.1rem;
+            font-weight: 800;
+        }
+
+        .note-card p + p {
+            margin-top: 8px;
+        }
+
+        @media (min-width: 720px) {
+            .qr-card {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) 260px;
+                gap: 18px;
+                align-items: center;
+            }
+
+            .qr-copy {
+                margin-bottom: 0;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .btn {
+                transition: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="shell topbar">
+        <div class="topbar-inner">
+            <a class="brand" href="https://teledoctorsa.co.za/" aria-label="TeledoctorSA home">
+                <span class="brand-badge">
+                    <img src="images/TDSA-Logo.png" alt="TeledoctorSA logo">
+                </span>
+                <span class="brand-copy">
+                    <strong>TeledoctorSA</strong>
+                    <span>QR code library</span>
+                </span>
+            </a>
+            <span class="badge">Internal use</span>
+        </div>
+    </header>
+
+    <main class="shell">
+        <section class="hero">
+            <span class="eyebrow">Saved QR assets</span>
+            <h1>One place for all TeledoctorSA QR codes</h1>
+            <p>Use this page to open the live service pages, download the matching QR files, or pull the correct code for exhibition material, print items, and staff sharing.</p>
+        </section>
+
+        <section class="qr-list" aria-label="TeledoctorSA QR codes">
+            <article class="qr-card">
+                <div class="qr-copy">
+                    <span class="service-tag">Exhibition Page</span>
+                    <h2>Exhibition landing QR</h2>
+                    <p>Links to the TeledoctorSA exhibition landing page for booth visitors, print material, and event follow-up.</p>
+                    <p class="url">https://teledoctorsa.co.za/exhibition-landing-page</p>
+                    <div class="actions">
+                        <a class="btn btn-primary" href="https://teledoctorsa.co.za/exhibition-landing-page" target="_blank" rel="noopener noreferrer">Open page</a>
+                        <a class="btn btn-secondary" href="images/qr/exhibition-landing-page.svg" download>Download QR</a>
+                    </div>
+                </div>
+                <div class="qr-visual">
+                    <img src="images/qr/exhibition-landing-page.svg" alt="QR code for the exhibition landing page" loading="lazy">
+                </div>
+            </article>
+
+            <article class="qr-card">
+                <div class="qr-copy">
+                    <span class="service-tag">Patients & Athletes</span>
+                    <h2>Patients portal QR</h2>
+                    <p>Links to the TDSA patient portal rollout page used by the exhibition patients page for records access, messaging, and ongoing digital follow-up.</p>
+                    <p class="url">https://teledoctorsa.co.za/teledoctorsa-app.html</p>
+                    <div class="actions">
+                        <a class="btn btn-primary" href="https://teledoctorsa.co.za/teledoctorsa-app.html" target="_blank" rel="noopener noreferrer">Open page</a>
+                        <a class="btn btn-secondary" href="images/qr/patients-portal-page.svg" download>Download QR</a>
+                    </div>
+                </div>
+                <div class="qr-visual">
+                    <img src="images/qr/patients-portal-page.svg" alt="QR code for the TDSA patients portal page" loading="lazy">
+                </div>
+            </article>
+
+            <article class="qr-card">
+                <div class="qr-copy">
+                    <span class="service-tag">73 Health Nursing</span>
+                    <h2>Nurses exhibition QR</h2>
+                    <p>Links to the nurse-focused exhibition page highlighting 73 Health support, workflow value, and the current exhibition video.</p>
+                    <p class="url">https://teledoctorsa.co.za/nurses-73-health.html</p>
+                    <div class="actions">
+                        <a class="btn btn-primary" href="https://teledoctorsa.co.za/nurses-73-health.html" target="_blank" rel="noopener noreferrer">Open page</a>
+                        <a class="btn btn-secondary" href="images/qr/nurses-73-health-page.svg" download>Download QR</a>
+                    </div>
+                </div>
+                <div class="qr-visual">
+                    <img src="images/qr/nurses-73-health-page.svg" alt="QR code for the nursing exhibition page" loading="lazy">
+                </div>
+            </article>
+
+            <article class="qr-card">
+                <div class="qr-copy">
+                    <span class="service-tag">Clinician Portal</span>
+                    <h2>Clinician exhibition QR</h2>
+                    <p>Links to the clinician-focused exhibition page for doctors, specialists, and private organisations exploring the TDSA portal story.</p>
+                    <p class="url">https://teledoctorsa.co.za/clinician-portal.html</p>
+                    <div class="actions">
+                        <a class="btn btn-primary" href="https://teledoctorsa.co.za/clinician-portal.html" target="_blank" rel="noopener noreferrer">Open page</a>
+                        <a class="btn btn-secondary" href="images/qr/clinician-portal-page.svg" download>Download QR</a>
+                    </div>
+                </div>
+                <div class="qr-visual">
+                    <img src="images/qr/clinician-portal-page.svg" alt="QR code for the clinician exhibition page" loading="lazy">
+                </div>
+            </article>
+
+            <article class="qr-card">
+                <div class="qr-copy">
+                    <span class="service-tag">UPVIO x TDSA</span>
+                    <h2>UPVIO live check QR</h2>
+                    <p>Links directly to the live 30-second wellness check so booth visitors can start the camera-based flow immediately.</p>
+                    <p class="url">https://scan.upvio.com/teledoctorsa/links/teledoctorsa2</p>
+                    <div class="actions">
+                        <a class="btn btn-primary" href="https://scan.upvio.com/teledoctorsa/links/teledoctorsa2" target="_blank" rel="noopener noreferrer">Open live check</a>
+                        <a class="btn btn-secondary" href="images/qr/upvio-live-check.svg" download>Download QR</a>
+                    </div>
+                </div>
+                <div class="qr-visual">
+                    <img src="images/qr/upvio-live-check.svg" alt="QR code for the live UPVIO wellness check" loading="lazy">
+                </div>
+            </article>
+
+            <article class="qr-card">
+                <div class="qr-copy">
+                    <span class="service-tag">Virtual Consultations</span>
+                    <h2>Virtual care access QR</h2>
+                    <p>Links directly to the TeledoctorSA virtual consultations page for patients, providers, and exhibition visitors.</p>
+                    <p class="url">https://teledoctorsa.co.za/virtual-consultations</p>
+                    <div class="actions">
+                        <a class="btn btn-primary" href="https://teledoctorsa.co.za/virtual-consultations" target="_blank" rel="noopener noreferrer">Open page</a>
+                        <a class="btn btn-secondary" href="images/qr/virtual-consultations-page.svg" download>Download QR</a>
+                    </div>
+                </div>
+                <div class="qr-visual">
+                    <img src="images/qr/virtual-consultations-page.svg" alt="QR code for the virtual consultations page" loading="lazy">
+                </div>
+            </article>
+
+            <article class="qr-card">
+                <div class="qr-copy">
+                    <span class="service-tag">Electronic Health Records</span>
+                    <h2>EHR access QR</h2>
+                    <p>Links to the electronic health records page for demonstrations, presentations, and quick mobile access.</p>
+                    <p class="url">https://teledoctorsa.co.za/ehr</p>
+                    <div class="actions">
+                        <a class="btn btn-primary" href="https://teledoctorsa.co.za/ehr" target="_blank" rel="noopener noreferrer">Open page</a>
+                        <a class="btn btn-secondary" href="images/qr/ehr-page.svg" download>Download QR</a>
+                    </div>
+                </div>
+                <div class="qr-visual">
+                    <img src="images/qr/ehr-page.svg" alt="QR code for the electronic health records page" loading="lazy">
+                </div>
+            </article>
+
+            <article class="qr-card">
+                <div class="qr-copy">
+                    <span class="service-tag">ECG247 Monitoring</span>
+                    <h2>ECG247 access QR</h2>
+                    <p>Links to the ECG247 page for cardiac monitoring demos, handouts, and exhibition follow-up material.</p>
+                    <p class="url">https://teledoctorsa.co.za/ecg247</p>
+                    <div class="actions">
+                        <a class="btn btn-primary" href="https://teledoctorsa.co.za/ecg247" target="_blank" rel="noopener noreferrer">Open page</a>
+                        <a class="btn btn-secondary" href="images/qr/ecg247-page.svg" download>Download QR</a>
+                    </div>
+                </div>
+                <div class="qr-visual">
+                    <img src="images/qr/ecg247-page.svg" alt="QR code for the ECG247 page" loading="lazy">
+                </div>
+            </article>
+        </section>
+
+        <section class="note-card">
+            <h3>Asset note</h3>
+            <p>This page is set to `noindex` so it can act as a simple internal QR storage page without being pushed into search.</p>
+            <p>The QR image files remain in `images/qr/`, and the mobile exhibition pages intentionally use direct CTAs instead of showing the codes in-page.</p>
+        </section>
+    </main>
+</body>
+</html>

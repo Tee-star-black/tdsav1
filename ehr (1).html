@@ -1,0 +1,1619 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electronic Health Records (EHR) | TeledoctorSA</title>
+    <meta name="description" content="Secure digital health records accessible anytime, anywhere. POPIA-compliant EHR system for managing your medical history with encryption and cloud storage.">
+    <meta name="keywords" content="Electronic Health Records, EHR South Africa, digital health records, POPIA compliant EHR, medical record system">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://teledoctorsa.co.za/ehr">
+
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="Electronic Health Records (EHR) | TeledoctorSA">
+    <meta property="og:description" content="Secure digital health records accessible anytime, anywhere. POPIA-compliant EHR system for managing your medical history with encryption and cloud storage.">
+    <meta property="og:url" content="https://teledoctorsa.co.za/ehr">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="TeleDoctorSA">
+    <meta property="og:locale" content="en_ZA">
+    <meta property="og:image" content="https://teledoctorsa.co.za/images/249/20429923/Untitleddesign48-25xV-u53f-vbZW3D9jN0Fg.png">
+    <meta property="og:image:alt" content="TeleDoctorSA logo">
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Electronic Health Records (EHR) | TeledoctorSA">
+    <meta name="twitter:description" content="Secure digital health records accessible anytime, anywhere. POPIA-compliant EHR system for managing your medical history with encryption and cloud storage.">
+    <meta name="twitter:image" content="https://teledoctorsa.co.za/images/249/20429923/Untitleddesign48-25xV-u53f-vbZW3D9jN0Fg.png">
+
+    <!-- Structured Data Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "name": "Electronic Health Records (EHR)",
+      "url": "https://teledoctorsa.co.za/ehr",
+      "description": "Secure digital health records accessible anytime, anywhere. POPIA-compliant EHR system for managing your medical history with encryption and cloud storage.",
+      "provider": {
+        "@type": "MedicalBusiness",
+        "name": "TeleDoctorSA",
+        "url": "https://teledoctorsa.co.za"
+      },
+      "areaServed": "ZA"
+    }
+    </script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --primary-orange: #FFA366;
+            --orange-dark: #FF8844;
+            --orange-light: #FFB886;
+            --deep-navy: #0F172A;
+            --slate-gray: #64748B;
+            --light-gray: #E8EDF3;
+            --white: #F8F9FA;
+            --border: #E2E8F0;
+            --success-green: #10B981;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--white);
+            color: var(--deep-navy);
+            line-height: 1.6;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 8%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo { 
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            text-decoration: none;
+        }
+
+        .logo img {
+            height: 50px;
+            width: auto;
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+        }
+
+        .logo-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            color: var(--deep-navy);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            position: relative;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-text::before {
+            content: '';
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, var(--primary-orange), var(--orange-dark));
+            mask: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>');
+            mask-size: contain;
+            mask-repeat: no-repeat;
+            -webkit-mask: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>');
+            -webkit-mask-size: contain;
+            -webkit-mask-repeat: no-repeat;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        .logo-text span {
+            color: var(--primary-orange);
+            font-weight: 800;
+            font-style: italic;
+        }
+
+        .logo:hover .logo-text {
+            transform: translateX(3px);
+        }
+
+        .logo:hover .logo-text::before {
+            animation: pulse 0.5s ease-in-out infinite;
+        }
+
+        .logo:hover img {
+            filter: drop-shadow(0 4px 8px rgba(255, 163, 102, 0.3));
+            transform: translateY(-2px);
+        }
+
+        /* Navigation Links */
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--deep-navy);
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-orange);
+        }
+
+        /* Hamburger Menu */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 8px;
+            background: transparent;
+            border: none;
+            z-index: 1001;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: var(--deep-navy);
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(7px, 7px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
+
+        /* Side Panel Dropdown */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown > a {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+
+        .side-panel-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(4px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .side-panel-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .dropdown-content {
+            position: fixed;
+            top: 0;
+            right: -450px;
+            width: 450px;
+            height: 100vh;
+            background: var(--white);
+            box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            transition: right 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            overflow-y: auto;
+            padding: 40px 32px;
+        }
+
+        .dropdown-content.active {
+            right: 0;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .panel-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--deep-navy);
+        }
+
+        .panel-close {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--light-gray);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .panel-close:hover {
+            background: var(--primary-orange);
+            transform: rotate(90deg);
+        }
+
+        .panel-close i {
+            color: var(--deep-navy);
+            width: 20px;
+            height: 20px;
+        }
+
+        .panel-close:hover i {
+            color: white;
+        }
+
+        .mega-menu-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .mega-menu-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            padding: 24px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            border: 2px solid var(--border);
+            background: var(--white);
+        }
+
+        .mega-menu-item:hover {
+            background: rgba(255, 163, 102, 0.05);
+            border-color: var(--primary-orange);
+            transform: translateX(-8px);
+            box-shadow: 4px 8px 16px rgba(255, 163, 102, 0.2);
+        }
+
+        .mega-menu-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--primary-orange), var(--orange-dark));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .mega-menu-icon i {
+            color: white;
+            width: 28px;
+            height: 28px;
+        }
+
+        .mega-menu-info {
+            flex: 1;
+        }
+
+        .mega-menu-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--deep-navy);
+            margin-bottom: 6px;
+        }
+
+        .mega-menu-desc {
+            font-size: 0.9rem;
+            color: var(--slate-gray);
+            line-height: 1.5;
+        }
+
+        .dropdown-content a::after {
+            display: none !important;
+        }
+
+        /* Contact Dropdown */
+        .btn-main {
+            background: var(--deep-navy);
+            color: var(--white) !important;
+            padding: 10px 24px;
+            border-radius: 0;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 8px 100%);
+            position: relative;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-main:hover {
+            background: var(--primary-orange);
+            transform: translateY(-1px);
+        }
+
+        .contact-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .contact-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 12px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            min-width: 280px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10000;
+        }
+
+        .contact-dropdown:hover .contact-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .contact-menu::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            right: 20px;
+            width: 12px;
+            height: 12px;
+            background: white;
+            transform: rotate(45deg);
+            box-shadow: -2px -2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .contact-menu-header {
+            padding: 16px 20px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .contact-menu-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--deep-navy);
+            margin-bottom: 4px;
+        }
+
+        .contact-menu-subtitle {
+            font-size: 0.75rem;
+            color: var(--slate-gray);
+        }
+
+        .contact-options {
+            padding: 8px;
+        }
+
+        .contact-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--deep-navy);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .contact-option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 163, 102, 0.1), transparent);
+            transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .contact-option:hover {
+            background: rgba(255, 163, 102, 0.05);
+            transform: translateX(4px);
+        }
+        
+        .contact-option:hover::before {
+            left: 100%;
+        }
+
+        .contact-option.primary {
+            background: linear-gradient(135deg, var(--primary-orange), var(--orange-dark));
+            color: white;
+            box-shadow: 0 4px 12px rgba(255, 163, 102, 0.3);
+        }
+
+        .contact-option.primary:hover {
+            background: linear-gradient(135deg, var(--orange-dark), var(--primary-orange));
+            transform: translateX(4px) scale(1.02);
+            box-shadow: 0 6px 16px rgba(255, 163, 102, 0.4);
+        }
+
+        .contact-option-icon {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            flex-shrink: 0;
+        }
+
+        .contact-option:not(.primary) .contact-option-icon {
+            background: var(--light-gray);
+        }
+
+        .contact-option-details {
+            flex: 1;
+        }
+
+        .contact-option-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 2px;
+        }
+
+        .contact-option-desc {
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+
+        .back-btn {
+            padding: 12px 24px;
+            background: var(--primary-orange);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn:hover {
+            background: var(--orange-dark);
+            transform: translateY(-2px);
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, var(--deep-navy) 0%, #1e293b 100%);
+            padding: 100px 8% 80px;
+            color: white;
+            text-align: center;
+        }
+
+        .hero-section h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            letter-spacing: -1.5px;
+        }
+
+        .hero-section .subtitle {
+            font-size: 1.3rem;
+            color: var(--orange-light);
+            max-width: 800px;
+            margin: 0 auto 40px;
+        }
+
+        .hero-icon {
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 163, 102, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            border: 3px solid var(--primary-orange);
+        }
+
+        .content-section {
+            padding: 80px 8%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 30px;
+            color: var(--deep-navy);
+        }
+
+        .section-subtitle {
+            font-size: 1.1rem;
+            color: var(--slate-gray);
+            margin-bottom: 50px;
+            line-height: 1.8;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .feature-card {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 35px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-orange);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-orange), var(--orange-light));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: var(--deep-navy);
+        }
+
+        .feature-card p {
+            color: var(--slate-gray);
+            line-height: 1.7;
+        }
+
+        .benefits-section {
+            background: var(--light-gray);
+            padding: 60px 8%;
+            margin: 60px 0;
+        }
+
+        .benefits-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .benefit-item {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            display: flex;
+            align-items: start;
+            gap: 15px;
+            border-left: 4px solid var(--primary-orange);
+        }
+
+        .benefit-check {
+            width: 24px;
+            height: 24px;
+            background: var(--success-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .cta-section {
+            text-align: center;
+            padding: 80px 8%;
+            background: linear-gradient(135deg, var(--primary-orange), var(--orange-dark));
+            color: white;
+        }
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .cta-btn {
+            padding: 16px 40px;
+            background: white;
+            color: var(--primary-orange);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: inline-block;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--deep-navy);
+            padding: 40px 8%;
+            border-top: 1px solid rgba(255, 163, 102, 0.2);
+            margin-top: 60px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .footer p {
+            color: rgba(255, 255, 255, 0.6);
+            margin: 0;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .social-link {
+            width: 45px;
+            height: 45px;
+            background: rgba(255, 163, 102, 0.1);
+            border: 2px solid rgba(255, 163, 102, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-orange);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .social-link::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: var(--primary-orange);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.4s ease;
+            z-index: 0;
+        }
+
+        .social-link:hover::before {
+            width: 100%;
+            height: 100%;
+        }
+
+        .social-link:hover {
+            border-color: var(--primary-orange);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(255, 163, 102, 0.3);
+        }
+
+        .social-link i {
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover i {
+            color: white;
+        }
+
+        /* Tablet - 1024px */
+        @media (max-width: 1024px) {
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            nav {
+                padding: 20px 5%;
+            }
+        }
+        
+        /* Tablet Small - 768px */
+        @media (max-width: 768px) {
+            .hero-section h1 {
+                font-size: 2.5rem;
+            }
+            .section-title {
+                font-size: 2rem;
+            }
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            .footer-content {
+                justify-content: center;
+                text-align: center;
+            }
+            nav {
+                padding: 18px 4%;
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+            .logo-text {
+                font-size: 1.3rem;
+            }
+        }
+        
+        /* Mobile - 640px */
+        @media (max-width: 640px) {
+            nav { padding: 16px 20px; }
+            .logo img { width: 40px; height: 40px; }
+            .logo-text { font-size: 1.1rem; }
+            .hero-section { padding: 100px 20px 60px; }
+            .hero-section h1 { font-size: 2rem; }
+            .subtitle { font-size: 1rem; }
+            .content-section { padding: 60px 20px; }
+            .section-title { font-size: 1.8rem; }
+            .cta-btn { padding: 12px 24px; font-size: 0.95rem; }
+            .back-btn { padding: 10px 20px; font-size: 0.9rem; }
+        }
+        
+        /* Mobile Small - 480px */
+        @media (max-width: 480px) {
+            .hero-section h1 { font-size: 1.75rem; }
+            .subtitle { font-size: 0.95rem; }
+            .section-title { font-size: 1.5rem; }
+            .feature-card h3 { font-size: 1.1rem; }
+        }
+            .mobile-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
+            z-index: 998;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .mobile-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+                position: relative;
+                z-index: 1001;
+            }
+
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 85%;
+                max-width: 340px;
+                height: 100vh;
+                background: white;
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 90px 24px 24px;
+                box-shadow: -5px 0 30px rgba(0,0,0,0.15);
+                transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+                z-index: 1000;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .nav-links.active { right: 0; }
+
+            .nav-links > * { width: 100%; }
+
+            .dropdown {
+                width: 100%;
+                display: block;
+            }
+
+            .dropdown > a {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                width: 100%;
+                padding: 16px 12px;
+                font-size: 1.05rem;
+                font-weight: 600;
+                border-bottom: 1px solid var(--border);
+                color: var(--deep-navy);
+                background: white;
+                transition: background 0.2s ease;
+            }
+
+            .dropdown > a:active {
+                background: var(--light-gray);
+            }
+
+            .nav-links > a {
+                display: block;
+                padding: 16px 12px;
+                font-size: 1.05rem;
+                font-weight: 500;
+                width: 100%;
+                border-bottom: 1px solid var(--border);
+                color: var(--deep-navy);
+                transition: all 0.2s ease;
+            }
+
+            .nav-links > a:active {
+                background: var(--light-gray);
+                transform: translateX(4px);
+            }
+
+            .dropdown-content {
+                position: static;
+                width: 100%;
+                height: auto;
+                box-shadow: none;
+                padding: 0;
+                margin-top: 0;
+                background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+                border-radius: 12px;
+                overflow: visible;
+                border: 1px solid var(--border);
+                display: none;
+            }
+
+            .dropdown-content.active {
+                display: block;
+                right: auto;
+            }
+
+            .panel-header {
+                padding: 16px 16px 12px;
+                margin-bottom: 0;
+                background: white;
+                border-radius: 12px 12px 0 0;
+            }
+
+            .panel-title { font-size: 1.2rem; }
+            .panel-close { width: 36px; height: 36px; }
+
+            .mega-menu-grid {
+                gap: 12px;
+                padding: 16px;
+            }
+
+            .mega-menu-item {
+                padding: 14px;
+                border-radius: 10px;
+            }
+
+            .mega-menu-icon { width: 44px; height: 44px; }
+            .mega-menu-icon i { width: 22px; height: 22px; }
+            .mega-menu-title { font-size: 1rem; }
+            .mega-menu-desc { font-size: 0.85rem; }
+        }
+            /* Mobile Nav Fix */
+        .mobile-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
+            z-index: 998;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .mobile-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                flex-wrap: nowrap;
+            }
+
+            .hamburger {
+                display: flex;
+                position: relative;
+                z-index: 1001;
+            }
+
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 85%;
+                max-width: 340px;
+                height: 100vh;
+                background: white;
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 90px 24px 24px;
+                box-shadow: -5px 0 30px rgba(0,0,0,0.15);
+                transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+                z-index: 1000;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .nav-links.active { right: 0; }
+
+            .nav-links > * { width: 100%; }
+
+            .dropdown { width: 100%; display: block; }
+
+            .dropdown > a {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                width: 100%;
+                padding: 16px 12px;
+                font-size: 1.05rem;
+                font-weight: 600;
+                border-bottom: 1px solid var(--border);
+                color: var(--deep-navy);
+                background: white;
+                transition: background 0.2s ease;
+            }
+
+            .dropdown > a:active { background: var(--light-gray); }
+
+            .nav-links > a {
+                display: block;
+                padding: 16px 12px;
+                font-size: 1.05rem;
+                font-weight: 500;
+                width: 100%;
+                border-bottom: 1px solid var(--border);
+                color: var(--deep-navy);
+                transition: all 0.2s ease;
+            }
+
+            .nav-links > a:active {
+                background: var(--light-gray);
+                transform: translateX(4px);
+            }
+
+            .dropdown-content {
+                position: static;
+                width: 100%;
+                height: auto;
+                box-shadow: none;
+                padding: 0;
+                margin-top: 0;
+                background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+                border-radius: 12px;
+                overflow: visible;
+                border: 1px solid var(--border);
+                display: none;
+            }
+
+            .dropdown-content.active {
+                display: block;
+                right: auto;
+            }
+
+            .panel-header {
+                padding: 16px 16px 12px;
+                margin-bottom: 0;
+                background: white;
+                border-radius: 12px 12px 0 0;
+            }
+
+            .panel-title { font-size: 1.2rem; }
+            .panel-close { width: 36px; height: 36px; }
+
+            .mega-menu-grid { gap: 12px; padding: 16px; }
+            .mega-menu-item { padding: 14px; border-radius: 10px; }
+            .mega-menu-icon { width: 44px; height: 44px; }
+            .mega-menu-icon i { width: 22px; height: 22px; }
+            .mega-menu-title { font-size: 1rem; }
+            .mega-menu-desc { font-size: 0.85rem; }
+        }
+    
+        /* Layout container */
+        .section-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        section {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        section > .section-inner {
+            padding-left: 8%;
+            padding-right: 8%;
+        }
+
+        /* Laptop + desktop tuning */
+        @media (max-width: 1200px) {
+            .hero { padding-top: 130px; padding-bottom: 100px; }
+            .hero h1 { font-size: 3.2rem; }
+            .hero-img {
+                height: 460px;
+                animation: none;
+                box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+            }
+            .hero-img::before { opacity: 0.7; }
+            .hero::before { opacity: 0.5; }
+        }
+
+        @media (max-width: 1100px) {
+            nav { padding: 18px 5%; }
+            nav.scrolled { padding: 12px 5%; }
+        }
+
+        @media (max-width: 1024px) {
+            nav { padding: 16px 4%; }
+            .hero h1 { font-size: 3.05rem; }
+            .hero p { font-size: 1.05rem; }
+            .hero-img { height: 430px; }
+        }
+
+        @media (max-width: 900px) {
+            .hero { padding-top: 120px; padding-bottom: 70px; }
+        }
+
+        @media (max-width: 768px) {
+            section > .section-inner { padding-left: 24px; padding-right: 24px; }
+        }
+
+        @media (max-width: 640px) {
+            section > .section-inner { padding-left: 20px; padding-right: 20px; }
+        }
+
+        @media (max-width: 480px) {
+            section > .section-inner { padding-left: 16px; padding-right: 16px; }
+        }
+            
+        @media (max-width: 900px) {
+            .hamburger { display: flex !important; }
+            .nav-links { display: none !important; }
+            .nav-links.active { display: flex !important; }
+        }    
+        /* Mobile nav transition smoothing */
+        @media (max-width: 900px) {
+            .nav-links {
+                display: flex !important;
+                visibility: hidden;
+                pointer-events: none;
+                opacity: 0;
+                right: -100%;
+                transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease, visibility 0s linear 0.35s;
+            }
+
+            .nav-links.active {
+                visibility: visible;
+                pointer-events: auto;
+                opacity: 1;
+                right: 0;
+                transition-delay: 0s;
+            }
+        }    </style>
+</head>
+<body>
+<div class="mobile-overlay" id="mobileOverlay"></div>
+    
+    <nav>
+        <a href="index.html" class="logo" style="text-decoration: none; cursor: pointer;">
+    <img src="images/TDSA-Logo.png" alt="TeledoctorSA Logo">
+    <span class="logo-text">Teledoctor<span>SA</span></span>
+</a>
+        
+        <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        
+        <div class="nav-links" id="navLinks">
+            <div class="dropdown">
+                <a href="#" role="button" id="openPanelBtn">
+                    What We Offer
+                    <i data-lucide="grid-3x3" style="width: 16px; height: 16px;"></i>
+                </a>
+                <div class="side-panel-overlay" id="sidePanelOverlay"></div>
+                <div class="dropdown-content" id="sidePanel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">What We Offer</h2>
+                        <button class="panel-close" id="closePanelBtn">
+                            <i data-lucide="x"></i>
+                        </button>
+                    </div>
+                    <div class="mega-menu-grid">
+                        <a href="ehr.html" class="mega-menu-item">
+                            <div class="mega-menu-icon">
+                                <i data-lucide="clipboard-list"></i>
+                            </div>
+                            <div class="mega-menu-info">
+                                <div class="mega-menu-title">Electronic Health Records (EHR)</div>
+                                <div class="mega-menu-desc">Secure digital store of patient medical information with encrypted access from any device</div>
+                            </div>
+                        </a>
+                        <a href="teledoctorsa-app.html" class="mega-menu-item">
+                            <div class="mega-menu-icon">
+                                <i data-lucide="smartphone"></i>
+                            </div>
+                            <div class="mega-menu-info">
+                                <div class="mega-menu-title">TeleDoctorSA App</div>
+                                <div class="mega-menu-desc">Send real-time health data to clinicians with integrated BP monitors, glucose meters & oximeters</div>
+                            </div>
+                        </a>
+                        <a href="ecg247.html" class="mega-menu-item">
+                            <div class="mega-menu-icon">
+                                <i data-lucide="activity"></i>
+                            </div>
+                            <div class="mega-menu-info">
+                                <div class="mega-menu-title">ECG247 - 24/7 Remote ECG Monitoring</div>
+                                <div class="mega-menu-desc">Medically certified wireless heart rhythm sensor for continuous cardiac monitoring</div>
+                            </div>
+                        </a>
+                        <a href="virtual-consultations.html" class="mega-menu-item">
+                            <div class="mega-menu-icon">
+                                <i data-lucide="video"></i>
+                            </div>
+                            <div class="mega-menu-info">
+                                <div class="mega-menu-title">Virtual Medical Consultations</div>
+                                <div class="mega-menu-desc">Secure video or telephone consultations with qualified practitioners for chronic disease management</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <a href="our-services.html">Services</a>
+            <a href="about-us.html">About</a>
+            <a href="telemedia-suite.html">TeleMedia Suite</a>
+            <a href="contact-us.html">Contact</a>
+            <div class="contact-dropdown">
+                <button class="btn-main">
+                    Contact us
+                    <i data-lucide="chevron-down" style="width: 16px; height: 16px; margin-left: 4px; display: inline-block; vertical-align: middle;"></i>
+                </button>
+                <div class="contact-menu">
+                    <div class="contact-menu-header">
+                        <div class="contact-menu-title">Get in Touch</div>
+                        <div class="contact-menu-subtitle">Choose your preferred contact method</div>
+                    </div>
+                    <div class="contact-options">
+                        <a href="https://api.whatsapp.com/send/?phone=27780336394&text=Hello%20TeleDoctorSA,%20I%20would%20like%20to%20get%20in%20touch.&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer" class="contact-option primary">
+                            <div class="contact-option-icon">
+                                <i data-lucide="message-circle" style="width: 20px; height: 20px;"></i>
+                            </div>
+                            <div class="contact-option-details">
+                                <div class="contact-option-name">WhatsApp</div>
+                                <div class="contact-option-desc">Instant messaging - Primary</div>
+                            </div>
+                        </a>
+                        <a href="https://www.facebook.com/DrMukudu/" target="_blank" rel="noopener noreferrer" class="contact-option">
+                            <div class="contact-option-icon">
+                                <i data-lucide="facebook" style="width: 20px; height: 20px; color: #1877F2;"></i>
+                            </div>
+                            <div class="contact-option-details">
+                                <div class="contact-option-name">Facebook</div>
+                                <div class="contact-option-desc">@DrMukudu</div>
+                            </div>
+                        </a>
+                        <a href="https://www.instagram.com/drmukudu_andpartners/" target="_blank" rel="noopener noreferrer" class="contact-option">
+                            <div class="contact-option-icon">
+                                <i data-lucide="instagram" style="width: 20px; height: 20px; color: #E4405F;"></i>
+                            </div>
+                            <div class="contact-option-details">
+                                <div class="contact-option-name">Instagram</div>
+                                <div class="contact-option-desc">@drmukudu_andpartners</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+
+
+    <section class="hero-section">
+        <div class="section-inner"><div class="hero-icon">
+            <i data-lucide="clipboard-list" style="width: 60px; height: 60px; color: var(--primary-orange);"></i>
+        </div>
+        <h1>Electronic Health Records (EHR)</h1>
+        <p class="subtitle">Secure Digital Patient Records – Accessible Anytime, Anywhere</p>
+        
+        <div style="margin: 30px 0;">
+            <a href="https://api.whatsapp.com/send/?phone=27780336394&text=Hello,%20I%20would%20like%20more%20information%20about%20the%20Electronic%20Health%20Records%20system.&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer" class="cta-btn" style="display: inline-flex; align-items: center; gap: 10px;">
+                <i data-lucide="message-circle" style="width: 20px; height: 20px;"></i>
+                Find Out More - Contact Us
+            </a>
+        </div>
+        
+        <div style="max-width: 900px; margin: 40px auto 0; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+            <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80" alt="Electronic Health Records" style="width: 100%; height: auto; display: block;">
+        </div>
+    </div></section>
+
+    <section class="content-section">
+        <div class="section-inner"><h2 class="section-title">What is EHR?</h2>
+        <p class="section-subtitle">
+            Electronic Health Records (EHR) is a secure digital store of patient medical information including past history, test results, consultations, and vitals. Your complete health journey is accessible from any device—phone, laptop, or tablet—ensuring both you and your clinicians can view your medical history anytime, anywhere.
+        </p>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i data-lucide="shield-check" style="width: 30px; height: 30px; color: white;"></i>
+                </div>
+                <h3>Secure & Encrypted</h3>
+                <p>Your medical data is protected with industry-leading encryption standards. Access is strictly controlled and monitored to ensure your privacy and data security.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i data-lucide="database" style="width: 30px; height: 30px; color: white;"></i>
+                </div>
+                <h3>Centralized Storage</h3>
+                <p>All your medical records in one place—no more scattered papers or lost files. Complete medical history, lab results, prescriptions, and consultation notes are organized and easily accessible.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i data-lucide="smartphone" style="width: 30px; height: 30px; color: white;"></i>
+                </div>
+                <h3>Multi-Device Access</h3>
+                <p>View your health records from your smartphone, tablet, or computer. Whether at home or traveling, your medical information travels with you.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i data-lucide="video" style="width: 30px; height: 30px; color: white;"></i>
+                </div>
+                <h3>Virtual Consultation Support</h3>
+                <p>EHR forms the backbone of our virtual consultations. Your doctor can review your complete medical history during telemedicine appointments for informed decision-making.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i data-lucide="users" style="width: 30px; height: 30px; color: white;"></i>
+                </div>
+                <h3>Multi-Provider Access</h3>
+                <p>Share your records securely with multiple healthcare providers. Ensure consistency across different specialists and healthcare facilities.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i data-lucide="trending-up" style="width: 30px; height: 30px; color: white;"></i>
+                </div>
+                <h3>Track Health Trends</h3>
+                <p>Monitor your health over time with visual graphs and trends. See how your vitals, medications, and conditions change, helping you and your doctor make proactive decisions.</p>
+            </div>
+        </div>
+    </div></section>
+
+    <section class="benefits-section">
+        <div class="section-inner"><div class="content-section" style="padding: 0;">
+            <h2 class="section-title" style="text-align: center; margin-bottom: 50px;">Why EHR Matters</h2>
+            <div class="benefits-list">
+                <div class="benefit-item">
+                    <div class="benefit-check">
+                        <i data-lucide="check" style="width: 16px; height: 16px; color: white;"></i>
+                    </div>
+                    <div>
+                        <strong>Patient-Centric Care</strong>
+                        <p>You're in control of your health data with complete visibility into your medical records.</p>
+                    </div>
+                </div>
+
+                <div class="benefit-item">
+                    <div class="benefit-check">
+                        <i data-lucide="check" style="width: 16px; height: 16px; color: white;"></i>
+                    </div>
+                    <div>
+                        <strong>Better Clinical Decisions</strong>
+                        <p>Doctors can make more informed treatment plans with access to your complete medical history.</p>
+                    </div>
+                </div>
+
+                <div class="benefit-item">
+                    <div class="benefit-check">
+                        <i data-lucide="check" style="width: 16px; height: 16px; color: white;"></i>
+                    </div>
+                    <div>
+                        <strong>Reduced Medical Errors</strong>
+                        <p>Structured digital data reduces miscommunication and duplicate testing.</p>
+                    </div>
+                </div>
+
+                <div class="benefit-item">
+                    <div class="benefit-check">
+                        <i data-lucide="check" style="width: 16px; height: 16px; color: white;"></i>
+                    </div>
+                    <div>
+                        <strong>Continuity of Care</strong>
+                        <p>Seamless handoffs between different healthcare providers and specialists.</p>
+                    </div>
+                </div>
+
+                <div class="benefit-item">
+                    <div class="benefit-check">
+                        <i data-lucide="check" style="width: 16px; height: 16px; color: white;"></i>
+                    </div>
+                    <div>
+                        <strong>Emergency Preparedness</strong>
+                        <p>Critical medical information available instantly in emergency situations.</p>
+                    </div>
+                </div>
+
+                <div class="benefit-item">
+                    <div class="benefit-check">
+                        <i data-lucide="check" style="width: 16px; height: 16px; color: white;"></i>
+                    </div>
+                    <div>
+                        <strong>Paperless & Eco-Friendly</strong>
+                        <p>Replace paper files with structured digital data that's searchable and organized.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div></section>
+
+    <section class="content-section">
+        <div class="section-inner"><h2 class="section-title">How EHR Supports Your Healthcare Journey</h2>
+        <p class="section-subtitle">
+            EHR forms the backbone of digital healthcare at TeleDoctorSA. By replacing paper files with structured digital data, we enable:
+        </p>
+        <ul style="font-size: 1.1rem; color: var(--slate-gray); line-height: 2; max-width: 800px; margin: 0 auto;">
+            <li><strong>Virtual Consultations:</strong> Doctors review your history before and during appointments</li>
+            <li><strong>Follow-Up Care:</strong> Track treatment progress and medication effectiveness over time</li>
+            <li><strong>Chronic Disease Management:</strong> Monitor long-term conditions with continuous data tracking</li>
+            <li><strong>Lab Integration:</strong> Automatic upload of test results directly to your records</li>
+            <li><strong>Prescription Management:</strong> Complete medication history prevents dangerous interactions</li>
+            <li><strong>Vital Signs Tracking:</strong> Integration with home health devices for real-time monitoring</li>
+        </ul>
+    </div></section>
+
+
+    <section class="cta-section">
+        <div class="section-inner"><h2>Ready to Take Control of Your Health Records?</h2>
+        <p style="font-size: 1.2rem; margin-bottom: 10px;">Experience the convenience and security of digital health records</p>
+        <a href="/#services" class="cta-btn">Get Started Today</a>
+    </div></section>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2025 TeledoctorSA. All rights reserved.</p>
+            <div class="social-links">
+                <a href="https://api.whatsapp.com/send/?phone=27780336394&text=Good+day%2C+Dr.+Mukudu+Offices.+I+would+like+to+make+an+enquiry+regarding+your+services.+Could+you+kindly+assist+me%3F+Thank+you.&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer" class="social-link" title="WhatsApp">
+                    <i data-lucide="message-circle" style="width: 22px; height: 22px;"></i>
+                </a>
+                <a href="https://www.facebook.com/DrMukudu/" target="_blank" rel="noopener noreferrer" class="social-link" title="Facebook">
+                    <i data-lucide="facebook" style="width: 22px; height: 22px;"></i>
+                </a>
+                <a href="https://www.instagram.com/drmukudu_andpartners/" target="_blank" rel="noopener noreferrer" class="social-link" title="Instagram">
+                    <i data-lucide="instagram" style="width: 22px; height: 22px;"></i>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 800,
+            once: true
+        });
+        lucide.createIcons();
+
+        
+    
+    </script>
+    <script>
+// Shared navbar behavior (mobile menu + side panel)
+(function () {
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const navLinks = document.getElementById('navLinks');
+    const mobileOverlay = document.getElementById('mobileOverlay');
+
+    if (!hamburgerBtn || !navLinks || !mobileOverlay) {
+        return;
+    }
+
+    function toggleMobileMenu() {
+        hamburgerBtn.classList.toggle('active');
+        navLinks.classList.toggle('active');
+        mobileOverlay.classList.toggle('active');
+        document.body.style.overflow = navLinks.classList.contains('active') ? 'hidden' : '';
+
+        // Add premium haptic feedback for mobile
+        if ('vibrate' in navigator && navLinks.classList.contains('active')) {
+            navigator.vibrate(10);
+        }
+    }
+
+    hamburgerBtn.addEventListener('click', toggleMobileMenu);
+    mobileOverlay.addEventListener('click', toggleMobileMenu);
+
+    navLinks.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            if (window.innerWidth <= 768) {
+                toggleMobileMenu();
+            }
+        });
+    });
+
+    // Side Panel Controls
+    const openPanelBtn = document.getElementById('openPanelBtn');
+    const closePanelBtn = document.getElementById('closePanelBtn');
+    const sidePanel = document.getElementById('sidePanel');
+    const sidePanelOverlay = document.getElementById('sidePanelOverlay');
+
+    function openSidePanel(event) {
+        if (event) {
+            event.preventDefault();
+        }
+        if (sidePanel && sidePanelOverlay) {
+            sidePanel.classList.add('active');
+            sidePanelOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function closeSidePanel() {
+        if (sidePanel && sidePanelOverlay) {
+            sidePanel.classList.remove('active');
+            sidePanelOverlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+    if (openPanelBtn) {
+        openPanelBtn.addEventListener('click', openSidePanel);
+    }
+
+    if (closePanelBtn) {
+        closePanelBtn.addEventListener('click', closeSidePanel);
+    }
+
+    if (sidePanelOverlay) {
+        sidePanelOverlay.addEventListener('click', closeSidePanel);
+    }
+})();
+</script>
+    <script src="scripts/support-chatbot.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

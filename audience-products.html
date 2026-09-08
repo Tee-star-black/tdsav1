@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeledoctorSA Audience Product Matrix</title>
+    <meta name="description" content="Internal audience-to-product URL matrix for TeledoctorSA banners and QR generation.">
+    <meta name="robots" content="noindex, follow">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f5f7fb;
+            --panel: rgba(255, 255, 255, 0.94);
+            --ink: #0f172a;
+            --muted: #475569;
+            --line: #dbe3ee;
+            --orange: #ff8d4d;
+            --orange-soft: rgba(255, 141, 77, 0.12);
+            --blue-soft: rgba(14, 165, 233, 0.12);
+            --green-soft: rgba(22, 163, 74, 0.12);
+            --amber-soft: rgba(245, 158, 11, 0.14);
+            --shadow: 0 22px 50px rgba(15, 23, 42, 0.1);
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: "Plus Jakarta Sans", sans-serif;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at top left, rgba(255, 141, 77, 0.14), transparent 24%),
+                radial-gradient(circle at top right, rgba(14, 165, 233, 0.1), transparent 20%),
+                linear-gradient(180deg, #fffaf5 0%, var(--bg) 40%, #f2f6fb 100%);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a { color: inherit; text-decoration: none; }
+        .shell { width: min(1320px, calc(100% - 28px)); margin: 0 auto; }
+        .topbar, .hero, .matrix, .footer-note {
+            background: var(--panel);
+            border: 1px solid rgba(255, 255, 255, 0.96);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+        }
+
+        .page { padding: 16px 0 40px; }
+        .topbar { padding: 16px 18px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+        .brand { display: flex; align-items: center; gap: 14px; }
+        .brand-badge {
+            width: 50px;
+            height: 50px;
+            padding: 8px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--orange-soft), var(--blue-soft));
+            border: 1px solid rgba(255, 141, 77, 0.18);
+        }
+
+        .brand-badge img { width: 100%; height: 100%; object-fit: contain; display: block; }
+        .brand strong, h1, th { font-family: "Sora", sans-serif; letter-spacing: -0.04em; }
+        .brand strong { display: block; font-size: 1rem; }
+        .brand span, .status, .hero p, .note, .card p, .url, .footer-note p { color: var(--muted); }
+        .brand span { display: block; font-size: 0.82rem; margin-top: 3px; }
+        .status, .eyebrow, .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 12px;
+            border-radius: 999px;
+            font-size: 0.74rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .status, .tag { background: #fff; border: 1px solid var(--line); }
+        .eyebrow { background: var(--orange-soft); border: 1px solid rgba(255, 141, 77, 0.18); color: #b45309; }
+        .status::before, .eyebrow::before, .tag::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--orange);
+            box-shadow: 0 0 0 5px rgba(255, 141, 77, 0.12);
+        }
+
+        .hero { margin-top: 14px; padding: 28px 24px; }
+        .hero-grid { display: grid; grid-template-columns: 1.5fr .9fr; gap: 18px; align-items: start; }
+        h1 { margin: 18px 0 12px; font-size: clamp(2.4rem, 6vw, 4rem); line-height: 0.98; max-width: 11ch; }
+        .hero p { margin: 0; max-width: 56ch; }
+        .note {
+            padding: 18px;
+            border-radius: 22px;
+            background: linear-gradient(180deg, #fff, #f8fafc);
+            border: 1px solid var(--line);
+        }
+
+        .note strong, .card strong, .section-title {
+            display: block;
+            font-weight: 800;
+        }
+
+        .note strong { margin-bottom: 6px; color: var(--ink); }
+        .matrix { margin-top: 16px; overflow-x: auto; }
+        table { width: 100%; min-width: 1120px; border-collapse: separate; border-spacing: 0; }
+        th, td { text-align: left; vertical-align: top; }
+        th {
+            padding: 22px 18px;
+            font-size: 1.12rem;
+            border-right: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
+            background: linear-gradient(180deg, #fff, #f8fafc);
+        }
+
+        th small {
+            display: block;
+            margin-top: 8px;
+            font-family: "Plus Jakarta Sans", sans-serif;
+            font-size: 0.78rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        th:first-child { border-top-left-radius: 28px; }
+        th:last-child { border-top-right-radius: 28px; border-right: 0; }
+        td {
+            width: 25%;
+            padding: 18px;
+            border-right: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
+            background: rgba(255, 255, 255, 0.82);
+        }
+
+        td:last-child, th:last-child { border-right: 0; }
+        tr:last-child td:first-child { border-bottom-left-radius: 28px; }
+        tr:last-child td:last-child { border-bottom-right-radius: 28px; }
+        .cell { display: grid; gap: 14px; }
+        .section-title { font-size: 0.76rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+        .card {
+            padding: 16px;
+            border-radius: 18px;
+            background: #fff;
+            border: 1px solid var(--line);
+        }
+
+        .card p { margin: 0 0 10px; font-size: 0.92rem; }
+        .link {
+            display: inline-block;
+            padding: 11px 13px;
+            border-radius: 14px;
+            background: #111827;
+            color: #f8fafc;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .url { display: block; margin-top: 10px; font-size: 0.84rem; word-break: break-all; }
+        .stack { display: grid; gap: 12px; }
+        .tag.blue { background: var(--blue-soft); }
+        .tag.green { background: var(--green-soft); }
+        .tag.amber { background: var(--amber-soft); }
+        .footer-note { margin-top: 16px; padding: 18px 20px; text-align: center; }
+        .footer-note p { margin: 0; font-size: 0.92rem; }
+
+        @media (max-width: 980px) { .hero-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 760px) {
+            .shell { width: min(100%, calc(100% - 18px)); }
+            .topbar { flex-direction: column; align-items: flex-start; }
+            table, thead, tbody, tr, th, td { display: block; }
+            table { min-width: 0; }
+            thead { display: none; }
+            td { width: 100%; border-right: 0; }
+            td::before {
+                content: attr(data-audience);
+                display: block;
+                margin-bottom: 14px;
+                font-family: "Sora", sans-serif;
+                font-size: 1.04rem;
+                font-weight: 800;
+                letter-spacing: -0.03em;
+            }
+            tr:last-child td:first-child, tr:last-child td:last-child { border-radius: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="shell">
+            <header class="topbar">
+                <a class="brand" href="https://teledoctorsa.co.za/" aria-label="TeledoctorSA home">
+                    <span class="brand-badge"><img src="../images/TDSA-Logo.png" alt="Teledoctorsa logo"></span>
+                    <span>
+                        <strong>TeledoctorSA</strong>
+                        <span>Audience product matrix</span>
+                    </span>
+                </a>
+                <span class="status">Internal reference for banners and QR creation</span>
+            </header>
+
+            <section class="hero">
+                <div class="hero-grid">
+                    <div>
+                        <span class="eyebrow">Grouped by target audience</span>
+                        <h1>One clean page for the 4 audience links.</h1>
+                        <p>This page groups the current TeledoctorSA audience landing pages and the most relevant product URLs under each audience so Zama can use the links directly for banners, QR generation, and other visuals.</p>
+                    </div>
+                    <div class="note">
+                        <strong>Current mapping used here</strong>
+                        Doctors uses the new doctors page URL. Nurses now include Mawonga Training and wellness includes both the UPVIO scan and the Employers / Employees link. If a QR code has not been created yet, use the exact URL shown in the relevant card below.
+                    </div>
+                </div>
+            </section>
+
+            <section class="matrix" aria-label="Audience product table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>TeledoctorSA for Doctors<small>Current doctors landing page</small></th>
+                            <th>TeledoctorSA for Nurses<small>Current nurse landing page</small></th>
+                            <th>TeledoctorSA for Wellness<small>Current wellness landing page</small></th>
+                            <th>TeledoctorSA for Patients<small>Current patient landing page</small></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td data-audience="TeledoctorSA for Doctors">
+                                <div class="cell">
+                                    <span class="tag">Main URL</span>
+                                    <div class="card">
+                                        <strong>Doctors audience page</strong>
+                                        <p>Use this as the main doctors link.</p>
+                                        <a class="link" href="https://teledoctorsa.co.za/doctors.html" target="_blank" rel="noopener noreferrer">Open doctors page</a>
+                                        <span class="url">https://teledoctorsa.co.za/doctors.html</span>
+                                    </div>
+                                    <div>
+                                        <span class="section-title">Relevant products</span>
+                                            <div class="stack">
+                                                <div class="card">
+                                                <strong>Clinician Platform</strong>
+                                                <p>Doctor-facing clinical platform and secure records workflow.</p>
+                                                <a class="link" href="https://teledoctorsa.co.za/ehr" target="_blank" rel="noopener noreferrer">Open Clinician Platform</a>
+                                                <span class="url">https://teledoctorsa.co.za/ehr</span>
+                                            </div>
+                                            <div class="card">
+                                                <strong>Patient App</strong>
+                                                <p>Patient-facing access, communication, and next-step support.</p>
+                                                <a class="link" href="https://demo-patient.teledoctorsa.co.za" target="_blank" rel="noopener noreferrer">Open Patient App</a>
+                                                <span class="url">https://demo-patient.teledoctorsa.co.za</span>
+                                            </div>
+                                            <div class="card">
+                                                <strong>ECG247</strong>
+                                                <p>Doctor-facing monitoring and cardiac review.</p>
+                                                <a class="link" href="https://teledoctorsa.co.za/ecg247" target="_blank" rel="noopener noreferrer">Open ECG247</a>
+                                                <span class="url">https://teledoctorsa.co.za/ecg247</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td data-audience="TeledoctorSA for Nurses">
+                                <div class="cell">
+                                    <span class="tag blue">Main URL</span>
+                                    <div class="card">
+                                        <strong>Nurses audience page: 73 Health</strong>
+                                        <p>Use this as the main nurses link.</p>
+                                        <a class="link" href="https://teledoctorsa.co.za/nurses.html" target="_blank" rel="noopener noreferrer">Open nurses page</a>
+                                        <span class="url">https://teledoctorsa.co.za/nurses.html</span>
+                                    </div>
+                                    <div>
+                                        <span class="section-title">Relevant products</span>
+                                        <div class="stack">
+                                            <div class="card">
+                                                <strong>73 Health</strong>
+                                                <p>Nurse-led coordination, reporting, and follow-up support.</p>
+                                                <a class="link" href="https://teledoctorsa.co.za/nurses.html" target="_blank" rel="noopener noreferrer">Open 73 Health</a>
+                                                <span class="url">https://teledoctorsa.co.za/nurses.html</span>
+                                            </div>
+                                            <div class="card">
+                                                <strong>Clinician Platform</strong>
+                                                <p>Shared clinical workflow and records access relevant to nurse coordination.</p>
+                                                <a class="link" href="https://teledoctorsa.co.za/ehr" target="_blank" rel="noopener noreferrer">Open Clinician Platform</a>
+                                                <span class="url">https://teledoctorsa.co.za/ehr</span>
+                                            </div>
+                                            <div class="card">
+                                                <strong>Mawonga Training</strong>
+                                                <p>Training route for nurse capability building and support.</p>
+                                                <a class="link" href="https://mawongatraining.co.za/" target="_blank" rel="noopener noreferrer">Open Mawonga Training</a>
+                                                <span class="url">https://mawongatraining.co.za/</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td data-audience="TeledoctorSA for Wellness">
+                                <div class="cell">
+                                    <span class="tag green">Main URL</span>
+                                    <div class="card">
+                                        <strong>Wellness audience page: UPVIO x TeledoctorSA</strong>
+                                        <p>Use this as the main wellness link.</p>
+                                        <a class="link" href="https://teledoctorsa.co.za/wellness.html" target="_blank" rel="noopener noreferrer">Open wellness page</a>
+                                        <span class="url">https://teledoctorsa.co.za/wellness.html</span>
+                                    </div>
+                                    <div>
+                                        <span class="section-title">Relevant products</span>
+                                        <div class="stack">
+                                            <div class="card">
+                                                <strong>UPVIO Vitals Facial Scan</strong>
+                                                <p>Direct live scan link for wellness demos and QR use.</p>
+                                                <a class="link" href="https://scan.upvio.com/teledoctorsa/links/teledoctorsa2" target="_blank" rel="noopener noreferrer">Open UPVIO scan</a>
+                                                <span class="url">https://scan.upvio.com/teledoctorsa/links/teledoctorsa2</span>
+                                            </div>
+                                            <div class="card">
+                                                <strong>Employers / Employees</strong>
+                                                <p>Broader employee wellness route for employer and employee audiences.</p>
+                                                <a class="link" href="https://www.trysimplecare.com/" target="_blank" rel="noopener noreferrer">Open Employers / Employees</a>
+                                                <span class="url">https://www.trysimplecare.com/</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td data-audience="TeledoctorSA for Patients">
+                                <div class="cell">
+                                    <span class="tag amber">Main URL</span>
+                                    <div class="card">
+                                        <strong>Patients audience page: Patient Portal</strong>
+                                        <p>Use this as the main patients link.</p>
+                                        <a class="link" href="https://teledoctorsa.co.za/patients.html" target="_blank" rel="noopener noreferrer">Open patients page</a>
+                                        <span class="url">https://teledoctorsa.co.za/patients.html</span>
+                                    </div>
+                                    <div>
+                                        <span class="section-title">Relevant products</span>
+                                            <div class="stack">
+                                                <div class="card">
+                                                <strong>Patient Application</strong>
+                                                <p>Patient-facing app for access, records, communication, and next-step support.</p>
+                                                <a class="link" href="https://demo-patient.teledoctorsa.co.za" target="_blank" rel="noopener noreferrer">Open patient application</a>
+                                                <span class="url">https://demo-patient.teledoctorsa.co.za</span>
+                                            </div>
+                                            <div class="card">
+                                                <strong>ECG247 and Athletes</strong>
+                                                <p>Continuous monitoring relevant to patients, sport, and return-to-play journeys.</p>
+                                                <a class="link" href="https://teledoctorsa.co.za/ecg247" target="_blank" rel="noopener noreferrer">Open ECG247</a>
+                                                <span class="url">https://teledoctorsa.co.za/ecg247</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section class="footer-note">
+                <p>Use the exact URLs shown in each card when a QR code still needs to be generated. This page is intended as a clean handoff reference for banner and visual production.</p>
+            </section>
+        </div>
+    </div>
+</body>
+</html>
