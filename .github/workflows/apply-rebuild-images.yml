@@ -1,0 +1,138 @@
+name: Apply TDSA rebuild images
+
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-rebuild-images.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply-images:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current site
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Replace legacy and stock image references
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          root = Path('.')
+
+          page_map = {
+              'index.html': 'images/rebuild/01-clinical-team-at-work.jpg',
+              'about-us.html': 'images/rebuild/01-clinical-team-at-work.jpg',
+              'our-services.html': 'images/rebuild/03-doctor-video-consultation.jpg',
+              'app.html': 'images/rebuild/07-mobile-health-app.jpg',
+              'ehr.html': 'images/rebuild/06-healthcare-dashboard.jpg',
+              'ecg247.html': 'images/rebuild/04-wearable-ecg-monitor.jpg',
+              'doctors.html': 'images/rebuild/09-clinician-platform-review.jpg',
+              'nurses.html': 'images/rebuild/08-nurses-at-clinical-workstation.jpg',
+              'patients.html': 'images/rebuild/05-remote-patient-monitoring.jpg',
+              'telemedia-suite.html': 'images/rebuild/02-connected-care-ecosystem.jpg',
+          }
+
+          # Homepage gets a richer sequence rather than one repeated stock image.
+          home_sequence = [
+              'images/rebuild/01-clinical-team-at-work.jpg',
+              'images/rebuild/02-connected-care-ecosystem.jpg',
+              'images/rebuild/03-doctor-video-consultation.jpg',
+              'images/rebuild/04-wearable-ecg-monitor.jpg',
+              'images/rebuild/05-remote-patient-monitoring.jpg',
+              'images/rebuild/06-healthcare-dashboard.jpg',
+              'images/rebuild/07-mobile-health-app.jpg',
+              'images/rebuild/08-nurses-at-clinical-workstation.jpg',
+              'images/rebuild/09-clinician-platform-review.jpg',
+              'images/rebuild/11-teledoctor-platform-clinician.jpg',
+          ]
+
+          unsplash = re.compile(r'https://images\.unsplash\.com/[^\"\'\)\s]+')
+
+          for filename, fallback in page_map.items():
+              path = root / filename
+              if not path.exists():
+                  continue
+
+              text = path.read_text(encoding='utf-8-sig')
+              original = text
+
+              # Repair known missing legacy hero reference from the old static site.
+              text = text.replace(
+                  'images/ChatGPT Image Mar 10, 2026, 01_43_50 PM.png',
+                  'images/rebuild/01-clinical-team-at-work.jpg'
+              )
+
+              # Replace old social/image placeholder path when it appears as visible content.
+              text = text.replace(
+                  'images/249/20429923/Untitleddesign48-25xV-u53f-vbZW3D9jN0Fg.png',
+                  'images/rebuild/logo.png'
+              )
+
+              matches = list(unsplash.finditer(text))
+              if filename == 'index.html' and matches:
+                  counter = {'i': 0}
+                  def repl(_m):
+                      i = counter['i']
+                      counter['i'] += 1
+                      return home_sequence[i % len(home_sequence)]
+                  text = unsplash.sub(repl, text)
+              else:
+                  text = unsplash.sub(fallback, text)
+
+              # Fix the broken logo path where the current site expects an image asset.
+              text = text.replace('images/TDSA-Logo.png', 'images/rebuild/logo.png')
+
+              # Replace the missing doctor image with the imported clinician visual.
+              if filename == 'doctors.html':
+                  text = text.replace('images/DrM.jpeg', 'images/rebuild/11-teledoctor-platform-clinician.jpg')
+
+              if text != original:
+                  path.write_text(text, encoding='utf-8')
+                  print(f'updated {filename}')
+
+      - name: Add reusable image library documentation
+        shell: bash
+        run: |
+          cat > images/rebuild/README.md <<'EOF'
+          # TeleDoctorSA Rebuild Image Library
+
+          Imported from the scrapped `Tee-star-black/teledoctorsa-rebuild` project so the visual work is preserved and reusable in `tdsav1`.
+
+          Primary curated assets:
+          - `01-clinical-team-at-work.jpg` - general clinical/team hero
+          - `02-connected-care-ecosystem.jpg` - connected care/platform sections
+          - `03-doctor-video-consultation.jpg` - telemedicine/services
+          - `04-wearable-ecg-monitor.jpg` - ECG247
+          - `05-remote-patient-monitoring.jpg` - patient monitoring
+          - `06-healthcare-dashboard.jpg` - EHR/platform dashboard
+          - `07-mobile-health-app.jpg` - TeleDoctorSA App
+          - `08-nurses-at-clinical-workstation.jpg` - nurses
+          - `09-clinician-platform-review.jpg` - clinician workflow
+          - `11-teledoctor-platform-clinician.jpg` - doctors/clinician platform
+          - `hero-clinician.jpg` - lightweight clinician hero option
+          - `logo.png` - legacy brand image
+
+          The original image files are retained under this folder so future page redesigns can reuse them without depending on the scrapped repository.
+          EOF
+
+      - name: Commit image integration
+        shell: bash
+        run: |
+          set -e
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add '*.html' images/rebuild/README.md
+          if git diff --cached --quiet; then
+            echo "No image references needed changing."
+            exit 0
+          fi
+          git commit -m "feat: use TDSA rebuild imagery across current site"
+          git push
