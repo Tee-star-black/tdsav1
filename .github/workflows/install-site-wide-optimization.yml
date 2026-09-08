@@ -1,0 +1,63 @@
+name: Install site-wide optimization
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/site-wide-optimization.js'
+      - '.github/workflows/install-site-wide-optimization.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Inject global optimization script into HTML pages
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          tag = '<script src="scripts/site-wide-optimization.js"></script>'
+          changed = []
+
+          for path in Path('.').rglob('*.html'):
+              parts = set(path.parts)
+              if '.git' in parts or 'node_modules' in parts:
+                  continue
+
+              text = path.read_text(encoding='utf-8-sig')
+              if tag in text:
+                  continue
+
+              if '</body>' in text:
+                  text = text.replace('</body>', f'    {tag}\n</body>', 1)
+              else:
+                  text += f'\n{tag}\n'
+
+              path.write_text(text, encoding='utf-8')
+              changed.append(str(path))
+
+          print(f'Updated {len(changed)} HTML files')
+          for item in changed:
+              print(item)
+          PY
+
+      - name: Commit generated HTML updates
+        run: |
+          if git diff --quiet; then
+            echo "No HTML updates required"
+            exit 0
+          fi
+          git config user.name "TDSA Site Automation"
+          git config user.email "actions@users.noreply.github.com"
+          git add '*.html' '**/*.html' || true
+          git commit -m "style: apply global responsive optimization to all pages"
+          git push
