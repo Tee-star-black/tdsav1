@@ -26,21 +26,10 @@
       overflow-x: clip !important;
     }
 
-    body {
-      position: relative !important;
-    }
+    body { position: relative !important; }
+    body > :first-child { margin-top: 0 !important; }
 
-    body > :first-child {
-      margin-top: 0 !important;
-    }
-
-    body > *,
-    main,
-    header,
-    footer,
-    section {
-      max-width: 100% !important;
-    }
+    body > *, main, header, footer, section { max-width: 100% !important; }
 
     body > main,
     body > header,
@@ -61,17 +50,9 @@
       margin-right: 0 !important;
     }
 
-    img,
-    video,
-    iframe,
-    svg {
-      max-width: 100%;
-    }
+    img, video, iframe, svg { max-width: 100%; }
+    img, video { height: auto; }
 
-    img,
-    video { height: auto; }
-
-    /* Compact type scale */
     h1 {
       font-size: clamp(2.15rem, 4vw, 3.85rem) !important;
       line-height: 1.02 !important;
@@ -89,14 +70,11 @@
       line-height: 1.18 !important;
     }
 
-    p,
-    li,
-    .mega-menu-desc {
+    p, li, .mega-menu-desc {
       font-size: .96rem !important;
       line-height: 1.58 !important;
     }
 
-    /* Navbar: no fake spacer above it */
     nav:not(.tds-mobile-nav) {
       width: 100% !important;
       max-width: 100% !important;
@@ -162,12 +140,11 @@
       max-width: 170px !important;
     }
 
-    /* Shared content shell */
+    /* Constrain CONTENT only. Full-width section backgrounds must never be boxed. */
     .container,
     .content-container,
     .page-container,
     .section-container,
-    .site-footer-shell,
     .services-header,
     .services-grid,
     .info-grid,
@@ -190,7 +167,6 @@
       padding-bottom: var(--tds-section-y) !important;
     }
 
-    /* Compact heroes */
     .hero,
     .hero-section,
     .page-hero,
@@ -208,7 +184,6 @@
       font-size: clamp(2.3rem, 4.5vw, 4rem) !important;
     }
 
-    /* Cards: remove the oversized legacy proportions */
     .card,
     [class*='-card'] {
       min-width: 0 !important;
@@ -252,16 +227,11 @@
     }
 
     .card-content h3,
-    [class*='-card'] h3 {
-      margin-bottom: 7px !important;
-    }
+    [class*='-card'] h3 { margin-bottom: 7px !important; }
 
     .card-content p,
-    [class*='-card'] p {
-      margin-bottom: 10px !important;
-    }
+    [class*='-card'] p { margin-bottom: 10px !important; }
 
-    /* Buttons/CTAs should feel precise, not chunky */
     .btn,
     .btn-main,
     .cta-btn,
@@ -275,25 +245,24 @@
       padding-bottom: 9px !important;
     }
 
-    /* Footer */
+    /* Footer background is full bleed. Only the grid/content is constrained. */
     footer,
-    .site-footer {
+    .site-footer,
+    .site-footer-shell {
       width: 100% !important;
       max-width: 100% !important;
-      margin: 0 !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
       padding-left: 0 !important;
       padding-right: 0 !important;
       overflow: hidden !important;
     }
 
-    .site-footer-shell {
-      padding-left: 0 !important;
-      padding-right: 0 !important;
-    }
-
     .site-footer-grid {
-      width: 100% !important;
-      max-width: 100% !important;
+      width: var(--tds-shell) !important;
+      max-width: 1240px !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
       gap: clamp(18px, 2.5vw, 34px) !important;
     }
 
@@ -312,9 +281,7 @@
 
     .site-footer p,
     .site-footer span,
-    .site-footer a {
-      overflow-wrap: anywhere !important;
-    }
+    .site-footer a { overflow-wrap: anywhere !important; }
 
     @media (max-width: 1100px) {
       :root {
@@ -327,36 +294,23 @@
         gap: 14px !important;
       }
 
-      nav:not(.tds-mobile-nav) .nav-links {
-        gap: 12px !important;
-      }
+      nav:not(.tds-mobile-nav) .nav-links { gap: 12px !important; }
 
       nav:not(.tds-mobile-nav) .nav-links > a,
       nav:not(.tds-mobile-nav) .nav-links > .dropdown > a,
-      nav:not(.tds-mobile-nav) .btn-main {
-        font-size: .82rem !important;
-      }
+      nav:not(.tds-mobile-nav) .btn-main { font-size: .82rem !important; }
 
-      .site-footer-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-      }
-
-      .site-footer-brand {
-        grid-column: 1 / -1 !important;
-      }
+      .site-footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+      .site-footer-brand { grid-column: 1 / -1 !important; }
 
       .location-grid,
       .trust-assurance-grid,
       .info-grid,
       .telemedicine-explainer-grid,
-      .tech-showcase-content {
-        grid-template-columns: 1fr !important;
-      }
+      .tech-showcase-content { grid-template-columns: 1fr !important; }
 
       .services-grid,
-      .tds-four-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-      }
+      .tds-four-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
     }
 
     @media (max-width: 900px) {
@@ -371,9 +325,7 @@
         justify-content: space-between !important;
       }
 
-      nav:not(.tds-mobile-nav) .logo {
-        max-width: calc(100% - 54px) !important;
-      }
+      nav:not(.tds-mobile-nav) .logo { max-width: calc(100% - 54px) !important; }
 
       nav:not(.tds-mobile-nav) .logo img {
         height: 38px !important;
@@ -381,9 +333,7 @@
         max-height: 38px !important;
       }
 
-      nav:not(.tds-mobile-nav) .logo-text {
-        font-size: clamp(1rem, 4.8vw, 1.3rem) !important;
-      }
+      nav:not(.tds-mobile-nav) .logo-text { font-size: clamp(1rem, 4.8vw, 1.3rem) !important; }
 
       nav:not(.tds-mobile-nav) .hamburger {
         flex: 0 0 40px !important;
@@ -406,38 +356,26 @@
       .hero-section,
       .page-hero,
       .hero-container,
-      [class*='hero-section'] {
-        min-height: auto !important;
-      }
+      [class*='hero-section'] { min-height: auto !important; }
 
       .services-grid,
       .tds-four-grid,
       .info-focus-grid,
       .trust-proof-grid,
-      .contact-cards {
-        grid-template-columns: 1fr !important;
-      }
+      .contact-cards { grid-template-columns: 1fr !important; }
 
       .card-img,
       .service-card img,
       .feature-card img,
       .product-card img,
       .audience-card img,
-      [class*='-card'] > img:first-child {
-        height: 150px !important;
-      }
+      [class*='-card'] > img:first-child { height: 150px !important; }
 
       .card-content,
       .service-card-content,
       .feature-card-content,
       .product-card-content,
-      .audience-card-content {
-        padding: 14px !important;
-      }
-
-      .site-footer-shell {
-        width: calc(100% - 24px) !important;
-      }
+      .audience-card-content { padding: 14px !important; }
 
       .site-footer-grid {
         grid-template-columns: 1fr !important;
@@ -462,10 +400,6 @@
       nav:not(.tds-mobile-nav) {
         padding-left: 9px !important;
         padding-right: 9px !important;
-      }
-
-      .site-footer-shell {
-        width: calc(100% - 18px) !important;
       }
 
       .tds-global-panel {
