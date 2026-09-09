@@ -86,10 +86,11 @@ jobs:
               if '.git' in path.parts:
                   continue
               text = path.read_text(encoding='utf-8')
-              if 'tds-mobile-nav' in text or 'mobile-navigation.js' in text or 'TDS_MOBILE_NAV_' in text:
+              has_dock_markup = '<nav class="tds-mobile-nav' in text or "<nav class='tds-mobile-nav" in text
+              if has_dock_markup or 'mobile-navigation.js' in text or 'TDS_MOBILE_NAV_' in text:
                   bad.append(str(path))
           if bad:
-              raise SystemExit('Legacy mobile dock still present in: ' + ', '.join(bad))
+              raise SystemExit('Legacy mobile dock markup still present in: ' + ', '.join(bad))
 
           index = Path('index.html').read_text(encoding='utf-8')
           assert 'styles/ux-v4.css?v=20260909-1846' in index
