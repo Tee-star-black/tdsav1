@@ -75,7 +75,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 24px 8%;
+            padding: 12px 5%;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border);
@@ -156,7 +156,7 @@
         /* Navigation Links */
         .nav-links {
             display: flex;
-            gap: 32px;
+            gap: 20px;
             list-style: none;
             align-items: center;
         }
@@ -579,7 +579,7 @@
         }
 
         .content-section {
-            padding: 80px 8%;
+            padding: 56px 5%;
             max-width: 1400px;
             margin: 0 auto;
         }
@@ -691,7 +691,7 @@
 
         .cta-section {
             text-align: center;
-            padding: 80px 8%;
+            padding: 56px 5%;
             background: linear-gradient(135deg, var(--primary-orange), var(--orange-dark));
             color: white;
         }
@@ -1177,7 +1177,7 @@
         }
 
         @media (max-width: 900px) {
-            .hero { padding-top: 120px; padding-bottom: 70px; }
+            .hero { padding-top: 120px; padding-bottom: 0; }
         }
 
         @media (max-width: 768px) {
@@ -1217,253 +1217,7 @@
             }
         }    </style>
 
-<!-- TDS_ACTUAL_HTML_LAYOUT_START -->
-<style id="tds-actual-html-layout">
-:root {
-  --tds-shell: 1180px;
-  --tds-gutter: clamp(16px, 3vw, 30px);
-  --tds-section-y: clamp(30px, 3.8vw, 48px);
-  --tds-gap: clamp(14px, 1.7vw, 22px);
-}
 
-html, body {
-  width: 100% !important;
-  max-width: 100% !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  overflow-x: clip !important;
-}
-*, *::before, *::after { box-sizing: border-box !important; }
-img, video, iframe, svg { max-width: 100%; }
-
-body > main,
-body > header,
-body > footer,
-body > section,
-main > section {
-  width: 100% !important;
-  max-width: 100% !important;
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-}
-
-nav:not(.tds-mobile-nav) {
-  width: 100% !important;
-  max-width: 100% !important;
-  min-height: 60px !important;
-  margin: 0 !important;
-  padding: 8px clamp(16px, 4vw, 54px) !important;
-}
-nav:not(.tds-mobile-nav).scrolled {
-  padding-top: 7px !important;
-  padding-bottom: 7px !important;
-}
-nav:not(.tds-mobile-nav) .logo img {
-  width: auto !important;
-  max-height: 38px !important;
-}
-nav:not(.tds-mobile-nav) .nav-links { gap: clamp(12px, 1.5vw, 22px) !important; }
-
-section:not(.hero):not(.core-highlights-slider) {
-  min-height: 0 !important;
-  height: auto !important;
-  padding-top: var(--tds-section-y) !important;
-  padding-bottom: var(--tds-section-y) !important;
-}
-
-.container,
-.content-container,
-.page-container,
-.section-container,
-.section-inner,
-.services-header,
-.services-grid,
-.info-grid,
-.trust-assurance-grid,
-.telemedicine-explainer-grid,
-.location-grid,
-.tech-showcase-content,
-.objectives-content,
-.mission-vision-grid,
-.values-grid,
-.stats-grid,
-.footer-grid,
-.site-footer-shell,
-.site-footer-grid {
-  width: min(var(--tds-shell), calc(100% - (var(--tds-gutter) * 2))) !important;
-  max-width: var(--tds-shell) !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-}
-section > .section-inner { padding-left: 0 !important; padding-right: 0 !important; }
-
-/* Consistent grid geometry */
-.services-grid,
-.values-grid,
-.product-grid,
-.audience-grid,
-.feature-grid,
-.features-grid,
-.signal-grid,
-.list-stack,
-.proof-strip {
-  display: grid !important;
-  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  gap: var(--tds-gap) !important;
-  align-items: stretch !important;
-}
-.mission-vision-grid,
-.info-grid,
-.trust-assurance-grid,
-.telemedicine-explainer-grid,
-.location-grid,
-.contact-cards,
-.hero-layout {
-  display: grid !important;
-  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  gap: var(--tds-gap) !important;
-  align-items: stretch !important;
-}
-.stats-grid {
-  display: grid !important;
-  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-  gap: var(--tds-gap) !important;
-}
-.journey-grid {
-  display: grid !important;
-  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-  gap: var(--tds-gap) !important;
-}
-
-.services-grid > *, .values-grid > *, .mission-vision-grid > *, .stats-grid > *,
-.info-grid > *, .trust-assurance-grid > *, .telemedicine-explainer-grid > *,
-.location-grid > *, .contact-cards > *, .product-grid > *, .audience-grid > *,
-.feature-grid > *, .features-grid > *, .signal-grid > *, .list-stack > *,
-.journey-grid > *, .proof-strip > * {
-  min-width: 0 !important;
-  min-height: 0 !important;
-  height: auto !important;
-}
-
-/* Compact cards */
-.card, .service-card, .feature-card, .info-focus-card, .trust-proof-card,
-.contact-card, .product-card, .audience-card, .stat-card, .shop-role-btn,
-.mv-card, .value-card, .info-card, .signal-card, .nav-card, .hero-card {
-  min-height: 0 !important;
-  height: auto !important;
-}
-.card-img,
-.service-card > img:first-child,
-.feature-card > img:first-child,
-.product-card > img:first-child,
-.audience-card > img:first-child {
-  height: clamp(126px, 10vw, 158px) !important;
-  min-height: 0 !important;
-  object-fit: cover !important;
-}
-.card-content,
-.service-card-content,
-.feature-card-content,
-.product-card-content,
-.audience-card-content,
-.mv-card,
-.value-card,
-.contact-card,
-.info-card,
-.signal-card,
-.nav-card {
-  padding: clamp(14px, 1.6vw, 21px) !important;
-}
-.services-header, .section-header, .section-heading { margin-bottom: 22px !important; }
-.section-card, .cta-card { margin-top: 28px !important; }
-.icon-wrap, .mv-card-icon, .value-icon { margin-bottom: 10px !important; }
-.button, .btn, .btn-main, .cta-btn, .learn-more-btn, .get-directions-btn,
-.site-footer-link, .read-more, [class*="-btn"] { min-height: 38px !important; }
-
-/* Homepage hero stays substantial but not oversized */
-.core-highlights-slider {
-  min-height: clamp(500px, 68svh, 680px) !important;
-  padding: clamp(48px, 5vw, 72px) clamp(18px, 5vw, 62px) 26px !important;
-}
-.core-slider-shell { max-width: 1160px !important; gap: 18px !important; }
-.core-slide { min-height: 0 !important; height: auto !important; padding: 22px 26px !important; gap: 18px !important; }
-.core-slide-visual { min-height: 215px !important; }
-
-/* Audience/exhibition pages */
-.page { width: min(var(--tds-shell), calc(100% - 28px)) !important; margin: 0 auto !important; padding: 14px 0 42px !important; }
-.topbar { padding: 10px 12px !important; gap: 14px !important; }
-.brand-logo { width: 44px !important; height: 44px !important; padding: 6px !important; }
-.hero-card { padding: clamp(20px, 2.4vw, 28px) !important; }
-.hero-layout { gap: 20px !important; }
-.media-frame img, .media-frame video { aspect-ratio: 16 / 9 !important; object-fit: cover !important; }
-
-/* Footer background spans viewport, content stays aligned */
-footer,
-footer.site-footer,
-.site-footer {
-  width: 100% !important;
-  max-width: none !important;
-  margin: 0 !important;
-  padding: clamp(34px, 3.8vw, 46px) 0 22px !important;
-  border-radius: 0 !important;
-  overflow: hidden !important;
-}
-.footer-grid,
-.site-footer-grid {
-  display: grid !important;
-  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  gap: clamp(18px, 2vw, 28px) !important;
-  align-items: start !important;
-  margin-bottom: 20px !important;
-}
-.footer-column, .site-footer-brand, .site-footer-column {
-  min-width: 0 !important;
-  max-width: 100% !important;
-}
-.footer-bottom,
-.site-footer-bottom {
-  width: min(var(--tds-shell), calc(100% - (var(--tds-gutter) * 2))) !important;
-  max-width: var(--tds-shell) !important;
-  margin: 16px auto 0 !important;
-  padding-top: 14px !important;
-}
-.footer-column h4, .site-footer-column h4 { margin-bottom: 8px !important; }
-.footer-column p, .footer-column a, .site-footer p, .site-footer a, .site-footer span {
-  overflow-wrap: anywhere !important;
-}
-.site-footer-brandline { margin-bottom: 10px !important; }
-.site-footer-brandline img { width: 44px !important; height: 44px !important; padding: 5px !important; }
-.site-footer-brand p { margin-bottom: 12px !important; }
-.site-footer-chip-row { gap: 7px !important; margin-bottom: 12px !important; }
-.site-footer-actions { gap: 8px !important; }
-
-@media (max-width: 1024px) {
-  .services-grid, .values-grid, .product-grid, .audience-grid, .feature-grid,
-  .features-grid, .signal-grid, .list-stack, .stats-grid, .journey-grid,
-  .footer-grid, .site-footer-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-  .hero-layout { grid-template-columns: 1fr !important; }
-  .site-footer-brand { grid-column: 1 / -1 !important; }
-}
-
-@media (max-width: 767px) {
-  :root { --tds-gutter: 12px; --tds-section-y: 28px; }
-  body { padding-top: 0 !important; }
-  .services-grid, .values-grid, .mission-vision-grid, .stats-grid, .info-grid,
-  .trust-assurance-grid, .telemedicine-explainer-grid, .location-grid,
-  .contact-cards, .product-grid, .audience-grid, .feature-grid, .features-grid,
-  .signal-grid, .list-stack, .journey-grid, .proof-strip,
-  .footer-grid, .site-footer-grid {
-    grid-template-columns: 1fr !important;
-  }
-  .site-footer-brand { grid-column: auto !important; }
-  .card-img { height: 138px !important; }
-  .page { width: calc(100% - 20px) !important; }
-  footer, .site-footer { padding-top: 30px !important; padding-bottom: 20px !important; }
-}
-</style>
-<!-- TDS_ACTUAL_HTML_LAYOUT_END -->
 </head>
 <body>
 <div class="mobile-overlay" id="mobileOverlay"></div>
@@ -1692,7 +1446,7 @@ footer.site-footer,
         </div>
     </div></section>
 
-    <section class="content-section" style="background: var(--light-gray); padding: 80px 8%; margin: 60px 0;">
+    <section class="content-section" style="background: var(--light-gray); padding: 56px 5%; margin: 60px 0;">
         <div class="section-inner"><h2 class="section-title">Why ECG247 Matters</h2>
         <p class="section-subtitle">
             Cardiac conditions often go undetected during brief office visits. ECG247 provides extended monitoring during your everyday life, capturing heart rhythm abnormalities that might be missed during short-term testing.
