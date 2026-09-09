@@ -49,8 +49,244 @@ if 'IN DEVELOPMENT' in text:
     if count != 1:
         raise SystemExit('Could not replace download CTA block')
 
-if 'Coming Soon' in text or 'IN DEVELOPMENT' in text:
+hero_styles = '''
+<style id="app-live-hero-styles">
+    .hero-section.app-live-hero {
+        min-height: 0;
+        padding: 104px 28px 64px;
+        background: #0f172a;
+        color: #ffffff;
+        text-align: left;
+        overflow: hidden;
+    }
+
+    .app-live-hero .app-hero-grid {
+        width: min(1180px, calc(100% - 48px));
+        max-width: 1180px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: minmax(0, .88fr) minmax(360px, 1.12fr);
+        gap: clamp(34px, 5vw, 72px);
+        align-items: center;
+    }
+
+    .app-live-hero .app-hero-copy {
+        min-width: 0;
+    }
+
+    .app-live-hero .app-live-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 18px;
+        padding: 7px 10px;
+        border: 1px solid rgba(255, 163, 102, .55);
+        border-radius: 2px;
+        color: #ffb886;
+        font-size: .75rem;
+        line-height: 1;
+        font-weight: 700;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+    }
+
+    .app-live-hero .app-live-badge::before {
+        content: '';
+        width: 7px;
+        height: 7px;
+        background: #10b981;
+        border-radius: 1px;
+    }
+
+    .app-live-hero h1 {
+        max-width: 640px;
+        margin: 0 0 16px;
+        color: #ffffff;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: clamp(2.35rem, 4vw, 4rem);
+        line-height: 1.02;
+        letter-spacing: -.055em;
+        font-weight: 800;
+    }
+
+    .app-live-hero .subtitle {
+        max-width: 610px;
+        margin: 0 0 26px;
+        color: rgba(255, 255, 255, .74);
+        font-size: clamp(.98rem, 1.25vw, 1.12rem);
+        line-height: 1.65;
+    }
+
+    .app-live-hero .app-hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 18px;
+    }
+
+    .app-live-hero .app-hero-primary,
+    .app-live-hero .app-hero-secondary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        padding: 11px 16px;
+        border-radius: 2px;
+        text-decoration: none;
+        font-size: .84rem;
+        line-height: 1.2;
+        font-weight: 700;
+        transition: background-color .2s ease, border-color .2s ease, color .2s ease;
+    }
+
+    .app-live-hero .app-hero-primary {
+        background: #ff9559;
+        border: 1px solid #ff9559;
+        color: #0f172a;
+    }
+
+    .app-live-hero .app-hero-primary:hover {
+        background: #ffad7d;
+        border-color: #ffad7d;
+    }
+
+    .app-live-hero .app-hero-secondary {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, .28);
+        color: #ffffff;
+    }
+
+    .app-live-hero .app-hero-secondary:hover {
+        border-color: rgba(255, 255, 255, .6);
+        background: rgba(255, 255, 255, .06);
+    }
+
+    .app-live-hero .app-hero-proof {
+        color: rgba(255, 255, 255, .52);
+        font-size: .76rem;
+        line-height: 1.5;
+    }
+
+    .app-live-hero .app-hero-visual {
+        position: relative;
+        min-width: 0;
+        border: 1px solid rgba(255, 255, 255, .12);
+        background: #111c31;
+        overflow: hidden;
+    }
+
+    .app-live-hero .app-hero-visual::before {
+        content: '';
+        position: absolute;
+        z-index: 2;
+        top: 0;
+        left: 0;
+        width: 64px;
+        height: 3px;
+        background: #ff9559;
+    }
+
+    .app-live-hero .app-hero-visual img {
+        display: block;
+        width: 100%;
+        height: clamp(330px, 36vw, 480px);
+        object-fit: cover;
+        object-position: center;
+    }
+
+    .app-live-hero .app-hero-image-caption {
+        position: absolute;
+        z-index: 3;
+        left: 16px;
+        bottom: 16px;
+        padding: 8px 10px;
+        background: rgba(15, 23, 42, .9);
+        border: 1px solid rgba(255, 255, 255, .12);
+        color: rgba(255, 255, 255, .84);
+        font-size: .72rem;
+        line-height: 1.35;
+    }
+
+    @media (max-width: 900px) {
+        .hero-section.app-live-hero {
+            padding: 88px 24px 48px;
+        }
+
+        .app-live-hero .app-hero-grid {
+            width: min(760px, 100%);
+            grid-template-columns: 1fr;
+            gap: 28px;
+        }
+
+        .app-live-hero .app-hero-visual img {
+            height: clamp(300px, 58vw, 430px);
+        }
+    }
+
+    @media (max-width: 560px) {
+        .hero-section.app-live-hero {
+            padding: 80px 18px 38px;
+        }
+
+        .app-live-hero .app-hero-grid {
+            width: 100%;
+        }
+
+        .app-live-hero h1 {
+            font-size: clamp(2rem, 10vw, 2.7rem);
+        }
+
+        .app-live-hero .app-hero-actions {
+            display: grid;
+            grid-template-columns: 1fr;
+        }
+
+        .app-live-hero .app-hero-primary,
+        .app-live-hero .app-hero-secondary {
+            width: 100%;
+        }
+
+        .app-live-hero .app-hero-visual img {
+            height: 300px;
+        }
+    }
+</style>
+'''
+
+if 'id="app-live-hero-styles"' not in text:
+    text = text.replace('</head>', hero_styles + '\n</head>', 1)
+
+hero_markup = '''<section class="hero-section app-live-hero">
+        <div class="section-inner app-hero-grid">
+            <div class="app-hero-copy">
+                <div class="app-live-badge">Now live</div>
+                <h1>Connected healthcare, right in your hands.</h1>
+                <p class="subtitle">Access your TeleDoctorSA patient portal, manage appointments, review health information and stay connected to your healthcare team from wherever you are.</p>
+                <div class="app-hero-actions">
+                    <a href="/patients" class="app-hero-primary">
+                        Open Patient App <span aria-hidden="true">&rarr;</span>
+                    </a>
+                    <a href="/virtual-consultations" class="app-hero-secondary">Book a Consultation</a>
+                </div>
+                <p class="app-hero-proof">Secure patient access &nbsp;•&nbsp; Private &nbsp;•&nbsp; Available 24/7</p>
+            </div>
+            <div class="app-hero-visual">
+                <img src="/images/rebuild/07-mobile-health-app.jpg" alt="Patient using the TeleDoctorSA digital health app" loading="eager" fetchpriority="high">
+                <div class="app-hero-image-caption">TeleDoctorSA patient access &nbsp;•&nbsp; Secure connected care</div>
+            </div>
+        </div>
+    </section>'''
+
+hero_pattern = re.compile(r'<section class="hero-section(?:\s+app-live-hero)?">.*?</section>', re.S)
+text, hero_count = hero_pattern.subn(hero_markup, text, count=1)
+if hero_count != 1:
+    raise SystemExit('Could not replace app hero section')
+
+if 'COMING SOON' in text or 'Coming Soon' in text or 'IN DEVELOPMENT' in text or 'Notify Me When Available' in text:
     raise SystemExit('Stale launch copy still present')
 
+if '/images/rebuild/07-mobile-health-app.jpg' not in text:
+    raise SystemExit('Hero image was not installed')
+
 path.write_text(text, encoding='utf-8')
-print('updated teledoctorsa-app.html')
+print('updated teledoctorsa-app.html with live hero image')
