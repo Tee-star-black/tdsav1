@@ -84,6 +84,14 @@
         <priority>0.3</priority>
     </url>
 
+    <!-- Cookie Policy Page -->
+    <url>
+        <loc>https://teledoctorsa.co.za/cookies-policy</loc>
+        <lastmod>2026-09-09</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.3</priority>
+    </url>
+
     <!-- Legal Notice Page -->
     <url>
         <loc>https://teledoctorsa.co.za/legal-notice</loc>
@@ -101,5 +109,3 @@
     </url>
 
 </urlset>
-
-
