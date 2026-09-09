@@ -20,6 +20,7 @@ jobs:
       - name: Apply professional site audit
         run: |
           python3 scripts/apply-professional-site-audit.py
+          python3 scripts/fix-73health-reference.py
           python3 scripts/fix-production-references.py
 
       - name: Validate whitespace and Python syntax
@@ -27,7 +28,11 @@ jobs:
           git diff --check
           python3 - <<'PY'
           from pathlib import Path
-          for path in [Path('scripts/apply-professional-site-audit.py'), Path('scripts/fix-production-references.py')]:
+          for path in [
+              Path('scripts/apply-professional-site-audit.py'),
+              Path('scripts/fix-73health-reference.py'),
+              Path('scripts/fix-production-references.py'),
+          ]:
               compile(path.read_text(encoding='utf-8'), str(path), 'exec')
           print('Python syntax validation passed.')
           PY
