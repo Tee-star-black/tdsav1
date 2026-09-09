@@ -11,5 +11,4 @@
   }
 
   loadOnce('tds-rebuild-images-core-loader', '/scripts/rebuild-images-core.js');
-  loadOnce('tds-unified-mobile-nav-loader', '/scripts/mobile-nav.js');
 })();
