@@ -49,11 +49,21 @@
     ];
 
     document.querySelectorAll(selectors.join(',')).forEach(function (container) {
-      if (container.querySelector('a[href*="cookies-policy"], a[href*="cookie-policy"]')) return;
-      var link = document.createElement('a');
-      link.href = '/cookies-policy';
-      link.textContent = 'Cookie Policy';
-      container.appendChild(link);
+      if (!container.querySelector('a[href*="cookies-policy"], a[href*="cookie-policy"]')) {
+        var link = document.createElement('a');
+        link.href = '/cookies-policy';
+        link.textContent = 'Cookie Policy';
+        container.appendChild(link);
+      }
+
+      if (!container.querySelector('[data-cookie-settings]')) {
+        var settings = document.createElement('button');
+        settings.type = 'button';
+        settings.className = 'tds-cookie-settings-link';
+        settings.setAttribute('data-cookie-settings', '');
+        settings.textContent = 'Cookie Settings';
+        container.appendChild(settings);
+      }
     });
   }
 
@@ -74,6 +84,7 @@
   maintainGlobalUi();
   loadOnce('tds-rebuild-images-core-loader', '/scripts/rebuild-images-core.js');
   loadOnce('tds-home-mobile-polish-loader', '/scripts/home-mobile-polish.js');
+  loadOnce('tds-cookie-notice-loader', '/scripts/cookie-notice.js');
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', maintainGlobalUi);
