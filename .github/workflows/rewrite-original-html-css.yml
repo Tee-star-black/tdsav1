@@ -1,0 +1,122 @@
+name: Rewrite original HTML CSS
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/rewrite-original-html-css.yml'
+permissions:
+  contents: write
+jobs:
+  rewrite:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Rewrite original CSS in real HTML files
+        shell: bash
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          import re
+
+          targets = [
+              'index.html','about-us.html','contact-us.html','ehr.html','ecg247.html',
+              'app.html','doctors.html','nurses.html','patients.html','audience-products.html'
+          ]
+
+          # Remove all prior injected layout blocks so the real page CSS is the only source of truth.
+          block_pairs = [
+              ('<!-- TDS_ACTUAL_HTML_LAYOUT_START -->','<!-- TDS_ACTUAL_HTML_LAYOUT_END -->'),
+              ('<!-- TDS_ABOUT_ACTUAL_HERO_START -->','<!-- TDS_ABOUT_ACTUAL_HERO_END -->'),
+              ('<!-- TDS_DIRECT_PRODUCTION_LAYOUT_START -->','<!-- TDS_DIRECT_PRODUCTION_LAYOUT_END -->'),
+              ('<!-- TDS_DIRECT_SOURCE_FIX_START -->','<!-- TDS_DIRECT_SOURCE_FIX_END -->'),
+              ('<!-- TDS_ABOUT_HERO_FIX_START -->','<!-- TDS_ABOUT_HERO_FIX_END -->'),
+          ]
+
+          for name in targets:
+              p = Path(name)
+              if not p.exists():
+                  continue
+              text = p.read_text(encoding='utf-8-sig')
+              original = text
+
+              for a,b in block_pairs:
+                  text = re.sub(re.escape(a) + r'.*?' + re.escape(b), '', text, flags=re.S)
+
+              # Remove obsolete layout JS references.
+              for tag in [
+                  '<script src="scripts/spacious-layout.js"></script>',
+                  '<script src="scripts/site-wide-optimization.js"></script>',
+                  '<script src="scripts/final-global-fixes.js"></script>',
+              ]:
+                  text = text.replace(tag, '')
+
+              # Kill legacy body viewport gaps wherever present.
+              text = re.sub(r'padding-top:\s*90px\s*;', 'padding-top: 0;', text)
+              text = re.sub(r'padding-bottom:\s*70px\s*;', 'padding-bottom: 0;', text)
+              text = re.sub(r'padding-top:\s*70px\s*;', 'padding-top: 0;', text)
+
+              # Make main nav compact without changing structure.
+              text = re.sub(r'padding:\s*24px\s+8%\s*;', 'padding: 12px 5%;', text)
+              text = re.sub(r'padding:\s*16px\s+8%\s*;', 'padding: 10px 5%;', text)
+
+              # Normalize common oversized section spacing.
+              text = re.sub(r'padding:\s*100px\s+8%\s*;', 'padding: 64px 5%;', text)
+              text = re.sub(r'padding:\s*80px\s+8%\s*;', 'padding: 56px 5%;', text)
+              text = re.sub(r'padding:\s*120px\s+8%\s*;', 'padding: 72px 5%;', text)
+
+              # Normalize common grid gaps.
+              text = re.sub(r'gap:\s*60px\s*;', 'gap: 28px;', text)
+              text = re.sub(r'gap:\s*50px\s*;', 'gap: 24px;', text)
+              text = re.sub(r'gap:\s*40px\s*;', 'gap: 22px;', text)
+              text = re.sub(r'gap:\s*32px\s*;', 'gap: 20px;', text)
+
+              # Make image cards less tall where hardcoded heights exist.
+              text = re.sub(r'height:\s*260px\s*;', 'height: 190px;', text)
+              text = re.sub(r'height:\s*240px\s*;', 'height: 185px;', text)
+              text = re.sub(r'height:\s*220px\s*;', 'height: 180px;', text)
+
+              if name == 'index.html':
+                  # Footer is full bleed; inner shell remains constrained.
+                  text = re.sub(
+                      r'(\.site-footer\s*\{)(.*?)(\})',
+                      lambda m: m.group(1) + re.sub(r'padding:\s*84px\s+8%\s+112px\s*;', 'padding: 56px 5% 36px;', m.group(2)) + m.group(3),
+                      text, count=1, flags=re.S
+                  )
+                  # Ensure the footer itself spans the viewport.
+                  text = re.sub(
+                      r'(\.site-footer\s*\{)',
+                      r'\1\n            width: 100%;\n            max-width: none;\n            margin: 0;\n            left: 0;\n            right: 0;',
+                      text, count=1
+                  )
+                  # Make the shell/grid genuinely aligned and compact.
+                  text = re.sub(r'max-width:\s*1180px\s*;', 'max-width: 1200px;', text)
+
+              if name == 'about-us.html':
+                  # Remove every competing vh hero height and use one stable responsive size.
+                  text = re.sub(r'height:\s*80vh\s*;', 'height: 640px;', text)
+                  text = re.sub(r'height:\s*75vh\s*;', 'height: 620px;', text)
+                  text = re.sub(r'height:\s*70vh\s*;', 'height: 600px;', text)
+                  text = re.sub(r'height:\s*60vh\s*;', 'height: 560px;', text)
+                  text = re.sub(r'height:\s*55vh\s*;', 'height: 520px;', text)
+                  # Stop hero copy from being clipped by narrow containers.
+                  text = re.sub(r'max-width:\s*600px\s*;', 'max-width: 720px;', text)
+
+              if text != original:
+                  p.write_text(text, encoding='utf-8')
+                  print('updated', name)
+
+          # Self-delete workflow so it cannot become part of the site architecture.
+          wf = Path('.github/workflows/rewrite-original-html-css.yml')
+          if wf.exists():
+              wf.unlink()
+          PY
+      - name: Commit actual HTML changes
+        shell: bash
+        run: |
+          git config user.name "TDSA HTML Repair"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          git commit -m "fix: rewrite original footer grid and about hero CSS"
+          git push origin main
