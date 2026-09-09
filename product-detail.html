@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Details | TeledoctorSA</title>
-    
+    <title>Product Details | TeleDoctorSA</title>
+
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -53,7 +53,7 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
         }
 
-        .logo { 
+        .logo {
             display: flex;
             align-items: center;
             gap: 12px;
@@ -517,7 +517,7 @@
             backdrop-filter: blur(20px) saturate(180%);
             border-radius: 16px;
             padding: 18px 20px;
-            box-shadow: 
+            box-shadow:
                 0 8px 32px rgba(0, 0, 0, 0.08),
                 0 2px 8px rgba(0, 0, 0, 0.04),
                 0 0 0 1px rgba(255, 255, 255, 0.1);
@@ -797,6 +797,7 @@ footer.site-footer, .site-footer {
 }
 </style>
 <!-- TDS_DIRECT_PRODUCTION_LAYOUT_END -->
+    <link rel="stylesheet" href="/site-polish.css?v=20260909" data-tds-production-polish>
 </head>
 <body>
     <div id="toastContainer" class="toast-container"></div>
@@ -804,7 +805,7 @@ footer.site-footer, .site-footer {
     <!-- Navigation -->
     <nav>
         <a href="index.html" class="logo">
-            <img src="images/TDSA-Logo.png" alt="TeledoctorSA Logo">
+            <img src="images/TDSA-Logo.png" alt="TeleDoctorSA Logo">
             <span class="logo-text">Teledoctor<span>SA</span></span>
         </a>
         <a href="shop.html" class="back-btn">
@@ -838,7 +839,7 @@ footer.site-footer, .site-footer {
                 <div class="product-header">
                     <div class="product-category-badge" id="categoryBadge"></div>
                     <h1 class="product-name" id="productName"></h1>
-                    
+
                     <div class="product-rating-section">
                         <div class="stars" id="productStars"></div>
                         <span class="rating-text" id="ratingText"></span>
@@ -958,17 +959,17 @@ footer.site-footer, .site-footer {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            
+
             const icons = {
                 success: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>',
             };
-            
+
             const defaultTitles = {
                 success: 'Success',
             };
-            
+
             const toastTitle = title || defaultTitles[type] || 'Notification';
-            
+
             toast.innerHTML = `
                 <div class="toast-icon" style="flex-shrink: 0; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: linear-gradient(135deg, var(--toast-color), var(--toast-color-light)); color: white;">${icons[type]}</div>
                 <div style="flex: 1;">
@@ -976,9 +977,9 @@ footer.site-footer, .site-footer {
                     <div style="font-size: 0.875rem; color: var(--slate-gray);">${message}</div>
                 </div>
             `;
-            
+
             container.appendChild(toast);
-            
+
             setTimeout(() => {
                 toast.style.animation = 'slideOutRight 0.3s cubic-bezier(0.4, 0, 1, 1)';
                 setTimeout(() => toast.remove(), 300);
@@ -1101,13 +1102,13 @@ footer.site-footer, .site-footer {
         document.getElementById('addToCartBtn').addEventListener('click', () => {
             let cart = JSON.parse(localStorage.getItem('cart')) || [];
             const existingItem = cart.find(item => item.id === product.id);
-            
+
             if (existingItem) {
                 existingItem.quantity++;
             } else {
                 cart.push({ ...product, quantity: 1 });
             }
-            
+
             localStorage.setItem('cart', JSON.stringify(cart));
             showToast(`${product.title} has been added to your cart`, 'success', 'Added to Cart');
         });
@@ -1116,7 +1117,7 @@ footer.site-footer, .site-footer {
         document.getElementById('wishlistBtn').addEventListener('click', () => {
             let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
             const index = wishlist.indexOf(product.id);
-            
+
             if (index > -1) {
                 wishlist.splice(index, 1);
                 showToast('Removed from wishlist', 'success', 'Wishlist Updated');
@@ -1124,7 +1125,7 @@ footer.site-footer, .site-footer {
                 wishlist.push(product.id);
                 showToast(`${product.title} added to wishlist`, 'success', 'Added to Wishlist');
             }
-            
+
             localStorage.setItem('wishlist', JSON.stringify(wishlist));
         });
 
@@ -1132,7 +1133,7 @@ footer.site-footer, .site-footer {
         document.getElementById('compareBtn').addEventListener('click', () => {
             let comparelist = JSON.parse(localStorage.getItem('comparelist')) || [];
             const index = comparelist.indexOf(product.id);
-            
+
             if (index > -1) {
                 comparelist.splice(index, 1);
                 showToast('Removed from comparison', 'success', 'Compare Updated');
@@ -1144,7 +1145,7 @@ footer.site-footer, .site-footer {
                 comparelist.push(product.id);
                 showToast(`${product.title} added to comparison (${comparelist.length}/4)`, 'success', 'Added to Compare');
             }
-            
+
             localStorage.setItem('comparelist', JSON.stringify(comparelist));
         });
 
@@ -1186,17 +1187,17 @@ footer.site-footer, .site-footer {
     .nav-links{ display: none !important; }
 
     .tds-mobile-nav{
-        position:fixed; left:50%; bottom:12px; top:auto !important; 
+        position:fixed; left:50%; bottom:12px; top:auto !important;
         transform: translateX(-50%);
         width: min(94vw, 420px);
-        background: linear-gradient(135deg, 
-            rgba(255, 255, 255, 0.95) 0%, 
+        background: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.95) 0%,
             rgba(255, 255, 255, 0.90) 100%);
         backdrop-filter: blur(24px) saturate(180%);
         -webkit-backdrop-filter: blur(24px) saturate(180%);
         border: 1.5px solid rgba(255, 163, 102, 0.15);
         border-radius: 24px;
-        box-shadow: 
+        box-shadow:
             0 8px 32px rgba(15, 23, 42, 0.12),
             0 2px 8px rgba(255, 163, 102, 0.08),
             inset 0 1px 0 rgba(255, 255, 255, 0.8);
@@ -1207,7 +1208,7 @@ footer.site-footer, .site-footer {
         min-height: 0;
         animation: floatNav 3s ease-in-out infinite;
     }
-    
+
     @keyframes floatNav {
         0%, 100% { transform: translateX(-50%) translateY(0px); }
         50% { transform: translateX(-50%) translateY(-2px); }
@@ -1220,7 +1221,7 @@ footer.site-footer, .site-footer {
         height: auto;
         padding: 2px 0;
     }
-    
+
     .tds-mnav-item{
         text-decoration:none;
         color: rgba(15,23,42,.7);
@@ -1229,9 +1230,9 @@ footer.site-footer, .site-footer {
         font-weight: 700;
         letter-spacing: 0.3px;
         display:flex; flex-direction:column; align-items:center; justify-content:center;
-        gap:4px; 
+        gap:4px;
         padding: 10px 6px 8px;
-        border-radius: 16px; 
+        border-radius: 16px;
         position:relative;
         transition: all .35s cubic-bezier(0.34, 1.56, 0.64, 1);
         -webkit-tap-highlight-color: transparent;
@@ -1243,115 +1244,115 @@ footer.site-footer, .site-footer {
         min-height: 0;
         overflow: hidden;
     }
-    
+
     .tds-mnav-item::before {
         content: '';
         position: absolute;
         inset: 0;
         border-radius: 16px;
-        background: linear-gradient(135deg, 
-            rgba(255, 163, 102, 0) 0%, 
+        background: linear-gradient(135deg,
+            rgba(255, 163, 102, 0) 0%,
             rgba(255, 163, 102, 0.12) 100%);
         opacity: 0;
         transition: opacity .35s ease;
         z-index: -1;
     }
-    
+
     .tds-mnav-item:hover::before {
         opacity: 1;
     }
-    
-    .tds-mnav-item svg{ 
+
+    .tds-mnav-item svg{
         width:20px;
-        height:20px; 
-        opacity:.85; 
+        height:20px;
+        opacity:.85;
         transition: all .35s cubic-bezier(0.34, 1.56, 0.64, 1);
         filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
     }
-    
-    .tds-mnav-item:active{ 
-        transform: scale(.92); 
+
+    .tds-mnav-item:active{
+        transform: scale(.92);
     }
-    
+
     .tds-mnav-item[aria-current="page"]{
         color: white;
         background: linear-gradient(135deg, var(--primary-orange) 0%, var(--orange-dark) 100%);
         border-color: rgba(255, 136, 68, 0.3);
-        box-shadow: 
+        box-shadow:
             0 4px 12px rgba(255, 163, 102, 0.35),
             0 2px 4px rgba(255, 136, 68, 0.2),
             inset 0 1px 0 rgba(255, 255, 255, 0.3);
         transform: translateY(-2px) scale(1.05);
     }
-    
+
     .tds-mnav-item[aria-current="page"]::before {
         opacity: 0;
     }
-    
-    .tds-mnav-item[aria-current="page"] svg{ 
+
+    .tds-mnav-item[aria-current="page"] svg{
         transform: scale(1.1) rotate(-5deg);
         opacity: 1;
         filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
     }
-    
+
     .tds-mnav-indicator{
-        position:absolute; 
-        top: 4px; 
+        position:absolute;
+        top: 4px;
         right: 8px;
         width: 8px;
         height: 8px;
         border-radius: 50%;
         background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
-        box-shadow: 
+        box-shadow:
             0 0 8px rgba(34, 197, 94, 0.5),
             0 2px 4px rgba(34, 197, 94, 0.3);
         transform: scale(0);
         transition: transform .35s cubic-bezier(0.34, 1.56, 0.64, 1);
         border: 1.5px solid white;
     }
-    
-    .tds-mnav-item[aria-current="page"] .tds-mnav-indicator{ 
+
+    .tds-mnav-item[aria-current="page"] .tds-mnav-indicator{
         transform: scale(1);
         animation: pulse-dot 2s ease-in-out infinite;
     }
-    
+
     @keyframes pulse-dot {
-        0%, 100% { 
-            box-shadow: 
+        0%, 100% {
+            box-shadow:
                 0 0 8px rgba(34, 197, 94, 0.5),
                 0 2px 4px rgba(34, 197, 94, 0.3);
         }
-        50% { 
-            box-shadow: 
+        50% {
+            box-shadow:
                 0 0 16px rgba(34, 197, 94, 0.7),
                 0 2px 8px rgba(34, 197, 94, 0.5);
         }
     }
-    
+
     @keyframes ripple-effect {
         to {
             transform: scale(2.5);
             opacity: 0;
         }
     }
-    
+
     /* Icon-specific color hints on hover */
     .tds-mnav-item[data-page="home"]:not([aria-current="page"]):hover svg {
         color: #3b82f6;
     }
-    
+
     .tds-mnav-item[data-page="about"]:not([aria-current="page"]):hover svg {
         color: #8b5cf6;
     }
-    
+
     .tds-mnav-item[data-page="offer"]:not([aria-current="page"]):hover svg {
         color: var(--primary-orange);
     }
-    
+
     .tds-mnav-item[data-page="services"]:not([aria-current="page"]):hover svg {
         color: #10b981;
     }
-    
+
     .tds-mnav-item[data-page="telemedia"]:not([aria-current="page"]):hover svg {
         color: #f59e0b;
     }
@@ -1450,7 +1451,7 @@ footer.site-footer, .site-footer {
         <span class="tds-sheet-desc">Secure digital patient records with encrypted access.</span>
       </span>
     </a>
-    <a class="tds-sheet-card" href="teledoctorsa-app.html">
+    <a class="tds-sheet-card" href="/app">
       <span class="tds-sheet-icon" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none"><rect x="6" y="3" width="12" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M10 17h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
       </span>
@@ -1718,8 +1719,8 @@ footer.site-footer, .site-footer {
 })();
 </script>
 <!-- TDS_MOBILE_NAV_SCRIPT_END -->
-    
-    
+
+
 </body>
 </html>
 

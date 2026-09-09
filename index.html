@@ -93,9 +93,9 @@
     </script>
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
-    
+
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    
+
     <script src="https://unpkg.com/lucide@latest"></script>
 
      <style>
@@ -154,7 +154,7 @@
                 flex: 0 0 auto;
             }
         }
-        
+
         /* Premium transitions base */
         * {
             transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
@@ -167,7 +167,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: 
+            background-image:
                 radial-gradient(circle at 20% 50%, rgba(255, 163, 102, 0.03) 0%, transparent 50%),
                 radial-gradient(circle at 80% 80%, rgba(255, 163, 102, 0.03) 0%, transparent 50%);
             pointer-events: none;
@@ -190,7 +190,7 @@
             box-shadow: 0 2px 12px rgba(0,0,0,0.03);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
+
         nav.scrolled {
             padding: 10px 5%;
             background: #fff;
@@ -204,9 +204,9 @@
             left: 0;
             width: 100%;
             height: 2px;
-            background: linear-gradient(90deg, 
-                transparent 0%, 
-                var(--primary-orange) 50%, 
+            background: linear-gradient(90deg,
+                transparent 0%,
+                var(--primary-orange) 50%,
                 transparent 100%);
             opacity: 0;
             transition: opacity 0.3s ease;
@@ -216,14 +216,14 @@
             opacity: 0.3;
         }
 
-        .logo { 
+        .logo {
             position: relative;
             display: flex;
             align-items: center;
             gap: 16px;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
+
         .logo:hover {
             transform: scale(1.03);
         }
@@ -340,24 +340,24 @@
             display: block;
             opacity: 1;
         }
-        
+
         /* Improve touch interactions on mobile */
         @media (hover: none) and (pointer: coarse) {
             .btn, .read-more, .learn-more-btn, .cta-btn {
                 -webkit-tap-highlight-color: rgba(255, 163, 102, 0.2);
                 touch-action: manipulation;
             }
-            
+
             .card {
                 touch-action: pan-y;
             }
         }
 
         .nav-links { display: flex; gap: 22px; align-items: center; }
-        .nav-links a { 
-            text-decoration: none; 
-            color: var(--slate-gray); 
-            font-weight: 500; 
+        .nav-links a {
+            text-decoration: none;
+            color: var(--slate-gray);
+            font-weight: 500;
             font-size: 0.95rem;
             transition: all 0.3s ease;
             position: relative;
@@ -531,7 +531,7 @@
             transition: width 0.3s ease;
         }
 
-        .nav-links a:hover { 
+        .nav-links a:hover {
             color: var(--deep-navy);
         }
 
@@ -624,7 +624,7 @@
             position: relative;
             overflow: hidden;
         }
-        
+
         .contact-option::before {
             content: '';
             position: absolute;
@@ -640,7 +640,7 @@
             background: var(--orange-subtle);
             transform: translateX(4px);
         }
-        
+
         .contact-option:hover::before {
             left: 100%;
         }
@@ -720,7 +720,7 @@
             position: relative;
             overflow: hidden;
         }
-        
+
         .hero > div {
             position: relative;
             z-index: 1;
@@ -746,7 +746,7 @@
             left: -10%;
             width: 400px;
             height: 400px;
-            background: 
+            background:
                 linear-gradient(45deg, transparent 48%, rgba(255, 163, 102, 0.05) 48%, rgba(255, 163, 102, 0.05) 52%, transparent 52%);
             background-size: 30px 30px;
             opacity: 0.6;
@@ -1292,7 +1292,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: 
+            background:
                 radial-gradient(ellipse at 20% 20%, rgba(255, 163, 102, 0.06) 0%, transparent 50%),
                 radial-gradient(ellipse at 80% 80%, rgba(255, 136, 68, 0.06) 0%, transparent 50%),
                 radial-gradient(ellipse at 50% 50%, rgba(255, 184, 134, 0.04) 0%, transparent 50%);
@@ -1646,11 +1646,11 @@
             left: 0;
             right: 0;
             height: 2px;
-            background: linear-gradient(90deg, 
-                transparent 0%, 
-                var(--primary-orange) 20%, 
-                var(--orange-light) 50%, 
-                var(--primary-orange) 80%, 
+            background: linear-gradient(90deg,
+                transparent 0%,
+                var(--primary-orange) 20%,
+                var(--orange-light) 50%,
+                var(--primary-orange) 80%,
                 transparent 100%);
             animation: shimmer 3s linear infinite;
         }
@@ -1662,9 +1662,9 @@
             left: 0;
             right: 0;
             height: 1px;
-            background: linear-gradient(90deg, 
-                transparent 0%, 
-                rgba(255, 163, 102, 0.3) 50%, 
+            background: linear-gradient(90deg,
+                transparent 0%,
+                rgba(255, 163, 102, 0.3) 50%,
                 transparent 100%);
         }
 
@@ -2337,7 +2337,7 @@
 
         /* --- Tech Showcase Section --- */
         .tech-showcase {
-            background: 
+            background:
                 linear-gradient(135deg, #FFF8F3 0%, #FFFBF7 50%, var(--white) 100%),
                 repeating-linear-gradient(90deg, transparent 0px, transparent 49px, rgba(255, 163, 102, 0.02) 49px, rgba(255, 163, 102, 0.02) 50px),
                 repeating-linear-gradient(0deg, transparent 0px, transparent 49px, rgba(255, 163, 102, 0.02) 49px, rgba(255, 163, 102, 0.02) 50px);
@@ -2577,7 +2577,7 @@
             position: relative;
             border-radius: 24px;
             overflow: hidden;
-            box-shadow: 
+            box-shadow:
                 0 30px 60px rgba(255, 163, 102, 0.25),
                 0 10px 30px rgba(0, 0, 0, 0.05);
             transform-style: preserve-3d;
@@ -2628,7 +2628,7 @@
 
         .tech-showcase-image-wrapper:hover {
             transform: translateY(-8px);
-            box-shadow: 
+            box-shadow:
                 0 40px 80px rgba(255, 163, 102, 0.3),
                 0 15px 40px rgba(0, 0, 0, 0.08);
         }
@@ -2855,10 +2855,10 @@
             inset: 0;
             border-radius: 24px;
             padding: 2px;
-            background: linear-gradient(45deg, 
-                transparent 0%, 
-                var(--primary-orange) 25%, 
-                var(--orange-light) 50%, 
+            background: linear-gradient(45deg,
+                transparent 0%,
+                var(--primary-orange) 25%,
+                var(--orange-light) 50%,
                 transparent 75%);
             background-size: 300% 300%;
             animation: borderRotate 4s linear infinite;
@@ -2993,7 +2993,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: 
+            background-image:
                 repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255, 163, 102, 0.03) 40px, rgba(255, 163, 102, 0.03) 80px),
                 repeating-linear-gradient(60deg, transparent, transparent 40px, rgba(255, 163, 102, 0.03) 40px, rgba(255, 163, 102, 0.03) 80px),
                 repeating-linear-gradient(120deg, transparent, transparent 40px, rgba(255, 163, 102, 0.03) 40px, rgba(255, 163, 102, 0.03) 80px);
@@ -3145,8 +3145,8 @@
         }
 
         /* --- Services Grid --- */
-        .services { 
-            padding: 64px 5%; 
+        .services {
+            padding: 64px 5%;
             position: relative;
             overflow: hidden;
         }
@@ -3158,7 +3158,7 @@
             left: -5%;
             width: 500px;
             height: 500px;
-            background: 
+            background:
                 repeating-linear-gradient(
                     45deg,
                     transparent,
@@ -3241,7 +3241,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: 
+            background:
                 radial-gradient(circle at top right, rgba(255, 163, 102, 0.03), transparent 50%),
                 radial-gradient(circle at bottom left, rgba(255, 136, 68, 0.02), transparent 50%);
             opacity: 0;
@@ -3334,7 +3334,7 @@
             transition: gap 0.3s;
         }
 
-        .read-more:hover { 
+        .read-more:hover {
             gap: 12px;
             color: var(--orange-dark);
         }
@@ -3374,7 +3374,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: 
+            background-image:
                 radial-gradient(circle at 20% 30%, rgba(255, 163, 102, 0.05) 0%, transparent 50%),
                 radial-gradient(circle at 80% 70%, rgba(255, 136, 68, 0.05) 0%, transparent 50%);
             opacity: 0;
@@ -3916,7 +3916,7 @@
             left: -10%;
             width: 500px;
             height: 500px;
-            background: 
+            background:
                 repeating-linear-gradient(
                     -45deg,
                     transparent,
@@ -4197,7 +4197,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: 
+            background-image:
                 linear-gradient(30deg, rgba(255, 163, 102, 0.02) 12%, transparent 12.5%, transparent 87%, rgba(255, 163, 102, 0.02) 87.5%, rgba(255, 163, 102, 0.02)),
                 linear-gradient(150deg, rgba(255, 163, 102, 0.02) 12%, transparent 12.5%, transparent 87%, rgba(255, 163, 102, 0.02) 87.5%, rgba(255, 163, 102, 0.02)),
                 linear-gradient(30deg, rgba(255, 163, 102, 0.02) 12%, transparent 12.5%, transparent 87%, rgba(255, 163, 102, 0.02) 87.5%, rgba(255, 163, 102, 0.02)),
@@ -4214,11 +4214,11 @@
             left: 0;
             width: 100%;
             height: 2px;
-            background: linear-gradient(90deg, 
-                transparent 0%, 
-                var(--primary-orange) 20%, 
-                var(--orange-light) 50%, 
-                var(--primary-orange) 80%, 
+            background: linear-gradient(90deg,
+                transparent 0%,
+                var(--primary-orange) 20%,
+                var(--orange-light) 50%,
+                var(--primary-orange) 80%,
                 transparent 100%);
             animation: shimmer 5s linear infinite;
         }
@@ -4524,7 +4524,7 @@
             .map-container { height: 350px; }
             nav { padding: 20px 5%; }
         }
-        
+
         /* Tablet Portrait - 768px to 1024px */
         @media (max-width: 1024px) {
             .services-grid { grid-template-columns: repeat(2, 1fr); }
@@ -4544,27 +4544,27 @@
                 padding-top: 80px;
             }
 
-            .hero { 
-                grid-template-columns: 1fr; 
-                text-align: center; 
+            .hero {
+                grid-template-columns: 1fr;
+                text-align: center;
                 padding-top: 100px;
                 padding-bottom: 0;
             }
 
-            .hero h1 { 
+            .hero h1 {
                 font-size: 3rem;
                 line-height: 1.15;
                 margin-bottom: 24px;
             }
 
-            .services-grid { 
+            .services-grid {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
                 gap: 24px;
             }
 
             nav { padding: 18px 4%; }
             .logo-text { font-size: 1.3rem; }
-            
+
             /* Optimize cards for tablet */
             .card {
                 padding: 0;
@@ -4612,7 +4612,7 @@
             .telemedicine-explainer-card {
                 transform: none;
             }
-              
+
         }
 
         @media (max-width: 600px) {
@@ -4628,25 +4628,25 @@
                 padding: 100px 24px 60px;
                 gap: 20px;
             }
-            
-            .hero h1 { 
+
+            .hero h1 {
                 font-size: 2.5rem;
                 line-height: 1.2;
                 margin-bottom: 20px;
             }
-            
+
             .hero p {
                 font-size: 1.05rem;
                 line-height: 1.6;
                 margin-bottom: 32px;
             }
-            
-            .badge { 
-                font-size: 0.75rem; 
+
+            .badge {
+                font-size: 0.75rem;
                 padding: 8px 16px;
                 display: inline-block;
             }
-            
+
             /* Services Section Mobile */
             .services-grid {
                 display: grid;
@@ -4663,33 +4663,33 @@
             .services-grid .card {
                 scroll-snap-align: start;
             }
-            
-            .services-header h2 { 
+
+            .services-header h2 {
                 font-size: 2.2rem;
                 line-height: 1.2;
             }
-            
+
             .services-header p {
                 font-size: 1rem;
                 margin-bottom: 32px;
             }
-            
+
             /* Card Optimization */
             .card {
                 padding: 0;
                 border-radius: 0;
             }
-            
+
             .card-img {
                 height: 180px;
                 border-radius: 8px;
             }
-            
+
             .card h3 {
                 font-size: 1.08rem;
                 margin-bottom: 12px;
             }
-            
+
             .card p {
                 font-size: 0.92rem;
                 line-height: 1.6;
@@ -4856,26 +4856,26 @@
                 justify-self: start;
                 margin-top: 18px;
             }
-            
+
             /* Location Section */
             .location-content h2 {
                 font-size: 2rem;
             }
-            
+
             .map-container {
                 height: 300px;
                 border-radius: 12px;
             }
-            
+
             /* Objectives Section */
             .objectives {
                 padding: 60px 24px;
             }
-            
+
             .objectives h2 {
                 font-size: 2rem;
             }
-            
+
             .objectives p {
                 font-size: 1rem;
                 line-height: 1.7;
@@ -4918,14 +4918,14 @@
             .site-footer-bottom {
                 flex-direction: column;
             }
-              
+
             .hamburger {
                 display: flex;
                 position: relative;
                 z-index: 1001;
             }
-            
-            .nav-links { 
+
+            .nav-links {
                 position: fixed;
                 top: 0;
                 right: -100%;
@@ -4942,18 +4942,18 @@
                 overflow-y: auto;
                 -webkit-overflow-scrolling: touch;
             }
-            
+
             .nav-links.active { right: 0; }
-            
+
             .nav-links > * {
                 width: 100%;
             }
-            
+
             .dropdown {
                 width: 100%;
                 display: block;
             }
-            
+
             .dropdown > a {
                 display: flex;
                 justify-content: space-between;
@@ -4967,11 +4967,11 @@
                 background: white;
                 transition: background 0.2s ease;
             }
-            
+
             .dropdown > a:active {
                 background: var(--light-gray);
             }
-            
+
             .nav-links > a {
                 display: block;
                 padding: 16px 12px;
@@ -4982,12 +4982,12 @@
                 color: var(--deep-navy);
                 transition: all 0.2s ease;
             }
-            
+
             .nav-links > a:active {
                 background: var(--light-gray);
                 transform: translateX(4px);
             }
-            
+
             /* Side panel within mobile menu */
             .dropdown-content {
                 position: static;
@@ -5001,33 +5001,33 @@
                 overflow: visible;
                 border: 1px solid var(--border);
             }
-            
+
             .dropdown-content.active {
                 right: auto;
             }
-            
+
             .panel-header {
                 padding: 16px 16px 12px;
                 margin-bottom: 0;
                 background: white;
                 border-radius: 12px 12px 0 0;
             }
-            
+
             .panel-title {
                 font-size: 1.1rem;
             }
-            
+
             .panel-close {
                 display: none;
             }
-            
+
             .mega-menu-grid {
                 display: flex;
                 flex-direction: column;
                 gap: 8px;
                 padding: 12px;
             }
-            
+
             .mega-menu-item {
                 padding: 14px;
                 border-radius: 8px;
@@ -5036,31 +5036,31 @@
                 border: 1px solid rgba(15, 23, 42, 0.08);
                 transition: all 0.2s ease;
             }
-            
+
             .mega-menu-item:active {
                 transform: scale(0.98);
                 box-shadow: 0 2px 8px rgba(255, 163, 102, 0.15);
             }
-            
+
             .mega-menu-title {
                 font-size: 0.95rem;
                 margin-bottom: 4px;
             }
-            
+
             .mega-menu-desc {
                 font-size: 0.85rem;
                 line-height: 1.4;
             }
-            
+
             .side-panel-overlay {
                 display: none !important;
             }
-            
-            .contact-dropdown { 
+
+            .contact-dropdown {
                 width: 100%;
                 display: block;
             }
-            
+
             .btn-main {
                 width: 100%;
                 text-align: center;
@@ -5073,12 +5073,12 @@
                 border-radius: 8px;
                 margin: 8px 0;
             }
-            
+
             .btn-main:active {
                 transform: scale(0.98);
             }
-            
-            .contact-menu { 
+
+            .contact-menu {
                 position: static;
                 opacity: 1;
                 visibility: visible;
@@ -5091,25 +5091,25 @@
                 overflow: hidden;
             }
             .contact-menu::before { display: none; }
-            
+
             .contact-menu-header {
                 background: white;
                 padding: 14px 16px;
             }
-            
+
             .contact-menu-title {
                 font-size: 0.95rem;
             }
-            
+
             .contact-menu-subtitle {
                 font-size: 0.8rem;
             }
-            
+
             .contact-options {
                 padding: 8px;
                 background: linear-gradient(135deg, #f8fafc, #f1f5f9);
             }
-            
+
             .contact-option {
                 padding: 14px 12px;
                 border-radius: 8px;
@@ -5117,134 +5117,134 @@
                 background: white;
                 border: 1px solid rgba(15, 23, 42, 0.05);
             }
-            
+
             .contact-option:active {
                 transform: scale(0.98);
             }
-            
+
             .contact-option.primary {
                 border: 1px solid var(--primary-orange);
             }
-            
+
             .mobile-overlay {
                 z-index: 998;
             }
         }
-        
+
         /* Mobile Medium - 640px */
         @media (max-width: 640px) {
             nav { padding: 14px 16px; }
             .logo img { width: 42px; height: 42px; }
             .logo-text { font-size: 1.05rem; }
-            
-            .hero { 
+
+            .hero {
                 padding: 100px 20px 50px;
                 gap: 24px;
             }
-            .hero h1 { 
+            .hero h1 {
                 font-size: 2rem;
                 line-height: 1.15;
             }
-            .hero p { 
+            .hero p {
                 font-size: 1rem;
                 line-height: 1.6;
             }
-            
+
             section { padding: 50px 20px; }
             .services-header h2 { font-size: 1.8rem; }
-            
+
             .card {
                 padding: 0;
             }
-            
+
             .card h3 {
                 font-size: 1.2rem;
             }
-            
+
             .card p {
                 font-size: 0.9rem;
             }
-            
+
             .read-more {
                 font-size: 0.9rem;
                 padding: 10px 0;
             }
-            
+
             .btn {
                 padding: 14px 28px;
                 font-size: 0.95rem;
             }
-            
+
             .contact-menu { min-width: 100%; }
-            
+
             .objectives h2 {
                 font-size: 1.8rem;
             }
-            
+
             .location-content h2 {
                 font-size: 1.8rem;
             }
         }
-        
+
         /* Mobile Small - 480px */
         @media (max-width: 480px) {
             nav { padding: 12px 16px; }
             .logo img { width: 38px; height: 38px; }
             .logo-text { font-size: 0.95rem; }
-            
+
             .hero { padding: 90px 16px 40px; }
-            .hero h1 { 
-                font-size: 1.75rem; 
+            .hero h1 {
+                font-size: 1.75rem;
                 line-height: 1.2;
                 margin-bottom: 16px;
             }
-            .hero p { 
+            .hero p {
                 font-size: 0.95rem;
                 line-height: 1.55;
             }
-            
+
             .badge {
                 font-size: 0.7rem;
                 padding: 6px 12px;
             }
-            
+
             section { padding: 40px 16px; }
-            
-            .services-header h2 { 
+
+            .services-header h2 {
                 font-size: 1.6rem;
                 margin-bottom: 12px;
             }
-            
+
             .services-header p {
                 font-size: 0.9rem;
             }
-            
+
             .card {
                 padding: 0;
             }
-            
+
             .card-img {
                 height: 160px;
             }
-            
+
             .card h3 {
                 font-size: 1.1rem;
             }
-            
+
             .card p {
                 font-size: 0.85rem;
                 line-height: 1.5;
             }
-            
-            .btn { 
-                padding: 12px 24px; 
+
+            .btn {
+                padding: 12px 24px;
                 font-size: 0.9rem;
             }
-            
+
             .objectives h2 {
                 font-size: 1.6rem;
             }
-            
+
             .objectives p {
                 font-size: 0.9rem;
             }
@@ -5300,15 +5300,15 @@
                 grid-template-columns: 1fr;
                 gap: 0;
             }
-             
+
             .location-content h2 {
                 font-size: 1.6rem;
             }
-            
+
             .map-container {
                 height: 250px;
             }
-            
+
             .nav-links {
                 width: 90%;
                 max-width: 100%;
@@ -5318,6 +5318,7 @@
     </style>
 
 
+    <link rel="stylesheet" href="/site-polish.css?v=20260909" data-tds-production-polish>
 </head>
 <body>
 
@@ -5330,19 +5331,19 @@
     </div>
 
     <div class="mobile-overlay" id="mobileOverlay"></div>
-    
+
     <nav>
         <a href="index.html" class="logo" style="text-decoration: none; cursor: pointer;">
-    <img src="images/rebuild/logo.png" alt="TeledoctorSA Logo">
+    <img src="images/rebuild/logo.png" alt="TeleDoctorSA Logo">
     <span class="logo-text">Teledoctor<span>SA</span></span>
 </a>
-        
+
         <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
             <span></span>
             <span></span>
             <span></span>
         </button>
-        
+
         <div class="nav-links" id="navLinks">
             <div class="dropdown">
                 <a href="#" role="button" id="openPanelBtn">
@@ -5367,7 +5368,7 @@
                                 <div class="mega-menu-desc">Secure digital store of patient medical information with encrypted access from any device</div>
                             </div>
                         </a>
-                        <a href="teledoctorsa-app.html" class="mega-menu-item">
+                        <a href="/app" class="mega-menu-item">
                             <div class="mega-menu-icon">
                                 <i data-lucide="smartphone"></i>
                             </div>
@@ -5453,7 +5454,7 @@
                 <div class="core-slider-actions">
                     <a class="core-slide-cta" href="virtual-consultations.html">Book Online Consultation <i data-lucide="calendar" style="width: 14px; height: 14px;"></i></a>
                     <a class="core-slider-secondary" href="ecg247.html">Start ECG Monitoring <i data-lucide="heart-pulse" style="width: 14px; height: 14px;"></i></a>
-                    <a class="core-slider-secondary" href="teledoctorsa-app.html">Follow App Access <i data-lucide="smartphone" style="width: 14px; height: 14px;"></i></a>
+                    <a class="core-slider-secondary" href="/app">Follow App Access <i data-lucide="smartphone" style="width: 14px; height: 14px;"></i></a>
                     <a class="core-slider-secondary" href="contact-us.html">Contact Support <i data-lucide="phone-call" style="width: 14px; height: 14px;"></i></a>
                 </div>
                 <div class="core-proof-strip" aria-label="Key trust signals">
@@ -5554,7 +5555,7 @@
                         <span>Patient Messaging</span>
                         <span>Reading Uploads</span>
                     </div>
-                    <a class="core-slide-cta" href="teledoctorsa-app.html">Follow App Access <i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i></a>
+                    <a class="core-slide-cta" href="/app">Follow App Access <i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i></a>
                 </div>
                 <div class="core-slide-visual">
                     <img src="images/rebuild/logo.png" alt="TeleDoctorSA app and platform experience">
@@ -5685,7 +5686,7 @@
             <h2>Choose Your Care Path</h2>
             <p style="max-width: 800px; margin: 16px auto 0; color: var(--slate-gray); font-size: 1.1rem;">Pick the route that matches your need today. Each path explains the service, who it helps, and the next step to take.</p>
         </div>
-        
+
         <div class="services-grid">
             <!-- Service 1: Electronic Health Records (EHR) -->
             <div class="card" data-aos="fade-up" data-aos-delay="100">
@@ -5693,23 +5694,23 @@
                     <svg width="200" height="220" viewBox="0 0 200 200" style="position: relative; z-index: 2;">
                         <!-- Tablet/Device -->
                         <rect x="40" y="25" width="120" height="150" rx="8" fill="#1e293b" stroke="#FFA366" stroke-width="2.5"/>
-                        
+
                         <!-- Screen -->
                         <rect x="48" y="33" width="104" height="134" rx="4" fill="#f8f9fa"/>
-                        
+
                         <!-- Header Bar -->
                         <rect x="48" y="33" width="104" height="20" rx="4" fill="#FFA366"/>
                         <text x="55" y="46" font-family="Arial" font-size="8" fill="white" font-weight="bold">PATIENT RECORDS</text>
-                        
+
                         <!-- Medical Cross Icon -->
                         <rect x="135" y="37" width="2" height="10" fill="white"/>
                         <rect x="130" y="41" width="12" height="2" fill="white"/>
-                        
+
                         <!-- Patient Info Section -->
                         <rect x="55" y="60" width="40" height="40" rx="4" fill="#E8EDF3"/>
                         <circle cx="75" cy="75" r="8" fill="#64748B"/>
                         <rect x="67" y="83" width="16" height="12" rx="2" fill="#64748B"/>
-                        
+
                         <!-- Patient Data Fields -->
                         <g opacity="0.8">
                             <rect x="100" y="62" width="38" height="4" rx="2" fill="#64748B"/>
@@ -5717,7 +5718,7 @@
                             <rect x="100" y="78" width="36" height="4" rx="2" fill="#64748B"/>
                             <rect x="100" y="86" width="30" height="4" rx="2" fill="#64748B"/>
                         </g>
-                        
+
                         <!-- Medical Records List -->
                         <g opacity="0.7">
                             <!-- Record 1 -->
@@ -5725,20 +5726,20 @@
                             <circle cx="62" cy="115" r="3" fill="#10B981"/>
                             <rect x="70" y="112" width="50" height="2" rx="1" fill="#64748B"/>
                             <rect x="70" y="117" width="35" height="2" rx="1" fill="#64748B" opacity="0.5"/>
-                            
+
                             <!-- Record 2 -->
                             <rect x="55" y="126" width="90" height="14" rx="3" fill="#E8EDF3"/>
                             <circle cx="62" cy="133" r="3" fill="#FFA366"/>
                             <rect x="70" y="130" width="45" height="2" rx="1" fill="#64748B"/>
                             <rect x="70" y="135" width="30" height="2" rx="1" fill="#64748B" opacity="0.5"/>
-                            
+
                             <!-- Record 3 -->
                             <rect x="55" y="144" width="90" height="14" rx="3" fill="#E8EDF3"/>
                             <circle cx="62" cy="151" r="3" fill="#10B981"/>
                             <rect x="70" y="148" width="40" height="2" rx="1" fill="#64748B"/>
                             <rect x="70" y="153" width="38" height="2" rx="1" fill="#64748B" opacity="0.5"/>
                         </g>
-                        
+
                         <!-- Security Badge -->
                         <g transform="translate(130, 145)">
                             <circle cx="10" cy="10" r="12.5" fill="#10B981"/>
@@ -5747,14 +5748,14 @@
                             <!-- Checkmark -->
                             <polyline points="8,11 10,13 13,9" stroke="#10B981" stroke-width="1.5" fill="none" stroke-linecap="round"/>
                         </g>
-                        
+
                         <!-- Sync/Cloud Icons -->
                         <g opacity="0.6">
                             <path d="M 60 183 Q 55 178 60 173 Q 65 173 67 178 Q 72 173 77 178 Q 77 183 72 183 Z" fill="#FFA366"/>
                             <!-- Upload Arrow -->
                             <polygon points="68,175 68,180 66,180 66,175 64,177 68,172 72,177 70,175" fill="white" opacity="0.8"/>
                         </g>
-                        
+
                         <!-- Data Encryption Lines -->
                         <g opacity="0.4">
                             <line x1="25" y1="100" x2="35" y2="100" stroke="#10B981" stroke-width="1">
@@ -5784,28 +5785,28 @@
                     <svg width="200" height="220" viewBox="0 0 200 200" style="position: relative; z-index: 2;">
                         <!-- Smartphone Device -->
                         <rect x="55" y="20" width="90" height="165" rx="10" fill="#1e293b" stroke="#FFA366" stroke-width="2.5"/>
-                        
+
                         <!-- Screen -->
                         <rect x="62" y="32" width="76" height="141" rx="4" fill="#0a0f1a"/>
-                        
+
                         <!-- Status Bar -->
                         <g opacity="0.6">
                             <text x="68" y="42" font-family="Arial" font-size="6" fill="white">9:41</text>
                             <rect x="120" y="37" width="10" height="4" rx="1" fill="#10B981"/>
                             <text x="110" y="42" font-family="Arial" font-size="6" fill="white">100%</text>
                         </g>
-                        
+
                         <!-- App Header -->
                         <rect x="62" y="47" width="76" height="18" fill="#FFA366"/>
                         <text x="74" y="58" font-family="Arial" font-size="8" fill="white" font-weight="bold">TeleDoctorSA</text>
-                        
+
                         <!-- Menu Icon -->
                         <g transform="translate(68, 52)">
                             <rect width="8" height="1.5" fill="white" rx="0.5"/>
                             <rect y="3" width="8" height="1.5" fill="white" rx="0.5"/>
                             <rect y="6" width="8" height="1.5" fill="white" rx="0.5"/>
                         </g>
-                        
+
                         <!-- Health Vitals Dashboard -->
                         <g opacity="0.9">
                             <!-- BP Card -->
@@ -5813,50 +5814,50 @@
                             <text x="72" y="82" font-family="Arial" font-size="6" fill="#64748B" font-weight="bold">BP</text>
                             <text x="70" y="92" font-family="Arial" font-size="9" fill="#FFA366" font-weight="bold">120/80</text>
                             <circle cx="91" cy="79" r="3" fill="#10B981"/>
-                            
+
                             <!-- Glucose Card -->
                             <rect x="104" y="72" width="30" height="28" rx="3" fill="#E8EDF3"/>
                             <text x="107" y="82" font-family="Arial" font-size="6" fill="#64748B" font-weight="bold">Glucose</text>
                             <text x="109" y="92" font-family="Arial" font-size="9" fill="#FFA366" font-weight="bold">5.2</text>
                             <circle cx="127" cy="79" r="3" fill="#10B981"/>
-                            
+
                             <!-- SpO2 Card -->
                             <rect x="68" y="106" width="30" height="28" rx="3" fill="#E8EDF3"/>
                             <text x="72" y="116" font-family="Arial" font-size="6" fill="#64748B" font-weight="bold">SpO2</text>
                             <text x="73" y="126" font-family="Arial" font-size="9" fill="#FFA366" font-weight="bold">98%</text>
                             <circle cx="91" cy="113" r="3" fill="#10B981"/>
-                            
+
                             <!-- Heart Rate Card -->
                             <rect x="104" y="106" width="30" height="28" rx="3" fill="#E8EDF3"/>
                             <text x="110" y="116" font-family="Arial" font-size="6" fill="#64748B" font-weight="bold">HR</text>
                             <text x="109" y="126" font-family="Arial" font-size="9" fill="#FFA366" font-weight="bold">72</text>
                             <circle cx="127" cy="113" r="3" fill="#10B981"/>
                         </g>
-                        
+
                         <!-- Sync Status -->
                         <rect x="68" y="141" width="64" height="22" rx="3" fill="#E8EDF3"/>
                         <circle cx="78" cy="152" r="5" fill="#10B981" class="svg-pulse"/>
                         <text x="87" y="150" font-family="Arial" font-size="6" fill="#64748B">Syncing Data...</text>
                         <text x="87" y="157" font-family="Arial" font-size="5" fill="#64748B" opacity="0.6">Last sync: 2 min ago</text>
-                        
+
                         <!-- Device Icons -->
                         <g transform="translate(70, 168)" opacity="0.7">
                             <!-- BP Monitor Icon -->
                             <rect x="0" y="0" width="8" height="6" rx="1" fill="#FFA366"/>
                             <circle cx="4" cy="3" r="1.5" fill="white"/>
-                            
+
                             <!-- Glucose Meter -->
                             <rect x="12" y="0" width="6" height="8" rx="1" fill="#FFA366"/>
                             <rect x="13" y="5" width="4" height="2" fill="white"/>
-                            
+
                             <!-- Oximeter -->
                             <rect x="22" y="1" width="8" height="6" rx="1" fill="#FFA366"/>
                             <rect x="24" y="3" width="4" height="2" fill="white"/>
                         </g>
-                        
+
                         <!-- Home Button -->
                         <circle cx="100" cy="177" r="4" fill="#64748B" opacity="0.5"/>
-                        
+
                         <!-- Notification Badge -->
                         <circle cx="130" cy="30" r="6" fill="#FF4444"/>
                         <text x="127" y="33" font-family="Arial" font-size="7" fill="white" font-weight="bold">3</text>
@@ -5868,7 +5869,7 @@
                     <h3>TeleDoctorSA App</h3>
                     <p>App rollout is in progress for patient messaging, appointment support, and future device-linked reading uploads. Register interest to hear when onboarding opens.</p>
                     <div class="card-actions">
-                        <a href="teledoctorsa-app.html" class="read-more">Follow App Access <i data-lucide="arrow-right" size="18"></i></a>
+                        <a href="/app" class="read-more">Follow App Access <i data-lucide="arrow-right" size="18"></i></a>
                         <a href="#contactModal" class="card-action-secondary" data-open-lead-modal data-service="app-access" data-intent="services-app" data-source="homepage-app-card">Join the interest list</a>
                     </div>
                 </div>
@@ -5880,10 +5881,10 @@
                     <svg width="200" height="220" viewBox="0 0 200 200" style="position: relative; z-index: 2;">
                         <!-- ECG Monitor Device -->
                         <rect x="25" y="30" width="150" height="140" rx="10" fill="#1e293b" stroke="#FFA366" stroke-width="2.5"/>
-                        
+
                         <!-- Screen -->
                         <rect x="35" y="40" width="130" height="85" rx="4" fill="#0a0f1a"/>
-                        
+
                         <!-- ECG Grid Lines -->
                         <g opacity="0.2">
                             <line x1="35" y1="55" x2="165" y2="55" stroke="#10B981" stroke-width="0.5"/>
@@ -5892,61 +5893,61 @@
                             <line x1="35" y1="100" x2="165" y2="100" stroke="#10B981" stroke-width="0.5"/>
                             <line x1="35" y1="115" x2="165" y2="115" stroke="#10B981" stroke-width="0.5"/>
                         </g>
-                        
+
                         <!-- Animated ECG Waveform -->
-                        <polyline points="35,85 50,85 55,70 60,100 65,85 80,85 85,75 90,95 95,85 110,85 115,65 120,105 125,85 165,85" 
+                        <polyline points="35,85 50,85 55,70 60,100 65,85 80,85 85,75 90,95 95,85 110,85 115,65 120,105 125,85 165,85"
                                   stroke="#10B981" stroke-width="2.5" fill="none" filter="url(#glow)"/>
-                        
+
                         <!-- Heart Rate Display -->
                         <text x="45" y="52" font-family="monospace" font-size="10" fill="#FFA366" font-weight="bold">HR</text>
                         <text x="65" y="52" font-family="monospace" font-size="14" fill="#10B981" font-weight="bold" class="svg-heartbeat">
                             72
                         </text>
                         <text x="85" y="52" font-family="monospace" font-size="8" fill="#64748B">bpm</text>
-                        
+
                         <!-- 24/7 Badge -->
                         <g transform="translate(110, 43)">
                             <rect x="0" y="0" width="48" height="14" rx="7" fill="#FFA366"/>
                             <text x="24" y="10" font-family="Arial" font-size="8" fill="white" font-weight="bold" text-anchor="middle">24/7</text>
                         </g>
-                        
+
                         <!-- Control Panel -->
                         <rect x="40" y="133" width="120" height="28" rx="4" fill="#0a0f1a"/>
-                        
+
                         <!-- Buttons -->
                         <circle cx="55" cy="147" r="6" class="svg-button-glow"/>
                         <circle cx="75" cy="147" r="6" fill="#64748B"/>
                         <circle cx="95" cy="147" r="6" fill="#64748B"/>
-                        
+
                         <!-- Status Indicators -->
                         <circle cx="125" cy="142" r="2.5" fill="#10B981" class="svg-power-blink"/>
                         <circle cx="135" cy="142" r="2.5" fill="#FFA366"/>
                         <circle cx="145" cy="142" r="2.5" fill="#64748B"/>
-                        
+
                         <text x="118" y="156" font-family="Arial" font-size="6" fill="#64748B">PWR</text>
                         <text x="128" y="156" font-family="Arial" font-size="6" fill="#64748B">REC</text>
                         <text x="138" y="156" font-family="Arial" font-size="6" fill="#64748B">ALM</text>
-                        
+
                         <!-- Wireless Signal -->
                         <g opacity="0.7">
                             <path d="M 170 45 Q 175 40 180 45" stroke="#10B981" stroke-width="1.5" fill="none" class="svg-wireless-1"/>
                             <path d="M 167 50 Q 175 42 183 50" stroke="#10B981" stroke-width="1.5" fill="none" class="svg-wireless-2"/>
                             <path d="M 164 55 Q 175 44 186 55" stroke="#10B981" stroke-width="1.5" fill="none" class="svg-wireless-3"/>
                         </g>
-                        
+
                         <!-- Cloud Upload Icon -->
                         <g transform="translate(45, 165)" opacity="0.6">
                             <path d="M 5 5 Q 2 2 5 -1 Q 8 -1 9 2 Q 13 -1 17 2 Q 17 5 14 5 Z" fill="#FFA366"/>
                             <polygon points="11,2 11,6 9,6 9,2 7,4 11,-1 15,4 13,2" fill="white" opacity="0.9"/>
                         </g>
-                        
+
                         <!-- Certification Badge -->
                         <g transform="translate(135, 165)">
                             <circle cx="10" cy="5" r="9" fill="#10B981"/>
                             <text x="10" y="8" font-family="Arial" font-size="6" fill="white" font-weight="bold" text-anchor="middle">?</text>
                             <text x="10" y="14" font-family="Arial" font-size="4" fill="white" text-anchor="middle">CERT</text>
                         </g>
-                        
+
                         <!-- Glow Filter -->
                         <defs>
                             <filter id="glow">
@@ -5978,55 +5979,55 @@
                         <!-- Video Screen -->
                         <rect x="30" y="40" width="140" height="100" rx="8" fill="#1e293b" stroke="#FFA366" stroke-width="2"/>
                         <rect x="35" y="45" width="130" height="90" rx="4" fill="#0F172A"/>
-                        
+
                         <!-- Doctor in Screen -->
                         <circle cx="100" cy="75" r="18" fill="#FFA366" class="svg-pulse"/>
                         <rect x="82" y="93" width="36" height="35" rx="4" fill="#FFA366" opacity="0.8"/>
-                        
+
                         <!-- Stethoscope Detail -->
                         <circle cx="120" cy="70" r="4" fill="white" opacity="0.9"/>
                         <path d="M 120 74 Q 125 80 130 85" stroke="white" stroke-width="2" fill="none" opacity="0.8"/>
-                        
+
                         <!-- Medical Cross -->
                         <rect x="138" y="62" width="3" height="12" fill="white" opacity="0.7"/>
                         <rect x="133" y="67" width="13" height="3" fill="white" opacity="0.7"/>
-                        
+
                         <!-- Video Call Indicators -->
                         <circle cx="50" cy="55" r="3" fill="#10B981" class="svg-blink"/>
                         <text x="58" y="58" font-family="Arial" font-size="8" fill="white" opacity="0.8">LIVE</text>
-                        
+
                         <!-- Connection Signal -->
                         <g opacity="0.7">
                             <rect x="140" y="123" width="3" height="10" fill="#FFA366"/>
                             <rect x="145" y="120" width="3" height="13" fill="#FFA366"/>
                             <rect x="150" y="117" width="3" height="16" fill="#FFA366"/>
                         </g>
-                        
+
                         <!-- Monitor Base -->
                         <rect x="85" y="145" width="30" height="4" rx="2" fill="#64748B"/>
                         <rect x="95" y="140" width="10" height="5" fill="#64748B"/>
-                        
+
                         <!-- Phone Icon (for telephone consultation option) -->
                         <g transform="translate(15, 90)" opacity="0.5">
                             <rect x="0" y="0" width="12" height="20" rx="2" fill="#FFA366"/>
                             <rect x="2" y="2" width="8" height="14" rx="1" fill="#0F172A"/>
                             <rect x="4" y="17" width="4" height="1.5" rx="0.5" fill="#0F172A"/>
                         </g>
-                        
+
                         <!-- Video Camera Icon -->
                         <g transform="translate(173, 90)" opacity="0.5">
                             <rect x="0" y="2" width="10" height="8" rx="1" fill="#FFA366"/>
                             <polygon points="10,4 14,2 14,10 10,8" fill="#FFA366"/>
                             <circle cx="5" cy="6" r="2" fill="#0F172A"/>
                         </g>
-                        
+
                         <!-- Data Transmission Lines -->
                         <line x1="15" y1="100" x2="25" y2="100" stroke="#FFA366" stroke-width="1.5" class="svg-fade-1"/>
                         <line x1="175" y1="100" x2="185" y2="100" stroke="#FFA366" stroke-width="1.5" class="svg-fade-2"/>
-                        
+
                         <!-- Heartbeat Monitor Line -->
                         <polyline points="40,165 60,165 65,155 70,175 75,165 160,165" stroke="#10B981" stroke-width="2" fill="none" opacity="0.6"/>
-                        
+
                         <!-- Appointment Calendar Icon -->
                         <g transform="translate(45, 150)" opacity="0.6">
                             <rect x="0" y="2" width="16" height="14" rx="1" fill="#E8EDF3"/>
@@ -6035,7 +6036,7 @@
                             <rect x="12" y="-1" width="2" height="3" fill="#64748B"/>
                             <text x="8" y="12" font-family="Arial" font-size="6" fill="#64748B" text-anchor="middle">24</text>
                         </g>
-                        
+
                         <!-- Secure Connection Badge -->
                         <g transform="translate(140, 150)">
                             <circle cx="8" cy="8" r="10" fill="#10B981" opacity="0.8"/>
@@ -6080,32 +6081,6 @@
             </div>
         </div>
     </section>
-
-    <section class="tech-showcase">
-        <!-- Animated Background Elements -->
-        <div class="tech-hex-pattern"></div>
-        
-        <div class="tech-particles">
-            <div class="tech-particle"></div>
-            <div class="tech-particle"></div>
-            <div class="tech-particle"></div>
-            <div class="tech-particle"></div>
-            <div class="tech-particle"></div>
-        </div>
-        
-        <div class="tech-connection-lines">
-            <div class="tech-line tech-line-1"></div>
-            <div class="tech-line tech-line-2"></div>
-        </div>
-        
-        <div class="tech-showcase-decorator">
-            <div class="tech-decorator-shape tech-decorator-shape-1"></div>
-            <div class="tech-decorator-shape tech-decorator-shape-2"></div>
-            <div class="tech-decorator-shape tech-decorator-shape-3"></div>
-            <div class="tech-sparkle tech-sparkle-1"></div>
-            <div class="tech-sparkle tech-sparkle-2"></div>
-            <div class="tech-sparkle tech-sparkle-3"></div>
-        </div>
 
     <section class="shop-discovery">
         <div class="shop-discovery-inner" data-aos="fade-up">
@@ -6210,7 +6185,7 @@
             <div class="location-content" data-aos="fade-right">
                 <h2>Visit Us <span>In Person</span></h2>
                 <p class="location-subtitle">Experience healthcare redefined. Our modern facility is equipped with the latest technology to serve you better.</p>
-                
+
                 <div class="contact-cards">
                     <div class="contact-card" data-aos="fade-up" data-aos-delay="100">
                         <div class="contact-card-header">
@@ -6329,7 +6304,7 @@
                     <div class="site-footer-list">
                         <a href="virtual-consultations.html">Online doctor consultations</a>
                         <a href="ecg247.html">ECG247 heart monitoring</a>
-                        <a href="teledoctorsa-app.html">TeleDoctorSA app rollout</a>
+                        <a href="/app">TeleDoctorSA app rollout</a>
                         <a href="ehr.html">Electronic health records</a>
                     </div>
                 </div>
@@ -6367,32 +6342,32 @@
     <div id="virtualModal" class="modal service-modal">
         <div class="modal-content">
             <span class="modal-close">&times;</span>
-            <h3>About TeledoctorSA</h3>
-            
+            <h3>About TeleDoctorSA</h3>
+
             <p style="font-size: 1.1rem; font-weight: 600; color: var(--deep-navy); margin-bottom: 16px;">
                 Get to know our founding platform, built through caring for our lovely patients over 11 years at Dr. Mukudu & Partners.
             </p>
-            
+
             <p style="margin-bottom: 20px;">
                 Click the Dr Mukudu and Partners link below to learn more about our community.
             </p>
-            
+
             <a href="https://drmukudu.co.za/" target="_blank" class="link-btn" style="margin-bottom: 24px; display: inline-block;">Dr Mukudu and Partners</a>
-            
+
             <h4 style="color: var(--primary-orange); font-size: 1.3rem; margin-top: 32px; margin-bottom: 16px;">Personal Growth Translates To Professional Growth</h4>
-            
+
             <p style="margin-bottom: 20px;">
                 Our team is made up of individuals with different and diverse backgrounds, merging the fields of Medicine, Statistics, Mathematics and Economics. Such self-motivated individuals embrace the challenge and gift of technological advancements. This dynamic group of individuals is also family oriented so we incorporate all-round wellness within our working environment and that translates to the service we provide.
             </p>
-            
+
             <h4 style="color: var(--primary-orange); font-size: 1.3rem; margin-top: 32px; margin-bottom: 16px;">Our Team's Support Structure Is What Sets Us Apart</h4>
-            
+
             <p style="margin-bottom: 20px;">
                 We have utilized technology to enable remote work, allowing our team to spend quality time with their loved ones. No one is an island: we all thrive on connection and companionship. Additionally, we incorporate learnerships that keep us updated on the latest in healthcare services.
             </p>
-            
+
             <div style="text-align: center; margin-top: 32px; padding: 24px; background: linear-gradient(135deg, var(--orange-subtle), var(--orange-lightest)); border-radius: 8px;">
-                <p style="font-size: 1.2rem; font-weight: 700; color: var(--deep-navy); margin-bottom: 8px;">TeledoctorSA</p>
+                <p style="font-size: 1.2rem; font-weight: 700; color: var(--deep-navy); margin-bottom: 8px;">TeleDoctorSA</p>
                 <p style="font-style: italic; color: var(--slate-gray);">Your Health, Our Technology</p>
                 <a href="https://wa.me/27780336394?text=Hi%20TeleDoctorSA%2C%20please%20may%20you%20contact%20me%3F%20Thanks." target="_blank" rel="noopener noreferrer" class="link-btn" style="margin-top: 16px; display: inline-block;">WhatsApp Us</a>
             </div>
@@ -6403,7 +6378,7 @@
         <div class="modal-content">
             <span class="modal-close">&times;</span>
             <h3>Our Services</h3>
-            
+
             <div style="text-align: center; margin-bottom: 30px;">
                 <a href="https://wa.me/27780336394?text=Hi%20TeleDoctorSA%2C%20please%20may%20you%20contact%20me%3F%20Thanks." target="_blank" rel="noopener noreferrer" class="link-btn">WhatsApp Us</a>
             </div>
@@ -6441,7 +6416,7 @@
                 <p style="color: var(--orange-light); font-weight: 600; text-align: center; margin-bottom: 20px; font-size: 1.05rem;">
                     SCREENING FOR ATRIAL FIBRILLATION IS RECOMMENDED FOR INDIVIDUALS WITH:
                 </p>
-                
+
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 24px;">
                     <div style="background: rgba(255, 163, 102, 0.1); padding: 12px; border-radius: 4px; border: 1px solid rgba(255, 163, 102, 0.3);">
                         <p style="color: white; font-weight: 600; margin: 0; text-align: center;">HYPERTENSION</p>
@@ -6600,7 +6575,7 @@
         <div class="modal-content" style="max-width: 900px;">
             <span class="modal-close">&times;</span>
             <h2 style="color: var(--deep-navy); margin-bottom: 30px; font-size: 2.2rem;">Legal Notice</h2>
-            
+
             <div style="line-height: 1.8; color: var(--slate-gray);">
                 <p style="margin-bottom: 24px; font-size: 1.05rem;">
                     We process personal data in accordance with the following legal and ethical principles:
@@ -6671,7 +6646,7 @@
                         5. Cross-Border Data Protection
                     </h3>
                     <p style="margin-bottom: 12px;">
-                        All personal data processed through TeledoctorSA or MedKulula's digital systems is stored on secure servers in South Africa.
+                        All personal data processed through TeleDoctorSA or MedKulula's digital systems is stored on secure servers in South Africa.
                     </p>
                     <p style="margin-bottom: 0;">
                         If limited cross-border transfer occurs (for example, during data backup or system support), it is conducted under conditions that ensure an equivalent level of protection as required by POPIA and GDPR.
@@ -6716,23 +6691,23 @@
         });
         // Initialize Icons
         lucide.createIcons();
-        
+
         // Premium navigation scroll effect
         let lastScroll = 0;
         const nav = document.querySelector('nav');
-        
+
         window.addEventListener('scroll', () => {
             const currentScroll = window.pageYOffset;
-            
+
             if (currentScroll > 100) {
                 nav.classList.add('scrolled');
             } else {
                 nav.classList.remove('scrolled');
             }
-            
+
             lastScroll = currentScroll;
         });
-        
+
         // Mobile menu functionality
         const hamburgerBtn = document.getElementById('hamburgerBtn');
         const navLinks = document.getElementById('navLinks');
@@ -6743,7 +6718,7 @@
             navLinks.classList.toggle('active');
             mobileOverlay.classList.toggle('active');
             document.body.style.overflow = navLinks.classList.contains('active') ? 'hidden' : '';
-            
+
             // Add premium haptic feedback for mobile
             if ('vibrate' in navigator && navLinks.classList.contains('active')) {
                 navigator.vibrate(10);
@@ -6761,7 +6736,7 @@
                 }
             });
         });
-        
+
         // Initialize Scroll Animations with premium settings
         AOS.init({
             duration: 1000,
@@ -6771,7 +6746,7 @@
             delay: 50,
             anchorPlacement: 'top-bottom'
         });
-        
+
         // Add stagger effect to cards
         document.querySelectorAll('.card').forEach((card, index) => {
             card.style.transitionDelay = `${index * 0.1}s`;
@@ -6793,7 +6768,7 @@
         const submitButton = contactForm ? contactForm.querySelector('.submit-btn') : null;
         const defaultModalTitle = modalTitle ? modalTitle.textContent : 'Start Your Care Journey';
         const defaultModalIntro = modalIntro ? modalIntro.textContent : '';
-        
+
         // Service modals
         const virtualModal = document.getElementById('virtualModal');
         const technologyModal = document.getElementById('technologyModal');
@@ -7161,7 +7136,7 @@
         window.addEventListener('scroll', () => {
             const scrolled = window.pageYOffset;
             const shapes = document.querySelectorAll('.shape');
-            
+
             shapes.forEach((shape, index) => {
                 const speed = 0.3 + (index * 0.1);
                 const yPos = -(scrolled * speed);
@@ -7191,7 +7166,7 @@
         window.addEventListener('scroll', () => {
             const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
             const nav = document.querySelector('nav');
-            
+
             if (scrollTop > lastScrollTop) {
                 // Scrolling down
                 nav.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.08)';
@@ -7199,7 +7174,7 @@
                 // Scrolling up
                 nav.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.04)';
             }
-            
+
             lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
         }, false);
 
@@ -7211,33 +7186,32 @@
                     <div style="line-height: 1.8;">
                         <h3 style="color: var(--deep-navy); margin: 24px 0 16px; font-size: 1.3rem;">Company Information</h3>
                         <p style="margin-bottom: 16px;">
-                            <strong>TeledoctorSA</strong> is a registered digital healthcare provider operating under the brand of Dr. Mukudu & Partners, 
+                            <strong>TeleDoctorSA</strong> is a registered digital healthcare provider operating under the brand of Dr. Mukudu & Partners,
                             a private medical practice registered in South Africa.
                         </p>
                         <p style="margin-bottom: 16px;">
-                            <strong>Practice Number:</strong> [Insert Practice Number]<br>
-                            <strong>Registration:</strong> Health Professions Council of South Africa (HPCSA)<br>
-                            <strong>Address:</strong> [Insert Physical Address]<br>
+<strong>Registration:</strong> Health Professions Council of South Africa (HPCSA)<br>
+                            <strong>Address:</strong> 29 Landor Street, Tulisa Park, Johannesburg, 2197<br>
                             <strong>Email:</strong> info@teledoctorsa.co.za<br>
-                            <strong>Phone:</strong> [Insert Contact Number]
+                            <strong>Phone:</strong> +27 78 033 6394
                         </p>
 
                         <h3 style="color: var(--deep-navy); margin: 24px 0 16px; font-size: 1.3rem;">Healthcare Services</h3>
                         <p style="margin-bottom: 16px;">
-                            All medical services provided through TeledoctorSA are subject to South African healthcare regulations, 
+                            All medical services provided through TeleDoctorSA are subject to South African healthcare regulations,
                             including the National Health Act (Act No. 61 of 2003) and guidelines from the Health Professions Council of South Africa (HPCSA).
                         </p>
 
                         <h3 style="color: var(--deep-navy); margin: 24px 0 16px; font-size: 1.3rem;">Professional Liability</h3>
                         <p style="margin-bottom: 16px;">
-                            All healthcare practitioners providing services through TeledoctorSA are registered with the HPCSA and maintain 
-                            professional indemnity insurance. Medical advice provided is for informational purposes and does not replace 
+                            All healthcare practitioners providing services through TeleDoctorSA are registered with the HPCSA and maintain
+                            professional indemnity insurance. Medical advice provided is for informational purposes and does not replace
                             in-person consultations where clinically necessary.
                         </p>
 
                         <h3 style="color: var(--deep-navy); margin: 24px 0 16px; font-size: 1.3rem;">Intellectual Property</h3>
                         <p style="margin-bottom: 16px;">
-                            All content, logos, and trademarks on this website are the property of TeledoctorSA and Dr. Mukudu & Partners. 
+                            All content, logos, and trademarks on this website are the property of TeleDoctorSA and Dr. Mukudu & Partners.
                             Unauthorized use is prohibited.
                         </p>
                     </div>
@@ -7251,8 +7225,8 @@
 
                         <h3 style="color: var(--deep-navy); margin: 24px 0 16px; font-size: 1.3rem;">Introduction</h3>
                         <p style="margin-bottom: 16px;">
-                            TeledoctorSA is committed to protecting your privacy and personal information in accordance with the 
-                            <strong>Protection of Personal Information Act (POPIA), 2013 (Act No. 4 of 2013)</strong> and where applicable, 
+                            TeleDoctorSA is committed to protecting your privacy and personal information in accordance with the
+                            <strong>Protection of Personal Information Act (POPIA), 2013 (Act No. 4 of 2013)</strong> and where applicable,
                             the General Data Protection Regulation (GDPR).
                         </p>
 
@@ -7315,13 +7289,13 @@
 
                         <h3 style="color: var(--deep-navy); margin: 24px 0 16px; font-size: 1.3rem;">Acceptance of Terms</h3>
                         <p style="margin-bottom: 16px;">
-                            By using TeledoctorSA services, you agree to these Terms and Conditions. If you do not agree, 
+                            By using TeleDoctorSA services, you agree to these Terms and Conditions. If you do not agree,
                             please do not use our services.
                         </p>
 
                         <h3 style="color: var(--deep-navy); margin: 24px 0 16px; font-size: 1.3rem;">Service Description</h3>
                         <p style="margin-bottom: 16px;">
-                            TeledoctorSA provides virtual healthcare services including:
+                            TeleDoctorSA provides virtual healthcare services including:
                         </p>
                         <ul style="margin-left: 24px; margin-bottom: 16px;">
                             <li style="margin-bottom: 8px;">Virtual medical consultations via video or telephone</li>
@@ -7341,28 +7315,28 @@
 
                         <h3 style="color: var(--deep-navy); margin: 24px 0 16px; font-size: 1.3rem;">Limitations of Telemedicine</h3>
                         <p style="margin-bottom: 16px;">
-                            Telemedicine has limitations. Virtual consultations may not be suitable for all medical conditions. 
-                            In emergencies, please call 10177 or visit the nearest emergency room. Our practitioners will advise 
+                            Telemedicine has limitations. Virtual consultations may not be suitable for all medical conditions.
+                            In emergencies, please call 10177 or visit the nearest emergency room. Our practitioners will advise
                             when an in-person consultation is necessary.
                         </p>
 
                         <h3 style="color: var(--deep-navy); margin: 24px 0 16px; font-size: 1.3rem;">Payment Terms</h3>
                         <p style="margin-bottom: 16px;">
-                            Payment is required at the time of booking unless covered by a valid medical aid. We accept major 
-                            South African medical aids and credit/debit cards. Consultation fees are non-refundable unless 
+                            Payment is required at the time of booking unless covered by a valid medical aid. We accept major
+                            South African medical aids and credit/debit cards. Consultation fees are non-refundable unless
                             cancelled 24 hours in advance.
                         </p>
 
                         <h3 style="color: var(--deep-navy); margin: 24px 0 16px; font-size: 1.3rem;">Confidentiality</h3>
                         <p style="margin-bottom: 16px;">
-                            All consultations are confidential and comply with HPCSA ethical guidelines. Information may only 
+                            All consultations are confidential and comply with HPCSA ethical guidelines. Information may only
                             be shared with your consent or as required by law.
                         </p>
 
                         <h3 style="color: var(--deep-navy); margin: 24px 0 16px; font-size: 1.3rem;">Limitation of Liability</h3>
                         <p style="margin-bottom: 16px;">
-                            While we strive for excellence, TeledoctorSA and its practitioners are not liable for outcomes 
-                            resulting from patient non-compliance, technical failures beyond our control, or emergencies 
+                            While we strive for excellence, TeleDoctorSA and its practitioners are not liable for outcomes
+                            resulting from patient non-compliance, technical failures beyond our control, or emergencies
                             where telemedicine was inappropriate.
                         </p>
 
@@ -7395,31 +7369,31 @@
                         <h3 style="color: var(--deep-navy); margin: 24px 0 16px; font-size: 1.3rem;">How to Cancel</h3>
                         <ul style="margin-left: 24px; margin-bottom: 16px;">
                             <li style="margin-bottom: 8px;">Log into your patient portal and cancel the appointment</li>
-                            <li style="margin-bottom: 8px;">Call our office at [Insert Number]</li>
+                            <li style="margin-bottom: 8px;">Call our office at +27 78 033 6394</li>
                             <li style="margin-bottom: 8px;">Email us at appointments@teledoctorsa.co.za</li>
                         </ul>
 
                         <h3 style="color: var(--deep-navy); margin: 24px 0 16px; font-size: 1.3rem;">Emergency Cancellations</h3>
                         <p style="margin-bottom: 16px;">
-                            In cases of medical emergencies, hospitalization, or other unforeseen circumstances, we handle 
+                            In cases of medical emergencies, hospitalization, or other unforeseen circumstances, we handle
                             cancellations on a case-by-case basis. Please contact us as soon as possible.
                         </p>
 
                         <h3 style="color: var(--deep-navy); margin: 24px 0 16px; font-size: 1.3rem;">Refund Processing</h3>
                         <p style="margin-bottom: 16px;">
-                            Approved refunds are processed within 7-10 business days to the original payment method. 
+                            Approved refunds are processed within 7-10 business days to the original payment method.
                             Medical aid claims cannot be refunded once submitted.
                         </p>
 
                         <h3 style="color: var(--deep-navy); margin: 24px 0 16px; font-size: 1.3rem;">Practitioner-Initiated Cancellations</h3>
                         <p style="margin-bottom: 16px;">
-                            If a practitioner needs to cancel your appointment, you will receive a full refund and priority 
+                            If a practitioner needs to cancel your appointment, you will receive a full refund and priority
                             rescheduling at no additional cost.
                         </p>
 
                         <h3 style="color: var(--deep-navy); margin: 24px 0 16px; font-size: 1.3rem;">Technical Issues</h3>
                         <p style="margin-bottom: 16px;">
-                            If technical difficulties prevent your consultation from taking place, you will receive a full 
+                            If technical difficulties prevent your consultation from taking place, you will receive a full
                             refund or free rescheduling. We test our systems regularly to minimize disruptions.
                         </p>
                     </div>
@@ -7431,7 +7405,7 @@
                     <div style="line-height: 1.8;">
                         <h3 style="color: var(--deep-navy); margin: 24px 0 16px; font-size: 1.3rem;">Virtual Consultation Process</h3>
                         <p style="margin-bottom: 16px;">
-                            Our virtual consultations are delivered through a secure, HIPAA-compliant video platform. 
+                            Our virtual consultations are delivered through a secure, HIPAA-compliant video platform.
                             Here's what to expect:
                         </p>
 
@@ -7458,7 +7432,7 @@
 
                         <h3 style="color: var(--deep-navy); margin: 24px 0 16px; font-size: 1.3rem;">Medical Certificates & Documentation</h3>
                         <p style="margin-bottom: 16px;">
-                            Sick notes, medical certificates, and referral letters are provided electronically within 1 hour 
+                            Sick notes, medical certificates, and referral letters are provided electronically within 1 hour
                             of your consultation. Hard copies can be mailed upon request.
                         </p>
 
@@ -7484,7 +7458,7 @@
 
                         <h3 style="color: var(--deep-navy); margin: 24px 0 16px; font-size: 1.3rem;">Service Availability</h3>
                         <p style="margin-bottom: 16px;">
-                            Virtual consultations are available Monday to Friday, 8:00 AM - 6:00 PM. Weekend and after-hours 
+                            Virtual consultations are available Monday to Friday, 8:00 AM - 6:00 PM. Weekend and after-hours
                             consultations may be available for urgent cases at premium rates.
                         </p>
                     </div>
@@ -7496,7 +7470,7 @@
                     <div style="line-height: 1.8;">
                         <h3 style="color: var(--deep-navy); margin: 24px 0 16px; font-size: 1.3rem;">Governing Law</h3>
                         <p style="margin-bottom: 16px;">
-                            These Terms and Conditions, and all services provided by TeledoctorSA, are governed by the laws 
+                            These Terms and Conditions, and all services provided by TeleDoctorSA, are governed by the laws
                             of the <strong>Republic of South Africa</strong>, including but not limited to:
                         </p>
                         <ul style="margin-left: 24px; margin-bottom: 16px;">
@@ -7509,8 +7483,8 @@
 
                         <h3 style="color: var(--deep-navy); margin: 24px 0 16px; font-size: 1.3rem;">Jurisdiction</h3>
                         <p style="margin-bottom: 16px;">
-                            Any disputes arising from the use of TeledoctorSA services shall be subject to the exclusive 
-                            jurisdiction of the South African courts. By using our services, you consent to the jurisdiction 
+                            Any disputes arising from the use of TeleDoctorSA services shall be subject to the exclusive
+                            jurisdiction of the South African courts. By using our services, you consent to the jurisdiction
                             of these courts.
                         </p>
 
@@ -7527,7 +7501,7 @@
 
                         <h3 style="color: var(--deep-navy); margin: 24px 0 16px; font-size: 1.3rem;">Regulatory Compliance</h3>
                         <p style="margin-bottom: 16px;">
-                            TeledoctorSA operates under the oversight of:
+                            TeleDoctorSA operates under the oversight of:
                         </p>
                         <ul style="margin-left: 24px; margin-bottom: 16px;">
                             <li style="margin-bottom: 8px;"><strong>Health Professions Council of South Africa (HPCSA)</strong></li>
@@ -7541,19 +7515,19 @@
                         </p>
                         <ul style="margin-left: 24px; margin-bottom: 16px;">
                             <li style="margin-bottom: 8px;">Email: complaints@teledoctorsa.co.za</li>
-                            <li style="margin-bottom: 8px;">Written complaint: [Insert Physical Address]</li>
+                            <li style="margin-bottom: 8px;">Written complaint: 29 Landor Street, Tulisa Park, Johannesburg, 2197</li>
                             <li style="margin-bottom: 8px;">HPCSA complaint hotline: 012 338 9300</li>
                         </ul>
 
                         <h3 style="color: var(--deep-navy); margin: 24px 0 16px; font-size: 1.3rem;">Severability</h3>
                         <p style="margin-bottom: 16px;">
-                            If any provision of these terms is found to be unenforceable, the remaining provisions shall 
+                            If any provision of these terms is found to be unenforceable, the remaining provisions shall
                             continue in full force and effect.
                         </p>
 
                         <h3 style="color: var(--deep-navy); margin: 24px 0 16px; font-size: 1.3rem;">Amendments</h3>
                         <p style="margin-bottom: 16px;">
-                            We reserve the right to amend these terms at any time. Changes will be communicated via email 
+                            We reserve the right to amend these terms at any time. Changes will be communicated via email
                             and posted on our website. Continued use of our services constitutes acceptance of updated terms.
                         </p>
 
@@ -7571,7 +7545,7 @@
             const modal = document.getElementById('legalModal');
             const title = document.getElementById('legalModalTitle');
             const body = document.getElementById('legalModalBody');
-            
+
             if (legalContent[type]) {
                 title.innerText = legalContent[type].title;
                 body.innerHTML = legalContent[type].content;
@@ -7914,7 +7888,7 @@
         <span class="tds-sheet-desc">Secure digital patient records with encrypted access.</span>
       </span>
     </a>
-    <a class="tds-sheet-card" href="teledoctorsa-app.html">
+    <a class="tds-sheet-card" href="/app">
       <span class="tds-sheet-icon" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none"><rect x="6" y="3" width="12" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M10 17h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
       </span>
@@ -8386,9 +8360,9 @@ document.addEventListener('DOMContentLoaded', function() {
     <script src="scripts/support-chatbot.js"></script>
     <script src="scripts/rebuild-images.js"></script>
     <script src="scripts/home-core-slide-images.js"></script>
-    
-    
-    
+
+
+
 </body>
 </html>
 

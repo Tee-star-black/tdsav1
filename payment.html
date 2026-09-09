@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Secure Checkout - TeleDoctorSA</title>
-    <meta name="description" content="Secure checkout for TeledoctorSA medical devices. Multiple payment options including card, EFT, and WhatsApp. Fast shipping across South Africa.">
+    <meta name="description" content="Secure checkout for TeleDoctorSA medical devices. Multiple payment options including card, EFT, and WhatsApp. Fast shipping across South Africa.">
     <meta name="robots" content="noindex, nofollow">
     <link rel="canonical" href="https://teledoctorsa.co.za/payment">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -824,7 +824,7 @@
             .mega-menu-title { font-size: 1rem; }
             .mega-menu-desc { font-size: 0.85rem; }
         }
-    
+
         /* Layout container */
         .section-inner {
             max-width: 1200px;
@@ -883,13 +883,13 @@
 
         @media (max-width: 480px) {
             section > .section-inner { padding-left: 16px; padding-right: 16px; }
-        }`r`n    
-            
+        }`r`n
+
         @media (max-width: 900px) {
             .hamburger { display: flex !important; }
             .nav-links { display: none !important; }
             .nav-links.active { display: flex !important; }
-        }    
+        }
         /* Mobile nav transition smoothing */
         @media (max-width: 900px) {
             .nav-links {
@@ -1097,12 +1097,13 @@ footer.site-footer, .site-footer {
 }
 </style>
 <!-- TDS_DIRECT_PRODUCTION_LAYOUT_END -->
+    <link rel="stylesheet" href="/site-polish.css?v=20260909" data-tds-production-polish>
 </head>
 <body>
 <div class="header">
         <div class="header-content">
             <a href="index.html" class="logo">
-    <img src="images/TDSA-Logo.png" alt="TeledoctorSA Logo">
+    <img src="images/TDSA-Logo.png" alt="TeleDoctorSA Logo">
     <span class="logo-text">Teledoctor<span>SA</span></span>
 </a>
             <div class="security-badge">
@@ -1336,10 +1337,10 @@ footer.site-footer, .site-footer {
             method.addEventListener('click', function() {
                 paymentMethods.forEach(m => m.classList.remove('active'));
                 this.classList.add('active');
-                
+
                 const input = this.querySelector('input');
                 input.checked = true;
-                
+
                 if (input.value === 'card') {
                     cardDetails.classList.add('active');
                 } else {
@@ -1383,13 +1384,13 @@ footer.site-footer, .site-footer {
             const shipping = subtotal > 0 ? (subtotal > 1000 ? 0 : 150) : 0;
             const tax = (subtotal - discountAmount) * 0.15;
             const total = subtotal - discountAmount + shipping + tax;
-            
+
             return { subtotal, shipping, tax, total };
         }
 
         function updateTotals() {
             const { subtotal, shipping, tax, total } = calculateTotals();
-            
+
             document.getElementById('subtotal').textContent = `R ${subtotal.toLocaleString('en-ZA', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
             document.getElementById('shipping').textContent = shipping > 0 ? `R ${shipping.toLocaleString('en-ZA', {minimumFractionDigits: 2})}` : 'FREE';
             document.getElementById('discount').textContent = `-R ${discountAmount.toLocaleString('en-ZA', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
@@ -1399,7 +1400,7 @@ footer.site-footer, .site-footer {
 
         function loadOrderSummary() {
             const summaryItems = document.getElementById('summaryItems');
-            
+
             if (cart.length === 0) {
                 summaryItems.innerHTML = `
                     <div class="empty-cart">
@@ -1454,7 +1455,7 @@ footer.site-footer, .site-footer {
                 message += `Address: ${address}, ${city}, ${postalCode}\`r`n\`r`n`;
                 message += `*ORDER ITEMS*\`r`n`;
                 message += `━━━━━━━━━━━━━━━━\`r`n`;
-                
+
                 cart.forEach((item, index) => {
                     message += `${index + 1}. ${item.title}\`r`n`;
                     message += `   Qty: ${item.quantity} × R${item.price.toLocaleString('en-ZA')}\`r`n`;
@@ -1510,7 +1511,7 @@ footer.site-footer, .site-footer {
             }
         });
     </script>
-    
+
     </script>
     <script>
 // Shared navbar behavior (mobile menu + side panel)
@@ -1777,7 +1778,7 @@ footer.site-footer, .site-footer {
         <span class="tds-sheet-desc">Secure digital patient records with encrypted access.</span>
       </span>
     </a>
-    <a class="tds-sheet-card" href="app.html">
+    <a class="tds-sheet-card" href="/app">
       <span class="tds-sheet-icon" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none"><rect x="6" y="3" width="12" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M10 17h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
       </span>
@@ -1920,8 +1921,8 @@ footer.site-footer, .site-footer {
 })();
 </script>
 <!-- TDS_MOBILE_NAV_SCRIPT_END -->
-    
-    
+
+
 </body>
 </html>
 
