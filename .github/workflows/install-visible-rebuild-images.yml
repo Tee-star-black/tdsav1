@@ -21,7 +21,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Inject rebuild image script into primary pages
+      - name: Inject shared routing script into public pages
         shell: python
         run: |
           from pathlib import Path
@@ -30,13 +30,21 @@ jobs:
               'index.html',
               'about-us.html',
               'our-services.html',
+              'contact-us.html',
+              'telemedia-suite.html',
+              'teledoctorsa-app.html',
               'app.html',
               'ehr.html',
               'ecg247.html',
+              'virtual-consultations.html',
+              'shop.html',
               'doctors.html',
               'nurses.html',
               'patients.html',
-              'telemedia-suite.html',
+              'patients-portal.html',
+              'privacy-policy.html',
+              'legal-notice.html',
+              'returns-policy.html',
           ]
 
           tag = '<script src="scripts/rebuild-images.js"></script>'
@@ -74,5 +82,5 @@ jobs:
             exit 0
           fi
           git diff --cached --check
-          git commit -m "feat: surface rebuild images and publish live app CTA"
+          git commit -m "fix: enable shared navigation and routing across public pages"
           git push
