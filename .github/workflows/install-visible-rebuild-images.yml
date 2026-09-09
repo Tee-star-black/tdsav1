@@ -4,7 +4,10 @@ on:
   push:
     paths:
       - 'scripts/rebuild-images.js'
+      - 'scripts/site-ux-v4.js'
+      - 'scripts/homepage-slider.js'
       - 'scripts/update-app-live.py'
+      - 'styles/ux-v4.css'
       - '.github/workflows/install-visible-rebuild-images.yml'
   workflow_dispatch:
 
@@ -21,7 +24,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Inject shared routing script into public pages
+      - name: Inject shared routing and UX assets into public pages
         shell: python
         run: |
           from pathlib import Path
@@ -47,26 +50,44 @@ jobs:
               'returns-policy.html',
           ]
 
-          tag = '<script src="scripts/rebuild-images.js"></script>'
+          routing_tag = '<script src="scripts/rebuild-images.js"></script>'
+          ux_script_tag = '<script src="scripts/site-ux-v4.js"></script>'
+          ux_css_tag = '<link rel="stylesheet" href="/styles/ux-v4.css?v=20260909" data-tds-ux-v4>'
 
           for name in pages:
               path = Path(name)
               if not path.exists():
                   continue
               text = path.read_text(encoding='utf-8-sig')
-              if tag in text:
-                  continue
-              if '<script src="scripts/support-chatbot.js"></script>' in text:
-                  text = text.replace(
-                      '<script src="scripts/support-chatbot.js"></script>',
-                      '<script src="scripts/support-chatbot.js"></script>\n    ' + tag
-                  )
-              elif '</body>' in text:
-                  text = text.replace('</body>', '    ' + tag + '\n</body>', 1)
-              else:
-                  continue
+
+              if ux_css_tag not in text and '</head>' in text:
+                  text = text.replace('</head>', '    ' + ux_css_tag + '\n</head>', 1)
+
+              if routing_tag not in text:
+                  if '<script src="scripts/support-chatbot.js"></script>' in text:
+                      text = text.replace(
+                          '<script src="scripts/support-chatbot.js"></script>',
+                          '<script src="scripts/support-chatbot.js"></script>\n    ' + routing_tag
+                      )
+                  elif '</body>' in text:
+                      text = text.replace('</body>', '    ' + routing_tag + '\n</body>', 1)
+
+              if ux_script_tag not in text and '</body>' in text:
+                  text = text.replace('</body>', '    ' + ux_script_tag + '\n</body>', 1)
+
               path.write_text(text, encoding='utf-8')
               print('updated', name)
+
+          index = Path('index.html')
+          if index.exists():
+              text = index.read_text(encoding='utf-8')
+              text = text.replace(
+                  'Stay close to your care team as app onboarding opens.',
+                  'Open your patient app and stay connected to your care team.'
+              )
+              text = text.replace('App Rollout</span>', 'Patient App</span>')
+              text = text.replace('Rollout access is underway', 'Patient access is live')
+              index.write_text(text, encoding='utf-8')
 
       - name: Publish live TeleDoctorSA app CTA
         run: python scripts/update-app-live.py
@@ -82,5 +103,5 @@ jobs:
             exit 0
           fi
           git diff --cached --check
-          git commit -m "fix: enable shared navigation and routing across public pages"
+          git commit -m "fix: install sticky header and compact automatic carousel"
           git push
