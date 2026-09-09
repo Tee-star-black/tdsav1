@@ -85,6 +85,7 @@
   loadOnce('tds-rebuild-images-core-loader', '/scripts/rebuild-images-core.js');
   loadOnce('tds-home-mobile-polish-loader', '/scripts/home-mobile-polish.js');
   loadOnce('tds-cookie-notice-loader', '/scripts/cookie-notice.js');
+  loadOnce('tds-cookie-policy-mobile-loader', '/scripts/cookie-policy-mobile.js');
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', maintainGlobalUi);
