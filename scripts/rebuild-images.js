@@ -326,6 +326,95 @@
     });
   }
 
+  function currentRoute() {
+    var path = (window.location.pathname || '/').replace(/\/{2,}/g, '/');
+    if (cleanRoutes[path]) return cleanRoutes[path];
+    var last = path.split('/').pop() || 'index.html';
+    if (bareRoutes[last]) return bareRoutes[last];
+    return path.replace(/\/$/, '') || '/';
+  }
+
+  function installMobileDockV2() {
+    var nav = document.querySelector('.tds-mobile-nav');
+    var row = nav && nav.querySelector('.tds-mobile-nav__row');
+    if (!nav || !row) return;
+
+    row.innerHTML =
+      '<a class="tds-mnav-item" href="/" data-route="/" aria-label="Home">' +
+        '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>' +
+        '<span>Home</span>' +
+      '</a>' +
+      '<a class="tds-mnav-item" href="/our-services" data-route="/our-services" aria-label="Services">' +
+        '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 5h16v14H4zM8 5v14M4 10h16" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>' +
+        '<span>Services</span>' +
+      '</a>' +
+      '<a class="tds-mnav-item" href="/app" data-route="/app" aria-label="TeleDoctorSA App">' +
+        '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="1.5" stroke="currentColor" stroke-width="1.8"/><path d="M10 17h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>' +
+        '<span>App</span>' +
+      '</a>' +
+      '<a class="tds-mnav-item" href="/virtual-consultations" data-route="/virtual-consultations" aria-label="Book a consultation">' +
+        '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="6" width="14" height="12" rx="1.5" stroke="currentColor" stroke-width="1.8"/><path d="M17 10l4-2v8l-4-2" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>' +
+        '<span>Consult</span>' +
+      '</a>' +
+      '<button class="tds-mnav-item" type="button" data-tds-more-open aria-label="More">' +
+        '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="5" cy="12" r="1.3" fill="currentColor"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/><circle cx="19" cy="12" r="1.3" fill="currentColor"/></svg>' +
+        '<span>More</span>' +
+      '</button>';
+
+    var sheet = document.querySelector('.tds-offer-sheet');
+    var backdrop = document.querySelector('.tds-offer-sheet-backdrop');
+    if (sheet) {
+      sheet.setAttribute('aria-label', 'More navigation');
+      sheet.innerHTML =
+        '<div class="tds-sheet-grab" aria-hidden="true"></div>' +
+        '<h3 class="tds-sheet-title">More</h3>' +
+        '<div class="tds-sheet-grid">' +
+          '<a class="tds-sheet-card" href="/ehr"><span class="tds-sheet-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M7 4h10v16H7zM9 8h6M9 12h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span><span class="tds-sheet-content"><span class="tds-sheet-name">Health Records</span></span></a>' +
+          '<a class="tds-sheet-card" href="/ecg247"><span class="tds-sheet-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M2 12h4l2-6 4 12 2-6h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="tds-sheet-content"><span class="tds-sheet-name">ECG247</span></span></a>' +
+          '<a class="tds-sheet-card" href="/about-us"><span class="tds-sheet-icon"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 11v5M12 8h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span><span class="tds-sheet-content"><span class="tds-sheet-name">About</span></span></a>' +
+          '<a class="tds-sheet-card" href="/telemedia-suite"><span class="tds-sheet-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M5 5h6v6H5zM13 5h6v6h-6zM5 13h6v6H5zM13 13h6v6h-6z" stroke="currentColor" stroke-width="1.8"/></svg></span><span class="tds-sheet-content"><span class="tds-sheet-name">TeleMedia Suite</span></span></a>' +
+          '<a class="tds-sheet-card" href="/contact-us"><span class="tds-sheet-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M5 5h14v11H9l-4 3z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span><span class="tds-sheet-content"><span class="tds-sheet-name">Contact</span></span></a>' +
+          '<a class="tds-sheet-card" href="/patients"><span class="tds-sheet-icon"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M6 20c.7-4 2.8-6 6-6s5.3 2 6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span><span class="tds-sheet-content"><span class="tds-sheet-name">Patient Access</span></span></a>' +
+        '</div>';
+    }
+
+    function openMore(event) {
+      if (event) event.preventDefault();
+      document.documentElement.classList.add('tdsui-offer-sheet-open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeMore(event) {
+      if (event) event.preventDefault();
+      document.documentElement.classList.remove('tdsui-offer-sheet-open');
+      document.body.style.overflow = '';
+    }
+
+    var moreButton = row.querySelector('[data-tds-more-open]');
+    if (moreButton) moreButton.addEventListener('click', openMore);
+    if (backdrop) backdrop.addEventListener('click', closeMore);
+    if (sheet) {
+      sheet.querySelectorAll('a[href]').forEach(function (link) {
+        link.addEventListener('click', closeMore);
+      });
+    }
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && document.documentElement.classList.contains('tdsui-offer-sheet-open')) {
+        closeMore();
+      }
+    });
+
+    var active = currentRoute();
+    row.querySelectorAll('[data-route]').forEach(function (item) {
+      if (item.getAttribute('data-route') === active) {
+        item.setAttribute('aria-current', 'page');
+      } else {
+        item.removeAttribute('aria-current');
+      }
+    });
+  }
+
   function removeLegacyLayoutInjection() {
     var staleStyle = document.getElementById('tds-layout-refresh');
     if (staleStyle) staleStyle.remove();
@@ -338,12 +427,15 @@
   function init() {
     ensureStyle('/site-polish.css?v=20260909', 'data-tds-production-polish');
     ensureStyle('/site-global-v2.css?v=20260909', 'data-tds-global-v2');
+    ensureStyle('/styles/ux-v3.css?v=20260909', 'data-tds-ux-v3');
     removeLegacyLayoutInjection();
     ensureFooter();
     normalizeInternalLinks();
     installMegaMenuSafety();
     installContactMenuSafety();
     installMobileMenuSafety();
+    installMobileDockV2();
+    normalizeInternalLinks();
   }
 
   if (document.readyState === 'loading') {
