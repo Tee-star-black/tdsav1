@@ -18,12 +18,19 @@ jobs:
           ref: fix/professional-site-audit-20260909
 
       - name: Apply professional site audit
-        run: python3 scripts/apply-professional-site-audit.py
+        run: |
+          python3 scripts/apply-professional-site-audit.py
+          python3 scripts/fix-production-references.py
 
-      - name: Validate whitespace and structure
+      - name: Validate whitespace and Python syntax
         run: |
           git diff --check
-          python3 -m py_compile scripts/apply-professional-site-audit.py
+          python3 - <<'PY'
+          from pathlib import Path
+          for path in [Path('scripts/apply-professional-site-audit.py'), Path('scripts/fix-production-references.py')]:
+              compile(path.read_text(encoding='utf-8'), str(path), 'exec')
+          print('Python syntax validation passed.')
+          PY
 
       - name: Commit audited site
         run: |
@@ -33,6 +40,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "fix: professionalize responsive HTML site"
+            git commit -m "fix: complete production HTML site audit"
             git push origin HEAD:fix/professional-site-audit-20260909
           fi
