@@ -84,6 +84,7 @@
   maintainGlobalUi();
   loadOnce('tds-rebuild-images-core-loader', '/scripts/rebuild-images-core.js');
   loadOnce('tds-home-mobile-polish-loader', '/scripts/home-mobile-polish.js');
+  loadOnce('tds-home-hero-mobile-center-loader', '/scripts/home-hero-mobile-center.js');
   loadOnce('tds-cookie-notice-loader', '/scripts/cookie-notice.js');
   loadOnce('tds-cookie-policy-mobile-loader', '/scripts/cookie-policy-mobile.js');
 
