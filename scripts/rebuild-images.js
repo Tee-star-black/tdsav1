@@ -41,6 +41,22 @@
     });
   }
 
+  function ensureCookiePolicyLinks() {
+    var selectors = [
+      '.site-footer-legal-links',
+      '.footer-legal-links',
+      'footer .legal-links'
+    ];
+
+    document.querySelectorAll(selectors.join(',')).forEach(function (container) {
+      if (container.querySelector('a[href*="cookies-policy"], a[href*="cookie-policy"]')) return;
+      var link = document.createElement('a');
+      link.href = '/cookies-policy';
+      link.textContent = 'Cookie Policy';
+      container.appendChild(link);
+    });
+  }
+
   function loadOnce(id, src) {
     if (document.getElementById(id)) return;
     var script = document.createElement('script');
@@ -50,13 +66,19 @@
     document.head.appendChild(script);
   }
 
-  removeMobileBottomNavigation();
-  loadOnce('tds-rebuild-images-core-loader', '/scripts/rebuild-images-core.js');
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', removeMobileBottomNavigation);
+  function maintainGlobalUi() {
+    removeMobileBottomNavigation();
+    ensureCookiePolicyLinks();
   }
 
-  var observer = new MutationObserver(removeMobileBottomNavigation);
+  maintainGlobalUi();
+  loadOnce('tds-rebuild-images-core-loader', '/scripts/rebuild-images-core.js');
+  loadOnce('tds-home-mobile-polish-loader', '/scripts/home-mobile-polish.js');
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', maintainGlobalUi);
+  }
+
+  var observer = new MutationObserver(maintainGlobalUi);
   observer.observe(document.documentElement, { childList: true, subtree: true });
 })();
