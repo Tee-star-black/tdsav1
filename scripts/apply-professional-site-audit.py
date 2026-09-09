@@ -1,0 +1,385 @@
+from pathlib import Path
+import re
+
+ROOT = Path(__file__).resolve().parents[1]
+
+CSS = r'''/* TeleDoctorSA production polish | 2026-09-09 */
+:root {
+  --tds-content-width: 1180px;
+  --tds-gutter: clamp(16px, 3vw, 32px);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html,
+body {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+  overflow-x: clip;
+}
+
+html { background: #fff; }
+body > *, main, header, footer, section { min-width: 0; max-width: 100%; }
+img, video, iframe, svg { max-width: 100%; }
+img, video { height: auto; }
+
+nav:not(.tds-mobile-nav) {
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding-left: var(--tds-gutter) !important;
+  padding-right: var(--tds-gutter) !important;
+}
+
+nav:not(.tds-mobile-nav) > *,
+nav:not(.tds-mobile-nav) .nav-links,
+nav:not(.tds-mobile-nav) .nav-links > * { min-width: 0; }
+
+nav:not(.tds-mobile-nav) .dropdown-content {
+  width: min(450px, 92vw) !important;
+  max-width: 92vw !important;
+}
+
+.section-inner,
+.services-header,
+.services-grid,
+.info-grid,
+.telemedicine-explainer-grid,
+.trust-assurance-grid,
+.location-grid,
+.objectives-content,
+.shop-discovery-inner,
+.core-slider-shell {
+  width: min(var(--tds-content-width), calc(100% - (2 * var(--tds-gutter)))) !important;
+  max-width: var(--tds-content-width) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+section { min-height: 0; }
+section:empty { display: none !important; }
+
+.hero,
+.hero-section,
+.page-hero {
+  height: auto !important;
+  min-height: clamp(480px, 64svh, 680px) !important;
+}
+
+/* Compact, editorial service cards rather than tall narrow tiles. */
+.services-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: clamp(16px, 2vw, 24px) !important;
+  align-items: stretch !important;
+}
+
+.services-grid > .card {
+  display: grid !important;
+  grid-template-columns: minmax(150px, 34%) minmax(0, 1fr) !important;
+  align-items: stretch !important;
+  min-width: 0 !important;
+  min-height: 220px !important;
+  height: auto !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+}
+
+.services-grid > .card .card-img {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 220px !important;
+  max-height: 280px !important;
+  margin: 0 !important;
+  object-fit: cover !important;
+}
+
+.services-grid > .card .card-content {
+  display: flex !important;
+  flex-direction: column !important;
+  min-width: 0 !important;
+  padding: 20px 20px 18px !important;
+}
+
+.services-grid > .card h3 { margin-bottom: 8px !important; }
+.services-grid > .card p {
+  margin-bottom: 14px !important;
+  line-height: 1.55 !important;
+}
+.services-grid > .card .card-actions { margin-top: auto !important; }
+
+.info-focus-grid,
+.trust-proof-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: clamp(12px, 1.6vw, 18px) !important;
+}
+
+.info-focus-card,
+.trust-proof-card,
+.contact-card {
+  min-width: 0 !important;
+  height: auto !important;
+}
+
+.shop-role-actions {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+}
+
+/* Full-bleed footer without 100vw/negative-margin scrollbar hacks. */
+footer.site-footer,
+.site-footer {
+  display: block !important;
+  position: relative !important;
+  left: auto !important;
+  right: auto !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: clamp(40px, 5vw, 58px) var(--tds-gutter) clamp(26px, 3vw, 38px) !important;
+  border-radius: 0 !important;
+  overflow: hidden !important;
+}
+
+.site-footer-shell {
+  width: min(var(--tds-content-width), 100%) !important;
+  max-width: var(--tds-content-width) !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+}
+
+.site-footer-grid {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  grid-template-columns: minmax(0, 1.2fr) repeat(3, minmax(0, 1fr)) !important;
+  gap: clamp(18px, 2.4vw, 30px) !important;
+}
+
+.site-footer-grid > *,
+.site-footer-column,
+.site-footer-brand { min-width: 0 !important; }
+.site-footer a,
+.site-footer span,
+.site-footer p { overflow-wrap: anywhere; }
+
+.footer-mobile {
+  display: none !important;
+  position: static !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.tds-global-panel,
+.mobile-overlay { max-width: 100% !important; }
+
+@media (max-width: 1024px) {
+  .site-footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .site-footer-brand { grid-column: 1 / -1 !important; }
+  .info-grid,
+  .telemedicine-explainer-grid,
+  .trust-assurance-grid,
+  .location-grid { grid-template-columns: 1fr !important; }
+}
+
+@media (max-width: 760px) {
+  :root { --tds-gutter: 16px; }
+  .hero,
+  .hero-section,
+  .page-hero {
+    min-height: 0 !important;
+    height: auto !important;
+  }
+  .services-grid { grid-template-columns: 1fr !important; }
+  .services-grid > .card {
+    grid-template-columns: minmax(135px, 34%) minmax(0, 1fr) !important;
+    min-height: 190px !important;
+  }
+  .services-grid > .card .card-img {
+    min-height: 190px !important;
+    max-height: 240px !important;
+  }
+  .services-grid > .card .card-content { padding: 16px !important; }
+  .shop-role-actions,
+  .info-focus-grid,
+  .trust-proof-grid,
+  .site-footer-grid { grid-template-columns: 1fr !important; }
+  .site-footer-brand { grid-column: auto !important; }
+}
+
+@media (max-width: 520px) {
+  .services-grid > .card {
+    display: block !important;
+    min-height: 0 !important;
+  }
+  .services-grid > .card .card-img {
+    height: 150px !important;
+    min-height: 150px !important;
+    max-height: 150px !important;
+  }
+  .services-grid > .card .card-content { padding: 15px 15px 16px !important; }
+  .site-footer { padding-left: 16px !important; padding-right: 16px !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+'''
+
+LOADER = r'''(function () {
+  'use strict';
+  if (document.querySelector('link[data-tds-production-polish]')) return;
+  var link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = '/site-polish.css?v=20260909';
+  link.setAttribute('data-tds-production-polish', '');
+  document.head.appendChild(link);
+})();
+'''
+
+
+def clean_trailing_whitespace(text: str) -> str:
+    return '\n'.join(line.rstrip() for line in text.splitlines()) + '\n'
+
+
+def patch_html(path: Path) -> bool:
+    text = path.read_text(encoding='utf-8', errors='replace')
+    original = text
+
+    polish_link = '    <link rel="stylesheet" href="/site-polish.css?v=20260909" data-tds-production-polish>\n'
+    if 'data-tds-production-polish' not in text and '</head>' in text:
+        text = text.replace('</head>', polish_link + '</head>', 1)
+
+    text = text.replace('href="teledoctorsa-app.html"', 'href="/app"')
+    text = text.replace("href='teledoctorsa-app.html'", "href='/app'")
+    text = text.replace('href="app.html"', 'href="/app"')
+    text = text.replace("href='app.html'", "href='/app'")
+    text = text.replace('TeledoctorSA', 'TeleDoctorSA')
+
+    text = text.replace('[Insert Physical Address]', '29 Landor Street, Tulisa Park, Johannesburg, 2197')
+    text = text.replace('[Insert Contact Number]', '+27 78 033 6394')
+    text = text.replace('[Insert Number]', '+27 78 033 6394')
+    text = re.sub(
+        r'\s*<strong>Practice Number:</strong>\s*\[Insert Practice Number\]<br>\s*',
+        '\n',
+        text,
+        flags=re.I,
+    )
+
+    stale_app = 'Download the TeleDoctorSA mobile app for virtual consultations, prescription management, and health monitoring. Available on iOS and Android.'
+    rollout_app = 'Follow the TeleDoctorSA app rollout for patient messaging, appointment support, secure health information, and connected care access in South Africa.'
+    text = text.replace(stale_app, rollout_app)
+
+    if path == ROOT / 'index.html':
+        tech_start = text.find('<section class="tech-showcase">')
+        shop_start = text.find('<section class="shop-discovery">', tech_start if tech_start >= 0 else 0)
+        if tech_start >= 0 and shop_start > tech_start:
+            segment = text[tech_start:shop_start]
+            if 'tech-showcase-content' not in segment:
+                text = text[:tech_start] + text[shop_start:]
+            elif '</section>' not in segment:
+                text = text[:shop_start] + '    </section>\n\n    ' + text[shop_start:]
+
+    text = clean_trailing_whitespace(text)
+    if text != original:
+        path.write_text(text, encoding='utf-8')
+        return True
+    return False
+
+
+def patch_htaccess() -> None:
+    path = ROOT / '.htaccess'
+    text = path.read_text(encoding='utf-8')
+    marker = '    # Canonical direct routes for physical directory aliases\n'
+    if marker in text:
+        return
+
+    anchor = '    RewriteBase /\n\n'
+    rules = r'''    # Keep app aliases on one canonical public URL
+    RewriteCond %{THE_REQUEST} \s/+app\.html(?:[?\s]) [NC]
+    RewriteRule ^app\.html$ /app [R=301,END,NC]
+    RewriteCond %{THE_REQUEST} \s/+teledoctorsa-app\.html(?:[?\s]) [NC]
+    RewriteRule ^teledoctorsa-app\.html$ /app [R=301,END,NC]
+    RewriteRule ^teledoctorsa-app/?$ /app [R=301,END,NC]
+
+    # Canonical direct routes for physical directory aliases
+    RewriteRule ^app/?$ teledoctorsa-app.html [END,NC]
+    RewriteRule ^ecg247/?$ ecg247.html [END,NC]
+    RewriteRule ^ehr/?$ ehr.html [END,NC]
+
+'''
+    if anchor not in text:
+        raise SystemExit('Could not find RewriteBase anchor in .htaccess')
+    path.write_text(clean_trailing_whitespace(text.replace(anchor, anchor + rules, 1)), encoding='utf-8')
+
+
+def validate() -> None:
+    index = (ROOT / 'index.html').read_text(encoding='utf-8')
+    if '<section class="tech-showcase">' in index:
+        start = index.find('<section class="tech-showcase">')
+        shop = index.find('<section class="shop-discovery">', start)
+        if shop > start and '</section>' not in index[start:shop]:
+            raise SystemExit('Homepage still has an unclosed tech-showcase section')
+
+    css = (ROOT / 'site-polish.css').read_text(encoding='utf-8')
+    if 'width: 100vw !important' in css or 'margin-left: -50vw' in css:
+        raise SystemExit('Unsafe viewport full-bleed hack remains in production CSS')
+
+    placeholders = []
+    for path in ROOT.rglob('*.html'):
+        text = path.read_text(encoding='utf-8', errors='ignore')
+        if re.search(r'\[Insert [^\]]+\]', text, flags=re.I):
+            placeholders.append(str(path.relative_to(ROOT)))
+    if placeholders:
+        raise SystemExit('Editorial placeholders remain in: ' + ', '.join(placeholders))
+
+    missing = []
+    for path in ROOT.rglob('*.html'):
+        text = path.read_text(encoding='utf-8', errors='ignore')
+        for attr, target in re.findall(r'\b(href|src)=["\']([^"\']+)["\']', text, flags=re.I):
+            if not target or target.startswith(('#', 'http://', 'https://', 'mailto:', 'tel:', 'javascript:', 'data:', '//')):
+                continue
+            clean = target.split('?', 1)[0].split('#', 1)[0]
+            if not clean:
+                continue
+            if clean.startswith('/'):
+                candidate = ROOT / clean.lstrip('/')
+            else:
+                candidate = path.parent / clean
+            if candidate.exists():
+                continue
+            if candidate.suffix == '' and (candidate.with_suffix('.html').exists() or candidate.is_dir()):
+                continue
+            if candidate.suffix in {'.php'} and candidate.exists():
+                continue
+            missing.append(f'{path.relative_to(ROOT)} -> {target}')
+
+    # Ignore known runtime/application routes rather than treating them as static assets.
+    missing = [m for m in missing if not re.search(r' -> /(app|ecg247|ehr)$', m)]
+    if missing:
+        print('Warning: unresolved local references found:')
+        for item in sorted(set(missing))[:50]:
+            print('  ' + item)
+
+
+(ROOT / 'site-polish.css').write_text(CSS.strip() + '\n', encoding='utf-8')
+for script_name in ('site-wide-optimization.js', 'final-global-fixes.js', 'spacious-layout.js'):
+    (ROOT / 'scripts' / script_name).write_text(LOADER, encoding='utf-8')
+
+changed = 0
+for html in ROOT.rglob('*.html'):
+    changed += int(patch_html(html))
+
+patch_htaccess()
+validate()
+print(f'Professional site audit patch applied to {changed} HTML files.')
