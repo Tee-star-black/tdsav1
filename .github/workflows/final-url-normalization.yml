@@ -1,0 +1,35 @@
+name: Final URL normalization
+
+on:
+  push:
+    branches:
+      - fix/professional-site-audit-20260909
+
+permissions:
+  contents: write
+
+jobs:
+  normalize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/professional-site-audit-20260909
+
+      - name: Normalize and validate URLs
+        run: |
+          python3 scripts/normalize-production-urls.py
+          git diff --check
+
+      - name: Commit normalized URLs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "fix: normalize production social image URLs"
+            git push origin HEAD:fix/professional-site-audit-20260909
+          fi
