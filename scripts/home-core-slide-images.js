@@ -58,7 +58,7 @@
         box-sizing: border-box !important;
       }
 
-      /* The inline homepage slider toggles the hidden attribute. Never let mobile CSS override it. */
+      /* The carousel script is the source of truth for visible hero cards. */
       .core-slide[hidden],
       .core-slide[aria-hidden="true"] {
         display: none !important;
@@ -124,10 +124,11 @@
       }
 
       @media (max-width: 820px) {
-        /* HERO: one compact card at a time. The existing buttons + swipe change slides. */
+        /* HERO: exactly one compact card at a time. */
         .core-highlights-slider {
           padding-left: 12px !important;
           padding-right: 12px !important;
+          touch-action: pan-y !important;
         }
 
         .core-slide[hidden],
@@ -199,7 +200,7 @@
           margin-top: 12px !important;
         }
 
-        /* CHOOSE YOUR CARE PATH: horizontal swipe carousel on phones/tablets. */
+        /* CHOOSE YOUR CARE PATH: true horizontal mobile carousel. */
         .services#services {
           overflow: hidden !important;
           padding-left: 0 !important;
@@ -225,19 +226,25 @@
           margin: 0 !important;
           padding: 0 16px 14px !important;
           gap: 14px !important;
-          overflow-x: auto !important;
+          overflow-x: scroll !important;
           overflow-y: hidden !important;
           scroll-snap-type: x mandatory !important;
           scroll-padding-inline: 16px !important;
-          overscroll-behavior-inline: contain !important;
+          overscroll-behavior-x: contain !important;
           -webkit-overflow-scrolling: touch !important;
           scrollbar-width: none !important;
-          touch-action: pan-x pan-y !important;
+          touch-action: pan-y !important;
           box-sizing: border-box !important;
+          cursor: grab !important;
         }
 
         .services#services .services-grid::-webkit-scrollbar {
           display: none !important;
+        }
+
+        .services#services .services-grid.is-dragging {
+          cursor: grabbing !important;
+          scroll-snap-type: none !important;
         }
 
         .services#services .services-grid > .card {
@@ -331,10 +338,58 @@
     });
   }
 
-  function enableCoreSwipe() {
+  function setupCoreCarousel() {
     var slider = document.querySelector('.core-highlights-slider');
-    if (!slider || slider.dataset.tdsSwipeReady === 'true') return;
-    slider.dataset.tdsSwipeReady = 'true';
+    var coreSlides = Array.prototype.slice.call(document.querySelectorAll('.core-slide'));
+    var dots = Array.prototype.slice.call(document.querySelectorAll('[data-core-slide-to]'));
+    var prev = document.querySelector('[data-core-slider-prev]');
+    var next = document.querySelector('[data-core-slider-next]');
+
+    if (!slider || !coreSlides.length || slider.dataset.tdsCarouselReady === 'true') return;
+    slider.dataset.tdsCarouselReady = 'true';
+
+    var currentIndex = Math.max(0, coreSlides.findIndex(function (slide) {
+      return slide.classList.contains('active') || slide.getAttribute('aria-hidden') === 'false';
+    }));
+
+    function showSlide(index) {
+      currentIndex = (index + coreSlides.length) % coreSlides.length;
+
+      coreSlides.forEach(function (slide, slideIndex) {
+        var visible = slideIndex === currentIndex;
+        slide.hidden = !visible;
+        slide.setAttribute('aria-hidden', visible ? 'false' : 'true');
+        slide.classList.toggle('active', visible);
+      });
+
+      dots.forEach(function (dot, dotIndex) {
+        var active = dotIndex === currentIndex;
+        dot.classList.toggle('active', active);
+        dot.setAttribute('aria-current', active ? 'true' : 'false');
+      });
+    }
+
+    if (prev) {
+      prev.addEventListener('click', function (event) {
+        event.preventDefault();
+        showSlide(currentIndex - 1);
+      });
+    }
+
+    if (next) {
+      next.addEventListener('click', function (event) {
+        event.preventDefault();
+        showSlide(currentIndex + 1);
+      });
+    }
+
+    dots.forEach(function (dot) {
+      dot.addEventListener('click', function (event) {
+        event.preventDefault();
+        var index = parseInt(dot.getAttribute('data-core-slide-to'), 10);
+        if (!Number.isNaN(index)) showSlide(index);
+      });
+    });
 
     var startX = 0;
     var startY = 0;
@@ -347,50 +402,81 @@
 
     slider.addEventListener('touchend', function (event) {
       if (!event.changedTouches || !event.changedTouches.length) return;
-
       var dx = event.changedTouches[0].clientX - startX;
       var dy = event.changedTouches[0].clientY - startY;
 
-      if (Math.abs(dx) < 45 || Math.abs(dx) <= Math.abs(dy)) return;
-
-      var control = document.querySelector(dx < 0 ? '[data-core-slider-next]' : '[data-core-slider-prev]');
-      if (control) control.click();
+      if (Math.abs(dx) < 42 || Math.abs(dx) <= Math.abs(dy)) return;
+      showSlide(dx < 0 ? currentIndex + 1 : currentIndex - 1);
     }, { passive: true });
+
+    showSlide(currentIndex);
   }
 
-  function ensureSingleVisibleSlide() {
-    var coreSlides = Array.prototype.slice.call(document.querySelectorAll('.core-slide'));
-    if (!coreSlides.length) return;
+  function setupCarePathSwipe() {
+    var grid = document.querySelector('.services#services .services-grid');
+    if (!grid || grid.dataset.tdsTouchScrollReady === 'true') return;
+    grid.dataset.tdsTouchScrollReady = 'true';
+    grid.setAttribute('tabindex', '0');
+    grid.setAttribute('aria-label', 'Choose your care path. Swipe horizontally to see more options.');
 
-    var active = coreSlides.find(function (slide) {
-      return slide.classList.contains('active') || slide.getAttribute('aria-hidden') === 'false';
-    }) || coreSlides[0];
+    var startX = 0;
+    var startY = 0;
+    var startScrollLeft = 0;
+    var axis = null;
 
-    coreSlides.forEach(function (slide) {
-      var visible = slide === active;
-      slide.hidden = !visible;
-      slide.setAttribute('aria-hidden', visible ? 'false' : 'true');
-      slide.classList.toggle('active', visible);
-    });
+    grid.addEventListener('touchstart', function (event) {
+      if (!event.touches || !event.touches.length) return;
+      startX = event.touches[0].clientX;
+      startY = event.touches[0].clientY;
+      startScrollLeft = grid.scrollLeft;
+      axis = null;
+      grid.classList.add('is-dragging');
+    }, { passive: true });
+
+    grid.addEventListener('touchmove', function (event) {
+      if (!event.touches || !event.touches.length) return;
+      var dx = event.touches[0].clientX - startX;
+      var dy = event.touches[0].clientY - startY;
+
+      if (!axis && (Math.abs(dx) > 6 || Math.abs(dy) > 6)) {
+        axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+      }
+
+      if (axis !== 'x') return;
+      event.preventDefault();
+      grid.scrollLeft = startScrollLeft - dx;
+    }, { passive: false });
+
+    function finishDrag() {
+      grid.classList.remove('is-dragging');
+      axis = null;
+    }
+
+    grid.addEventListener('touchend', finishDrag, { passive: true });
+    grid.addEventListener('touchcancel', finishDrag, { passive: true });
   }
 
   function init() {
     addStyles();
     applyImages();
     normalizeBookingLinks();
-    enableCoreSwipe();
-    ensureSingleVisibleSlide();
+    setupCoreCarousel();
+    setupCarePathSwipe();
 
     var attempts = 0;
     var timer = window.setInterval(function () {
       attempts += 1;
       applyImages();
       normalizeBookingLinks();
+      setupCoreCarousel();
+      setupCarePathSwipe();
       if (attempts >= 12) window.clearInterval(timer);
     }, 250);
 
     var observer = new MutationObserver(function () {
       normalizeBookingLinks();
+      setupCoreCarousel();
+      setupCarePathSwipe();
     });
     observer.observe(document.body, { childList: true, subtree: true });
   }
