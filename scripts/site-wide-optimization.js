@@ -17,17 +17,43 @@
     html,
     body {
       width: 100% !important;
+      min-width: 0 !important;
       max-width: 100% !important;
+      min-height: 100% !important;
       margin: 0 !important;
+      padding: 0 !important;
       overflow-x: clip !important;
+    }
+
+    body {
+      position: relative !important;
     }
 
     body > *,
     main,
-    section,
     header,
     footer {
       max-width: 100% !important;
+    }
+
+    /* Full-bleed page bands. Keep content constrained inside inner containers. */
+    body > main,
+    body > header,
+    body > footer,
+    body > section,
+    main > section,
+    .hero,
+    .hero-section,
+    .page-hero,
+    .hero-container,
+    .site-footer,
+    .contact-section,
+    .contact-cta,
+    [class*='hero-section'] {
+      width: 100% !important;
+      max-width: 100% !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
     }
 
     img,
@@ -65,7 +91,7 @@
       line-height: 1.65 !important;
     }
 
-    /* -------- Desktop navbar: full viewport, contained content -------- */
+    /* -------- Navbar: keep it in normal document flow so there is no fake top spacer -------- */
     nav:not(.tds-mobile-nav) {
       width: 100% !important;
       max-width: 100% !important;
@@ -75,6 +101,9 @@
       box-sizing: border-box !important;
       left: 0 !important;
       right: 0 !important;
+      top: 0 !important;
+      position: sticky !important;
+      z-index: 1200 !important;
       display: flex !important;
       align-items: center !important;
       gap: 24px !important;
@@ -166,7 +195,6 @@
     .page-hero,
     .hero-container,
     [class*='hero-section'] {
-      max-width: 100% !important;
       overflow: hidden !important;
     }
 
@@ -177,7 +205,7 @@
       font-size: clamp(2.6rem, 5vw, 4.5rem) !important;
     }
 
-    /* -------- Footer overextension fix -------- */
+    /* -------- Footer/contact overextension and white-gap fix -------- */
     footer,
     .site-footer {
       width: 100% !important;
@@ -187,6 +215,13 @@
       padding-right: 0 !important;
       overflow: hidden !important;
       box-sizing: border-box !important;
+    }
+
+    body > footer:last-child,
+    body > section:last-child,
+    main > section:last-child,
+    .site-footer:last-child {
+      margin-bottom: 0 !important;
     }
 
     .site-footer-shell {
@@ -224,7 +259,7 @@
     /* -------- Tablet -------- */
     @media (max-width: 1100px) {
       :root {
-        --tds-global-shell: min(100% - 40px, 1000px);
+        --tds-global-shell: min(calc(100% - 40px), 1000px);
         --tds-global-section-y: 56px;
       }
 
