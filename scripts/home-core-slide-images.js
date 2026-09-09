@@ -4,6 +4,8 @@
   var page = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
   if (page !== 'index.html') return;
 
+  var bookingUrl = 'https://wa.me/27780336394?text=Hello%20TeleDoctorSA%2C%20I%20would%20like%20to%20book%20a%20consultation.';
+
   var slides = [
     {
       image: '/images/rebuild/03-doctor-video-consultation.jpg',
@@ -45,91 +47,32 @@
         max-width: none !important;
         min-height: auto !important;
         margin: 0 !important;
-        padding: clamp(76px, 7vw, 108px) clamp(20px, 4vw, 64px) clamp(34px, 5vw, 64px) !important;
         box-sizing: border-box !important;
         overflow: hidden !important;
-        background:
-          radial-gradient(circle at 12% 10%, rgba(47,171,255,.10), transparent 30%),
-          radial-gradient(circle at 88% 10%, rgba(255,163,102,.13), transparent 28%),
-          linear-gradient(180deg, #f8fafc 0%, #fffaf6 100%) !important;
       }
 
       .core-slider-shell {
         width: 100% !important;
         max-width: 1480px !important;
         margin: 0 auto !important;
-        padding: 0 !important;
         box-sizing: border-box !important;
       }
 
-      .core-slider-intro {
-        width: 100% !important;
-        max-width: 1060px !important;
-        margin: 0 auto 30px !important;
-        padding: 0 clamp(0px, 2vw, 24px) !important;
-        box-sizing: border-box !important;
+      /* The inline homepage slider toggles the hidden attribute. Never let mobile CSS override it. */
+      .core-slide[hidden],
+      .core-slide[aria-hidden="true"] {
+        display: none !important;
       }
 
-      .core-slider-intro h1 {
-        font-size: clamp(2.7rem, 5.1vw, 5.2rem) !important;
-        line-height: .98 !important;
-        letter-spacing: -.055em !important;
-      }
-
-      .core-slider-actions {
-        width: 100% !important;
+      .core-slide.active:not([hidden]),
+      .core-slide[aria-hidden="false"] {
         display: grid !important;
-        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-        gap: 12px !important;
-        margin-top: 26px !important;
-      }
-
-      .core-slider-actions > a {
-        width: 100% !important;
-        min-width: 0 !important;
-        min-height: 54px !important;
-        justify-content: center !important;
-        box-sizing: border-box !important;
-        white-space: normal !important;
-        text-align: center !important;
-      }
-
-      .core-proof-strip {
-        display: flex !important;
-        flex-wrap: wrap !important;
-        justify-content: center !important;
-        gap: 10px !important;
-      }
-
-      .core-slide {
-        width: 100% !important;
-        max-width: none !important;
-        min-width: 0 !important;
-        grid-template-columns: minmax(0, .95fr) minmax(420px, 1.05fr) !important;
-        gap: 0 !important;
-        align-items: stretch !important;
-        overflow: hidden !important;
-        box-sizing: border-box !important;
-      }
-
-      .core-slide-copy {
-        min-width: 0 !important;
-        padding: clamp(30px, 4vw, 58px) !important;
-        box-sizing: border-box !important;
       }
 
       .core-slide .core-slide-visual.tds-core-image-visual {
         position: relative !important;
-        width: 100% !important;
-        min-width: 0 !important;
-        min-height: 500px !important;
-        padding: 0 !important;
         overflow: hidden !important;
-        border: 0 !important;
-        background-color: #0f172a !important;
-        background-position: center center !important;
-        background-size: cover !important;
-        background-repeat: no-repeat !important;
+        background: #0f172a center/cover no-repeat !important;
       }
 
       .tds-core-slide-image {
@@ -137,13 +80,9 @@
         inset: 0 !important;
         width: 100% !important;
         height: 100% !important;
-        min-width: 100% !important;
-        min-height: 100% !important;
         object-fit: cover !important;
-        object-position: center center !important;
+        object-position: center !important;
         display: block !important;
-        opacity: 1 !important;
-        visibility: visible !important;
         z-index: 0 !important;
       }
 
@@ -152,24 +91,24 @@
         inset: 0 !important;
         z-index: 1 !important;
         pointer-events: none !important;
-        background: linear-gradient(180deg, rgba(15,23,42,.02) 25%, rgba(15,23,42,.56) 100%) !important;
+        background: linear-gradient(180deg, rgba(15,23,42,.03) 28%, rgba(15,23,42,.6) 100%) !important;
       }
 
       .tds-core-image-label {
         position: absolute !important;
-        left: 22px !important;
-        bottom: 22px !important;
+        left: 18px !important;
+        bottom: 18px !important;
         z-index: 2 !important;
         display: inline-flex !important;
         align-items: center !important;
-        gap: 9px !important;
-        padding: 11px 14px !important;
-        background: rgba(15,23,42,.84) !important;
+        gap: 8px !important;
+        padding: 10px 13px !important;
+        background: rgba(15,23,42,.86) !important;
         border: 1px solid rgba(255,255,255,.2) !important;
         color: #fff !important;
-        backdrop-filter: blur(12px) !important;
-        -webkit-backdrop-filter: blur(12px) !important;
-        font: 700 .78rem/1.2 'Plus Jakarta Sans', sans-serif !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+        font: 700 .76rem/1.2 'Plus Jakarta Sans', sans-serif !important;
       }
 
       .tds-core-image-label::before {
@@ -184,95 +123,149 @@
         display: none !important;
       }
 
-      .core-slider-controls {
-        width: 100% !important;
-        max-width: 1480px !important;
-        margin: 18px auto 0 !important;
-        padding: 0 !important;
-        box-sizing: border-box !important;
-      }
-
-      @media (max-width: 1100px) {
-        .core-slider-actions {
-          grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-        }
-
-        .core-slide {
-          grid-template-columns: minmax(0, 1fr) minmax(360px, .9fr) !important;
-        }
-
-        .core-slide .core-slide-visual.tds-core-image-visual {
-          min-height: 430px !important;
-        }
-      }
-
       @media (max-width: 820px) {
-        .core-highlights-slider {
-          padding: 82px 16px 28px !important;
-        }
-
-        .core-slider-intro {
-          margin-bottom: 22px !important;
-          padding: 0 !important;
-        }
-
-        .core-slider-intro h1 {
-          font-size: clamp(2.35rem, 10vw, 3.6rem) !important;
-          line-height: 1.02 !important;
-        }
-
-        .core-slider-actions {
-          grid-template-columns: 1fr !important;
-          gap: 10px !important;
-        }
-
-        .core-slide {
-          display: grid !important;
-          grid-template-columns: 1fr !important;
-          width: 100% !important;
-        }
-
-        .core-slide-copy {
-          padding: 30px 22px 32px !important;
-        }
-
-        .core-slide .core-slide-visual.tds-core-image-visual {
-          width: 100% !important;
-          min-height: 340px !important;
-          order: -1 !important;
-        }
-
-        .core-slider-controls {
-          gap: 10px !important;
-          margin-top: 14px !important;
-        }
-      }
-
-      @media (max-width: 560px) {
+        /* HERO: one compact card at a time. The existing buttons + swipe change slides. */
         .core-highlights-slider {
           padding-left: 12px !important;
           padding-right: 12px !important;
         }
 
+        .core-slide[hidden],
+        .core-slide[aria-hidden="true"] {
+          display: none !important;
+        }
+
+        .core-slide.active:not([hidden]),
+        .core-slide[aria-hidden="false"] {
+          display: grid !important;
+          grid-template-columns: 1fr !important;
+          width: 100% !important;
+          max-width: 100% !important;
+          min-height: 0 !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          overflow: hidden !important;
+        }
+
         .core-slide-copy {
-          padding: 24px 18px 28px !important;
+          padding: 20px 18px 22px !important;
+        }
+
+        .core-slide-heading {
+          font-size: clamp(1.35rem, 6vw, 1.75rem) !important;
+          line-height: 1.08 !important;
+          margin-bottom: 10px !important;
+        }
+
+        .core-slide-copy > p {
+          font-size: .92rem !important;
+          line-height: 1.55 !important;
+          margin-bottom: 14px !important;
+        }
+
+        .core-slide-meta {
+          display: flex !important;
+          flex-wrap: nowrap !important;
+          gap: 8px !important;
+          overflow-x: auto !important;
+          padding-bottom: 3px !important;
+          scrollbar-width: none !important;
+        }
+
+        .core-slide-meta::-webkit-scrollbar {
+          display: none !important;
+        }
+
+        .core-slide-meta > * {
+          flex: 0 0 auto !important;
+          white-space: nowrap !important;
         }
 
         .core-slide .core-slide-visual.tds-core-image-visual {
-          min-height: 260px !important;
+          width: 100% !important;
+          min-height: 220px !important;
+          height: 220px !important;
+          order: -1 !important;
+        }
+
+        .core-slide-cta {
+          width: fit-content !important;
+          min-height: 44px !important;
+          padding: 11px 15px !important;
+          font-size: .88rem !important;
+        }
+
+        .core-slider-controls {
+          margin-top: 12px !important;
+        }
+
+        /* CHOOSE YOUR CARE PATH: horizontal swipe carousel on phones/tablets. */
+        .services#services {
+          overflow: hidden !important;
+          padding-left: 0 !important;
+          padding-right: 0 !important;
+        }
+
+        .services#services .services-header {
+          width: 100% !important;
+          max-width: none !important;
+          margin-left: 0 !important;
+          margin-right: 0 !important;
+          padding-left: 16px !important;
+          padding-right: 16px !important;
+          box-sizing: border-box !important;
+        }
+
+        .services#services .services-grid {
+          display: flex !important;
+          grid-template-columns: none !important;
+          grid-auto-flow: unset !important;
+          width: 100% !important;
+          max-width: none !important;
+          margin: 0 !important;
+          padding: 0 16px 14px !important;
+          gap: 14px !important;
+          overflow-x: auto !important;
+          overflow-y: hidden !important;
+          scroll-snap-type: x mandatory !important;
+          scroll-padding-inline: 16px !important;
+          overscroll-behavior-inline: contain !important;
+          -webkit-overflow-scrolling: touch !important;
+          scrollbar-width: none !important;
+          touch-action: pan-x pan-y !important;
+          box-sizing: border-box !important;
+        }
+
+        .services#services .services-grid::-webkit-scrollbar {
+          display: none !important;
+        }
+
+        .services#services .services-grid > .card {
+          flex: 0 0 min(84vw, 360px) !important;
+          width: min(84vw, 360px) !important;
+          min-width: min(84vw, 360px) !important;
+          max-width: min(84vw, 360px) !important;
+          margin: 0 !important;
+          scroll-snap-align: start !important;
+          scroll-snap-stop: always !important;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .core-slide .core-slide-visual.tds-core-image-visual {
+          height: 190px !important;
+          min-height: 190px !important;
+        }
+
+        .core-slide-copy {
+          padding: 18px 16px 20px !important;
         }
 
         .tds-core-image-label {
           left: 12px !important;
           bottom: 12px !important;
-          padding: 9px 11px !important;
-          font-size: .72rem !important;
-        }
-
-        .core-slider-arrow {
-          width: 42px !important;
-          height: 42px !important;
-          flex: 0 0 42px !important;
+          padding: 8px 10px !important;
+          font-size: .7rem !important;
         }
       }
     `;
@@ -291,16 +284,16 @@
       visual.classList.add('tds-core-image-visual');
       visual.style.setProperty('background-image', 'url("' + data.image + '")', 'important');
 
-      var existingImage = visual.querySelector('.tds-core-slide-image');
-      if (!existingImage) {
-        existingImage = document.createElement('img');
-        existingImage.className = 'tds-core-slide-image';
-        visual.insertBefore(existingImage, visual.firstChild);
+      var image = visual.querySelector('.tds-core-slide-image');
+      if (!image) {
+        image = document.createElement('img');
+        image.className = 'tds-core-slide-image';
+        visual.insertBefore(image, visual.firstChild);
       }
-      existingImage.src = data.image;
-      existingImage.alt = data.alt;
-      existingImage.loading = index === 0 ? 'eager' : 'lazy';
-      existingImage.decoding = 'async';
+      image.src = data.image;
+      image.alt = data.alt;
+      image.loading = index === 0 ? 'eager' : 'lazy';
+      image.decoding = 'async';
 
       if (!visual.querySelector('.tds-core-image-shade')) {
         var shade = document.createElement('span');
@@ -321,19 +314,85 @@
     return true;
   }
 
+  function normalizeBookingLinks() {
+    document.querySelectorAll('a[href]').forEach(function (link) {
+      var label = (link.textContent || '').replace(/\s+/g, ' ').trim().toLowerCase();
+      var href = (link.getAttribute('href') || '').toLowerCase();
+      var isBooking = label.indexOf('book online consultation') !== -1 ||
+        label.indexOf('book a consultation') !== -1 ||
+        label.indexOf('book consultation') !== -1;
+      var isUpvioConsultation = href.indexOf('upvio') !== -1 && label.indexOf('consult') !== -1;
+
+      if (isBooking || isUpvioConsultation) {
+        link.setAttribute('href', bookingUrl);
+        link.setAttribute('target', '_blank');
+        link.setAttribute('rel', 'noopener noreferrer');
+      }
+    });
+  }
+
+  function enableCoreSwipe() {
+    var slider = document.querySelector('.core-highlights-slider');
+    if (!slider || slider.dataset.tdsSwipeReady === 'true') return;
+    slider.dataset.tdsSwipeReady = 'true';
+
+    var startX = 0;
+    var startY = 0;
+
+    slider.addEventListener('touchstart', function (event) {
+      if (!event.touches || !event.touches.length) return;
+      startX = event.touches[0].clientX;
+      startY = event.touches[0].clientY;
+    }, { passive: true });
+
+    slider.addEventListener('touchend', function (event) {
+      if (!event.changedTouches || !event.changedTouches.length) return;
+
+      var dx = event.changedTouches[0].clientX - startX;
+      var dy = event.changedTouches[0].clientY - startY;
+
+      if (Math.abs(dx) < 45 || Math.abs(dx) <= Math.abs(dy)) return;
+
+      var control = document.querySelector(dx < 0 ? '[data-core-slider-next]' : '[data-core-slider-prev]');
+      if (control) control.click();
+    }, { passive: true });
+  }
+
+  function ensureSingleVisibleSlide() {
+    var coreSlides = Array.prototype.slice.call(document.querySelectorAll('.core-slide'));
+    if (!coreSlides.length) return;
+
+    var active = coreSlides.find(function (slide) {
+      return slide.classList.contains('active') || slide.getAttribute('aria-hidden') === 'false';
+    }) || coreSlides[0];
+
+    coreSlides.forEach(function (slide) {
+      var visible = slide === active;
+      slide.hidden = !visible;
+      slide.setAttribute('aria-hidden', visible ? 'false' : 'true');
+      slide.classList.toggle('active', visible);
+    });
+  }
+
   function init() {
     addStyles();
     applyImages();
+    normalizeBookingLinks();
+    enableCoreSwipe();
+    ensureSingleVisibleSlide();
 
     var attempts = 0;
     var timer = window.setInterval(function () {
       attempts += 1;
-      if (applyImages() || attempts >= 12) window.clearInterval(timer);
+      applyImages();
+      normalizeBookingLinks();
+      if (attempts >= 12) window.clearInterval(timer);
     }, 250);
 
-    window.addEventListener('resize', function () {
-      applyImages();
+    var observer = new MutationObserver(function () {
+      normalizeBookingLinks();
     });
+    observer.observe(document.body, { childList: true, subtree: true });
   }
 
   if (document.readyState === 'loading') {
