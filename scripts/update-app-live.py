@@ -1,8 +1,10 @@
 from pathlib import Path
 import re
 
-path = Path('teledoctorsa-app.html')
-text = path.read_text(encoding='utf-8-sig')
+app_path = Path('teledoctorsa-app.html')
+home_path = Path('index.html')
+text = app_path.read_text(encoding='utf-8-sig')
+home = home_path.read_text(encoding='utf-8-sig')
 
 old_desc = 'Follow the TeleDoctorSA app rollout for patient messaging, appointment support, secure health information, and connected care access in South Africa.'
 new_desc = 'Access the TeleDoctorSA patient app for secure health information, appointment support, messaging and connected care in South Africa.'
@@ -70,9 +72,7 @@ hero_styles = '''
         align-items: center;
     }
 
-    .app-live-hero .app-hero-copy {
-        min-width: 0;
-    }
+    .app-live-hero .app-hero-copy { min-width: 0; }
 
     .app-live-hero .app-live-badge {
         display: inline-flex;
@@ -208,47 +208,26 @@ hero_styles = '''
     }
 
     @media (max-width: 900px) {
-        .hero-section.app-live-hero {
-            padding: 88px 24px 48px;
-        }
-
+        .hero-section.app-live-hero { padding: 88px 24px 48px; }
         .app-live-hero .app-hero-grid {
             width: min(760px, 100%);
             grid-template-columns: 1fr;
             gap: 28px;
         }
-
-        .app-live-hero .app-hero-visual img {
-            height: clamp(300px, 58vw, 430px);
-        }
+        .app-live-hero .app-hero-visual img { height: clamp(300px, 58vw, 430px); }
     }
 
     @media (max-width: 560px) {
-        .hero-section.app-live-hero {
-            padding: 80px 18px 38px;
-        }
-
-        .app-live-hero .app-hero-grid {
-            width: 100%;
-        }
-
-        .app-live-hero h1 {
-            font-size: clamp(2rem, 10vw, 2.7rem);
-        }
-
+        .hero-section.app-live-hero { padding: 80px 18px 38px; }
+        .app-live-hero .app-hero-grid { width: 100%; }
+        .app-live-hero h1 { font-size: clamp(2rem, 10vw, 2.7rem); }
         .app-live-hero .app-hero-actions {
             display: grid;
             grid-template-columns: 1fr;
         }
-
         .app-live-hero .app-hero-primary,
-        .app-live-hero .app-hero-secondary {
-            width: 100%;
-        }
-
-        .app-live-hero .app-hero-visual img {
-            height: 300px;
-        }
+        .app-live-hero .app-hero-secondary { width: 100%; }
+        .app-live-hero .app-hero-visual img { height: 300px; }
     }
 </style>
 '''
@@ -282,11 +261,43 @@ text, hero_count = hero_pattern.subn(hero_markup, text, count=1)
 if hero_count != 1:
     raise SystemExit('Could not replace app hero section')
 
+# Homepage: update stale app-launch wording and install a proper hero image.
+home = home.replace('follow TeleDoctorSA app rollout', 'access the TeleDoctorSA app')
+home = home.replace('app rollout access', 'TeleDoctorSA app access')
+home = home.replace('Follow App Access', 'Open Patient App')
+home = home.replace('TeleDoctorSA app rollout', 'TeleDoctorSA app')
+
+if 'class="home-hero-media"' not in home:
+    hero_media = '''
+                <figure class="home-hero-media">
+                    <img src="/images/rebuild/01-clinical-team-at-work.jpg" alt="TeleDoctorSA clinical team using connected digital healthcare tools" loading="eager" fetchpriority="high">
+                    <figcaption>Connected care, built around real clinical workflows.</figcaption>
+                </figure>'''
+    boundary = '\n            </div>\n\n            <article class="core-slide active"'
+    if boundary not in home:
+        raise SystemExit('Could not locate homepage hero intro boundary')
+    home = home.replace(boundary, hero_media + boundary, 1)
+
+# Use the homepage footer as the canonical footer for the App page.
+footer_match = re.search(r'(<footer class="site-footer">.*?</footer>)', home, re.S)
+if not footer_match:
+    raise SystemExit('Could not locate canonical homepage footer')
+canonical_footer = footer_match.group(1)
+
+footer_pattern = re.compile(r'<footer class="(?:footer|site-footer)"[^>]*>.*?</footer>', re.S)
+text, footer_count = footer_pattern.subn(canonical_footer, text, count=1)
+if footer_count != 1:
+    raise SystemExit('Could not replace App page footer')
+
 if 'COMING SOON' in text or 'Coming Soon' in text or 'IN DEVELOPMENT' in text or 'Notify Me When Available' in text:
     raise SystemExit('Stale launch copy still present')
-
 if '/images/rebuild/07-mobile-health-app.jpg' not in text:
-    raise SystemExit('Hero image was not installed')
+    raise SystemExit('App hero image was not installed')
+if '/images/rebuild/01-clinical-team-at-work.jpg' not in home:
+    raise SystemExit('Homepage hero image was not installed')
+if '<footer class="site-footer">' not in text:
+    raise SystemExit('Canonical footer was not installed on App page')
 
-path.write_text(text, encoding='utf-8')
-print('updated teledoctorsa-app.html with live hero image')
+app_path.write_text(text, encoding='utf-8')
+home_path.write_text(home, encoding='utf-8')
+print('updated homepage hero image and synchronized App page footer')
