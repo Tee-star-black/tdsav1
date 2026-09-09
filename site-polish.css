@@ -1,6 +1,6 @@
 /* TeleDoctorSA production polish | compact pass 2026-09-09 */
 :root {
-  --tds-content-width: 1120px;
+  --tds-content-width: 1240px;
   --tds-gutter: clamp(14px, 2.5vw, 28px);
 }
 
