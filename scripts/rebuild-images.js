@@ -1,8 +1,87 @@
 (function () {
   'use strict';
 
+  if (window.__TDS_GLOBAL_V2__) return;
+  window.__TDS_GLOBAL_V2__ = true;
+
   var LOCAL_HOSTS = ['localhost', '127.0.0.1', '::1'];
   var isLocalPreview = LOCAL_HOSTS.indexOf(window.location.hostname) !== -1;
+
+  var cleanRoutes = {
+    '/': '/',
+    '/index.html': '/',
+    '/about-us': '/about-us',
+    '/about-us.html': '/about-us',
+    '/our-services': '/our-services',
+    '/our-services.html': '/our-services',
+    '/telemedia-suite': '/telemedia-suite',
+    '/telemedia-suite.html': '/telemedia-suite',
+    '/contact-us': '/contact-us',
+    '/contact-us.html': '/contact-us',
+    '/ehr': '/ehr',
+    '/ehr.html': '/ehr',
+    '/ehr/index.html': '/ehr',
+    '/app': '/app',
+    '/app.html': '/app',
+    '/teledoctorsa-app.html': '/app',
+    '/app/index.html': '/app',
+    '/ecg247': '/ecg247',
+    '/ecg247.html': '/ecg247',
+    '/ecg247/index.html': '/ecg247',
+    '/virtual-consultations': '/virtual-consultations',
+    '/virtual-consultations.html': '/virtual-consultations',
+    '/privacy-policy': '/privacy-policy',
+    '/privacy-policy.html': '/privacy-policy',
+    '/legal-notice': '/legal-notice',
+    '/legal-notice.html': '/legal-notice',
+    '/shop': '/shop',
+    '/shop.html': '/shop',
+    '/doctors': '/doctors',
+    '/doctors.html': '/doctors',
+    '/nurses': '/nurses',
+    '/nurses.html': '/nurses',
+    '/patients': '/patients',
+    '/patients.html': '/patients',
+    '/patients-portal': '/patients-portal',
+    '/patients-portal.html': '/patients-portal'
+  };
+
+  var bareRoutes = {
+    'index.html': '/',
+    'about-us': '/about-us',
+    'about-us.html': '/about-us',
+    'our-services': '/our-services',
+    'our-services.html': '/our-services',
+    'telemedia-suite': '/telemedia-suite',
+    'telemedia-suite.html': '/telemedia-suite',
+    'contact-us': '/contact-us',
+    'contact-us.html': '/contact-us',
+    'ehr': '/ehr',
+    'ehr.html': '/ehr',
+    'app': '/app',
+    'app.html': '/app',
+    'teledoctorsa-app.html': '/app',
+    'ecg247': '/ecg247',
+    'ecg247.html': '/ecg247',
+    'virtual-consultations': '/virtual-consultations',
+    'virtual-consultations.html': '/virtual-consultations',
+    'privacy-policy': '/privacy-policy',
+    'privacy-policy.html': '/privacy-policy',
+    'legal-notice': '/legal-notice',
+    'legal-notice.html': '/legal-notice',
+    'shop': '/shop',
+    'shop.html': '/shop',
+    'doctors': '/doctors',
+    'doctors.html': '/doctors',
+    'nurses': '/nurses',
+    'nurses.html': '/nurses',
+    'patients': '/patients',
+    'patients.html': '/patients',
+    'patients-portal': '/patients-portal',
+    'patients-portal.html': '/patients-portal',
+    'wellness.html': '/our-services',
+    'clinician-portal.html': '/doctors'
+  };
 
   var localRouteMap = {
     '/': '/index.html',
@@ -16,37 +95,124 @@
     '/virtual-consultations': '/virtual-consultations.html',
     '/privacy-policy': '/privacy-policy.html',
     '/legal-notice': '/legal-notice.html',
-    '/shop': '/shop.html'
+    '/shop': '/shop.html',
+    '/doctors': '/doctors.html',
+    '/nurses': '/nurses.html',
+    '/patients': '/patients.html',
+    '/patients-portal': '/patients-portal.html'
   };
 
-  function normalizePath(href) {
-    if (!href || href.charAt(0) !== '/' || href.indexOf('//') === 0) return '';
+  function ensureStyle(href, marker) {
+    if (document.querySelector('link[' + marker + ']')) return;
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = href;
+    link.setAttribute(marker, '');
+    document.head.appendChild(link);
+  }
+
+  function routeFromHref(rawHref) {
+    if (!rawHref) return null;
+    var raw = rawHref.trim();
+    if (!raw || raw === '#' || raw.charAt(0) === '#') return null;
+    if (/^(?:mailto:|tel:|javascript:|data:)/i.test(raw)) return null;
+
+    var queryIndex = raw.indexOf('?');
+    var hashIndex = raw.indexOf('#');
+    var cut = raw.length;
+    if (queryIndex >= 0) cut = Math.min(cut, queryIndex);
+    if (hashIndex >= 0) cut = Math.min(cut, hashIndex);
+    var bare = raw.slice(0, cut).replace(/^\.\//, '').replace(/^\.\.\//, '');
+
+    if (bareRoutes[bare]) {
+      return {
+        route: bareRoutes[bare],
+        suffix: raw.slice(cut)
+      };
+    }
+
     try {
-      return new URL(href, window.location.origin).pathname.replace(/\/$/, '') || '/';
+      var url = new URL(raw, window.location.href);
+      if (url.origin !== window.location.origin) return null;
+      var path = url.pathname.replace(/\/{2,}/g, '/').replace(/\/$/, '') || '/';
+      var route = cleanRoutes[path];
+      if (!route) return null;
+      return {
+        route: route,
+        suffix: url.search + url.hash
+      };
     } catch (error) {
-      return '';
+      return null;
     }
   }
 
-  function installLocalRouteFallback() {
-    if (!isLocalPreview) return;
+  function normalizeInternalLinks() {
+    document.querySelectorAll('a[href]').forEach(function (anchor) {
+      var raw = anchor.getAttribute('href');
+      var match = routeFromHref(raw);
+      if (!match) return;
 
-    document.addEventListener('click', function (event) {
-      var anchor = event.target.closest && event.target.closest('a[href]');
-      if (!anchor) return;
-      if (anchor.target === '_blank' || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      if (anchor.closest('.services-section .service-card') && /book consultation/i.test(anchor.textContent || '')) {
+        match.route = '/virtual-consultations';
+      }
 
-      var rawHref = anchor.getAttribute('href');
-      if (!rawHref || rawHref === '#' || rawHref.charAt(0) === '#') return;
-
-      var path = normalizePath(rawHref);
-      var localTarget = localRouteMap[path];
-      if (!localTarget) return;
-
-      var url = new URL(rawHref, window.location.origin);
-      event.preventDefault();
-      window.location.href = localTarget + url.search + url.hash;
+      var destination = match.route + match.suffix;
+      if (isLocalPreview && localRouteMap[match.route]) {
+        destination = localRouteMap[match.route] + match.suffix;
+      }
+      anchor.setAttribute('href', destination);
     });
+  }
+
+  function ensureFooter() {
+    var existing = document.querySelector('footer:not(.footer-mobile), .site-footer, .footer:not(.footer-mobile)');
+    if (existing) {
+      var copyright = existing.querySelector('.footer-bottom p, .site-footer-copyright');
+      if (copyright && copyright.textContent) {
+        copyright.textContent = copyright.textContent.replace(/\b2025\b/g, '2026');
+      }
+      return;
+    }
+
+    var footer = document.createElement('footer');
+    footer.className = 'footer tds-injected-footer';
+    footer.setAttribute('data-tds-injected-footer', '');
+    footer.innerHTML =
+      '<div class="footer-content">' +
+        '<div class="footer-section">' +
+          '<div class="tds-footer-brandline">' +
+            '<img src="/images/rebuild/logo.png" alt="TeleDoctorSA logo">' +
+            '<div><strong>TeleDoctorSA</strong><span>Connected care across South Africa</span></div>' +
+          '</div>' +
+          '<p>Virtual consultations, ECG247 monitoring, digital records and connected care support from a real clinical team.</p>' +
+        '</div>' +
+        '<div class="footer-section">' +
+          '<h3>Quick Links</h3>' +
+          '<ul class="footer-links">' +
+            '<li><a href="/">Home</a></li>' +
+            '<li><a href="/our-services">Services</a></li>' +
+            '<li><a href="/about-us">About</a></li>' +
+            '<li><a href="/telemedia-suite">TeleMedia Suite</a></li>' +
+          '</ul>' +
+        '</div>' +
+        '<div class="footer-section">' +
+          '<h3>Care Paths</h3>' +
+          '<ul class="footer-links">' +
+            '<li><a href="/virtual-consultations">Virtual consultations</a></li>' +
+            '<li><a href="/ecg247">ECG247 monitoring</a></li>' +
+            '<li><a href="/app">TeleDoctorSA app</a></li>' +
+            '<li><a href="/ehr">Electronic health records</a></li>' +
+          '</ul>' +
+        '</div>' +
+        '<div class="footer-section">' +
+          '<h3>Contact & Legal</h3>' +
+          '<p><a href="tel:+27780336394">+27 78 033 6394</a><br><a href="mailto:info@teledoctorsa.co.za">info@teledoctorsa.co.za</a><br>29 Landor Street, Tulisa Park, Johannesburg, 2197</p>' +
+          '<div class="tds-footer-legal"><a href="/privacy-policy">Privacy</a><a href="/legal-notice">Legal Notice</a><a href="/contact-us">Contact</a></div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="footer-bottom"><p>&copy; 2026 TeleDoctorSA. All rights reserved.</p></div>';
+
+    document.body.appendChild(footer);
   }
 
   function installMegaMenuSafety() {
@@ -170,8 +336,11 @@
   }
 
   function init() {
+    ensureStyle('/site-polish.css?v=20260909', 'data-tds-production-polish');
+    ensureStyle('/site-global-v2.css?v=20260909', 'data-tds-global-v2');
     removeLegacyLayoutInjection();
-    installLocalRouteFallback();
+    ensureFooter();
+    normalizeInternalLinks();
     installMegaMenuSafety();
     installContactMenuSafety();
     installMobileMenuSafety();
