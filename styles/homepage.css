@@ -25,8 +25,6 @@ img, svg, video, iframe { max-width: 100%; }
 .telemedicine-explainer-grid,
 .trust-assurance-grid,
 .location-grid,
-.objectives-content,
-.shop-discovery-inner,
 .core-slider-shell,
 .site-footer-shell {
   width: min(var(--tds-shell), calc(100% - 48px)) !important;
@@ -45,10 +43,7 @@ img, svg, video, iframe { max-width: 100%; }
 .services,
 .services-section,
 .telemedicine-explainer,
-.trust-assurance,
-.shop-discovery,
-.objectives,
-.objectives-section {
+.trust-assurance {
   padding-top: 76px !important;
   padding-bottom: 76px !important;
 }
@@ -104,7 +99,6 @@ img, svg, video, iframe { max-width: 100%; }
 .link-btn,
 .site-footer-link,
 .core-slide-cta,
-.shop-role-actions a,
 .site-footer-kicker,
 .site-footer-chip,
 .card-kicker,
@@ -301,8 +295,6 @@ footer,
   .telemedicine-explainer-grid,
   .trust-assurance-grid,
   .location-grid,
-  .objectives-content,
-  .shop-discovery-inner,
   .core-slider-shell,
   .site-footer-shell { width: calc(100% - 56px) !important; }
   .services-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
@@ -320,8 +312,6 @@ footer,
   .telemedicine-explainer-grid,
   .trust-assurance-grid,
   .location-grid,
-  .objectives-content,
-  .shop-discovery-inner,
   .core-slider-shell,
   .site-footer-shell { width: calc(100% - 36px) !important; }
   .hero,
@@ -333,10 +323,7 @@ footer,
   .services,
   .services-section,
   .telemedicine-explainer,
-  .trust-assurance,
-  .shop-discovery,
-  .objectives,
-  .objectives-section {
+  .trust-assurance {
     padding-top: 52px !important;
     padding-bottom: 52px !important;
   }
