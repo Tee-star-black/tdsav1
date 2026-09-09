@@ -1,13 +1,11 @@
-name: Install visible rebuild images
+name: Publish TeleDoctorSA production HTML
 
 on:
   push:
     paths:
-      - 'scripts/rebuild-images.js'
-      - 'scripts/site-ux-v4.js'
-      - 'scripts/homepage-slider.js'
-      - 'scripts/update-app-live.py'
-      - 'styles/ux-v4.css'
+      - 'site-polish.css'
+      - 'styles/**'
+      - 'scripts/**'
       - '.github/workflows/install-visible-rebuild-images.yml'
   workflow_dispatch:
 
@@ -15,7 +13,7 @@ permissions:
   contents: write
 
 jobs:
-  install:
+  publish:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
@@ -24,84 +22,90 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Inject shared routing and UX assets into public pages
+      - name: Clean actual HTML and refresh asset versions
         shell: python
         run: |
           from pathlib import Path
+          import re
 
-          pages = [
-              'index.html',
-              'about-us.html',
-              'our-services.html',
-              'contact-us.html',
-              'telemedia-suite.html',
-              'teledoctorsa-app.html',
-              'app.html',
-              'ehr.html',
-              'ecg247.html',
-              'virtual-consultations.html',
-              'shop.html',
-              'doctors.html',
-              'nurses.html',
-              'patients.html',
-              'patients-portal.html',
-              'privacy-policy.html',
-              'legal-notice.html',
-              'returns-policy.html',
+          version = '20260909-1846'
+          marker_blocks = [
+              ('TDS_MOBILE_NAV_START', 'TDS_MOBILE_NAV_END'),
+              ('TDS_MOBILE_NAV_HTML_START', 'TDS_MOBILE_NAV_HTML_END'),
+              ('TDS_MOBILE_NAV_SCRIPT_START', 'TDS_MOBILE_NAV_SCRIPT_END'),
+          ]
+          shared_scripts = [
+              'scripts/navigation.js',
+              'scripts/rebuild-images.js',
+              'scripts/homepage.js',
+              'scripts/homepage-slider.js',
+              'scripts/site-ux-v4.js',
           ]
 
-          routing_tag = '<script src="scripts/rebuild-images.js"></script>'
-          ux_script_tag = '<script src="scripts/site-ux-v4.js"></script>'
-          ux_css_tag = '<link rel="stylesheet" href="/styles/ux-v4.css?v=20260909" data-tds-ux-v4>'
-
-          for name in pages:
-              path = Path(name)
-              if not path.exists():
+          for path in Path('.').rglob('*.html'):
+              if '.git' in path.parts:
                   continue
               text = path.read_text(encoding='utf-8-sig')
+              original = text
 
-              if ux_css_tag not in text and '</head>' in text:
-                  text = text.replace('</head>', '    ' + ux_css_tag + '\n</head>', 1)
+              for start, end in marker_blocks:
+                  text = re.sub(
+                      rf'\s*<!--\s*{start}\s*-->.*?<!--\s*{end}\s*-->\s*',
+                      '\n',
+                      text,
+                      flags=re.S,
+                  )
 
-              if routing_tag not in text:
-                  if '<script src="scripts/support-chatbot.js"></script>' in text:
-                      text = text.replace(
-                          '<script src="scripts/support-chatbot.js"></script>',
-                          '<script src="scripts/support-chatbot.js"></script>\n    ' + routing_tag
-                      )
-                  elif '</body>' in text:
-                      text = text.replace('</body>', '    ' + routing_tag + '\n</body>', 1)
-
-              if ux_script_tag not in text and '</body>' in text:
-                  text = text.replace('</body>', '    ' + ux_script_tag + '\n</body>', 1)
-
-              path.write_text(text, encoding='utf-8')
-              print('updated', name)
-
-          index = Path('index.html')
-          if index.exists():
-              text = index.read_text(encoding='utf-8')
-              text = text.replace(
-                  'Stay close to your care team as app onboarding opens.',
-                  'Open your patient app and stay connected to your care team.'
+              text = re.sub(
+                  r'\s*<script[^>]+src=["\'][^"\']*mobile-navigation\.js(?:\?[^"\']*)?["\'][^>]*></script>\s*',
+                  '\n',
+                  text,
+                  flags=re.I,
               )
-              text = text.replace('App Rollout</span>', 'Patient App</span>')
-              text = text.replace('Rollout access is underway', 'Patient access is live')
-              index.write_text(text, encoding='utf-8')
+
+              text = re.sub(r'\?v=20260909(?:-[0-9]+)?', f'?v={version}', text)
+
+              for script in shared_scripts:
+                  pattern = rf'(?P<prefix><script[^>]+src=["\']/?){re.escape(script)}(?:\?v=[^"\']*)?(?P<suffix>["\'][^>]*></script>)'
+                  text = re.sub(pattern, rf'\g<prefix>{script}?v={version}\g<suffix>', text, flags=re.I)
+
+              if text != original:
+                  path.write_text(text, encoding='utf-8')
+                  print('updated', path)
 
       - name: Publish live TeleDoctorSA app CTA
         run: python scripts/update-app-live.py
 
-      - name: Commit
+      - name: Validate production HTML
+        shell: python
+        run: |
+          from pathlib import Path
+
+          bad = []
+          for path in Path('.').rglob('*.html'):
+              if '.git' in path.parts:
+                  continue
+              text = path.read_text(encoding='utf-8')
+              if 'tds-mobile-nav' in text or 'mobile-navigation.js' in text or 'TDS_MOBILE_NAV_' in text:
+                  bad.append(str(path))
+          if bad:
+              raise SystemExit('Legacy mobile dock still present in: ' + ', '.join(bad))
+
+          index = Path('index.html').read_text(encoding='utf-8')
+          assert 'styles/ux-v4.css?v=20260909-1846' in index
+          assert 'site-polish.css?v=20260909-1846' in index
+          print('Production HTML validation passed')
+
+      - name: Commit actual HTML changes
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add '*.html'
+          git add '*.html' '*/index.html'
           if git diff --cached --quiet; then
             echo "Nothing to commit"
             exit 0
           fi
           git diff --cached --check
-          git commit -m "fix: install sticky header and compact automatic carousel"
+          git commit -m "fix: remove legacy mobile dock and refresh production assets"
           git push
