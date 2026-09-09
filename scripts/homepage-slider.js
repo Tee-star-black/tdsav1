@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const coreNextBtn = document.querySelector('[data-core-slider-next]');
     let coreIndex = 0;
     let coreTimer = null;
-    const coreSlideDuration = 6200;
+    const coreSlideDuration = 4800;
 
     function showCoreSlide(nextIndex) {
         if (!coreSlides.length) return;
@@ -77,8 +77,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         if (coreSlider && coreSlides.length > 1) {
-            coreSlider.addEventListener('mouseenter', stopCoreSlider);
-            coreSlider.addEventListener('mouseleave', startCoreSlider);
+            // Keep the carousel moving while the pointer is merely resting over it.
+            // Pause only for keyboard focus so controls remain accessible.
             coreSlider.addEventListener('focusin', stopCoreSlider);
             coreSlider.addEventListener('focusout', function(event) {
                 if (!coreSlider.contains(event.relatedTarget)) {
