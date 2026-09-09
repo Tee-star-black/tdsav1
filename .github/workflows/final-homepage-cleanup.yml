@@ -17,7 +17,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Tighten homepage markup and CSS
+      - name: Tighten homepage markup and legacy animation definitions
         shell: python
         run: |
           from pathlib import Path
@@ -26,113 +26,13 @@ jobs:
           index = Path('index.html')
           html = index.read_text(encoding='utf-8')
 
-          # Remove two repetitive homepage interruptions so the rhythm becomes:
-          # core offering -> services -> technology -> trust -> location -> footer.
-          html, shop_removed = re.subn(
-              r'\s*<section class="shop-discovery">.*?</section>',
-              '', html, count=1, flags=re.S
-          )
-          html, objective_removed = re.subn(
-              r'\s*<section class="objectives">.*?</section>',
-              '', html, count=1, flags=re.S
-          )
-
-          # Reduce common inline icon sizing attributes by replacing them with classes.
-          def replace_icon_style(match):
-              tag = match.group(0)
-              size = match.group('size')
-              style = match.group('style')
-              # Only migrate pure width/height declarations. Coloured social icons keep their colour declaration.
-              declarations = [x.strip() for x in style.strip().strip(';').split(';') if x.strip()]
-              pure = all(d.startswith('width:') or d.startswith('height:') for d in declarations)
-              if not pure:
-                  return tag
-              class_name = f'tds-icon-{size}'
-              tag = re.sub(r'\sstyle="[^"]*"', '', tag, count=1)
-              if re.search(r'\sclass="', tag):
-                  tag = re.sub(r'class="([^"]*)"', lambda m: f'class="{m.group(1)} {class_name}"', tag, count=1)
-              else:
-                  tag = tag[:-1] + f' class="{class_name}">' if tag.endswith('>') else tag
-              return tag
-
-          icon_pattern = re.compile(
-              r'<(?:i|svg)\b[^>]*style="(?P<style>width:\s*(?P<size>14|16|18|20)px;\s*height:\s*(?P=size)px;?)"[^>]*>',
-              re.I
-          )
-          html = icon_pattern.sub(replace_icon_style, html)
-
-          # Remove trivial inline styling from the brand link. It belongs in CSS.
+          html, shop_removed = re.subn(r'\s*<section class="shop-discovery">.*?</section>', '', html, count=1, flags=re.S)
+          html, objective_removed = re.subn(r'\s*<section class="objectives">.*?</section>', '', html, count=1, flags=re.S)
           html = html.replace(' class="logo" style="text-decoration: none; cursor: pointer;"', ' class="logo"', 1)
-
-          # Remove individual card entrance animations. Keep major-section motion only.
           html = re.sub(r'(<div class="card"[^>]*?)\sdata-aos="[^"]*"(?:\sdata-aos-delay="[^"]*")?', r'\1', html)
           html = re.sub(r'(<div class="contact-card"[^>]*?)\sdata-aos="[^"]*"(?:\sdata-aos-delay="[^"]*")?', r'\1', html)
+          index.write_text('\n'.join(line.rstrip() for line in html.splitlines()) + '\n', encoding='utf-8')
 
-          index.write_text(html, encoding='utf-8')
-
-          css_path = Path('styles/homepage.css')
-          css = css_path.read_text(encoding='utf-8')
-          css += r'''
-
-/* Final visual discipline pass */
-.logo { text-decoration: none; cursor: pointer; }
-.tds-icon-14 { width: 14px !important; height: 14px !important; }
-.tds-icon-16 { width: 16px !important; height: 16px !important; }
-.tds-icon-18 { width: 18px !important; height: 18px !important; }
-.tds-icon-20 { width: 20px !important; height: 20px !important; }
-
-.hero,.hero-section,.page-hero { padding-top: 88px !important; padding-bottom: 72px !important; }
-
-/* Flat premium surfaces. Gradients remain only where they carry image legibility. */
-.core-highlights-slider,
-.services,
-.services-section,
-.telemedicine-explainer,
-.trust-assurance,
-.location,
-.site-footer {
-  background-image: none !important;
-}
-.core-highlights-slider { background-color: #f8fafc !important; }
-.services,.services-section,.telemedicine-explainer,.trust-assurance { background-color: #fff !important; }
-.location,.site-footer { background-color: var(--tds-navy) !important; }
-
-.core-proof-chip,
-.core-slide-meta span,
-.telemedicine-explainer-tags span,
-.trust-assurance-kicker,
-.site-footer-chip,
-.site-footer-kicker {
-  border-radius: var(--tds-radius) !important;
-  background-image: none !important;
-  box-shadow: none !important;
-}
-
-.services-grid > .card,
-.info-focus-card,
-.trust-proof-card,
-.contact-card,
-.trust-assurance-panel,
-.trust-faq-card {
-  box-shadow: 0 6px 18px rgba(15,23,42,.07) !important;
-}
-
-/* Do not conceal an oversized child as the primary overflow strategy. */
-main, section, footer, .core-slider-shell, .location-grid, .site-footer-grid,
-.services-grid, .telemedicine-explainer-grid, .trust-assurance-grid {
-  min-width: 0 !important;
-  max-width: 100% !important;
-}
-.core-slide, .core-slide-copy, .core-slide-visual, .map-column, .location-content,
-.site-footer-brand, .site-footer-column { min-width: 0 !important; }
-
-@media (max-width: 720px) {
-  .hero,.hero-section,.page-hero { padding-top: 78px !important; padding-bottom: 44px !important; }
-}
-'''
-          css_path.write_text(css, encoding='utf-8')
-
-          # Remove duplicate keyframe declarations from extracted legacy CSS, keeping the first occurrence.
           legacy_path = Path('styles/index-legacy.css')
           legacy = legacy_path.read_text(encoding='utf-8')
           keyframe_re = re.compile(r'@(?:-webkit-)?keyframes\s+([A-Za-z0-9_-]+)\s*\{')
@@ -140,34 +40,30 @@ main, section, footer, .core-slider-shell, .location-grid, .site-footer-grid,
           removals = []
           pos = 0
           while True:
-              m = keyframe_re.search(legacy, pos)
-              if not m:
+              match = keyframe_re.search(legacy, pos)
+              if not match:
                   break
               depth = 0
-              i = legacy.find('{', m.start())
-              j = i
-              while j < len(legacy):
-                  if legacy[j] == '{': depth += 1
-                  elif legacy[j] == '}':
+              start_brace = legacy.find('{', match.start())
+              cursor = start_brace
+              while cursor < len(legacy):
+                  if legacy[cursor] == '{':
+                      depth += 1
+                  elif legacy[cursor] == '}':
                       depth -= 1
                       if depth == 0:
-                          j += 1
+                          cursor += 1
                           break
-                  j += 1
-              name = m.group(1)
+                  cursor += 1
+              name = match.group(1)
               if name in seen:
-                  removals.append((m.start(), j))
+                  removals.append((match.start(), cursor))
               else:
                   seen.add(name)
-              pos = max(j, m.end())
+              pos = max(cursor, match.end())
           for start, end in reversed(removals):
               legacy = legacy[:start] + legacy[end:]
-          legacy_path.write_text(legacy, encoding='utf-8')
-
-          # Normalize whitespace.
-          for path in [index, css_path, legacy_path]:
-              text = path.read_text(encoding='utf-8')
-              path.write_text('\n'.join(line.rstrip() for line in text.splitlines()) + '\n', encoding='utf-8')
+          legacy_path.write_text('\n'.join(line.rstrip() for line in legacy.splitlines()) + '\n', encoding='utf-8')
 
           print('shop section removed:', shop_removed)
           print('redundant CTA section removed:', objective_removed)
@@ -183,14 +79,14 @@ main, section, footer, .core-slider-shell, .location-grid, .site-footer-grid,
           node --check scripts/mobile-navigation.js
           git diff --check
           test "$(grep -c '<footer' index.html)" -eq 1
+          test "$(grep -c '</footer>' index.html)" -eq 1
           ! grep -q 'legal-links-section' index.html
           ! grep -q 'map-brand-badge' index.html
           ! grep -q '<section class="shop-discovery"' index.html
           ! grep -q '<section class="objectives"' index.html
           grep -q 'site-footer-legal-links' index.html
-          grep -q 'grid-template-columns:repeat(4' styles/homepage.css
-          grep -q '@media(max-width:1080px)' styles/homepage.css
-          grep -q '@media(max-width:720px)' styles/homepage.css
+          grep -q '/styles/homepage.css?v=20260909' index.html
+          grep -q '/scripts/navigation.js' index.html
 
       - name: Commit final cleanup
         shell: bash
@@ -200,5 +96,5 @@ main, section, footer, .core-slider-shell, .location-grid, .site-footer-grid,
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -m "refactor: tighten homepage rhythm and visual system"
+          git commit -m "refactor: tighten homepage rhythm and animation system"
           git push
