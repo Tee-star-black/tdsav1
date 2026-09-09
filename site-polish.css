@@ -1,3 +1,5 @@
+@import url('/site-global-v2.css?v=20260909');
+
 /* TeleDoctorSA production polish | compact pass 2026-09-09 */
 :root {
   --tds-content-width: 1240px;
@@ -260,8 +262,7 @@ section h2 {
   padding-bottom: clamp(40px, 4.5vw, 62px) !important;
 }
 
-/* One footer only. Remove the old mobile/legacy footer and the extra bottom strip. */
-.footer,
+/* Legacy mobile footer stays hidden. Shared v2 CSS restores real legacy footers. */
 .footer-mobile {
   display: none !important;
   position: static !important;
@@ -349,9 +350,6 @@ footer.site-footer,
 .site-footer a,
 .site-footer span,
 .site-footer p { overflow-wrap: anywhere; }
-
-/* This was reading as a second footer. Keep the useful content in the main footer only. */
-.site-footer-bottom { display: none !important; }
 
 .tds-global-panel,
 .mobile-overlay { max-width: 100% !important; }
