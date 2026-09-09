@@ -2270,10 +2270,7 @@
             animation: pulse 10s ease-in-out infinite reverse;
         }
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
-            50% { transform: scale(1.1) rotate(10deg); opacity: 0.8; }
-        }
+
 
         .tech-showcase-decorator {
             position: absolute;
@@ -3090,14 +3087,7 @@
             }
         }
 
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-20px);
-            }
-        }
+
 
         .services-header { margin-bottom: 60px; }
         .services-header h2 { font-size: 2.8rem; font-weight: 800; letter-spacing: -1.5px; }
@@ -3827,16 +3817,7 @@
             clip-path: polygon(0 15%, 15% 0, 100% 0, 100% 100%, 0 100%);
         }
 
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-                opacity: 0.5;
-            }
-            50% {
-                transform: scale(1.2);
-                opacity: 0.8;
-            }
-        }
+
 
         .location-grid {
             display: grid;
