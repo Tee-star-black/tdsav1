@@ -4,17 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Cookie Policy | TeleDoctorSA</title>
-  <meta name="description" content="Read the TeleDoctorSA Cookie Policy, including how cookies and similar technologies may be used on the TeleDoctorSA website and how visitors can manage them.">
+  <meta name="description" content="Understand how TeleDoctorSA uses cookies and browser storage, which technologies are essential, and how to manage your preferences.">
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#0F172A">
   <link rel="canonical" href="https://teledoctorsa.co.za/cookies-policy">
   <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/android-chrome-192x192.png">
   <link rel="manifest" href="/site.webmanifest">
+
+  <meta property="og:title" content="Cookie Policy | TeleDoctorSA">
+  <meta property="og:description" content="Learn how TeleDoctorSA uses cookies and browser storage and how to manage your preferences.">
+  <meta property="og:url" content="https://teledoctorsa.co.za/cookies-policy">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="TeleDoctorSA">
+  <meta property="og:locale" content="en_ZA">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles/production-fixes.css?v=20260909">
+
   <style>
     :root {
       --navy: #0f172a;
@@ -24,34 +33,37 @@
       --line: #e2e8f0;
       --soft: #f8fafc;
       --white: #ffffff;
-      --max: 980px;
+      --max: 1120px;
     }
 
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     body {
       margin: 0;
+      min-height: 100vh;
       font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
       color: var(--ink);
       background: #fff;
-      line-height: 1.7;
+      line-height: 1.65;
       -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
     }
+
+    a { color: inherit; }
 
     nav {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 24px;
       min-height: 68px;
-      padding: 10px 5%;
+      padding: 10px max(18px, 5vw);
       background: rgba(255,255,255,.98);
       border-bottom: 1px solid var(--line);
       z-index: 1000;
     }
 
     .logo {
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 10px;
       color: var(--navy);
@@ -59,123 +71,231 @@
       font-weight: 800;
     }
 
-    .logo img { width: 42px; height: 42px; object-fit: contain; }
-    .logo-text { font-size: 1.15rem; }
+    .logo img { width: 40px; height: 40px; object-fit: contain; }
+    .logo-text { font-size: 1.08rem; }
     .logo-text span { color: var(--orange); }
-
-    .nav-links { display: flex; align-items: center; gap: 22px; }
-    .nav-links a { color: var(--navy); text-decoration: none; font-size: .9rem; font-weight: 700; }
+    .nav-links { display: flex; align-items: center; gap: 20px; }
+    .nav-links a { text-decoration: none; font-size: .86rem; font-weight: 700; }
     .hamburger { display: none; }
     .mobile-overlay { display: none; }
 
     .policy-hero {
-      padding: 118px 24px 56px;
+      padding: 104px 0 50px;
       background: var(--navy);
       color: #fff;
     }
 
-    .policy-hero-inner,
-    .policy-wrap { width: min(var(--max), calc(100% - 36px)); margin: 0 auto; }
+    .policy-shell {
+      width: min(var(--max), calc(100% - 40px));
+      margin: 0 auto;
+    }
+
     .policy-kicker {
       display: inline-block;
-      margin-bottom: 12px;
+      margin-bottom: 11px;
       color: #ffab76;
-      font-size: .74rem;
+      font-size: .72rem;
       font-weight: 800;
       letter-spacing: .13em;
       text-transform: uppercase;
     }
 
     .policy-hero h1 {
-      max-width: 760px;
+      max-width: 680px;
       margin: 0;
-      font-size: clamp(2.4rem, 7vw, 4.8rem);
-      line-height: 1;
+      font-size: clamp(2.5rem, 7vw, 4.5rem);
+      line-height: .98;
       letter-spacing: -.05em;
     }
 
     .policy-hero p {
       max-width: 720px;
-      margin: 18px 0 0;
+      margin: 16px 0 0;
       color: rgba(255,255,255,.76);
-      font-size: 1rem;
+      font-size: .98rem;
     }
 
     .policy-meta {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px 14px;
-      margin-top: 22px;
-      color: rgba(255,255,255,.65);
-      font-size: .8rem;
+      gap: 8px 16px;
+      margin-top: 18px;
+      color: rgba(255,255,255,.62);
+      font-size: .76rem;
     }
 
-    .policy-wrap { padding: 52px 0 72px; }
-    .policy-card {
-      margin-bottom: 16px;
-      padding: 26px;
+    .policy-main {
+      width: min(var(--max), calc(100% - 40px));
+      margin: 0 auto;
+      padding: 42px 0 70px;
+      display: grid;
+      grid-template-columns: minmax(0, .72fr) minmax(0, 1.8fr);
+      gap: 34px;
+      align-items: start;
+    }
+
+    .policy-summary {
+      position: sticky;
+      top: 86px;
+      padding: 20px;
       border: 1px solid var(--line);
-      background: var(--white);
+      background: var(--soft);
     }
 
-    .policy-card h2 {
+    .policy-summary h2 {
       margin: 0 0 10px;
-      color: var(--navy);
-      font-size: 1.35rem;
-      line-height: 1.2;
-      letter-spacing: -.025em;
-    }
-
-    .policy-card h3 {
-      margin: 22px 0 8px;
       color: var(--navy);
       font-size: 1rem;
     }
 
-    .policy-card p { margin: 0 0 12px; color: #475569; }
+    .policy-summary p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: .84rem;
+    }
+
+    .policy-summary nav {
+      min-height: 0;
+      padding: 0;
+      display: grid;
+      gap: 7px;
+      background: transparent;
+      border: 0;
+      position: static !important;
+    }
+
+    .policy-summary nav a,
+    .policy-summary button {
+      display: block;
+      width: 100%;
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      text-align: left;
+      text-decoration: none;
+      font: 700 .78rem/1.25 'Plus Jakarta Sans', system-ui, sans-serif;
+      cursor: pointer;
+    }
+
+    .policy-summary button {
+      margin-top: 4px;
+      border-color: var(--orange);
+      background: var(--orange);
+      color: var(--navy);
+    }
+
+    .policy-content { min-width: 0; }
+
+    .policy-card {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--line);
+      scroll-margin-top: 92px;
+    }
+
+    .policy-card:first-child { padding-top: 0; }
+    .policy-card:last-child { border-bottom: 0; }
+
+    .policy-card h2 {
+      margin: 0 0 10px;
+      color: var(--navy);
+      font-size: clamp(1.25rem, 3vw, 1.6rem);
+      line-height: 1.18;
+      letter-spacing: -.025em;
+    }
+
+    .policy-card h3 {
+      margin: 20px 0 7px;
+      color: var(--navy);
+      font-size: .98rem;
+    }
+
+    .policy-card p { margin: 0 0 11px; color: #475569; font-size: .94rem; }
     .policy-card p:last-child { margin-bottom: 0; }
-    .policy-card ul { margin: 10px 0 0; padding-left: 20px; color: #475569; }
-    .policy-card li + li { margin-top: 8px; }
-    .policy-card a { color: #c85d22; }
+    .policy-card ul { margin: 9px 0 0; padding-left: 19px; color: #475569; font-size: .94rem; }
+    .policy-card li + li { margin-top: 7px; }
+    .policy-card a { color: #b95522; }
+
+    .policy-table-wrap {
+      margin-top: 14px;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+    }
+
+    .policy-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 620px;
+      font-size: .84rem;
+    }
+
+    .policy-table th,
+    .policy-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .policy-table th {
+      background: var(--soft);
+      color: var(--navy);
+      font-size: .75rem;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .policy-table tr:last-child td { border-bottom: 0; }
 
     .policy-note {
-      padding: 18px 20px;
+      margin-top: 14px;
+      padding: 15px 16px;
       border-left: 3px solid var(--orange);
       background: var(--soft);
       color: #475569;
-      font-size: .92rem;
+      font-size: .86rem;
     }
 
     .site-footer { background: var(--navy); color: #fff; }
-    .site-footer-shell { width: min(1200px, calc(100% - 40px)); margin: 0 auto; padding: 34px 0 20px; }
-    .site-footer-grid { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 28px; }
+    .site-footer-shell { width: min(1200px, calc(100% - 40px)); margin: 0 auto; padding: 32px 0 18px; }
+    .site-footer-grid { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 26px; }
     .site-footer-brandline { display: flex; align-items: center; gap: 10px; }
-    .site-footer-brandline img { width: 40px; height: 40px; object-fit: contain; }
+    .site-footer-brandline img { width: 38px; height: 38px; object-fit: contain; }
     .site-footer-brandline strong { display: block; }
     .site-footer-brandline span,
     .site-footer-brand p,
     .site-footer-list a,
     .site-footer-list span,
     .site-footer-legal-links a,
-    .site-footer-copyright { color: rgba(255,255,255,.7); font-size: .82rem; }
-    .site-footer-brand p { max-width: 440px; }
-    .site-footer-column h3 { margin: 0 0 10px; font-size: .9rem; }
-    .site-footer-list { display: flex; flex-direction: column; gap: 7px; }
+    .site-footer-copyright,
+    .site-footer-legal-links button { color: rgba(255,255,255,.7); font-size: .79rem; }
+    .site-footer-brand p { max-width: 420px; }
+    .site-footer-column h3 { margin: 0 0 9px; font-size: .88rem; }
+    .site-footer-list { display: flex; flex-direction: column; gap: 6px; }
     .site-footer-list a,
     .site-footer-legal-links a { text-decoration: none; }
-    .site-footer-bottom { display: flex; justify-content: space-between; gap: 20px; margin-top: 24px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,.12); }
+    .site-footer-bottom { display: flex; justify-content: space-between; gap: 20px; margin-top: 22px; padding-top: 13px; border-top: 1px solid rgba(255,255,255,.12); }
     .site-footer-legal-links { display: flex; flex-wrap: wrap; gap: 8px 14px; }
 
     @media (max-width: 900px) {
-      .policy-hero { padding-top: 96px; }
+      .policy-hero { padding-top: 92px; }
+      .policy-main { grid-template-columns: 1fr; gap: 22px; }
+      .policy-summary { position: static; }
+      .policy-summary nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .site-footer-grid { grid-template-columns: 1fr 1fr; }
       .site-footer-brand { grid-column: 1 / -1; }
     }
 
     @media (max-width: 640px) {
-      .policy-hero { padding: 92px 0 42px; }
-      .policy-wrap { padding: 34px 0 52px; }
-      .policy-card { padding: 20px 18px; }
+      .policy-shell,
+      .policy-main,
+      .site-footer-shell { width: calc(100% - 28px); }
+      .policy-hero { padding: 82px 0 36px; }
+      .policy-hero h1 { font-size: 2.6rem; }
+      .policy-main { padding: 26px 0 48px; }
+      .policy-summary { padding: 16px; }
+      .policy-summary nav { grid-template-columns: 1fr; }
+      .policy-card { padding: 20px 0; }
       .site-footer-grid { grid-template-columns: 1fr; }
       .site-footer-brand { grid-column: auto; }
       .site-footer-bottom { flex-direction: column; align-items: flex-start; }
@@ -184,9 +304,10 @@
 </head>
 <body>
   <div class="mobile-overlay" id="mobileOverlay"></div>
+
   <nav>
     <a href="/" class="logo">
-      <img src="/images/rebuild/logo.png" alt="TeleDoctorSA logo">
+      <img src="/images/rebuild/logo.png" alt="TeleDoctorSA logo" width="40" height="40">
       <span class="logo-text">Teledoctor<span>SA</span></span>
     </a>
     <button class="hamburger" id="hamburgerBtn" aria-label="Open menu" aria-expanded="false">
@@ -202,10 +323,10 @@
   </nav>
 
   <header class="policy-hero">
-    <div class="policy-hero-inner">
+    <div class="policy-shell">
       <span class="policy-kicker">Legal & privacy</span>
       <h1>Cookie Policy</h1>
-      <p>This policy explains how TeleDoctorSA may use cookies, browser storage, and similar technologies when you use our public website.</p>
+      <p>A clear explanation of the browser storage and related technologies that may be used when you visit TeleDoctorSA.</p>
       <div class="policy-meta">
         <span>Last updated: 9 September 2026</span>
         <span>TeleDoctorSA · South Africa</span>
@@ -213,53 +334,73 @@
     </div>
   </header>
 
-  <main class="policy-wrap">
-    <section class="policy-card">
-      <h2>1. What cookies are</h2>
-      <p>Cookies are small text files or similar browser technologies that can be stored on your device when you visit a website. They can help a site remember preferences, support essential functions, or understand how visitors use the site.</p>
-    </section>
+  <main class="policy-main">
+    <aside class="policy-summary" aria-label="Cookie policy summary">
+      <h2>Quick summary</h2>
+      <p>Essential storage supports the website. Optional technologies should only be used when enabled and appropriate.</p>
+      <nav aria-label="Cookie policy sections">
+        <a href="#categories">Cookie categories</a>
+        <a href="#third-parties">Third parties</a>
+        <a href="#managing">Managing cookies</a>
+        <a href="#contact">Contact</a>
+        <button type="button" data-cookie-settings>Cookie settings</button>
+      </nav>
+    </aside>
 
-    <section class="policy-card">
-      <h2>2. How TeleDoctorSA uses cookies</h2>
-      <p>TeleDoctorSA aims to keep the use of cookies and similar technologies limited and proportionate. Depending on the features available on the website, the following categories may be used:</p>
-      <h3>Essential technologies</h3>
-      <p>These support basic site functions, security, navigation, form behaviour, or remembering a choice that is necessary for the website to work as expected.</p>
-      <h3>Preference technologies</h3>
-      <p>These may remember settings or choices you make so the website can provide a more consistent experience on a later visit.</p>
-      <h3>Analytics technologies</h3>
-      <p>If analytics tools are enabled on the website, they may collect information such as page visits, device type, browser type, approximate location, and interaction patterns. TeleDoctorSA should use this information to understand website performance and improve the user experience, not to make clinical decisions.</p>
-    </section>
+    <div class="policy-content">
+      <section class="policy-card" id="overview">
+        <h2>What cookies are</h2>
+        <p>Cookies are small text files or similar browser technologies stored on your device when you visit a website. They can support essential site functions, remember preferences, or help website owners understand how visitors use a service.</p>
+      </section>
 
-    <section class="policy-card">
-      <h2>3. Third-party services</h2>
-      <p>Some pages may link to or load services operated by third parties. These services may process information according to their own privacy and cookie practices.</p>
-      <ul>
-        <li><strong>WhatsApp:</strong> when you choose to contact or book with TeleDoctorSA through WhatsApp, you leave the TeleDoctorSA website and interact with a Meta service.</li>
-        <li><strong>Google services:</strong> some pages may use Google-hosted fonts, maps, or other Google services. Their handling of information is governed by their own terms and privacy documentation.</li>
-        <li><strong>Embedded or external services:</strong> other external platforms may receive technical information when you actively load or follow their content.</li>
-      </ul>
-    </section>
+      <section class="policy-card" id="categories">
+        <h2>How TeleDoctorSA uses browser technologies</h2>
+        <p>TeleDoctorSA aims to keep the use of cookies and similar technologies limited and proportionate.</p>
+        <div class="policy-table-wrap" role="region" aria-label="Cookie categories" tabindex="0">
+          <table class="policy-table">
+            <thead>
+              <tr><th>Category</th><th>Purpose</th><th>Typical status</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Essential</strong></td><td>Navigation, security, form behaviour and remembering necessary choices.</td><td>Required for site operation</td></tr>
+              <tr><td><strong>Preferences</strong></td><td>Remembering settings that make repeat visits more consistent.</td><td>Optional where used</td></tr>
+              <tr><td><strong>Analytics</strong></td><td>Understanding page visits, devices and interaction patterns to improve website performance.</td><td>Optional where enabled</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
 
-    <section class="policy-card">
-      <h2>4. What cookies are not used for</h2>
-      <p>Cookies on the public TeleDoctorSA website should not be used to diagnose medical conditions, make automated treatment decisions, or replace a consultation with a qualified healthcare professional.</p>
-      <div class="policy-note">Clinical information submitted through a dedicated TeleDoctorSA care platform may be governed by additional privacy, consent, and security terms separate from this public website policy.</div>
-    </section>
+      <section class="policy-card" id="third-parties">
+        <h2>Third-party services</h2>
+        <p>Some pages may link to or load services operated by third parties. Those services may process information according to their own privacy and cookie practices.</p>
+        <ul>
+          <li><strong>WhatsApp:</strong> booking or contacting TeleDoctorSA through WhatsApp takes you to a Meta service.</li>
+          <li><strong>Google services:</strong> some pages may use Google-hosted fonts, maps, or other Google services.</li>
+          <li><strong>Other external services:</strong> external platforms may receive technical information when you actively open or load their content.</li>
+        </ul>
+      </section>
 
-    <section class="policy-card">
-      <h2>5. Managing cookies</h2>
-      <p>You can usually control or delete cookies through your browser settings. Blocking some cookies may affect how certain website features work. Browser controls vary, so refer to your browser's privacy or site-data settings for the available options.</p>
-    </section>
+      <section class="policy-card" id="clinical">
+        <h2>Clinical information</h2>
+        <p>Cookies on the public TeleDoctorSA website should not be used to diagnose medical conditions, make automated treatment decisions, or replace consultation with a qualified healthcare professional.</p>
+        <div class="policy-note">Clinical information submitted through a dedicated TeleDoctorSA care platform may be governed by additional privacy, consent and security terms separate from this public website policy.</div>
+      </section>
 
-    <section class="policy-card">
-      <h2>6. Changes to this policy</h2>
-      <p>TeleDoctorSA may update this Cookie Policy when website functionality, third-party services, or legal requirements change. The latest revision date will appear at the top of this page.</p>
-    </section>
+      <section class="policy-card" id="managing">
+        <h2>Managing your preferences</h2>
+        <p>You can use the Cookie Settings control on this page to review the website preference prompt again. You can also control or delete cookies through your browser settings. Blocking essential browser storage may affect how certain website features work.</p>
+      </section>
 
-    <section class="policy-card">
-      <h2>7. Contact</h2>
-      <p>For questions about this Cookie Policy or how information is handled on the TeleDoctorSA website, contact <a href="mailto:info@teledoctorsa.co.za">info@teledoctorsa.co.za</a> or use the <a href="/contact-us">contact page</a>.</p>
-    </section>
+      <section class="policy-card" id="changes">
+        <h2>Changes to this policy</h2>
+        <p>TeleDoctorSA may update this Cookie Policy when website functionality, third-party services, or legal requirements change. The latest revision date will appear at the top of this page.</p>
+      </section>
+
+      <section class="policy-card" id="contact">
+        <h2>Contact</h2>
+        <p>For questions about this Cookie Policy or website privacy, email <a href="mailto:info@teledoctorsa.co.za">info@teledoctorsa.co.za</a> or use the <a href="/contact-us">contact page</a>.</p>
+      </section>
+    </div>
   </main>
 
   <footer class="site-footer">
@@ -267,7 +408,7 @@
       <div class="site-footer-grid">
         <div class="site-footer-brand">
           <div class="site-footer-brandline">
-            <img src="/images/rebuild/logo.png" alt="TeleDoctorSA logo">
+            <img src="/images/rebuild/logo.png" alt="TeleDoctorSA logo" width="38" height="38" loading="lazy">
             <div><strong>TeleDoctorSA</strong><span>Connected care platform</span></div>
           </div>
           <p>Virtual consultations, connected monitoring, patient app access and secure digital care pathways.</p>
@@ -296,13 +437,13 @@
           <a href="/privacy-policy">Privacy Policy</a>
           <a href="/cookies-policy">Cookie Policy</a>
           <a href="/legal-notice">Legal Notice</a>
+          <button type="button" class="tds-cookie-settings-link" data-cookie-settings>Cookie Settings</button>
         </div>
       </div>
     </div>
   </footer>
 
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <script src="/scripts/navigation.js"></script>
-  <script src="/scripts/rebuild-images.js"></script>
+  <script src="/scripts/navigation.js" defer></script>
+  <script src="/scripts/rebuild-images.js" defer></script>
 </body>
 </html>
