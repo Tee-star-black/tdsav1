@@ -239,71 +239,90 @@ footer.site-footer,
 }
 .site-footer-legal-links a:hover { color: #fff !important; }
 
-/* Homepage hero image: a deliberate editorial split, not another floating card. */
+/* Homepage hero: clinical image is the background, not a separate image card. */
+.core-highlights-slider {
+  position: relative !important;
+  background-image:
+    linear-gradient(90deg, rgba(15, 23, 42, .94) 0%, rgba(15, 23, 42, .86) 46%, rgba(15, 23, 42, .58) 100%),
+    url('/images/rebuild/01-clinical-team-at-work.jpg') !important;
+  background-size: cover !important;
+  background-position: center 36% !important;
+  background-repeat: no-repeat !important;
+  background-color: var(--tds-navy) !important;
+  color: #fff !important;
+}
+
+.core-slider-shell {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
 .core-slider-intro {
-  display: grid !important;
-  grid-template-columns: minmax(0, 1.05fr) minmax(340px, .95fr) !important;
-  column-gap: 42px !important;
-  row-gap: 16px !important;
-  align-items: center !important;
+  display: block !important;
+  width: min(760px, 100%) !important;
+  max-width: 760px !important;
+  margin: 0 !important;
+  padding: 88px 0 68px !important;
   text-align: left !important;
 }
-.core-slider-intro > h1,
-.core-slider-intro > p,
-.core-slider-intro > .core-slider-actions,
-.core-slider-intro > .core-proof-strip {
-  grid-column: 1 !important;
-  min-width: 0 !important;
+
+.core-slider-intro > h1 {
+  max-width: 720px !important;
+  margin: 0 0 14px !important;
+  color: #fff !important;
 }
-.core-slider-intro > h1 { margin-bottom: 0 !important; }
-.core-slider-intro > p { margin: 0 !important; }
+
+.core-slider-intro > p {
+  max-width: 620px !important;
+  margin: 0 0 22px !important;
+  color: rgba(255, 255, 255, .78) !important;
+}
+
 .core-slider-intro .core-slider-actions,
 .core-slider-intro .core-proof-strip {
   justify-content: flex-start !important;
 }
+
+.core-slider-intro .core-slider-actions {
+  margin-bottom: 18px !important;
+}
+
+.core-slider-intro .core-slider-secondary {
+  color: #fff !important;
+  border-color: rgba(255, 255, 255, .28) !important;
+  background: rgba(15, 23, 42, .18) !important;
+  backdrop-filter: blur(4px);
+}
+
+.core-slider-intro .core-slider-secondary:hover {
+  border-color: rgba(255, 255, 255, .55) !important;
+  background: rgba(15, 23, 42, .34) !important;
+}
+
+.core-slider-intro .core-proof-chip {
+  color: rgba(255, 255, 255, .9) !important;
+  background: rgba(15, 23, 42, .38) !important;
+  border-color: rgba(255, 255, 255, .16) !important;
+  box-shadow: none !important;
+}
+
 .home-hero-media {
-  grid-column: 2 !important;
-  grid-row: 1 / span 4 !important;
-  align-self: stretch !important;
-  min-width: 0 !important;
-  min-height: 360px !important;
-  position: relative !important;
-  overflow: hidden !important;
-  border-radius: var(--tds-radius) !important;
-  border-top: 3px solid var(--tds-orange) !important;
-  background: var(--tds-navy) !important;
-  box-shadow: 0 14px 34px rgba(15, 23, 42, .12) !important;
+  display: none !important;
 }
-.home-hero-media img {
-  display: block !important;
-  width: 100% !important;
-  height: 100% !important;
-  min-height: 360px !important;
-  object-fit: cover !important;
-  object-position: center !important;
-}
-.home-hero-media figcaption {
-  position: absolute !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  padding: 12px 14px !important;
-  background: rgba(15, 23, 42, .9) !important;
-  color: rgba(255,255,255,.9) !important;
-  font-size: .78rem !important;
-  line-height: 1.4 !important;
+
+/* Keep the content slider itself crisp against the image-backed hero. */
+.core-slide {
+  background-color: rgba(255, 255, 255, .97) !important;
 }
 
 /* Final visual discipline pass */
 .logo { text-decoration: none; cursor: pointer; }
-.core-highlights-slider,
 .services,
 .services-section,
 .telemedicine-explainer,
 .trust-assurance,
 .location,
 .site-footer { background-image: none !important; }
-.core-highlights-slider { background-color: #f8fafc !important; }
 .services,
 .services-section,
 .telemedicine-explainer,
@@ -358,31 +377,22 @@ footer,
   .map-container { min-height: 330px !important; }
   .site-footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
   .core-slider-intro {
-    grid-template-columns: minmax(0, 1fr) minmax(300px, .8fr) !important;
-    column-gap: 28px !important;
+    width: min(700px, 100%) !important;
+    padding: 76px 0 58px !important;
   }
-  .home-hero-media,
-  .home-hero-media img { min-height: 320px !important; }
 }
 
 @media (max-width: 860px) {
+  .core-highlights-slider {
+    background-image:
+      linear-gradient(90deg, rgba(15, 23, 42, .93) 0%, rgba(15, 23, 42, .84) 58%, rgba(15, 23, 42, .68) 100%),
+      url('/images/rebuild/01-clinical-team-at-work.jpg') !important;
+    background-position: 58% center !important;
+  }
   .core-slider-intro {
-    grid-template-columns: 1fr !important;
-    gap: 18px !important;
+    width: min(640px, 100%) !important;
+    padding: 68px 0 54px !important;
   }
-  .core-slider-intro > h1,
-  .core-slider-intro > p,
-  .core-slider-intro > .core-slider-actions,
-  .core-slider-intro > .core-proof-strip,
-  .home-hero-media {
-    grid-column: 1 !important;
-  }
-  .home-hero-media {
-    grid-row: auto !important;
-    min-height: 280px !important;
-    margin-top: 4px !important;
-  }
-  .home-hero-media img { min-height: 280px !important; }
 }
 
 @media (max-width: 720px) {
@@ -425,14 +435,25 @@ footer,
     flex-direction: column !important;
   }
   .site-footer-legal-links { justify-content: flex-start !important; }
-  .home-hero-media,
-  .home-hero-media img { min-height: 230px !important; }
+  .core-highlights-slider {
+    background-image:
+      linear-gradient(rgba(15, 23, 42, .88), rgba(15, 23, 42, .9)),
+      url('/images/rebuild/01-clinical-team-at-work.jpg') !important;
+    background-position: 62% center !important;
+  }
+  .core-slider-intro {
+    width: 100% !important;
+    padding: 56px 0 46px !important;
+  }
+  .core-slider-intro .core-slider-actions {
+    gap: 8px !important;
+  }
 }
 
 @media (max-width: 520px) {
-  .home-hero-media,
-  .home-hero-media img { min-height: 205px !important; }
-  .home-hero-media figcaption { font-size: .72rem !important; }
+  .core-slider-intro {
+    padding: 50px 0 42px !important;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
