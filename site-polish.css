@@ -31,6 +31,27 @@ body > *, main, header, footer, section { min-width: 0; max-width: 100%; }
 img, video, iframe, svg { max-width: 100%; }
 img, video { height: auto; }
 
+/* AOS fail-safe: content must never disappear because an animation CDN or script failed. */
+[data-aos],
+[data-aos][class],
+.aos-init,
+.aos-animate {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
+}
+
+/* The floating bottom mobile dock has been retired. Keep any stale cached copy invisible. */
+.tds-mobile-nav,
+.tds-offer-sheet,
+.tds-offer-sheet-backdrop {
+  display: none !important;
+}
+
+body {
+  padding-bottom: 0 !important;
+}
+
 /* Keep the navigation crisp and visually lighter. */
 nav:not(.tds-mobile-nav) {
   left: 0 !important;
