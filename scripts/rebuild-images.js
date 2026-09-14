@@ -22,5 +22,6 @@
   loadStyleOnce('tds-center-alignment-loader', '/styles/center-alignment.css?v=20260914');
   loadOnce('tds-rebuild-images-core-loader', '/scripts/rebuild-images-core.js');
   loadOnce('tds-unified-mobile-nav-loader', '/scripts/mobile-nav.js');
+  loadOnce('tds-editorial-mega-menu-loader', '/scripts/mega-menu.js');
   loadOnce('tds-footer-full-bleed-guard-loader', '/scripts/footer-full-bleed-guard.js');
 })();
