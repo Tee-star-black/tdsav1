@@ -21,43 +21,92 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Inject shared experience script into all root HTML pages
+      - name: Normalize shared experience loader across HTML pages
         shell: python
         run: |
           from pathlib import Path
+          import re
 
-          pages = sorted(Path('.').glob('*.html'))
-          tag = '<script src="scripts/rebuild-images.js"></script>'
+          loader = '<script src="/scripts/rebuild-images.js"></script>'
+          loader_pattern = re.compile(
+              r'\s*<script\b[^>]*\bsrc=["\']/?scripts/rebuild-images\.js(?:\?[^"\']*)?["\'][^>]*>\s*</script>\s*',
+              re.I,
+          )
+          legacy_mobile_pattern = re.compile(
+              r'\s*<script\b[^>]*\bsrc=["\'][^"\']*mobile-navigation\.js(?:\?[^"\']*)?["\'][^>]*>\s*</script>\s*',
+              re.I,
+          )
+          marker_blocks = [
+              ('TDS_MOBILE_NAV_START', 'TDS_MOBILE_NAV_END'),
+              ('TDS_MOBILE_NAV_HTML_START', 'TDS_MOBILE_NAV_HTML_END'),
+              ('TDS_MOBILE_NAV_SCRIPT_START', 'TDS_MOBILE_NAV_SCRIPT_END'),
+          ]
 
-          for path in pages:
+          for path in sorted(Path('.').rglob('*.html')):
+              if '.git' in path.parts:
+                  continue
+
               text = path.read_text(encoding='utf-8-sig')
-              if tag in text:
-                  continue
+              original = text
 
-              if '<script src="scripts/support-chatbot.js"></script>' in text:
-                  text = text.replace(
-                      '<script src="scripts/support-chatbot.js"></script>',
-                      '<script src="scripts/support-chatbot.js"></script>\n    ' + tag,
-                      1
+              # Repair literal PowerShell escape text accidentally written into HTML.
+              text = text.replace('`r`n', '\n')
+
+              # Remove stale inline mobile-nav blocks from the older site layer.
+              for start, end in marker_blocks:
+                  text = re.sub(
+                      rf'\s*<!--\s*{re.escape(start)}\s*-->.*?<!--\s*{re.escape(end)}\s*-->\s*',
+                      '\n',
+                      text,
+                      flags=re.S,
                   )
-              elif '</body>' in text:
-                  text = text.replace('</body>', '    ' + tag + '\n</body>', 1)
+
+              text = legacy_mobile_pattern.sub('\n', text)
+
+              # Collapse every relative/absolute duplicate to one canonical loader.
+              text = loader_pattern.sub('\n', text)
+              if '</body>' in text:
+                  text = text.replace('</body>', f'    {loader}\n</body>', 1)
               else:
-                  print('skipped (no body):', path.name)
+                  print('skipped (no body):', path)
                   continue
 
-              path.write_text(text, encoding='utf-8')
-              print('updated', path.name)
+              if text != original:
+                  path.write_text(text, encoding='utf-8')
+                  print('updated', path)
+
+      - name: Validate loader normalization
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          bad = []
+          pattern = re.compile(r'<script\b[^>]*\bsrc=["\']/?scripts/rebuild-images\.js(?:\?[^"\']*)?["\'][^>]*>\s*</script>', re.I)
+
+          for path in sorted(Path('.').rglob('*.html')):
+              if '.git' in path.parts:
+                  continue
+              text = path.read_text(encoding='utf-8')
+              count = len(pattern.findall(text))
+              if count != 1 or '`r`n' in text:
+                  bad.append(f'{path}: loader_count={count}')
+
+          if bad:
+              raise SystemExit('Shared loader validation failed: ' + ', '.join(bad))
+
+          print('Shared loader validation passed')
 
       - name: Commit
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add '*.html'
+          git add -A -- '*.html' ':(glob)**/*.html'
           if git diff --cached --quiet; then
             echo "Nothing to commit"
             exit 0
           fi
-          git commit -m "chore: install shared TDSA experience across all pages"
+          git diff --cached --check
+          git commit -m "chore: normalize shared TDSA experience loader"
           git push
