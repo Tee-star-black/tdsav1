@@ -1,9 +1,10 @@
-name: Install visible rebuild images
+name: Install shared TeleDoctorSA experience
 
 on:
   push:
     paths:
       - 'scripts/rebuild-images.js'
+      - 'scripts/mobile-nav.js'
       - '.github/workflows/install-visible-rebuild-images.yml'
   workflow_dispatch:
 
@@ -20,44 +21,33 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Inject rebuild image script into primary pages
+      - name: Inject shared experience script into all root HTML pages
         shell: python
         run: |
           from pathlib import Path
 
-          pages = [
-              'index.html',
-              'about-us.html',
-              'our-services.html',
-              'app.html',
-              'ehr.html',
-              'ecg247.html',
-              'doctors.html',
-              'nurses.html',
-              'patients.html',
-              'telemedia-suite.html',
-          ]
-
+          pages = sorted(Path('.').glob('*.html'))
           tag = '<script src="scripts/rebuild-images.js"></script>'
 
-          for name in pages:
-              path = Path(name)
-              if not path.exists():
-                  continue
+          for path in pages:
               text = path.read_text(encoding='utf-8-sig')
               if tag in text:
                   continue
+
               if '<script src="scripts/support-chatbot.js"></script>' in text:
                   text = text.replace(
                       '<script src="scripts/support-chatbot.js"></script>',
-                      '<script src="scripts/support-chatbot.js"></script>\n    ' + tag
+                      '<script src="scripts/support-chatbot.js"></script>\n    ' + tag,
+                      1
                   )
               elif '</body>' in text:
                   text = text.replace('</body>', '    ' + tag + '\n</body>', 1)
               else:
+                  print('skipped (no body):', path.name)
                   continue
+
               path.write_text(text, encoding='utf-8')
-              print('updated', name)
+              print('updated', path.name)
 
       - name: Commit
         shell: bash
@@ -69,5 +59,5 @@ jobs:
             echo "Nothing to commit"
             exit 0
           fi
-          git commit -m "feat: surface rebuild images in visible page sections"
+          git commit -m "chore: install shared TDSA experience across all pages"
           git push
