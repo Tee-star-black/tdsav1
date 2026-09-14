@@ -29,8 +29,15 @@ function observeNonFatalErrors(page, file) {
 }
 
 async function waitForSharedNav(page, file) {
-  await page.waitForSelector('body[data-tds-canonical-nav-ready="true"]', { timeout: 8000 });
-  await page.waitForSelector('#tdsSiteNav[data-tds-canonical-nav="true"]', { timeout: 3000 });
+  await page.waitForFunction(() => document.body?.getAttribute('data-tds-canonical-nav-ready') === 'true', null, { timeout: 8000 });
+  await page.waitForSelector('#tdsSiteNav[data-tds-canonical-nav="true"]', { state: 'attached', timeout: 3000 });
+  await page.waitForFunction(() => {
+    const nav = document.querySelector('#tdsSiteNav');
+    if (!nav) return false;
+    const style = getComputedStyle(nav);
+    const rect = nav.getBoundingClientRect();
+    return style.display !== 'none' && style.visibility !== 'hidden' && Number(style.opacity || 1) > 0 && rect.width > 0 && rect.height > 0;
+  }, null, { timeout: 5000 });
 
   const counts = await page.evaluate(() => ({
     canonicalNavs: document.querySelectorAll('#tdsSiteNav[data-tds-canonical-nav="true"]').length,
@@ -46,23 +53,30 @@ async function waitForSharedNav(page, file) {
   }
 }
 
+async function waitForOfferVisible(page, file, mobile = false) {
+  await page.waitForFunction((isMobile) => {
+    const panel = document.querySelector('#tdsOfferPanel');
+    if (!panel || !panel.classList.contains('is-open')) return false;
+    const style = getComputedStyle(panel);
+    const rect = panel.getBoundingClientRect();
+    if (isMobile) return style.display !== 'none' && style.visibility !== 'hidden' && rect.height > 0;
+    return style.display !== 'none' && style.visibility !== 'hidden' && style.pointerEvents !== 'none' && Number(style.opacity || 1) > 0.5 && rect.width > 0 && rect.height > 0;
+  }, mobile, { timeout: 3000 }).catch(() => {
+    throw new Error(`${file}: ${mobile ? 'mobile' : 'desktop'} What We Offer panel did not become visibly open`);
+  });
+}
+
 async function testDesktop(browser, file) {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   page.setDefaultTimeout(5000);
   observeNonFatalErrors(page, file);
 
   try {
-    await page.goto(toUrl(file), { waitUntil: 'domcontentloaded', timeout: 12000 });
+    await page.goto(toUrl(file), { waitUntil: 'load', timeout: 15000 });
     await waitForSharedNav(page, file);
 
     await page.click('#tdsOfferTrigger');
-    await page.waitForFunction(() => document.querySelector('#tdsOfferPanel')?.classList.contains('is-open'), null, { timeout: 3000 });
-
-    const visible = await page.$eval('#tdsOfferPanel', el => {
-      const style = getComputedStyle(el);
-      return style.visibility !== 'hidden' && style.pointerEvents !== 'none' && Number(style.opacity || 1) > 0;
-    });
-    if (!visible) throw new Error(`${file}: desktop What We Offer panel did not become visible`);
+    await waitForOfferVisible(page, file, false);
 
     await page.keyboard.press('Escape');
     await page.waitForFunction(() => !document.querySelector('#tdsOfferPanel')?.classList.contains('is-open'), null, { timeout: 3000 });
@@ -77,20 +91,21 @@ async function testMobile(browser, file) {
   observeNonFatalErrors(page, file);
 
   try {
-    await page.goto(toUrl(file), { waitUntil: 'domcontentloaded', timeout: 12000 });
+    await page.goto(toUrl(file), { waitUntil: 'load', timeout: 15000 });
     await waitForSharedNav(page, file);
 
     await page.click('#tdsNavMenuButton');
-    await page.waitForFunction(() => document.querySelector('#tdsNavLinks')?.classList.contains('is-open'), null, { timeout: 3000 });
+    await page.waitForFunction(() => {
+      const links = document.querySelector('#tdsNavLinks');
+      const style = links ? getComputedStyle(links) : null;
+      return !!links && links.classList.contains('is-open') && style?.visibility !== 'hidden' && style?.pointerEvents !== 'none';
+    }, null, { timeout: 3000 });
 
     const expanded = await page.getAttribute('#tdsNavMenuButton', 'aria-expanded');
     if (expanded !== 'true') throw new Error(`${file}: mobile menu button did not set aria-expanded=true`);
 
     await page.click('#tdsOfferTrigger');
-    await page.waitForFunction(() => document.querySelector('#tdsOfferPanel')?.classList.contains('is-open'), null, { timeout: 3000 });
-
-    const mobilePanelVisible = await page.$eval('#tdsOfferPanel', el => getComputedStyle(el).display !== 'none');
-    if (!mobilePanelVisible) throw new Error(`${file}: mobile What We Offer panel did not open`);
+    await waitForOfferVisible(page, file, true);
 
     await page.keyboard.press('Escape');
     await page.waitForFunction(() => !document.querySelector('#tdsNavLinks')?.classList.contains('is-open'), null, { timeout: 3000 });
