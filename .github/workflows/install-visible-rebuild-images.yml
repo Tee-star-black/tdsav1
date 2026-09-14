@@ -5,9 +5,8 @@ on:
     paths:
       - 'scripts/rebuild-images.js'
       - 'scripts/canonical-nav.js'
-      - 'scripts/mobile-nav.js'
-      - 'scripts/mega-menu.js'
       - 'scripts/verify-navbar.mjs'
+      - 'scripts/footer-full-bleed-guard.js'
       - 'styles/center-alignment.css'
       - '.github/workflows/install-visible-rebuild-images.yml'
   workflow_dispatch:
@@ -52,7 +51,6 @@ jobs:
 
               text = path.read_text(encoding='utf-8-sig')
               original = text
-
               text = text.replace('`r`n', '\n')
 
               for start, end in marker_blocks:
@@ -87,9 +85,8 @@ jobs:
 
           required_runtime_files = [
               Path('scripts/rebuild-images.js'),
+              Path('scripts/rebuild-images-core.js'),
               Path('scripts/canonical-nav.js'),
-              Path('scripts/mobile-nav.js'),
-              Path('scripts/mega-menu.js'),
               Path('scripts/footer-full-bleed-guard.js'),
               Path('styles/center-alignment.css'),
           ]
@@ -99,9 +96,13 @@ jobs:
                   bad.append(f'missing runtime file: {required}')
 
           loader = Path('scripts/rebuild-images.js').read_text(encoding='utf-8')
-          for expected in ['canonical-nav.js', 'mobile-nav.js', 'mega-menu.js', 'footer-full-bleed-guard.js', 'center-alignment.css']:
+          for expected in ['rebuild-images-core.js', 'canonical-nav.js', 'footer-full-bleed-guard.js', 'center-alignment.css']:
               if expected not in loader:
                   bad.append(f'rebuild-images.js does not load {expected}')
+
+          for retired in ['mobile-nav.js', 'mega-menu.js']:
+              if retired in loader:
+                  bad.append(f'rebuild-images.js still loads retired competing navbar runtime {retired}')
 
           for path in sorted(Path('.').rglob('*.html')):
               if '.git' in path.parts:
