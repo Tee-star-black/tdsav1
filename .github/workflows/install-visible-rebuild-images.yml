@@ -4,7 +4,11 @@ on:
   push:
     paths:
       - 'scripts/rebuild-images.js'
+      - 'scripts/canonical-nav.js'
       - 'scripts/mobile-nav.js'
+      - 'scripts/mega-menu.js'
+      - 'scripts/verify-navbar.mjs'
+      - 'styles/center-alignment.css'
       - '.github/workflows/install-visible-rebuild-images.yml'
   workflow_dispatch:
 
@@ -49,10 +53,8 @@ jobs:
               text = path.read_text(encoding='utf-8-sig')
               original = text
 
-              # Repair literal PowerShell escape text accidentally written into HTML.
               text = text.replace('`r`n', '\n')
 
-              # Remove stale inline mobile-nav blocks from the older site layer.
               for start, end in marker_blocks:
                   text = re.sub(
                       rf'\s*<!--\s*{re.escape(start)}\s*-->.*?<!--\s*{re.escape(end)}\s*-->\s*',
@@ -62,9 +64,8 @@ jobs:
                   )
 
               text = legacy_mobile_pattern.sub('\n', text)
-
-              # Collapse every relative/absolute duplicate to one canonical loader.
               text = loader_pattern.sub('\n', text)
+
               if '</body>' in text:
                   text = text.replace('</body>', f'    {loader}\n</body>', 1)
               else:
@@ -75,29 +76,68 @@ jobs:
                   path.write_text(text, encoding='utf-8')
                   print('updated', path)
 
-      - name: Validate loader normalization
+      - name: Validate shared navigation wiring
         shell: python
         run: |
           from pathlib import Path
           import re
 
           bad = []
-          pattern = re.compile(r'<script\b[^>]*\bsrc=["\']/?scripts/rebuild-images\.js(?:\?[^"\']*)?["\'][^>]*>\s*</script>', re.I)
+          loader_pattern = re.compile(r'<script\b[^>]*\bsrc=["\']/?scripts/rebuild-images\.js(?:\?[^"\']*)?["\'][^>]*>\s*</script>', re.I)
+
+          required_runtime_files = [
+              Path('scripts/rebuild-images.js'),
+              Path('scripts/canonical-nav.js'),
+              Path('scripts/mobile-nav.js'),
+              Path('scripts/mega-menu.js'),
+              Path('scripts/footer-full-bleed-guard.js'),
+              Path('styles/center-alignment.css'),
+          ]
+
+          for required in required_runtime_files:
+              if not required.is_file():
+                  bad.append(f'missing runtime file: {required}')
+
+          loader = Path('scripts/rebuild-images.js').read_text(encoding='utf-8')
+          for expected in ['canonical-nav.js', 'mobile-nav.js', 'mega-menu.js', 'footer-full-bleed-guard.js', 'center-alignment.css']:
+              if expected not in loader:
+                  bad.append(f'rebuild-images.js does not load {expected}')
 
           for path in sorted(Path('.').rglob('*.html')):
               if '.git' in path.parts:
                   continue
               text = path.read_text(encoding='utf-8')
-              count = len(pattern.findall(text))
-              if count != 1 or '`r`n' in text:
+              if '<body' not in text.lower():
+                  continue
+              count = len(loader_pattern.findall(text))
+              if count != 1:
                   bad.append(f'{path}: loader_count={count}')
+              if '`r`n' in text:
+                  bad.append(f'{path}: contains literal PowerShell newline escape')
+              if re.search(r'<script\b[^>]*mobile-navigation\.js', text, re.I):
+                  bad.append(f'{path}: legacy mobile-navigation.js still referenced')
 
           if bad:
-              raise SystemExit('Shared loader validation failed: ' + ', '.join(bad))
+              raise SystemExit('Shared navbar validation failed:\n- ' + '\n- '.join(bad))
 
-          print('Shared loader validation passed')
+          print('Static shared-navbar validation passed')
 
-      - name: Commit
+      - name: Install browser smoke-test dependency
+        shell: bash
+        run: |
+          npm install --no-save --package-lock=false playwright
+          npx playwright install --with-deps chromium
+
+      - name: Browser-test navbar on every interactive HTML page
+        shell: bash
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/tdsa-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+          node scripts/verify-navbar.mjs
+
+      - name: Commit normalized HTML
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
