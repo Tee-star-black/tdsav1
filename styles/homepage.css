@@ -1,0 +1,465 @@
+/* TeleDoctorSA homepage refactor | 2026-09-09 */
+:root {
+  --tds-shell: 1240px;
+  --tds-radius: 4px;
+  --tds-shadow: 0 6px 18px rgba(15, 23, 42, .07);
+  --tds-navy: #0f172a;
+  --tds-orange: #f28a4b;
+}
+
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+}
+
+body { overflow-x: clip; }
+*, *::before, *::after { box-sizing: border-box; }
+img, svg, video, iframe { max-width: 100%; }
+
+.section-inner,
+.services-header,
+.services-grid,
+.info-grid,
+.telemedicine-explainer-grid,
+.trust-assurance-grid,
+.location-grid,
+.core-slider-shell,
+.site-footer-shell {
+  width: min(var(--tds-shell), calc(100% - 48px)) !important;
+  max-width: var(--tds-shell) !important;
+  margin-inline: auto !important;
+}
+
+.hero,
+.hero-section,
+.page-hero {
+  min-height: 0 !important;
+  padding-top: 88px !important;
+  padding-bottom: 72px !important;
+}
+
+.services,
+.services-section,
+.telemedicine-explainer,
+.trust-assurance {
+  padding-top: 76px !important;
+  padding-bottom: 76px !important;
+}
+
+.services-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 16px !important;
+}
+
+.services-grid > .card {
+  min-width: 0 !important;
+  min-height: 0 !important;
+  height: auto !important;
+  border-radius: var(--tds-radius) !important;
+  box-shadow: var(--tds-shadow) !important;
+}
+
+.services-grid > .card .card-img {
+  height: 132px !important;
+  min-height: 132px !important;
+  max-height: 132px !important;
+  border-radius: 0 !important;
+  background: var(--tds-navy) !important;
+}
+
+.services-grid > .card .card-content { padding: 14px 15px 15px !important; }
+.services-grid > .card h3 {
+  margin-bottom: 7px !important;
+  font-size: 1.02rem !important;
+  line-height: 1.24 !important;
+}
+.services-grid > .card p {
+  margin-bottom: 10px !important;
+  font-size: .88rem !important;
+  line-height: 1.5 !important;
+}
+
+.info-focus-card,
+.trust-proof-card,
+.contact-card,
+.telemedicine-explainer-card,
+.trust-assurance-panel,
+.trust-faq-card {
+  border-radius: var(--tds-radius) !important;
+  box-shadow: var(--tds-shadow) !important;
+}
+
+.btn,
+.btn-main,
+.read-more,
+.learn-more-btn,
+.cta-btn,
+.link-btn,
+.site-footer-link,
+.core-slide-cta,
+.site-footer-kicker,
+.site-footer-chip,
+.card-kicker,
+[style*="border-radius: 999px"],
+[style*="border-radius:999px"] {
+  border-radius: var(--tds-radius) !important;
+}
+
+.btn-main,
+.site-footer-link.primary,
+.telemedicine-explainer-card,
+[class*="primary"] {
+  background-image: none !important;
+}
+.site-footer-link.primary,
+.telemedicine-explainer-card { background: var(--tds-orange) !important; }
+
+.floating-shapes,
+.map-brand-badge,
+[class*="particle"],
+[class*="sparkle"],
+.site-footer::before,
+.site-footer::after,
+nav:not(.tds-mobile-nav)::before {
+  display: none !important;
+  animation: none !important;
+}
+
+.logo-text::before,
+.core-proof-strip span,
+.site-footer-chip,
+.site-footer-kicker { animation: none !important; }
+
+.location {
+  padding: 72px 0 56px !important;
+  min-height: 0 !important;
+  background: var(--tds-navy) !important;
+}
+
+.location-grid {
+  display: grid !important;
+  grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr) !important;
+  gap: 28px !important;
+  align-items: stretch !important;
+}
+.location-content,
+.map-column { min-width: 0 !important; }
+.location-content h2 { margin-bottom: 10px !important; }
+.location-subtitle {
+  margin-bottom: 20px !important;
+  max-width: 620px !important;
+}
+.contact-cards {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+}
+.contact-card { padding: 15px !important; }
+.map-column { display: flex !important; }
+.map-container {
+  width: 100% !important;
+  height: auto !important;
+  min-height: 410px !important;
+  border-radius: var(--tds-radius) !important;
+  clip-path: none !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .22) !important;
+  transform: none !important;
+  border-top: 2px solid var(--tds-orange) !important;
+}
+.map-container:hover {
+  transform: none !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .22) !important;
+}
+
+footer.site-footer,
+.site-footer {
+  padding: 30px 0 0 !important;
+  background: var(--tds-navy) !important;
+  border-radius: 0 !important;
+}
+.site-footer-shell {
+  width: min(var(--tds-shell), calc(100% - 48px)) !important;
+  padding: 0 !important;
+}
+.site-footer-grid {
+  display: grid !important;
+  grid-template-columns: 1.25fr 1fr 1fr 1fr !important;
+  gap: 28px !important;
+  align-items: start !important;
+}
+.site-footer-brand,
+.site-footer-column { min-width: 0 !important; }
+.site-footer-brandline img {
+  width: 42px !important;
+  height: 42px !important;
+  border-radius: var(--tds-radius) !important;
+}
+.site-footer-brandline strong { font-size: 1.15rem !important; }
+.site-footer-brandline span,
+.site-footer-brand p,
+.site-footer-list a,
+.site-footer-list span {
+  font-size: .9rem !important;
+  line-height: 1.5 !important;
+}
+.site-footer-column h3 {
+  font-size: .98rem !important;
+  margin-bottom: 10px !important;
+}
+.site-footer-list { gap: 7px !important; }
+.site-footer-bottom {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 18px !important;
+  margin-top: 24px !important;
+  padding: 16px 0 18px !important;
+  border-top: 1px solid rgba(255, 255, 255, .12) !important;
+  font-size: .82rem !important;
+}
+.site-footer-copyright { color: rgba(255, 255, 255, .64) !important; }
+.site-footer-legal-links {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: flex-end !important;
+  gap: 8px 14px !important;
+  position: static !important;
+  width: auto !important;
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 0 !important;
+}
+.site-footer-legal-links a {
+  color: rgba(255, 255, 255, .72) !important;
+  text-decoration: none !important;
+  font-size: .82rem !important;
+}
+.site-footer-legal-links a:hover { color: #fff !important; }
+
+/* Homepage hero: clinical image is the background, not a separate image card. */
+.core-highlights-slider {
+  position: relative !important;
+  background-image:
+    linear-gradient(90deg, rgba(15, 23, 42, .94) 0%, rgba(15, 23, 42, .86) 46%, rgba(15, 23, 42, .58) 100%),
+    url('/images/rebuild/01-clinical-team-at-work.jpg') !important;
+  background-size: cover !important;
+  background-position: center 36% !important;
+  background-repeat: no-repeat !important;
+  background-color: var(--tds-navy) !important;
+  color: #fff !important;
+}
+
+.core-slider-shell {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.core-slider-intro {
+  display: block !important;
+  width: min(760px, 100%) !important;
+  max-width: 760px !important;
+  margin: 0 !important;
+  padding: 88px 0 68px !important;
+  text-align: left !important;
+}
+
+.core-slider-intro > h1 {
+  max-width: 720px !important;
+  margin: 0 0 14px !important;
+  color: #fff !important;
+}
+
+.core-slider-intro > p {
+  max-width: 620px !important;
+  margin: 0 0 22px !important;
+  color: rgba(255, 255, 255, .78) !important;
+}
+
+.core-slider-intro .core-slider-actions,
+.core-slider-intro .core-proof-strip {
+  justify-content: flex-start !important;
+}
+
+.core-slider-intro .core-slider-actions {
+  margin-bottom: 18px !important;
+}
+
+.core-slider-intro .core-slider-secondary {
+  color: #fff !important;
+  border-color: rgba(255, 255, 255, .28) !important;
+  background: rgba(15, 23, 42, .18) !important;
+  backdrop-filter: blur(4px);
+}
+
+.core-slider-intro .core-slider-secondary:hover {
+  border-color: rgba(255, 255, 255, .55) !important;
+  background: rgba(15, 23, 42, .34) !important;
+}
+
+.core-slider-intro .core-proof-chip {
+  color: rgba(255, 255, 255, .9) !important;
+  background: rgba(15, 23, 42, .38) !important;
+  border-color: rgba(255, 255, 255, .16) !important;
+  box-shadow: none !important;
+}
+
+.home-hero-media {
+  display: none !important;
+}
+
+/* Keep the content slider itself crisp against the image-backed hero. */
+.core-slide {
+  background-color: rgba(255, 255, 255, .97) !important;
+}
+
+/* Final visual discipline pass */
+.logo { text-decoration: none; cursor: pointer; }
+.services,
+.services-section,
+.telemedicine-explainer,
+.trust-assurance,
+.location,
+.site-footer { background-image: none !important; }
+.services,
+.services-section,
+.telemedicine-explainer,
+.trust-assurance { background-color: #fff !important; }
+.location,
+.site-footer { background-color: var(--tds-navy) !important; }
+
+.core-proof-chip,
+.core-slide-meta span,
+.telemedicine-explainer-tags span,
+.trust-assurance-kicker,
+.site-footer-chip,
+.site-footer-kicker {
+  border-radius: var(--tds-radius) !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+main,
+section,
+footer,
+.core-slider-shell,
+.location-grid,
+.site-footer-grid,
+.services-grid,
+.telemedicine-explainer-grid,
+.trust-assurance-grid {
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+.core-slide,
+.core-slide-copy,
+.core-slide-visual,
+.map-column,
+.location-content,
+.site-footer-brand,
+.site-footer-column { min-width: 0 !important; }
+
+@media (max-width: 1080px) {
+  .section-inner,
+  .services-header,
+  .services-grid,
+  .info-grid,
+  .telemedicine-explainer-grid,
+  .trust-assurance-grid,
+  .location-grid,
+  .core-slider-shell,
+  .site-footer-shell { width: calc(100% - 56px) !important; }
+  .services-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .location-grid { grid-template-columns: 1fr !important; }
+  .contact-cards { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .map-container { min-height: 330px !important; }
+  .site-footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .core-slider-intro {
+    width: min(700px, 100%) !important;
+    padding: 76px 0 58px !important;
+  }
+}
+
+@media (max-width: 860px) {
+  .core-highlights-slider {
+    background-image:
+      linear-gradient(90deg, rgba(15, 23, 42, .93) 0%, rgba(15, 23, 42, .84) 58%, rgba(15, 23, 42, .68) 100%),
+      url('/images/rebuild/01-clinical-team-at-work.jpg') !important;
+    background-position: 58% center !important;
+  }
+  .core-slider-intro {
+    width: min(640px, 100%) !important;
+    padding: 68px 0 54px !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .section-inner,
+  .services-header,
+  .services-grid,
+  .info-grid,
+  .telemedicine-explainer-grid,
+  .trust-assurance-grid,
+  .location-grid,
+  .core-slider-shell,
+  .site-footer-shell { width: calc(100% - 36px) !important; }
+  .hero,
+  .hero-section,
+  .page-hero {
+    padding-top: 78px !important;
+    padding-bottom: 44px !important;
+  }
+  .services,
+  .services-section,
+  .telemedicine-explainer,
+  .trust-assurance {
+    padding-top: 52px !important;
+    padding-bottom: 52px !important;
+  }
+  .services-grid,
+  .contact-cards,
+  .site-footer-grid { grid-template-columns: 1fr !important; }
+  .services-grid > .card { display: block !important; }
+  .services-grid > .card .card-img {
+    width: 100% !important;
+    height: 118px !important;
+    min-height: 118px !important;
+    max-height: 118px !important;
+  }
+  .location { padding: 52px 0 40px !important; }
+  .map-container { min-height: 280px !important; }
+  .site-footer-bottom {
+    align-items: flex-start !important;
+    flex-direction: column !important;
+  }
+  .site-footer-legal-links { justify-content: flex-start !important; }
+  .core-highlights-slider {
+    background-image:
+      linear-gradient(rgba(15, 23, 42, .88), rgba(15, 23, 42, .9)),
+      url('/images/rebuild/01-clinical-team-at-work.jpg') !important;
+    background-position: 62% center !important;
+  }
+  .core-slider-intro {
+    width: 100% !important;
+    padding: 56px 0 46px !important;
+  }
+  .core-slider-intro .core-slider-actions {
+    gap: 8px !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .core-slider-intro {
+    padding: 50px 0 42px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
