@@ -883,7 +883,8 @@
 
         @media (max-width: 480px) {
             section > .section-inner { padding-left: 16px; padding-right: 16px; }
-        }`r`n
+        }
+
 
         @media (max-width: 900px) {
             .hamburger { display: flex !important; }
@@ -1446,30 +1447,52 @@ footer.site-footer, .site-footer {
             const { subtotal, shipping, tax, total } = calculateTotals();
 
             if (selectedMethod === 'whatsapp') {
-                let message = `*NEW ORDER - TELEDOCTORSA*\`r`n\`r`n`;
-                message += `â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”\`r`n`;
-                message += `*CUSTOMER DETAILS*\`r`n`;
-                message += `Name: ${firstName} ${lastName}\`r`n`;
-                message += `Email: ${email}\`r`n`;
-                message += `Phone: ${phone}\`r`n`;
-                message += `Address: ${address}, ${city}, ${postalCode}\`r`n\`r`n`;
-                message += `*ORDER ITEMS*\`r`n`;
-                message += `â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”\`r`n`;
+                let message = `*NEW ORDER - TELEDOCTORSA*\
+\
+`;
+                message += `â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”\
+`;
+                message += `*CUSTOMER DETAILS*\
+`;
+                message += `Name: ${firstName} ${lastName}\
+`;
+                message += `Email: ${email}\
+`;
+                message += `Phone: ${phone}\
+`;
+                message += `Address: ${address}, ${city}, ${postalCode}\
+\
+`;
+                message += `*ORDER ITEMS*\
+`;
+                message += `â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”\
+`;
 
                 cart.forEach((item, index) => {
-                    message += `${index + 1}. ${item.title}\`r`n`;
-                    message += `   Qty: ${item.quantity} Ã— R${item.price.toLocaleString('en-ZA')}\`r`n`;
-                    message += `   Subtotal: R${(item.price * item.quantity).toLocaleString('en-ZA')}\`r`n\`r`n`;
+                    message += `${index + 1}. ${item.title}\
+`;
+                    message += `   Qty: ${item.quantity} Ã— R${item.price.toLocaleString('en-ZA')}\
+`;
+                    message += `   Subtotal: R${(item.price * item.quantity).toLocaleString('en-ZA')}\
+\
+`;
                 });
 
-                message += `â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”\`r`n`;
-                message += `Subtotal: R${subtotal.toLocaleString('en-ZA', {minimumFractionDigits: 2})}\`r`n`;
+                message += `â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”\
+`;
+                message += `Subtotal: R${subtotal.toLocaleString('en-ZA', {minimumFractionDigits: 2})}\
+`;
                 if (discountAmount > 0) {
-                    message += `Discount: -R${discountAmount.toLocaleString('en-ZA', {minimumFractionDigits: 2})}\`r`n`;
+                    message += `Discount: -R${discountAmount.toLocaleString('en-ZA', {minimumFractionDigits: 2})}\
+`;
                 }
-                message += `Shipping: ${shipping > 0 ? 'R' + shipping.toLocaleString('en-ZA') : 'FREE'}\`r`n`;
-                message += `Tax (15%): R${tax.toLocaleString('en-ZA', {minimumFractionDigits: 2})}\`r`n`;
-                message += `*TOTAL: R${total.toLocaleString('en-ZA', {minimumFractionDigits: 2})}*\`r`n\`r`n`;
+                message += `Shipping: ${shipping > 0 ? 'R' + shipping.toLocaleString('en-ZA') : 'FREE'}\
+`;
+                message += `Tax (15%): R${tax.toLocaleString('en-ZA', {minimumFractionDigits: 2})}\
+`;
+                message += `*TOTAL: R${total.toLocaleString('en-ZA', {minimumFractionDigits: 2})}*\
+\
+`;
                 message += `Payment Method: WhatsApp Assisted Payment`;
 
                 const encodedMessage = encodeURIComponent(message);
@@ -1479,28 +1502,48 @@ footer.site-footer, .site-footer {
                 alert('Your order has been sent via WhatsApp. Our team will assist you with payment.');
             } else {
                 const methodLabel = selectedMethod === 'card' ? 'Card' : 'EFT';
-                let message = `NEW ORDER - TELEDOCTORSA`r`n`r`n`;
-                message += `CUSTOMER DETAILS`r`n`;
-                message += `Name: ${firstName} ${lastName}`r`n`;
-                message += `Email: ${email}`r`n`;
-                message += `Phone: ${phone}`r`n`;
-                message += `Address: ${address}, ${city}, ${postalCode}`r`n`r`n`;
-                message += `ORDER ITEMS`r`n`;
+                let message = `NEW ORDER - TELEDOCTORSA
+
+`;
+                message += `CUSTOMER DETAILS
+`;
+                message += `Name: ${firstName} ${lastName}
+`;
+                message += `Email: ${email}
+`;
+                message += `Phone: ${phone}
+`;
+                message += `Address: ${address}, ${city}, ${postalCode}
+
+`;
+                message += `ORDER ITEMS
+`;
 
                 cart.forEach((item, index) => {
-                    message += `${index + 1}. ${item.title}`r`n`;
-                    message += `   Qty: ${item.quantity} x R${item.price.toLocaleString('en-ZA')}`r`n`;
-                    message += `   Subtotal: R${(item.price * item.quantity).toLocaleString('en-ZA')}`r`n`r`n`;
+                    message += `${index + 1}. ${item.title}
+`;
+                    message += `   Qty: ${item.quantity} x R${item.price.toLocaleString('en-ZA')}
+`;
+                    message += `   Subtotal: R${(item.price * item.quantity).toLocaleString('en-ZA')}
+
+`;
                 });
 
-                message += `Subtotal: R${subtotal.toLocaleString('en-ZA', {minimumFractionDigits: 2})}`r`n`;
+                message += `Subtotal: R${subtotal.toLocaleString('en-ZA', {minimumFractionDigits: 2})}
+`;
                 if (discountAmount > 0) {
-                    message += `Discount: -R${discountAmount.toLocaleString('en-ZA', {minimumFractionDigits: 2})}`r`n`;
+                    message += `Discount: -R${discountAmount.toLocaleString('en-ZA', {minimumFractionDigits: 2})}
+`;
                 }
-                message += `Shipping: ${shipping > 0 ? 'R' + shipping.toLocaleString('en-ZA') : 'FREE'}`r`n`;
-                message += `Tax (15%): R${tax.toLocaleString('en-ZA', {minimumFractionDigits: 2})}`r`n`;
-                message += `TOTAL: R${total.toLocaleString('en-ZA', {minimumFractionDigits: 2})}`r`n`r`n`;
-                message += `Payment Method: ${methodLabel}`r`n`;
+                message += `Shipping: ${shipping > 0 ? 'R' + shipping.toLocaleString('en-ZA') : 'FREE'}
+`;
+                message += `Tax (15%): R${tax.toLocaleString('en-ZA', {minimumFractionDigits: 2})}
+`;
+                message += `TOTAL: R${total.toLocaleString('en-ZA', {minimumFractionDigits: 2})}
+
+`;
+                message += `Payment Method: ${methodLabel}
+`;
                 message += `Please send a secure payment link or banking details.`;
 
                 const mailSubject = `TeleDoctorSA Order - ${methodLabel}`;
@@ -1585,7 +1628,8 @@ footer.site-footer, .site-footer {
     }
 })();
 </script>
-    <script src="/scripts/rebuild-images.js"></script>`r`n    <script src="scripts/rebuild-images.js"></script>
+
+    <script src="/scripts/rebuild-images.js"></script>
 </body>
 </html>
 
