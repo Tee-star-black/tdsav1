@@ -1,0 +1,421 @@
+/* TeleDoctorSA UX v3 | mobile dock + homepage hero */
+
+/* --------------------------------------------------
+   Homepage hero
+   -------------------------------------------------- */
+body:has(.core-highlights-slider) .core-highlights-slider {
+  position: relative !important;
+  isolation: isolate !important;
+  background-color: #0f172a !important;
+  background-image:
+    linear-gradient(rgba(15, 23, 42, .78), rgba(15, 23, 42, .78)),
+    url('/images/rebuild/01-clinical-team-at-work.jpg') !important;
+  background-size: cover !important;
+  background-position: center 34% !important;
+  background-repeat: no-repeat !important;
+  color: #fff !important;
+  overflow: hidden !important;
+}
+
+body:has(.core-highlights-slider) .core-slider-shell {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+body:has(.core-highlights-slider) .core-slider-intro {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: min(980px, 100%) !important;
+  max-width: 980px !important;
+  margin: 0 auto !important;
+  padding: 104px 0 82px !important;
+  text-align: center !important;
+}
+
+body:has(.core-highlights-slider) .core-slider-intro > h1 {
+  width: 100% !important;
+  max-width: 900px !important;
+  margin: 0 auto 18px !important;
+  color: #fff !important;
+  font-size: clamp(2.55rem, 5vw, 4.85rem) !important;
+  line-height: 1.01 !important;
+  letter-spacing: -.055em !important;
+  text-align: center !important;
+  text-wrap: balance !important;
+}
+
+body:has(.core-highlights-slider) .core-slider-intro > p {
+  width: 100% !important;
+  max-width: 690px !important;
+  margin: 0 auto 28px !important;
+  color: rgba(255, 255, 255, .82) !important;
+  font-size: clamp(.98rem, 1.25vw, 1.12rem) !important;
+  line-height: 1.6 !important;
+  text-align: center !important;
+}
+
+body:has(.core-highlights-slider) .core-slider-actions {
+  width: 100% !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  margin: 0 auto 20px !important;
+}
+
+body:has(.core-highlights-slider) .core-slider-actions > a {
+  flex: 0 1 auto !important;
+  min-width: 178px !important;
+  min-height: 42px !important;
+  padding: 11px 16px !important;
+  border-radius: 3px !important;
+  box-shadow: none !important;
+  transform: none !important;
+  font-size: .82rem !important;
+  font-weight: 700 !important;
+}
+
+body:has(.core-highlights-slider) .core-slide-cta {
+  background: #ff9559 !important;
+  color: #0f172a !important;
+  border: 1px solid #ff9559 !important;
+}
+
+body:has(.core-highlights-slider) .core-slider-secondary {
+  background: rgba(15, 23, 42, .42) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, .26) !important;
+  backdrop-filter: blur(5px) !important;
+}
+
+body:has(.core-highlights-slider) .core-slider-secondary:hover {
+  background: rgba(15, 23, 42, .62) !important;
+  border-color: rgba(255, 255, 255, .5) !important;
+}
+
+body:has(.core-highlights-slider) .core-proof-strip {
+  width: 100% !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  margin: 0 auto !important;
+}
+
+body:has(.core-highlights-slider) .core-proof-chip {
+  min-height: 34px !important;
+  padding: 8px 11px !important;
+  border-radius: 3px !important;
+  border: 1px solid rgba(255, 255, 255, .15) !important;
+  background: rgba(15, 23, 42, .5) !important;
+  color: rgba(255, 255, 255, .92) !important;
+  box-shadow: none !important;
+  animation: none !important;
+  font-size: .76rem !important;
+}
+
+body:has(.core-highlights-slider) .home-hero-media {
+  display: none !important;
+}
+
+/* Keep the content slide beneath the hero crisp and readable. */
+body:has(.core-highlights-slider) .core-slide {
+  background: rgba(255, 255, 255, .98) !important;
+}
+
+/* --------------------------------------------------
+   Mobile navigation dock
+   -------------------------------------------------- */
+@media (max-width: 767px) {
+  body {
+    padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .tds-mobile-nav {
+    position: fixed !important;
+    left: 50% !important;
+    right: auto !important;
+    bottom: 10px !important;
+    top: auto !important;
+    transform: translateX(-50%) !important;
+    display: block !important;
+    width: min(calc(100% - 20px), 430px) !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 7px 8px calc(7px + env(safe-area-inset-bottom, 0px)) !important;
+    background: rgba(255, 255, 255, .98) !important;
+    background-image: none !important;
+    border: 1px solid rgba(15, 23, 42, .12) !important;
+    border-radius: 4px !important;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, .13) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    animation: none !important;
+    z-index: 9997 !important;
+  }
+
+  .tds-mobile-nav__row {
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 2px !important;
+    align-items: stretch !important;
+    padding: 0 !important;
+  }
+
+  .tds-mnav-item {
+    position: relative !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    min-width: 0 !important;
+    min-height: 50px !important;
+    margin: 0 !important;
+    padding: 7px 3px 6px !important;
+    border: 0 !important;
+    border-radius: 2px !important;
+    background: transparent !important;
+    background-image: none !important;
+    color: #64748b !important;
+    box-shadow: none !important;
+    transform: none !important;
+    animation: none !important;
+    font: inherit !important;
+    font-size: 9.5px !important;
+    line-height: 1 !important;
+    font-weight: 650 !important;
+    letter-spacing: 0 !important;
+    text-align: center !important;
+    text-decoration: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+    overflow: visible !important;
+  }
+
+  .tds-mnav-item::before {
+    display: none !important;
+  }
+
+  .tds-mnav-item::after {
+    content: '' !important;
+    position: absolute !important;
+    left: 50% !important;
+    bottom: -1px !important;
+    width: 20px !important;
+    height: 2px !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    transform: translateX(-50%) !important;
+  }
+
+  .tds-mnav-item svg {
+    width: 19px !important;
+    height: 19px !important;
+    color: currentColor !important;
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
+    animation: none !important;
+    stroke-width: 1.8 !important;
+  }
+
+  .tds-mnav-item[aria-current='page'] {
+    color: #0f172a !important;
+    background: transparent !important;
+    background-image: none !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+
+  .tds-mnav-item[aria-current='page']::after {
+    background: #ff9559 !important;
+  }
+
+  .tds-mnav-item[aria-current='page'] svg {
+    color: #ff7f3f !important;
+    transform: none !important;
+    filter: none !important;
+  }
+
+  .tds-mnav-indicator {
+    display: none !important;
+  }
+
+  .tds-mnav-item:active {
+    background: #f8fafc !important;
+    color: #0f172a !important;
+    transform: none !important;
+  }
+
+  /* Replace the glossy offer sheet with a compact More panel. */
+  .tds-offer-sheet-backdrop {
+    position: fixed !important;
+    inset: 0 !important;
+    display: block !important;
+    background: rgba(2, 6, 23, .48) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transition: opacity .2s ease !important;
+    z-index: 9998 !important;
+  }
+
+  .tds-offer-sheet {
+    position: fixed !important;
+    left: 50% !important;
+    bottom: 0 !important;
+    width: min(calc(100% - 20px), 430px) !important;
+    max-height: min(72vh, 560px) !important;
+    overflow-y: auto !important;
+    transform: translateX(-50%) translateY(104%) !important;
+    padding: 14px 14px calc(18px + env(safe-area-inset-bottom, 0px)) !important;
+    background: #fff !important;
+    background-image: none !important;
+    border: 1px solid rgba(15, 23, 42, .12) !important;
+    border-bottom: 0 !important;
+    border-radius: 4px 4px 0 0 !important;
+    box-shadow: 0 -12px 34px rgba(15, 23, 42, .16) !important;
+    transition: transform .22s ease !important;
+    z-index: 9999 !important;
+  }
+
+  .tdsui-offer-sheet-open .tds-offer-sheet-backdrop {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+
+  .tdsui-offer-sheet-open .tds-offer-sheet {
+    transform: translateX(-50%) translateY(0) !important;
+  }
+
+  .tds-sheet-grab {
+    width: 38px !important;
+    height: 3px !important;
+    margin: 0 auto 12px !important;
+    border-radius: 0 !important;
+    background: #cbd5e1 !important;
+  }
+
+  .tds-sheet-title {
+    margin: 0 0 12px !important;
+    color: #0f172a !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: 1rem !important;
+    line-height: 1.2 !important;
+    font-weight: 800 !important;
+    text-align: left !important;
+  }
+
+  .tds-sheet-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+  }
+
+  .tds-sheet-card {
+    display: flex !important;
+    align-items: center !important;
+    gap: 9px !important;
+    min-height: 56px !important;
+    padding: 10px !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 3px !important;
+    background: #fff !important;
+    color: #0f172a !important;
+    box-shadow: none !important;
+    transform: none !important;
+    text-decoration: none !important;
+  }
+
+  .tds-sheet-card:active {
+    background: #f8fafc !important;
+    transform: none !important;
+  }
+
+  .tds-sheet-icon {
+    width: 34px !important;
+    height: 34px !important;
+    display: grid !important;
+    place-items: center !important;
+    flex: 0 0 34px !important;
+    border-radius: 2px !important;
+    background: #fff4ed !important;
+    color: #f47f3c !important;
+  }
+
+  .tds-sheet-icon svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  .tds-sheet-content {
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+  }
+
+  .tds-sheet-name {
+    color: #0f172a !important;
+    font-size: 11px !important;
+    line-height: 1.2 !important;
+    font-weight: 750 !important;
+  }
+
+  .tds-sheet-desc {
+    display: none !important;
+  }
+}
+
+@media (max-width: 620px) {
+  body:has(.core-highlights-slider) .core-slider-intro {
+    padding: 86px 0 60px !important;
+  }
+
+  body:has(.core-highlights-slider) .core-slider-intro > h1 {
+    font-size: clamp(2.2rem, 11vw, 3.15rem) !important;
+    line-height: 1.03 !important;
+  }
+
+  body:has(.core-highlights-slider) .core-slider-intro > p {
+    max-width: 92% !important;
+  }
+
+  body:has(.core-highlights-slider) .core-slider-actions {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    width: min(100%, 390px) !important;
+  }
+
+  body:has(.core-highlights-slider) .core-slider-actions > a {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  body:has(.core-highlights-slider) .core-proof-strip {
+    width: min(100%, 390px) !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .tds-sheet-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  body:has(.core-highlights-slider) .core-slider-actions {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tds-mobile-nav,
+  .tds-mnav-item,
+  .tds-offer-sheet,
+  .tds-offer-sheet-backdrop {
+    animation: none !important;
+    transition: none !important;
+  }
+}

@@ -4,26 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TeleDoctorSA App | Digital Health Access</title>
-    <meta name="description" content="Download the TeledoctorSA mobile app for virtual consultations, prescription management, and health monitoring. Available on iOS and Android.">
+    <meta name="description" content="Access the TeleDoctorSA patient app for secure health information, appointment support, messaging and connected care in South Africa.">
     <meta name="keywords" content="TeleDoctorSA app, telemedicine app South Africa, virtual doctor app, mobile health app, online consultations">
-    <meta name="robots" content="noindex, follow">
+    <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://teledoctorsa.co.za/app">
 
     <!-- Open Graph / Social Media Meta Tags -->
     <meta property="og:title" content="TeleDoctorSA App | Digital Health Access">
-    <meta property="og:description" content="Download the TeledoctorSA mobile app for virtual consultations, prescription management, and health monitoring. Available on iOS and Android.">
+    <meta property="og:description" content="Access the TeleDoctorSA patient app for secure health information, appointment support, messaging and connected care in South Africa.">
     <meta property="og:url" content="https://teledoctorsa.co.za/app">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="TeleDoctorSA">
     <meta property="og:locale" content="en_ZA">
-    <meta property="og:image" content="https://teledoctorsa.co.za/images/249/20429923/Untitleddesign48-25xV-u53f-vbZW3D9jN0Fg.png">
+    <meta property="og:image" content="https://teledoctorsa.co.za/images/rebuild/logo.png">
     <meta property="og:image:alt" content="TeleDoctorSA logo">
 
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="TeleDoctorSA App | Digital Health Access">
-    <meta name="twitter:description" content="Download the TeledoctorSA mobile app for virtual consultations, prescription management, and health monitoring. Available on iOS and Android.">
-    <meta name="twitter:image" content="https://teledoctorsa.co.za/images/249/20429923/Untitleddesign48-25xV-u53f-vbZW3D9jN0Fg.png">
+    <meta name="twitter:description" content="Access the TeleDoctorSA patient app for secure health information, appointment support, messaging and connected care in South Africa.">
+    <meta name="twitter:image" content="https://teledoctorsa.co.za/images/rebuild/logo.png">
 
     <!-- Structured Data Schema -->
     <script type="application/ld+json">
@@ -32,7 +32,7 @@
       "@type": "WebPage",
       "name": "TeleDoctorSA App",
       "url": "https://teledoctorsa.co.za/app",
-      "description": "Download the TeledoctorSA mobile app for virtual consultations, prescription management, and health monitoring. Available on iOS and Android.",
+      "description": "Access the TeleDoctorSA patient app for secure health information, appointment support, messaging and connected care in South Africa.",
       "isPartOf": {
         "@type": "WebSite",
         "url": "https://teledoctorsa.co.za"
@@ -44,7 +44,7 @@
       }
     }
     </script>
-    
+
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -85,7 +85,7 @@
             border-bottom: 1px solid var(--border);
         }
 
-        .logo { 
+        .logo {
             position: relative;
             display: flex;
             align-items: center;
@@ -457,7 +457,7 @@
             position: relative;
             overflow: hidden;
         }
-        
+
         .contact-option::before {
             content: '';
             position: absolute;
@@ -473,7 +473,7 @@
             background: rgba(255, 163, 102, 0.05);
             transform: translateX(4px);
         }
-        
+
         .contact-option:hover::before {
             left: 100%;
         }
@@ -799,7 +799,7 @@
                 padding: 20px 5%;
             }
         }
-        
+
         /* Tablet Small - 768px */
         @media (max-width: 768px) {
             .hero-section h1 {
@@ -824,7 +824,7 @@
                 font-size: 1.3rem;
             }
         }
-        
+
         /* Mobile - 640px */
         @media (max-width: 640px) {
             nav { padding: 16px 20px; }
@@ -839,7 +839,7 @@
             .section-title { font-size: 1.8rem; }
             .back-btn { padding: 10px 20px; font-size: 0.9rem; }
         }
-        
+
         /* Mobile Small - 480px */
         @media (max-width: 480px) {
             .hero-section h1 { font-size: 1.75rem; }
@@ -1104,7 +1104,7 @@
             .mega-menu-title { font-size: 1rem; }
             .mega-menu-desc { font-size: 0.85rem; }
         }
-    
+
         /* Layout container */
         .section-inner {
             max-width: 1200px;
@@ -1164,12 +1164,12 @@
         @media (max-width: 480px) {
             section > .section-inner { padding-left: 16px; padding-right: 16px; }
         }
-            
+
         @media (max-width: 900px) {
             .hamburger { display: flex !important; }
             .nav-links { display: none !important; }
             .nav-links.active { display: flex !important; }
-        }    
+        }
         /* Mobile nav transition smoothing */
         @media (max-width: 900px) {
             .nav-links {
@@ -1377,22 +1377,227 @@ footer.site-footer, .site-footer {
 }
 </style>
 <!-- TDS_DIRECT_PRODUCTION_LAYOUT_END -->
+    <link rel="stylesheet" href="/site-polish.css?v=20260909" data-tds-production-polish>
+
+<style id="app-live-hero-styles">
+    .hero-section.app-live-hero {
+        min-height: 0;
+        padding: 104px 28px 64px;
+        background: #0f172a;
+        color: #ffffff;
+        text-align: left;
+        overflow: hidden;
+    }
+
+    .app-live-hero .app-hero-grid {
+        width: min(1180px, calc(100% - 48px));
+        max-width: 1180px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: minmax(0, .88fr) minmax(360px, 1.12fr);
+        gap: clamp(34px, 5vw, 72px);
+        align-items: center;
+    }
+
+    .app-live-hero .app-hero-copy {
+        min-width: 0;
+    }
+
+    .app-live-hero .app-live-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 18px;
+        padding: 7px 10px;
+        border: 1px solid rgba(255, 163, 102, .55);
+        border-radius: 2px;
+        color: #ffb886;
+        font-size: .75rem;
+        line-height: 1;
+        font-weight: 700;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+    }
+
+    .app-live-hero .app-live-badge::before {
+        content: '';
+        width: 7px;
+        height: 7px;
+        background: #10b981;
+        border-radius: 1px;
+    }
+
+    .app-live-hero h1 {
+        max-width: 640px;
+        margin: 0 0 16px;
+        color: #ffffff;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: clamp(2.35rem, 4vw, 4rem);
+        line-height: 1.02;
+        letter-spacing: -.055em;
+        font-weight: 800;
+    }
+
+    .app-live-hero .subtitle {
+        max-width: 610px;
+        margin: 0 0 26px;
+        color: rgba(255, 255, 255, .74);
+        font-size: clamp(.98rem, 1.25vw, 1.12rem);
+        line-height: 1.65;
+    }
+
+    .app-live-hero .app-hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 18px;
+    }
+
+    .app-live-hero .app-hero-primary,
+    .app-live-hero .app-hero-secondary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        padding: 11px 16px;
+        border-radius: 2px;
+        text-decoration: none;
+        font-size: .84rem;
+        line-height: 1.2;
+        font-weight: 700;
+        transition: background-color .2s ease, border-color .2s ease, color .2s ease;
+    }
+
+    .app-live-hero .app-hero-primary {
+        background: #ff9559;
+        border: 1px solid #ff9559;
+        color: #0f172a;
+    }
+
+    .app-live-hero .app-hero-primary:hover {
+        background: #ffad7d;
+        border-color: #ffad7d;
+    }
+
+    .app-live-hero .app-hero-secondary {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, .28);
+        color: #ffffff;
+    }
+
+    .app-live-hero .app-hero-secondary:hover {
+        border-color: rgba(255, 255, 255, .6);
+        background: rgba(255, 255, 255, .06);
+    }
+
+    .app-live-hero .app-hero-proof {
+        color: rgba(255, 255, 255, .52);
+        font-size: .76rem;
+        line-height: 1.5;
+    }
+
+    .app-live-hero .app-hero-visual {
+        position: relative;
+        min-width: 0;
+        border: 1px solid rgba(255, 255, 255, .12);
+        background: #111c31;
+        overflow: hidden;
+    }
+
+    .app-live-hero .app-hero-visual::before {
+        content: '';
+        position: absolute;
+        z-index: 2;
+        top: 0;
+        left: 0;
+        width: 64px;
+        height: 3px;
+        background: #ff9559;
+    }
+
+    .app-live-hero .app-hero-visual img {
+        display: block;
+        width: 100%;
+        height: clamp(330px, 36vw, 480px);
+        object-fit: cover;
+        object-position: center;
+    }
+
+    .app-live-hero .app-hero-image-caption {
+        position: absolute;
+        z-index: 3;
+        left: 16px;
+        bottom: 16px;
+        padding: 8px 10px;
+        background: rgba(15, 23, 42, .9);
+        border: 1px solid rgba(255, 255, 255, .12);
+        color: rgba(255, 255, 255, .84);
+        font-size: .72rem;
+        line-height: 1.35;
+    }
+
+    @media (max-width: 900px) {
+        .hero-section.app-live-hero {
+            padding: 88px 24px 48px;
+        }
+
+        .app-live-hero .app-hero-grid {
+            width: min(760px, 100%);
+            grid-template-columns: 1fr;
+            gap: 28px;
+        }
+
+        .app-live-hero .app-hero-visual img {
+            height: clamp(300px, 58vw, 430px);
+        }
+    }
+
+    @media (max-width: 560px) {
+        .hero-section.app-live-hero {
+            padding: 80px 18px 38px;
+        }
+
+        .app-live-hero .app-hero-grid {
+            width: 100%;
+        }
+
+        .app-live-hero h1 {
+            font-size: clamp(2rem, 10vw, 2.7rem);
+        }
+
+        .app-live-hero .app-hero-actions {
+            display: grid;
+            grid-template-columns: 1fr;
+        }
+
+        .app-live-hero .app-hero-primary,
+        .app-live-hero .app-hero-secondary {
+            width: 100%;
+        }
+
+        .app-live-hero .app-hero-visual img {
+            height: 300px;
+        }
+    }
+</style>
+
+    <link rel="stylesheet" href="/styles/ux-v4.css?v=20260909" data-tds-ux-v4>
 </head>
 <body>
 <div class="mobile-overlay" id="mobileOverlay"></div>
-    
+
     <nav>
-        <a href="index.html" class="logo" style="text-decoration: none; cursor: pointer;">
-    <img src="images/TDSA-Logo.png" alt="TeledoctorSA Logo">
+        <a href="/" class="logo" style="text-decoration: none; cursor: pointer;">
+    <img src="/images/rebuild/logo.png" alt="TeleDoctorSA Logo">
     <span class="logo-text">Teledoctor<span>SA</span></span>
 </a>
-        
+
         <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
             <span></span>
             <span></span>
             <span></span>
         </button>
-        
+
         <div class="nav-links" id="navLinks">
             <div class="dropdown">
                 <a href="#" role="button" id="openPanelBtn">
@@ -1435,7 +1640,7 @@ footer.site-footer, .site-footer {
                                 <div class="mega-menu-desc">Medically certified wireless heart rhythm sensor for continuous cardiac monitoring</div>
                             </div>
                         </a>
-                        <a href="virtual-consultations.html" class="mega-menu-item">
+                        <a href="/virtual-consultations" class="mega-menu-item">
                             <div class="mega-menu-icon">
                                 <i data-lucide="video"></i>
                             </div>
@@ -1447,10 +1652,10 @@ footer.site-footer, .site-footer {
                     </div>
                 </div>
             </div>
-            <a href="our-services.html">Services</a>
-            <a href="about-us.html">About</a>
-            <a href="telemedia-suite.html">TeleMedia Suite</a>
-            <a href="contact-us.html">Contact</a>
+            <a href="/our-services">Services</a>
+            <a href="/about-us">About</a>
+            <a href="/telemedia-suite">TeleMedia Suite</a>
+            <a href="/contact-us">Contact</a>
             <div class="contact-dropdown">
                 <button class="btn-main">
                     Contact us
@@ -1497,33 +1702,31 @@ footer.site-footer, .site-footer {
 
 
 
-    <section class="hero-section">
-        <div class="section-inner"><div class="hero-icon">
-            <i data-lucide="smartphone" style="width: 60px; height: 60px; color: var(--primary-orange);"></i>
-        </div>
-        <h1>TeleDoctorSA App <span style="display: inline-block; background: linear-gradient(135deg, var(--primary-orange), var(--orange-dark)); color: white; padding: 6px 16px; border-radius: 20px; font-size: 0.5em; font-weight: 600; margin-left: 12px; vertical-align: middle;">COMING SOON</span></h1>
-        <p class="subtitle">Your Complete Digital Health Platform – Manage Your Health Anytime, Anywhere</p>
-        
-        <div style="display: flex; gap: 20px; justify-content: center; margin: 30px 0;">
-            <a href="#notify" class="cta-btn" style="display: inline-flex; align-items: center; gap: 10px; background: var(--slate-gray); cursor: not-allowed; opacity: 0.7;">
-                <i data-lucide="bell" style="width: 20px; height: 20px;"></i>
-                Notify Me When Available
-            </a>
-        </div>
-        
-        <div style="max-width: 900px; margin: 40px auto 0; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3); position: relative;">
-            <img src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&w=1200&q=80" alt="TeleDoctorSA Mobile App" style="width: 100%; height: auto; display: block; opacity: 0.6;">
-            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(255, 255, 255, 0.95); padding: 30px 50px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
-                <h3 style="font-size: 2rem; color: var(--primary-orange); margin-bottom: 10px; font-weight: 700;">Coming Soon</h3>
-                <p style="color: var(--deep-navy); font-size: 1.1rem; margin: 0;">App launching in 2026</p>
+    <section class="hero-section app-live-hero">
+        <div class="section-inner app-hero-grid">
+            <div class="app-hero-copy">
+                <div class="app-live-badge">Now live</div>
+                <h1>Connected healthcare, right in your hands.</h1>
+                <p class="subtitle">Access your TeleDoctorSA patient portal, manage appointments, review health information and stay connected to your healthcare team from wherever you are.</p>
+                <div class="app-hero-actions">
+                    <a href="/patients" class="app-hero-primary">
+                        Open Patient App <span aria-hidden="true">&rarr;</span>
+                    </a>
+                    <a href="/virtual-consultations" class="app-hero-secondary">Book a Consultation</a>
+                </div>
+                <p class="app-hero-proof">Secure patient access &nbsp;â€¢&nbsp; Private &nbsp;â€¢&nbsp; Available 24/7</p>
+            </div>
+            <div class="app-hero-visual">
+                <img src="/images/rebuild/07-mobile-health-app.jpg" alt="Patient using the TeleDoctorSA digital health app" loading="eager" fetchpriority="high">
+                <div class="app-hero-image-caption">TeleDoctorSA patient access &nbsp;â€¢&nbsp; Secure connected care</div>
             </div>
         </div>
-    </div></section>
+    </section>
 
     <section class="content-section">
         <div class="section-inner"><h2 class="section-title">What is the TeleDoctorSA App?</h2>
         <p class="section-subtitle">
-            The TeleDoctorSA App is your personal patient portal that puts healthcare at your fingertips. Download the app to send real-time health data directly to your clinicians, access your electronic health records, book appointments, and communicate securely with your healthcare team—all from your smartphone or tablet.
+            The TeleDoctorSA App is your secure patient portal for connected care. Sign in to share health information with your clinical team, access your electronic health records, manage appointments, and communicate securely from your phone, tablet, or computer.
         </p>
 
         <div class="features-grid">
@@ -1540,7 +1743,7 @@ footer.site-footer, .site-footer {
                     <i data-lucide="calendar" style="width: 30px; height: 30px; color: white;"></i>
                 </div>
                 <h3>Appointment Booking</h3>
-                <p>Schedule virtual consultations with ease. View available time slots, book appointments, and receive reminders—all within the app.</p>
+                <p>Schedule virtual consultations with ease. View available time slots, book appointments, and receive remindersâ€”all within the app.</p>
             </div>
 
             <div class="feature-card">
@@ -1582,7 +1785,7 @@ footer.site-footer, .site-footer {
         <p class="section-subtitle">
             The TeleDoctorSA App seamlessly integrates with home health devices, allowing you to track and share vital signs with your healthcare team automatically.
         </p>
-        
+
         <div class="device-grid">
             <div class="device-item">
                 <div class="device-icon">
@@ -1639,8 +1842,8 @@ footer.site-footer, .site-footer {
         <div class="features-grid">
             <div class="feature-card">
                 <div style="font-size: 2rem; font-weight: 800; color: var(--primary-orange); margin-bottom: 15px;">1</div>
-                <h3>Download the App</h3>
-                <p>Available for iOS and Android devices. Download from the App Store or Google Play Store and create your secure account.</p>
+                <h3>Open the App</h3>
+                <p>Open the secure TeleDoctorSA patient app in your browser and sign in to your account. No app-store download is required.</p>
             </div>
 
             <div class="feature-card">
@@ -1665,49 +1868,94 @@ footer.site-footer, .site-footer {
 
     <section class="download-section">
         <div class="section-inner"><h2 style="font-size: 2.8rem; margin-bottom: 20px;">Ready to Get Started?</h2>
-        <p style="font-size: 1.2rem; margin-bottom: 10px;">Download the TeleDoctorSA App today and take control of your health</p>
-        
+        <p style="font-size: 1.2rem; margin-bottom: 10px;">Open the TeleDoctorSA patient app and stay connected to your healthcare team</p>
+
         <div class="download-buttons">
-            <a href="#" class="download-btn" style="position: relative; opacity: 0.6; cursor: not-allowed; background: var(--slate-gray);">
-                <i data-lucide="smartphone" style="width: 24px; height: 24px;"></i>
-                Download for iOS
-                <span style="position: absolute; top: -10px; right: -10px; background: linear-gradient(135deg, #FFA500, #FF8C00); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.7em; font-weight: 700; box-shadow: 0 4px 12px rgba(255, 165, 0, 0.4); display: flex; align-items: center; gap: 4px;">
-                    <i data-lucide="hammer" style="width: 12px; height: 12px;"></i>
-                    IN DEVELOPMENT
-                </span>
+            <a href="/patients" class="download-btn" style="background: var(--deep-navy); color: white; text-decoration: none;">
+                <i data-lucide="log-in" style="width: 24px; height: 24px;"></i>
+                Open Patient App
             </a>
-            <a href="#" class="download-btn" style="position: relative; opacity: 0.6; cursor: not-allowed; background: var(--slate-gray);">
-                <i data-lucide="smartphone" style="width: 24px; height: 24px;"></i>
-                Download for Android
-                <span style="position: absolute; top: -10px; right: -10px; background: linear-gradient(135deg, #FFA500, #FF8C00); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.7em; font-weight: 700; box-shadow: 0 4px 12px rgba(255, 165, 0, 0.4); display: flex; align-items: center; gap: 4px;">
-                    <i data-lucide="hammer" style="width: 12px; height: 12px;"></i>
-                    IN DEVELOPMENT
-                </span>
+            <a href="/virtual-consultations" class="download-btn" style="background: transparent; color: var(--deep-navy); border: 1px solid var(--deep-navy); text-decoration: none;">
+                <i data-lucide="video" style="width: 24px; height: 24px;"></i>
+                Book a Consultation
             </a>
         </div>
 
         <p style="margin-top: 30px; font-size: 0.9rem; opacity: 0.9;">
             <span style="background: rgba(255, 165, 0, 0.1); padding: 8px 16px; border-radius: 8px; border-left: 4px solid #FFA500; display: inline-block;">
                 <i data-lucide="info" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; margin-right: 6px;"></i>
-                <strong>Coming Soon 2026</strong> • Free to download • Secure & Private • Available 24/7
+                <strong>Now Live</strong> â€¢ Secure & Private â€¢ Available 24/7 â€¢ Browser-based access
             </span>
         </p>
     </div></section>
 
-    <footer class="footer">
-        <div class="footer-content">
-            <p>&copy; 2025 TeledoctorSA. All rights reserved.</p>
-            <div class="social-links">
-                <a href="https://api.whatsapp.com/send/?phone=27780336394&text=Good+day%2C+Dr.+Mukudu+Offices.+I+would+like+to+make+an+enquiry+regarding+your+services.+Could+you+kindly+assist+me%3F+Thank+you.&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer" class="social-link" title="WhatsApp">
-                    <i data-lucide="message-circle" style="width: 22px; height: 22px;"></i>
-                </a>
-                <a href="https://www.facebook.com/DrMukudu/" target="_blank" rel="noopener noreferrer" class="social-link" title="Facebook">
-                    <i data-lucide="facebook" style="width: 22px; height: 22px;"></i>
-                </a>
-                <a href="https://www.instagram.com/drmukudu_andpartners/" target="_blank" rel="noopener noreferrer" class="social-link" title="Instagram">
-                    <i data-lucide="instagram" style="width: 22px; height: 22px;"></i>
-                </a>
+    <footer class="site-footer">
+        <div class="site-footer-shell">
+            <div class="site-footer-grid">
+                <div class="site-footer-brand">
+                    <span class="site-footer-kicker"><i data-lucide="heart-pulse" style="width: 14px; height: 14px;"></i> Connected care platform</span>
+                    <div class="site-footer-brandline">
+                        <img src="images/rebuild/logo.png" alt="TeleDoctorSA logo">
+                        <div>
+                            <strong>TeleDoctorSA</strong>
+                            <span>Consultations, monitoring, app access, and records support</span>
+                        </div>
+                    </div>
+                    <p>TeleDoctorSA helps patients in South Africa start with the right digital care path, stay closer to clinicians, and keep follow-up simpler across consultations, ECG247 monitoring, and secure records.</p>
+                    <div class="site-footer-chip-row">
+                        <span class="site-footer-chip"><i data-lucide="stethoscope" style="width: 14px; height: 14px;"></i> HPCSA-aligned practice</span>
+                        <span class="site-footer-chip"><i data-lucide="shield-check" style="width: 14px; height: 14px;"></i> POPIA-aware processes</span>
+                        <span class="site-footer-chip"><i data-lucide="map-pin" style="width: 14px; height: 14px;"></i> Johannesburg, South Africa</span>
+                    </div>
+                    <div class="site-footer-actions">
+                        <a class="site-footer-link primary" href="/virtual-consultations">Book consultation <i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i></a>
+                        <a class="site-footer-link secondary" href="/contact-us">Contact support <i data-lucide="phone-call" style="width: 14px; height: 14px;"></i></a>
+                    </div>
+                </div>
+
+                <div class="site-footer-column">
+                    <h3>Quick Links</h3>
+                    <div class="site-footer-list">
+                        <a href="/virtual-consultations">Online doctor consultations</a>
+                        <a href="/ecg247">ECG247 heart monitoring</a>
+                        <a href="/app">TeleDoctorSA app</a>
+                        <a href="/ehr">Electronic health records</a>
+                    </div>
+                </div>
+
+                <div class="site-footer-column">
+                    <h3>Contact</h3>
+                    <div class="site-footer-list">
+                        <a href="https://wa.me/27780336394?text=Hi%20TeleDoctorSA%2C%20please%20may%20you%20contact%20me%3F%20Thanks." target="_blank" rel="noopener noreferrer">WhatsApp: +27 78 033 6394</a>
+                        <a href="tel:+27780336394">Phone: +27 78 033 6394</a>
+                        <a href="mailto:info@teledoctorsa.co.za">Email: info@teledoctorsa.co.za</a>
+                        <span>29 Landor Street, Tulisa Park, Johannesburg, 2197</span>
+                    </div>
+                </div>
+
+                <div class="site-footer-column">
+                    <h3>Trust & Legal</h3>
+                    <div class="site-footer-list">
+                        <a href="/about-us">Meet the care team</a>
+                        <span>POPIA-aware information handling</span>
+                        <span>HPCSA-aligned clinical workflows</span>
+
+                        <span>For planned support and non-emergency care only. Urgent or emergency needs should use the appropriate immediate care channel.</span>
+                    </div>
+                </div>
             </div>
+
+            <div class="site-footer-bottom">
+      <span class="site-footer-copyright">Â© 2026 TeleDoctorSA Â· Dr. Mukudu & Partners Â· Johannesburg, South Africa</span>
+      <nav class="site-footer-legal-links" aria-label="Legal and policy links">
+          <a href="/privacy-policy">Privacy</a>
+          <a href="javascript:void(0)" onclick="openLegal('terms-conditions')">Terms</a>
+          <a href="javascript:void(0)" onclick="openLegal('refund-policy')">Refund</a>
+          <a href="javascript:void(0)" onclick="openLegal('legal-notice')">Legal Notice</a>
+          <a href="javascript:void(0)" onclick="openLegal('fulfillment-policy')">Service Fulfilment</a>
+          <a href="javascript:void(0)" onclick="openLegal('governing-law')">Governing Law</a>
+      </nav>
+  </div>
         </div>
     </footer>
 
@@ -1719,8 +1967,8 @@ footer.site-footer, .site-footer {
         });
         lucide.createIcons();
 
-        
-    
+
+
     </script>
     <script>
 // Shared navbar behavior (mobile menu + side panel)
@@ -1794,599 +2042,11 @@ footer.site-footer, .site-footer {
     }
 })();
 </script>
-<!-- TDS_MOBILE_NAV_START -->
-<style>
-:root{
-  --tds-navy:#0b2a55;
-  --tds-orange:#ff7a18;
-  --tds-text:#0f172a;
-  --tds-surface:rgba(255,255,255,.92);
-  --tds-surface2:rgba(255,255,255,.98);
-  --tds-border:rgba(15,23,42,.10);
-  --tds-shadow: 0 10px 30px rgba(15,23,42,.12);
-  --tds-shadow2: 0 16px 40px rgba(15,23,42,.16);
-  --tds-radius: 18px;
-}
-
-.tds-mobile-nav,
-.tds-offer-sheet,
-.tds-offer-sheet-backdrop{ display:none; }
-
-@media (max-width: 767px){
-    body{
-        padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px)) !important;
-        padding-top: 64px;
-    }
-
-    nav:not(.tds-mobile-nav){
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 56px;
-        padding: 8px 16px;
-        background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.92));
-        backdrop-filter: blur(18px);
-        -webkit-backdrop-filter: blur(18px);
-        border-bottom: 1px solid rgba(15,23,42,0.08);
-        box-shadow: 0 8px 24px rgba(15,23,42,0.08);
-        z-index: 1000;
-        justify-content: center;
-    }
-
-    @supports not ((-webkit-backdrop-filter: blur(2px)) or (backdrop-filter: blur(2px))) {
-        nav:not(.tds-mobile-nav){
-            background: rgba(255,255,255,0.98);
-        }
-    }
-
-    .logo{ gap: 10px; margin: 0 auto; text-decoration: none; display: flex; align-items: center; }
-    .logo a{ display:flex; align-items:center; gap:10px; text-decoration:none; }
-    .logo img{ height: 32px; width: 32px; display: block; object-fit: contain; flex: 0 0 auto; }
-    .logo-text{
-        display: inline-flex;
-        font-size: 0.95rem;
-        letter-spacing: 0.2px;
-    }
-    .logo-text::before{ display: none; }
-    .hamburger{ display: none !important; }
-    .nav-links{ display: none !important; }
-
-    .tds-mobile-nav{
-        position:fixed; left:50%; bottom:12px; top:auto !important;
-        transform: translateX(-50%);
-        width: min(94vw, 420px);
-        padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
-        background: linear-gradient(135deg,
-            rgba(255, 255, 255, 0.95) 0%,
-            rgba(255, 255, 255, 0.90) 100%);
-        backdrop-filter: blur(24px) saturate(180%);
-        -webkit-backdrop-filter: blur(24px) saturate(180%);
-        border: 1.5px solid rgba(255, 163, 102, 0.15);
-        border-radius: 24px;
-        box-shadow:
-            0 8px 32px rgba(15, 23, 42, 0.12),
-            0 2px 8px rgba(255, 163, 102, 0.08),
-            inset 0 1px 0 rgba(255, 255, 255, 0.8);
-        padding: 8px 8px 10px;
-        z-index: 9997;
-        display:block;
-        height: auto;
-        min-height: 0;
-        animation: floatNav 3s ease-in-out infinite;
-    }
-
-    @supports not ((-webkit-backdrop-filter: blur(2px)) or (backdrop-filter: blur(2px))) {
-        .tds-mobile-nav{
-            background: rgba(255,255,255,0.98);
-        }
-    }
-
-    @keyframes floatNav {
-        0%, 100% { transform: translateX(-50%) translateY(0px); }
-        50% { transform: translateX(-50%) translateY(-2px); }
-    }
-    .tds-mobile-nav__row{
-        display:grid;
-        grid-template-columns: repeat(5, 1fr);
-        gap:4px;
-        align-items:center;
-        height: auto;
-        padding: 2px 0;
-    }
-
-    .tds-mnav-item{
-        text-decoration:none;
-        color: rgba(15,23,42,.7);
-        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-        font-size: 9.5px;
-        font-weight: 700;
-        letter-spacing: 0.3px;
-        display:flex; flex-direction:column; align-items:center; justify-content:center;
-        gap:4px;
-        padding: 10px 6px 8px;
-        border-radius: 16px;
-        position:relative;
-        transition: all .35s cubic-bezier(0.34, 1.56, 0.64, 1);
-        -webkit-tap-highlight-color: transparent;
-        border: 1.5px solid transparent;
-        background: transparent;
-        line-height: 1.1;
-        text-align:center;
-        min-width: 0;
-        min-height: 48px;
-        overflow: hidden;
-    }
-
-    .tds-mnav-item:focus-visible,
-    .tds-sheet-card:focus-visible,
-    .tds-sheet-close:focus-visible,
-    [data-tds-offer-open]:focus-visible{
-        outline: 2px solid var(--tds-orange);
-        outline-offset: 2px;
-    }
-
-    .tds-mnav-item::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        border-radius: 16px;
-        background: linear-gradient(135deg,
-            rgba(255, 163, 102, 0) 0%,
-            rgba(255, 163, 102, 0.12) 100%);
-        opacity: 0;
-        transition: opacity .35s ease;
-        z-index: -1;
-    }
-
-    .tds-mnav-item:hover::before {
-        opacity: 1;
-    }
-
-    .tds-mnav-item svg{
-        width:20px;
-        height:20px;
-        opacity:.85;
-        transition: all .35s cubic-bezier(0.34, 1.56, 0.64, 1);
-        filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
-    }
-
-    .tds-mnav-item:active{
-        transform: scale(.96);
-    }
-
-    .tds-mnav-item[aria-current="page"]{
-        color: white;
-        background: linear-gradient(135deg, var(--primary-orange) 0%, var(--orange-dark) 100%);
-        border-color: rgba(255, 136, 68, 0.3);
-        box-shadow:
-            0 4px 12px rgba(255, 163, 102, 0.35),
-            0 2px 4px rgba(255, 136, 68, 0.2),
-            inset 0 1px 0 rgba(255, 255, 255, 0.3);
-        transform: translateY(-2px) scale(1.05);
-    }
-
-    .tds-mnav-item[aria-current="page"]::before {
-        opacity: 0;
-    }
-
-    .tds-mnav-item[aria-current="page"] svg{
-        transform: scale(1.1) rotate(-5deg);
-        opacity: 1;
-        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
-    }
-
-    .tds-mnav-indicator{
-        position:absolute;
-        top: 4px;
-        right: 8px;
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
-        box-shadow:
-            0 0 8px rgba(34, 197, 94, 0.5),
-            0 2px 4px rgba(34, 197, 94, 0.3);
-        transform: scale(0);
-        transition: transform .35s cubic-bezier(0.34, 1.56, 0.64, 1);
-        border: 1.5px solid white;
-    }
-
-    .tds-mnav-item[aria-current="page"] .tds-mnav-indicator{
-        transform: scale(1);
-        animation: pulse-dot 2s ease-in-out infinite;
-    }
-
-    @keyframes pulse-dot {
-        0%, 100% {
-            box-shadow:
-                0 0 8px rgba(34, 197, 94, 0.5),
-                0 2px 4px rgba(34, 197, 94, 0.3);
-        }
-        50% {
-            box-shadow:
-                0 0 16px rgba(34, 197, 94, 0.7),
-                0 2px 8px rgba(34, 197, 94, 0.5);
-        }
-    }
-
-    @keyframes ripple-effect {
-        to {
-            transform: scale(2.5);
-            opacity: 0;
-        }
-    }
-
-    .tds-mnav-item[data-page="home"]:not([aria-current="page"]):hover svg { color: #3b82f6; }
-    .tds-mnav-item[data-page="about"]:not([aria-current="page"]):hover svg { color: #8b5cf6; }
-    .tds-mnav-item[data-page="offer"]:not([aria-current="page"]):hover svg { color: var(--primary-orange); }
-    .tds-mnav-item[data-page="services"]:not([aria-current="page"]):hover svg { color: #10b981; }
-    .tds-mnav-item[data-page="telemedia"]:not([aria-current="page"]):hover svg { color: #f59e0b; }
-
-    .tds-offer-sheet-backdrop{
-        position: fixed;
-        inset: 0;
-        background: rgba(2,6,23,.45);
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity .22s ease;
-        z-index: 9998;
-        display:block;
-    }
-    .tds-offer-sheet{
-        position: fixed;
-        left: 50%;
-        bottom: 0;
-        transform: translateX(-50%) translateY(102%);
-        width: min(96vw, 560px);
-        background: var(--tds-surface2);
-        border: 1px solid var(--tds-border);
-        border-bottom: 0;
-        border-radius: 22px 22px 0 0;
-        box-shadow: var(--tds-shadow2);
-        z-index: 9999;
-        transition: transform .26s ease;
-        padding: 14px 14px calc(16px + env(safe-area-inset-bottom, 0px));
-        display:block;
-    }
-    .tdsui-offer-sheet-open .tds-offer-sheet-backdrop{ opacity:1; pointer-events:auto; }
-    .tdsui-offer-sheet-open .tds-offer-sheet{ transform: translateX(-50%) translateY(0); }
-
-    .tds-sheet-grab{
-        width: 44px; height: 5px; border-radius: 999px;
-        background: rgba(15,23,42,.18);
-        margin: 2px auto 10px;
-    }
-    .tds-sheet-title{
-        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-        font-weight: 900;
-        color: var(--tds-navy);
-        text-align:center;
-        margin: 0 0 10px;
-    }
-    .tds-sheet-grid{ display:grid; grid-template-columns: 1fr; gap:10px; }
-    .tds-sheet-card{
-        display:flex;
-        align-items:flex-start;
-        gap:12px;
-        text-decoration:none;
-        padding: 12px 12px;
-        border-radius: 14px;
-        border: 1px solid rgba(15,23,42,.10);
-        background: rgba(11,42,85,.04);
-        color: rgba(15,23,42,.92);
-        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-        min-height: 48px;
-    }
-    .tds-sheet-card:active{ transform: scale(.99); }
-    .tds-sheet-icon{ width: 38px; height: 38px; border-radius: 12px; background: rgba(11,42,85,.10); display:grid; place-items:center; flex: 0 0 auto; }
-    .tds-sheet-icon svg{ width:20px;height:20px; }
-    .tds-sheet-content{ display:flex; flex-direction:column; gap:4px; }
-    .tds-sheet-name{ font-weight: 900; font-size: 14px; color: var(--tds-text); }
-    .tds-sheet-desc{ font-size: 11.8px; line-height: 1.35; color: rgba(15,23,42,.68); }
-}
-
-@media (prefers-reduced-motion: reduce){
-    .tds-mobile-nav,
-    .tds-mnav-item,
-    .tds-mnav-indicator,
-    .tds-offer-sheet,
-    .tds-offer-sheet-backdrop{
-        animation: none !important;
-        transition: none !important;
-    }
-}
-</style>
-<!-- TDS_MOBILE_NAV_END -->
-
-<!-- TDS_MOBILE_NAV_HTML_START -->
-<div class="tds-offer-sheet-backdrop" data-tds-offer-close aria-hidden="true"></div>
-<section class="tds-offer-sheet" aria-label="What we offer">
-  <div class="tds-sheet-grab" aria-hidden="true"></div>
-  <h3 class="tds-sheet-title">What we offer</h3>
-  <div class="tds-sheet-grid">
-    <a class="tds-sheet-card" href="ehr.html">
-      <span class="tds-sheet-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none"><path d="M7 4h10v16H7z" stroke="currentColor" stroke-width="1.8"/><path d="M9 8h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M9 12h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-      </span>
-      <span class="tds-sheet-content">
-        <span class="tds-sheet-name">Electronic Health Records (EHR)</span>
-        <span class="tds-sheet-desc">Secure digital patient records with encrypted access.</span>
-      </span>
-    </a>
-    <a class="tds-sheet-card" href="teledoctorsa-app.html">
-      <span class="tds-sheet-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none"><rect x="6" y="3" width="12" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M10 17h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-      </span>
-      <span class="tds-sheet-content">
-        <span class="tds-sheet-name">TeleDoctorSA App</span>
-        <span class="tds-sheet-desc">Send real-time health data to clinicians securely.</span>
-      </span>
-    </a>
-    <a class="tds-sheet-card" href="ecg247.html">
-      <span class="tds-sheet-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none"><path d="M2 12h4l2-6 4 12 2-6h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </span>
-      <span class="tds-sheet-content">
-        <span class="tds-sheet-name">ECG247 Monitoring</span>
-        <span class="tds-sheet-desc">Certified wireless heart rhythm monitoring, 24/7.</span>
-      </span>
-    </a>
-    <a class="tds-sheet-card" href="virtual-consultations.html">
-      <span class="tds-sheet-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="14" height="12" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M17 10l4-2v8l-4-2" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-      </span>
-      <span class="tds-sheet-content">
-        <span class="tds-sheet-name">Virtual Medical Consultations</span>
-        <span class="tds-sheet-desc">Secure video or phone visits with qualified doctors.</span>
-      </span>
-    </a>
-  </div>
-</section>
-
-<nav class="tds-mobile-nav" aria-label="Bottom navigation">
-  <div class="tds-mobile-nav__row">
-    <a class="tds-mnav-item" href="index.html" data-page="home">
-      <span class="tds-mnav-indicator" aria-hidden="true"></span>
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-      </svg>
-      <span>Home</span>
-    </a>
-
-    <a class="tds-mnav-item" href="about-us.html" data-page="about">
-      <span class="tds-mnav-indicator" aria-hidden="true"></span>
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/>
-        <path d="M12 17v-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-        <path d="M12 8h.01" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-      </svg>
-      <span>About</span>
-    </a>
-
-    <button class="tds-mnav-item" type="button" data-page="offer" data-tds-offer-open aria-label="What we offer">
-      <span class="tds-mnav-indicator" aria-hidden="true"></span>
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M4 12h16M12 4v16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-      </svg>
-      <span>What we offer</span>
-    </button>
-
-    <a class="tds-mnav-item" href="our-services.html" data-page="services">
-      <span class="tds-mnav-indicator" aria-hidden="true"></span>
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M7 7h10v10H7z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-        <path d="M9 2h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-        <path d="M9 22h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-        <path d="M2 9v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-        <path d="M22 9v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-      </svg>
-      <span>Services</span>
-    </a>
-
-    <a class="tds-mnav-item" href="telemedia-suite.html" data-page="telemedia">
-      <span class="tds-mnav-indicator" aria-hidden="true"></span>
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M5 5h6v6H5zM13 5h6v6h-6zM5 13h6v6H5zM13 13h6v6h-6z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-      </svg>
-      <span>Telemedia</span>
-    </a>
-  </div>
-</nav>
-<!-- TDS_MOBILE_NAV_HTML_END -->
-
-<!-- TDS_MOBILE_NAV_SCRIPT_START -->
-<script>
-(function(){
-  var root = document.documentElement;
-  var body = document.body;
-  var sheet = document.querySelector('.tds-offer-sheet');
-  var backdrop = document.querySelector('.tds-offer-sheet-backdrop');
-  var lastFocusedEl = null;
-  var isReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var isDataSaver = !!(navigator.connection && navigator.connection.saveData);
-
-  root.classList.remove('tdsui-offer-sheet-open');
-
-  function getFocusable(container){
-    if(!container) return [];
-    return Array.prototype.slice.call(container.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'));
-  }
-
-  function trapFocus(e){
-    if(!root.classList.contains('tdsui-offer-sheet-open') || e.key !== 'Tab') return;
-    var focusables = getFocusable(sheet);
-    if(!focusables.length) return;
-    var first = focusables[0];
-    var last = focusables[focusables.length - 1];
-    if(e.shiftKey && document.activeElement === first){
-      e.preventDefault();
-      last.focus();
-    }else if(!e.shiftKey && document.activeElement === last){
-      e.preventDefault();
-      first.focus();
-    }
-  }
-
-  function setBodyLock(locked){
-    if(locked){
-      body.dataset.tdsPrevOverflow = body.style.overflow || '';
-      body.style.overflow = 'hidden';
-    }else{
-      body.style.overflow = body.dataset.tdsPrevOverflow || '';
-      delete body.dataset.tdsPrevOverflow;
-    }
-  }
-
-  function openSheet(){
-    lastFocusedEl = document.activeElement;
-    root.classList.add('tdsui-offer-sheet-open');
-    setBodyLock(true);
-    var focusables = getFocusable(sheet);
-    if(focusables.length){ focusables[0].focus(); }
-  }
-
-  function closeSheet(){
-    root.classList.remove('tdsui-offer-sheet-open');
-    setBodyLock(false);
-    if(lastFocusedEl && typeof lastFocusedEl.focus === 'function'){
-      lastFocusedEl.focus();
-    }
-  }
-
-  document.addEventListener('keydown', function(e){
-    if(e.key === 'Escape' && root.classList.contains('tdsui-offer-sheet-open')){
-      closeSheet();
-      return;
-    }
-    trapFocus(e);
-  });
-
-  // Ripple effect
-  document.querySelectorAll('.tds-mnav-item').forEach(function(item) {
-    item.addEventListener('click', function(e) {
-      if(isReducedMotion || isDataSaver) return;
-      var ripple = document.createElement('span');
-      var rect = this.getBoundingClientRect();
-      var size = Math.max(rect.width, rect.height);
-      var x = e.clientX - rect.left - size / 2;
-      var y = e.clientY - rect.top - size / 2;
-
-      ripple.style.width = ripple.style.height = size + 'px';
-      ripple.style.left = x + 'px';
-      ripple.style.top = y + 'px';
-      ripple.style.position = 'absolute';
-      ripple.style.borderRadius = '50%';
-      ripple.style.background = 'rgba(255, 255, 255, 0.6)';
-      ripple.style.transform = 'scale(0)';
-      ripple.style.animation = 'ripple-effect 0.6s ease-out';
-      ripple.style.pointerEvents = 'none';
-      this.appendChild(ripple);
-      setTimeout(function() { ripple.remove(); }, 600);
-    });
-  });
-
-  // Bounce-on-scroll only when motion allowed
-  var lastScroll = 0;
-  var nav = document.querySelector('.tds-mobile-nav');
-  if (nav && !isReducedMotion && !isDataSaver) {
-    window.addEventListener('scroll', function() {
-      var currentScroll = window.pageYOffset;
-      if (Math.abs(currentScroll - lastScroll) > 50) {
-        nav.style.animation = 'none';
-        setTimeout(function() {
-          nav.style.animation = 'floatNav 3s ease-in-out infinite';
-        }, 10);
-      }
-      lastScroll = currentScroll;
-    });
-  } else if (nav) {
-    nav.style.animation = 'none';
-  }
-
-  // Swipe down to close sheet
-  var startY = 0;
-  if(sheet){
-    sheet.addEventListener('touchstart', function(e){
-      startY = (e.touches && e.touches[0]) ? e.touches[0].clientY : 0;
-    }, {passive:true});
-    sheet.addEventListener('touchend', function(e){
-      var endY = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0].clientY : startY;
-      if(endY - startY > 60){ closeSheet(); }
-    }, {passive:true});
-  }
-
-  document.querySelectorAll('[data-tds-offer-open]').forEach(function(btn){
-    btn.addEventListener('click', openSheet);
-  });
-  document.querySelectorAll('[data-tds-offer-close]').forEach(function(el){
-    el.addEventListener('click', closeSheet);
-  });
-  document.querySelectorAll('.tds-offer-sheet a').forEach(function(a){
-    a.addEventListener('click', closeSheet);
-  });
-
-  document.querySelectorAll('.tds-mobile-nav a.tds-mnav-item[data-page]').forEach(function(link){
-    link.addEventListener('click', function(e){
-      var page = link.getAttribute('data-page') || '';
-      var forcedTargets = {
-        about: 'about-us.html',
-        telemedia: 'telemedia-suite.html'
-      };
-      var target = forcedTargets[page];
-      if (target) {
-        e.preventDefault();
-        e.stopPropagation();
-        window.location.href = target;
-      }
-    });
-  });
-
-  document.querySelectorAll('.nav-links a[href="telemedia-suite.html"], a.tds-mnav-item[href="telemedia-suite.html"]').forEach(function(link){
-    link.addEventListener('click', function(e){
-      e.preventDefault();
-      e.stopPropagation();
-      window.location.href = 'telemedia-suite.html';
-    });
-  });
-
-  function syncActiveNav(){
-    var path = (location.pathname || '').split('/').pop() || 'index.html';
-    path = path.toLowerCase();
-    var map = {
-      'index.html':'home',
-      'about-us.html':'about',
-      'contact-us.html':'contact',
-      'our-services.html':'services',
-      'telemedia-suite.html':'telemedia',
-      'app.html':'telemedia',
-      'teledoctorsa-app.html':'telemedia',
-      'ehr.html':'offer',
-      'ecg247.html':'offer',
-      'virtual-consultations.html':'offer'
-    };
-    var key = map[path] || '';
-    document.querySelectorAll('.tds-mnav-item').forEach(function(el){
-      var p = el.getAttribute('data-page') || '';
-      if(p && p === key){
-        el.setAttribute('aria-current','page');
-      }else{
-        el.removeAttribute('aria-current');
-      }
-    });
-  }
-
-  syncActiveNav();
-  window.addEventListener('popstate', syncActiveNav);
-  window.addEventListener('pageshow', syncActiveNav);
-})();
-</script>
-<!-- TDS_MOBILE_NAV_SCRIPT_END -->
-    
-    
-    <script src="scripts/rebuild-images.js"></script>
+<script src="scripts/site-ux-v4.js"></script>
+    <script src="/scripts/rebuild-images.js"></script>
 </body>
 </html>
+
 
 
 

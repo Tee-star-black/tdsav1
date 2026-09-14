@@ -6,6 +6,18 @@ RedirectMatch 301 ^/patients/?$ https://demo-patient.teledoctorsa.co.za/
     RewriteEngine On
     RewriteBase /
 
+    # Keep app aliases on one canonical public URL
+    RewriteCond %{THE_REQUEST} \s/+app\.html(?:[?\s]) [NC]
+    RewriteRule ^app\.html$ /app [R=301,END,NC]
+    RewriteCond %{THE_REQUEST} \s/+teledoctorsa-app\.html(?:[?\s]) [NC]
+    RewriteRule ^teledoctorsa-app\.html$ /app [R=301,END,NC]
+    RewriteRule ^teledoctorsa-app/?$ /app [R=301,END,NC]
+
+    # Canonical direct routes for physical directory aliases
+    RewriteRule ^app/?$ teledoctorsa-app.html [END,NC]
+    RewriteRule ^ecg247/?$ ecg247.html [END,NC]
+    RewriteRule ^ehr/?$ ehr.html [END,NC]
+
     # Redirect old URLs to new pages
     RewriteRule ^services/?$ /our-services [R=301,END,NC]
     RewriteRule ^about/?$ /about-us [R=301,END,NC]

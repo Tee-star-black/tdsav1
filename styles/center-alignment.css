@@ -1,0 +1,252 @@
+/* TeleDoctorSA centered content system | 2026-09-14
+   Keeps navigation, forms, tables and long legal lists readable while
+   centering the public-facing headings, copy, cards and calls-to-action. */
+
+:root {
+  --tds-centered-copy: 760px;
+}
+
+/* Section headings and supporting copy */
+main section,
+main .section-header,
+main .services-header,
+main .page-header,
+main .section-title,
+main .section-intro,
+main .section-copy,
+main .hero-content,
+main .hero-copy,
+main .page-hero-content,
+main .cta-content,
+main .cta-copy,
+main .intro-content,
+main .core-slider-intro {
+  text-align: center !important;
+}
+
+main section > h1,
+main section > h2,
+main section > h3,
+main section > p,
+main .section-header > h1,
+main .section-header > h2,
+main .section-header > h3,
+main .section-header > p,
+main .services-header > h1,
+main .services-header > h2,
+main .services-header > h3,
+main .services-header > p,
+main .hero-content > h1,
+main .hero-content > h2,
+main .hero-content > p,
+main .hero-copy > h1,
+main .hero-copy > h2,
+main .hero-copy > p,
+main .page-hero h1,
+main .page-hero h2,
+main .page-hero p,
+main .cta-content > h2,
+main .cta-content > p,
+main .intro-content > h2,
+main .intro-content > p {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+main section > p,
+main .section-header > p,
+main .services-header > p,
+main .hero-content > p,
+main .hero-copy > p,
+main .page-hero p,
+main .cta-content > p,
+main .intro-content > p {
+  max-width: var(--tds-centered-copy) !important;
+}
+
+/* Public-facing cards */
+main .services-grid > .card,
+main .services-grid > .card .card-content,
+main .info-focus-card,
+main .trust-proof-card,
+main .contact-card,
+main .feature-card,
+main .benefit-card,
+main .product-card,
+main .audience-card,
+main .role-card,
+main .path-card,
+main .core-slide-copy,
+main .telemedicine-explainer-card,
+main .trust-assurance-panel,
+main .trust-faq-card {
+  text-align: center !important;
+}
+
+main .services-grid > .card .card-content,
+main .info-focus-card,
+main .trust-proof-card,
+main .contact-card,
+main .feature-card,
+main .benefit-card,
+main .product-card,
+main .audience-card,
+main .role-card,
+main .path-card,
+main .core-slide-copy {
+  align-items: center !important;
+}
+
+main .services-grid > .card .icon-wrap,
+main .feature-card .icon-wrap,
+main .benefit-card .icon-wrap,
+main .product-card .icon-wrap,
+main .audience-card .icon-wrap,
+main .role-card .icon-wrap,
+main .path-card .icon-wrap {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Buttons and CTA groups */
+main .hero-actions,
+main .cta-actions,
+main .card-actions,
+main .button-group,
+main .buttons,
+main .actions,
+main .shop-role-actions,
+main .core-slider-actions,
+main .contact-actions,
+main .section-actions {
+  justify-content: center !important;
+  justify-items: center !important;
+  align-items: center !important;
+  text-align: center !important;
+}
+
+main .btn,
+main .btn-main,
+main .cta-btn,
+main .link-btn,
+main .learn-more-btn,
+main .read-more,
+main .core-slide-cta,
+main a[class*="btn"],
+main button[class*="btn"] {
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+/* When a CTA is intended to stand on its own, keep it visually centred. */
+main .section-header > .btn,
+main .section-header > .cta-btn,
+main .services-header > .btn,
+main .services-header > .cta-btn,
+main .cta-content > .btn,
+main .cta-content > .cta-btn,
+main .intro-content > .btn,
+main .intro-content > .cta-btn {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Canonical footer follows the same centered visual language. */
+.tds-canonical-footer,
+.tds-canonical-footer .tds-footer-column,
+.tds-canonical-footer .tds-footer-brandline,
+.site-footer,
+.site-footer .site-footer-column,
+.site-footer .site-footer-brand {
+  text-align: center !important;
+}
+
+.tds-canonical-footer .tds-footer-brandline,
+.tds-canonical-footer .tds-footer-socials,
+.site-footer .site-footer-brandline,
+.site-footer .site-footer-chip-row,
+.site-footer .site-footer-actions {
+  justify-content: center !important;
+}
+
+.tds-canonical-footer .tds-footer-description,
+.site-footer .site-footer-brand p {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.tds-canonical-footer .tds-footer-list,
+.site-footer .site-footer-list {
+  justify-items: center !important;
+}
+
+.tds-canonical-footer .tds-footer-bottom {
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+/* Preserve usability in content that should not be centered. */
+main form,
+main form label,
+main form input,
+main form textarea,
+main form select,
+main table,
+main th,
+main td,
+main .legal-content ul,
+main .legal-content ol,
+main .policy-content ul,
+main .policy-content ol,
+main .terms-content ul,
+main .terms-content ol {
+  text-align: left !important;
+}
+
+main form {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Mobile gets the same deliberate alignment instead of falling back to legacy left alignment. */
+@media (max-width: 900px) {
+  main section,
+  main .section-header,
+  main .services-header,
+  main .page-header,
+  main .hero-content,
+  main .hero-copy,
+  main .page-hero-content,
+  main .cta-content,
+  main .intro-content,
+  main .services-grid > .card,
+  main .services-grid > .card .card-content,
+  main .core-slide-copy {
+    text-align: center !important;
+  }
+
+  main .hero-actions,
+  main .cta-actions,
+  main .card-actions,
+  main .button-group,
+  main .actions,
+  main .section-actions,
+  main .core-slider-actions {
+    width: 100% !important;
+    justify-content: center !important;
+    justify-items: center !important;
+  }
+
+  main .hero-actions > *,
+  main .cta-actions > *,
+  main .card-actions > *,
+  main .button-group > *,
+  main .section-actions > * {
+    text-align: center !important;
+  }
+
+  .tds-canonical-footer .tds-footer-grid,
+  .site-footer .site-footer-grid {
+    text-align: center !important;
+  }
+}
