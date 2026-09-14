@@ -30,19 +30,15 @@ function observeNonFatalErrors(page, file) {
 
 async function waitForSharedNav(page, file) {
   await page.waitForSelector('body[data-tds-canonical-nav-ready="true"]', { timeout: 8000 });
-  await page.waitForSelector('nav[data-tds-canonical-nav="true"]', { timeout: 3000 });
-  await page.waitForFunction(() => {
-    const nav = document.querySelector('nav[data-tds-canonical-nav="true"]');
-    const panel = document.querySelector('#sidePanel');
-    return !!nav && !!panel && panel.dataset.tdsMegaReady === 'true';
-  }, null, { timeout: 5000 });
+  await page.waitForSelector('#tdsSiteNav[data-tds-canonical-nav="true"]', { timeout: 3000 });
 
   const counts = await page.evaluate(() => ({
-    canonicalNavs: document.querySelectorAll('nav[data-tds-canonical-nav="true"]').length,
-    hamburgerButtons: document.querySelectorAll('#hamburgerBtn').length,
-    navLinks: document.querySelectorAll('#navLinks').length,
-    offerTriggers: document.querySelectorAll('#openPanelBtn').length,
-    offerPanels: document.querySelectorAll('#sidePanel').length,
+    canonicalNavs: document.querySelectorAll('#tdsSiteNav[data-tds-canonical-nav="true"]').length,
+    menuButtons: document.querySelectorAll('#tdsNavMenuButton').length,
+    navLinks: document.querySelectorAll('#tdsNavLinks').length,
+    offerTriggers: document.querySelectorAll('#tdsOfferTrigger').length,
+    offerPanels: document.querySelectorAll('#tdsOfferPanel').length,
+    backdrops: document.querySelectorAll('#tdsNavBackdrop').length,
   }));
 
   for (const [name, count] of Object.entries(counts)) {
@@ -52,23 +48,24 @@ async function waitForSharedNav(page, file) {
 
 async function testDesktop(browser, file) {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  page.setDefaultTimeout(5000);
   observeNonFatalErrors(page, file);
 
   try {
     await page.goto(toUrl(file), { waitUntil: 'domcontentloaded', timeout: 12000 });
     await waitForSharedNav(page, file);
 
-    await page.click('#openPanelBtn');
-    await page.waitForFunction(() => document.querySelector('#sidePanel')?.classList.contains('active'), null, { timeout: 3000 });
+    await page.click('#tdsOfferTrigger');
+    await page.waitForFunction(() => document.querySelector('#tdsOfferPanel')?.classList.contains('is-open'), null, { timeout: 3000 });
 
-    const visible = await page.$eval('#sidePanel', el => {
+    const visible = await page.$eval('#tdsOfferPanel', el => {
       const style = getComputedStyle(el);
       return style.visibility !== 'hidden' && style.pointerEvents !== 'none' && Number(style.opacity || 1) > 0;
     });
     if (!visible) throw new Error(`${file}: desktop What We Offer panel did not become visible`);
 
     await page.keyboard.press('Escape');
-    await page.waitForFunction(() => !document.querySelector('#sidePanel')?.classList.contains('active'), null, { timeout: 3000 });
+    await page.waitForFunction(() => !document.querySelector('#tdsOfferPanel')?.classList.contains('is-open'), null, { timeout: 3000 });
   } finally {
     await page.close();
   }
@@ -76,26 +73,27 @@ async function testDesktop(browser, file) {
 
 async function testMobile(browser, file) {
   const page = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  page.setDefaultTimeout(5000);
   observeNonFatalErrors(page, file);
 
   try {
     await page.goto(toUrl(file), { waitUntil: 'domcontentloaded', timeout: 12000 });
     await waitForSharedNav(page, file);
 
-    await page.click('#hamburgerBtn');
-    await page.waitForFunction(() => document.querySelector('#navLinks')?.classList.contains('active'), null, { timeout: 3000 });
+    await page.click('#tdsNavMenuButton');
+    await page.waitForFunction(() => document.querySelector('#tdsNavLinks')?.classList.contains('is-open'), null, { timeout: 3000 });
 
-    const expanded = await page.getAttribute('#hamburgerBtn', 'aria-expanded');
-    if (expanded !== 'true') throw new Error(`${file}: mobile hamburger did not set aria-expanded=true`);
+    const expanded = await page.getAttribute('#tdsNavMenuButton', 'aria-expanded');
+    if (expanded !== 'true') throw new Error(`${file}: mobile menu button did not set aria-expanded=true`);
 
-    await page.click('#openPanelBtn');
-    await page.waitForFunction(() => document.querySelector('#sidePanel')?.classList.contains('active'), null, { timeout: 3000 });
+    await page.click('#tdsOfferTrigger');
+    await page.waitForFunction(() => document.querySelector('#tdsOfferPanel')?.classList.contains('is-open'), null, { timeout: 3000 });
 
-    const mobilePanelVisible = await page.$eval('#sidePanel', el => getComputedStyle(el).display !== 'none');
+    const mobilePanelVisible = await page.$eval('#tdsOfferPanel', el => getComputedStyle(el).display !== 'none');
     if (!mobilePanelVisible) throw new Error(`${file}: mobile What We Offer panel did not open`);
 
     await page.keyboard.press('Escape');
-    await page.waitForFunction(() => !document.querySelector('#navLinks')?.classList.contains('active'), null, { timeout: 3000 });
+    await page.waitForFunction(() => !document.querySelector('#tdsNavLinks')?.classList.contains('is-open'), null, { timeout: 3000 });
   } finally {
     await page.close();
   }
@@ -106,7 +104,6 @@ const pages = [];
 for (const file of allFiles.sort()) {
   const text = await readFile(file, 'utf8');
   if (!/<body\b/i.test(text)) continue;
-  // Tiny redirect shim pages are not independently interactive; their destination is tested separately.
   if (/http-equiv=["']refresh["']/i.test(text)) continue;
   pages.push(file);
 }
