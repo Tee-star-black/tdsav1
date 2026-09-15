@@ -19,7 +19,7 @@
     document.head.appendChild(link);
   }
 
-  var release = '20260915-navback1';
+  var release = '20260915-navback2';
 
   loadStyleOnce('tds-center-alignment-loader', '/styles/center-alignment.css?v=' + release);
   loadStyleOnce('tds-home-hero-center-loader', '/styles/home-hero-center.css?v=' + release);
