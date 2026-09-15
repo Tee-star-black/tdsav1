@@ -29,7 +29,10 @@ function observeNonFatalErrors(page, file) {
 }
 
 async function waitForSharedNav(page, file) {
-  await page.waitForFunction(() => document.body?.getAttribute('data-tds-canonical-nav-ready') === 'true', null, { timeout: 8000 });
+  await page.waitForFunction(() => (
+    document.body?.getAttribute('data-tds-canonical-nav-ready') === 'true' &&
+    document.body?.getAttribute('data-tds-nav-back-ready') === 'true'
+  ), null, { timeout: 8000 });
   await page.waitForSelector('#tdsSiteNav[data-tds-canonical-nav="true"]', { state: 'attached', timeout: 3000 });
   await page.waitForFunction(() => {
     const nav = document.querySelector('#tdsSiteNav');
@@ -46,6 +49,7 @@ async function waitForSharedNav(page, file) {
     offerTriggers: document.querySelectorAll('#tdsOfferTrigger').length,
     offerPanels: document.querySelectorAll('#tdsOfferPanel').length,
     backdrops: document.querySelectorAll('#tdsNavBackdrop').length,
+    mobileBackButtons: document.querySelectorAll('#tdsMobileMenuBack').length,
   }));
 
   for (const [name, count] of Object.entries(counts)) {
@@ -104,11 +108,39 @@ async function testMobile(browser, file) {
     const expanded = await page.getAttribute('#tdsNavMenuButton', 'aria-expanded');
     if (expanded !== 'true') throw new Error(`${file}: mobile menu button did not set aria-expanded=true`);
 
+    await page.waitForFunction(() => {
+      const back = document.querySelector('#tdsMobileMenuBack');
+      if (!back) return false;
+      const style = getComputedStyle(back);
+      const rect = back.getBoundingClientRect();
+      return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height >= 44;
+    }, null, { timeout: 3000 });
+
     await page.click('#tdsOfferTrigger');
     await waitForOfferVisible(page, file, true);
 
-    await page.keyboard.press('Escape');
+    const submenuBackLabel = (await page.textContent('#tdsMobileMenuBack'))?.trim();
+    if (submenuBackLabel !== 'Back to menu') {
+      throw new Error(`${file}: mobile back control did not switch to "Back to menu" while submenu was open`);
+    }
+
+    await page.click('#tdsMobileMenuBack');
+    await page.waitForFunction(() => {
+      const links = document.querySelector('#tdsNavLinks');
+      const panel = document.querySelector('#tdsOfferPanel');
+      return !!links && links.classList.contains('is-open') && !panel?.classList.contains('is-open');
+    }, null, { timeout: 3000 });
+
+    const menuBackLabel = (await page.textContent('#tdsMobileMenuBack'))?.trim();
+    if (menuBackLabel !== 'Back') {
+      throw new Error(`${file}: mobile back control did not return to "Back" after closing submenu`);
+    }
+
+    await page.click('#tdsMobileMenuBack');
     await page.waitForFunction(() => !document.querySelector('#tdsNavLinks')?.classList.contains('is-open'), null, { timeout: 3000 });
+
+    const collapsed = await page.getAttribute('#tdsNavMenuButton', 'aria-expanded');
+    if (collapsed !== 'false') throw new Error(`${file}: mobile back control did not close the drawer cleanly`);
   } finally {
     await page.close();
   }
@@ -149,4 +181,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`\nNavbar verification passed on ${pages.length} interactive HTML pages at desktop and mobile widths.`);
+console.log(`\nNavbar verification passed on ${pages.length} interactive HTML pages at desktop and mobile widths, including back controls.`);
