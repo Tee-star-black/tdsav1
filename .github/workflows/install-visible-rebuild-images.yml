@@ -6,8 +6,10 @@ on:
       - 'scripts/rebuild-images.js'
       - 'scripts/canonical-nav.js'
       - 'scripts/verify-navbar.mjs'
+      - 'scripts/verify-home-hero.mjs'
       - 'scripts/footer-full-bleed-guard.js'
       - 'styles/center-alignment.css'
+      - 'styles/home-hero-center.css'
       - '.github/workflows/install-visible-rebuild-images.yml'
   workflow_dispatch:
 
@@ -88,7 +90,10 @@ jobs:
               Path('scripts/rebuild-images-core.js'),
               Path('scripts/canonical-nav.js'),
               Path('scripts/footer-full-bleed-guard.js'),
+              Path('scripts/verify-navbar.mjs'),
+              Path('scripts/verify-home-hero.mjs'),
               Path('styles/center-alignment.css'),
+              Path('styles/home-hero-center.css'),
           ]
 
           for required in required_runtime_files:
@@ -96,7 +101,7 @@ jobs:
                   bad.append(f'missing runtime file: {required}')
 
           loader = Path('scripts/rebuild-images.js').read_text(encoding='utf-8')
-          for expected in ['rebuild-images-core.js', 'canonical-nav.js', 'footer-full-bleed-guard.js', 'center-alignment.css']:
+          for expected in ['rebuild-images-core.js', 'canonical-nav.js', 'footer-full-bleed-guard.js', 'center-alignment.css', 'home-hero-center.css']:
               if expected not in loader:
                   bad.append(f'rebuild-images.js does not load {expected}')
 
@@ -137,6 +142,7 @@ jobs:
           trap 'kill $SERVER_PID || true' EXIT
           sleep 2
           node scripts/verify-navbar.mjs
+          node scripts/verify-home-hero.mjs
 
       - name: Commit normalized HTML
         shell: bash
