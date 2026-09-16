@@ -11,7 +11,7 @@
   <meta property="og:description" content="{{ article.excerpt }}">
   <meta property="og:image" content="{{ article.coverImage.url }}">
   <link rel="stylesheet" href="/styles/blog.css">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":{{ article.title | dump | safe }},"datePublished":{{ article.publishedAt | dump | safe }},"author":{"@type":"Person","name":{{ article.author | dump | safe }}},"publisher":{"@type":"Organization","name":"TeleDoctorSA","url":"https://teledoctorsa.co.za"}}</script>
+  <script type="application/ld+json">{{ article.schemaJson | safe }}</script>
 </head>
 <body class="tdsa-article">
   <header class="blog-site-header"><a href="/" aria-label="TeleDoctorSA home"><img src="/images/rebuild/logo.png" alt="TeleDoctorSA logo"></a><nav><a href="/blog/">Blog & Insights</a><a href="/telemedia-suite">TeleMedia Suite</a><a href="/contact-us">Contact</a></nav></header>
