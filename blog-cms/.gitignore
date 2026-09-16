@@ -1,0 +1,6 @@
+node_modules/
+.env
+content/articles.json
+data/store.local.json
+server/uploads/*
+!server/uploads/.gitkeep
