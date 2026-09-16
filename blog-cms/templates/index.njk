@@ -9,16 +9,18 @@
   <link rel="stylesheet" href="/styles/blog.css">
 </head>
 <body class="tdsa-blog">
+  <header class="blog-site-header"><a href="/" aria-label="TeleDoctorSA home"><img src="/images/rebuild/logo.png" alt="TeleDoctorSA logo"></a><nav><a href="/telemedia-suite">TeleMedia Suite</a><a href="/our-services">Services</a><a href="/contact-us">Contact</a></nav></header>
   <main>
-    <header class="blog-hero"><p>TELEDOCTORSA EDITORIAL</p><h1>Blog & Insights</h1><span>Useful health information, product updates and stories from connected care.</span></header>
-    <section class="blog-grid" aria-label="Latest articles">
+    <section class="blog-hero"><div><p>TELEDOCTORSA EDITORIAL</p><h1>Useful healthcare stories, made easier to understand.</h1><span>Practical guidance, digital-health education and updates from TeleDoctorSA.</span></div>{% if featured %}<article class="blog-feature"><small>FEATURED</small><h2>{{ featured.title }}</h2><p>{{ featured.excerpt }}</p><a href="/blog/{{ featured.slug }}/">Read story →</a></article>{% endif %}</section>
+    <section class="blog-content"><div class="blog-section-title"><div><p>LATEST</p><h2>From the editorial desk</h2></div><span>{{ articles | length }} published stories</span></div><section class="blog-grid" aria-label="Latest articles">
       {% for article in articles %}
       <article class="blog-card">
         <a href="/blog/{{ article.slug }}/" class="blog-card-image"><img src="{{ article.coverImage.url }}" alt="{{ article.coverImage.alt }}" loading="lazy"></a>
-        <div class="blog-card-copy"><span>{{ article.category.title }}</span><h2><a href="/blog/{{ article.slug }}/">{{ article.title }}</a></h2><p>{{ article.excerpt }}</p><small>{{ article.author.name }} · {{ article.publishedAt | truncate(10, true, '') }}</small></div>
+        <div class="blog-card-copy"><span>{{ article.category }}</span><h2><a href="/blog/{{ article.slug }}/">{{ article.title }}</a></h2><p>{{ article.excerpt }}</p><small>{{ article.author }} · {{ article.publishedAt | truncate(10, true, '') }}</small></div>
       </article>
       {% endfor %}
-    </section>
+    </section></section>
   </main>
+  <footer class="blog-footer"><img src="/images/rebuild/logo.png" alt="TeleDoctorSA logo"><span>Healthcare. Anywhere.</span></footer>
 </body>
 </html>
