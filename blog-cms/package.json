@@ -1,12 +1,17 @@
 {
   "name": "teledoctorsa-blog-cms",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "scripts": {
-    "prototype": "npx serve prototype",
+    "studio:preview": "npx serve prototype",
+    "blog:preview": "npx serve public-preview",
+    "sanity:dev": "sanity dev --config sanity/sanity.config.ts",
+    "sanity:deploy": "sanity deploy --config sanity/sanity.config.ts",
+    "content:fetch": "node scripts/fetch-sanity.mjs",
+    "content:validate": "node scripts/validate-content.mjs content/articles.json",
     "build:blog": "node scripts/build-blog.mjs",
-    "validate:content": "node scripts/validate-content.mjs"
+    "build:sample": "npm run content:validate && npm run build:blog"
   },
   "dependencies": {
     "@sanity/client": "^7.11.2",
