@@ -16,11 +16,11 @@
   },
   "dependencies": {
     "@sanity/client": "^7.11.2",
-    "@sanity/vision": "^4.10.0",
-    "nunjucks": "^3.2.4",
-    "sanity": "^4.10.0"
+    "nunjucks": "^3.2.4"
   },
   "devDependencies": {
+    "@sanity/vision": "^4.10.0",
+    "sanity": "^4.10.0",
     "typescript": "^5.9.2"
   }
 }
