@@ -9,16 +9,19 @@ const cmsRoot=path.resolve(here,'..');
 const siteRoot=path.resolve(cmsRoot,'..');
 const repo=createRepository();
 const port=Number(process.env.PORT||8787);
+const MAX_JSON_BYTES=9*1024*1024;
+let scheduleSweepRunning=false;
 
 const MIME={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp','.svg':'image/svg+xml','.ico':'image/x-icon'};
 
 function json(res,status,payload){
-  res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'Content-Type','Access-Control-Allow-Methods':'GET,POST,PUT,DELETE,OPTIONS'});
+  res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'Content-Type','Access-Control-Allow-Methods':'GET,POST,PUT,DELETE,OPTIONS','Cache-Control':'no-store'});
   res.end(JSON.stringify(payload));
 }
 
 async function body(req){
-  const chunks=[];for await(const chunk of req)chunks.push(chunk);
+  const chunks=[];let total=0;
+  for await(const chunk of req){total+=chunk.length;if(total>MAX_JSON_BYTES)throw Object.assign(new Error('Request is too large.'),{statusCode:413});chunks.push(chunk);}
   if(!chunks.length)return {};
   try{return JSON.parse(Buffer.concat(chunks).toString('utf8'));}catch{throw Object.assign(new Error('Request body must be valid JSON.'),{statusCode:400});}
 }
@@ -61,6 +64,18 @@ async function api(req,res,url){
   return json(res,404,{error:'API route not found.'});
 }
 
+async function publishDueScheduled(){
+  if(scheduleSweepRunning)return;
+  scheduleSweepRunning=true;
+  try{
+    const now=Date.now();
+    const due=(await repo.listArticles()).filter(article=>article.status==='Scheduled'&&article.scheduledAt&&new Date(article.scheduledAt).getTime()<=now);
+    for(const article of due){
+      try{await repo.saveArticle({...article,status:'Published',scheduledAt:''},article.id);console.log(`Published scheduled article: ${article.slug}`);}catch(error){console.error(`Scheduled publication blocked for ${article.slug}:`,error.message);}
+    }
+  }finally{scheduleSweepRunning=false;}
+}
+
 async function serveFile(res,filePath){
   try{
     const info=await stat(filePath);if(info.isDirectory())filePath=path.join(filePath,'index.html');
@@ -68,7 +83,7 @@ async function serveFile(res,filePath){
   }catch{res.writeHead(404,{'Content-Type':'text/plain; charset=utf-8'});res.end('Not found');}
 }
 
-function safeResolve(base,relative){const target=path.resolve(base,'.'+relative);return target.startsWith(base)?target:null;}
+function safeResolve(base,relative){const target=path.resolve(base,'.'+relative);return target===base||target.startsWith(base+path.sep)?target:null;}
 
 const server=http.createServer(async(req,res)=>{
   try{
@@ -76,9 +91,9 @@ const server=http.createServer(async(req,res)=>{
     if(url.pathname.startsWith('/api/'))return await api(req,res,url);
     if(url.pathname==='/')return serveFile(res,path.join(cmsRoot,'prototype','index.html'));
     if(url.pathname.startsWith('/uploads/'))return serveFile(res,path.join(cmsRoot,'server',url.pathname));
-    if(url.pathname.startsWith('/prototype/')){const target=safeResolve(path.join(cmsRoot,'prototype'),url.pathname.replace('/prototype',''));return target?serveFile(res,target):res.end();}
-    if(url.pathname.startsWith('/public-preview/')){const target=safeResolve(path.join(cmsRoot,'public-preview'),url.pathname.replace('/public-preview',''));return target?serveFile(res,target):res.end();}
-    if(url.pathname.startsWith('/client/')){const target=safeResolve(path.join(cmsRoot,'client'),url.pathname.replace('/client',''));return target?serveFile(res,target):res.end();}
+    if(url.pathname.startsWith('/prototype/')){const target=safeResolve(path.join(cmsRoot,'prototype'),url.pathname.replace('/prototype',''));return target?serveFile(res,target):json(res,400,{error:'Invalid path.'});}
+    if(url.pathname.startsWith('/public-preview/')){const target=safeResolve(path.join(cmsRoot,'public-preview'),url.pathname.replace('/public-preview',''));return target?serveFile(res,target):json(res,400,{error:'Invalid path.'});}
+    if(url.pathname.startsWith('/client/')){const target=safeResolve(path.join(cmsRoot,'client'),url.pathname.replace('/client',''));return target?serveFile(res,target):json(res,400,{error:'Invalid path.'});}
     const siteTarget=safeResolve(siteRoot,url.pathname);if(siteTarget)return serveFile(res,siteTarget);
     res.writeHead(404);res.end('Not found');
   }catch(error){console.error(error);json(res,error.statusCode||500,{error:error.message||'Unexpected server error.',details:error.details||[]});}
@@ -88,4 +103,6 @@ server.listen(port,'127.0.0.1',()=>{
   console.log(`TeleDoctorSA Blog CMS running on http://127.0.0.1:${port}`);
   console.log(`Backend: ${repo.backendName}`);
   console.log(`Public preview: http://127.0.0.1:${port}/public-preview/`);
+  publishDueScheduled().catch(console.error);
 });
+setInterval(()=>publishDueScheduled().catch(console.error),30000).unref();
