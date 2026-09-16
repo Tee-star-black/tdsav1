@@ -67,7 +67,14 @@ export class LocalRepository{
   }
   async #mutate(fn){
     let output;
-    this.queue=this.queue.then(async()=>{const store=await readStore();const result=await fn(store);await writeStore(result.store);output=result.value;});
-    await this.queue;return output;
+    const operation=this.queue.catch(()=>undefined).then(async()=>{
+      const store=await readStore();
+      const result=await fn(store);
+      await writeStore(result.store);
+      output=result.value;
+    });
+    this.queue=operation.then(()=>undefined,()=>undefined);
+    await operation;
+    return output;
   }
 }
