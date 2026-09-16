@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>TeleDoctorSA Publishing Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./studio.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#" aria-label="TeleDoctorSA Publishing Studio home">
+        <span class="brand-mark" aria-hidden="true"><i></i><b></b></span>
+        <span><strong>TeleDoctor<span>SA</span></strong><small>Publishing Studio</small></span>
+      </a>
+
+      <nav class="side-nav" aria-label="Publishing navigation">
+        <p>Workspace</p>
+        <button class="nav-item active" data-view="articles"><span>▤</span>Articles <em>24</em></button>
+        <button class="nav-item" data-action="new"><span>＋</span>New story</button>
+        <button class="nav-item"><span>◫</span>Media library</button>
+        <button class="nav-item"><span>◇</span>Categories</button>
+        <p>Editorial</p>
+        <button class="nav-item"><span>◷</span>Review queue <em class="alert">3</em></button>
+        <button class="nav-item"><span>✓</span>Published</button>
+        <button class="nav-item"><span>◴</span>Scheduled</button>
+        <p>Website</p>
+        <a class="nav-item" href="../../telemedia-suite.html" target="_blank"><span>↗</span>TeleMedia Suite</a>
+        <a class="nav-item" href="../../index.html" target="_blank"><span>⌂</span>View website</a>
+      </nav>
+
+      <div class="profile">
+        <span class="avatar">TS</span>
+        <span><strong>Tee S.</strong><small>Administrator</small></span>
+        <button aria-label="Account options">•••</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button class="menu" id="menuBtn" aria-label="Open menu">☰</button>
+        <div class="global-search"><span>⌕</span><input id="globalSearch" type="search" placeholder="Search stories, authors, categories…"></div>
+        <div class="top-actions"><button aria-label="Help">?</button><button aria-label="Notifications">♢<i></i></button></div>
+      </header>
+
+      <div class="content">
+        <section class="welcome">
+          <div><span class="eyebrow">TELEDOCTORSA EDITORIAL</span><h1>Blog & Insights</h1><p>Stories worth publishing, without touching a line of production code.</p></div>
+          <button class="primary" data-action="new"><span>＋</span> New article</button>
+        </section>
+
+        <section class="metrics" aria-label="Publishing summary">
+          <article><span class="metric-icon mint">▤</span><div><strong>24</strong><small>Published stories</small></div><b>+4 this month</b></article>
+          <article><span class="metric-icon amber">◷</span><div><strong>3</strong><small>Awaiting review</small></div><b>Needs attention</b></article>
+          <article><span class="metric-icon blue">✎</span><div><strong>2</strong><small>Active drafts</small></div><b>Continue writing</b></article>
+          <article><span class="metric-icon violet">↗</span><div><strong>18.4k</strong><small>Readers · 30 days</small></div><b>+12.8%</b></article>
+        </section>
+
+        <section class="workspace-grid">
+          <div class="article-panel">
+            <div class="panel-heading"><div><h2>Your stories</h2><p>Manage everything currently moving through the publishing desk.</p></div><button class="ghost">Export</button></div>
+            <div class="tabs" role="tablist">
+              <button class="active" data-filter="all">All <span>29</span></button><button data-filter="Published">Published <span>24</span></button><button data-filter="Draft">Drafts <span>2</span></button><button data-filter="Review">In review <span>3</span></button>
+            </div>
+            <div class="filters"><label><span>⌕</span><input id="articleSearch" type="search" placeholder="Find an article…"></label><select id="categoryFilter"><option value="all">All categories</option><option>Health Education</option><option>Company News</option><option>Patient Guides</option><option>Digital Health</option></select><select><option>Newest first</option><option>Oldest first</option></select></div>
+            <div class="article-list" id="articleList"></div>
+            <div class="empty" id="emptyState" hidden><span>⌕</span><h3>No stories found</h3><p>Try another search or filter. The articles have not escaped, probably.</p></div>
+            <footer class="list-footer"><span id="resultCount">Showing 6 stories</span><div><button disabled>‹</button><button class="active">1</button><button>2</button><button>3</button><button>›</button></div></footer>
+          </div>
+
+          <aside class="right-rail">
+            <article class="editorial-card"><span>EDITORIAL NOTE</span><h2>Make healthcare easier to understand.</h2><p>Useful, human stories build trust long before someone needs care.</p><div class="line"></div></article>
+            <article class="rail-card"><div class="rail-title"><h3>Quick actions</h3><span>⌘</span></div><button data-action="new"><i>✎</i><span><strong>Write a story</strong><small>Start from a clean draft</small></span><b>›</b></button><button><i>▧</i><span><strong>Upload media</strong><small>Images and documents</small></span><b>›</b></button><button><i>◫</i><span><strong>Categories</strong><small>Organise the library</small></span><b>›</b></button></article>
+            <article class="rail-card activity"><div class="rail-title"><h3>Recent activity</h3><span>Today</span></div><div><i class="dot mint-dot"></i><p><strong>T. Maseko</strong> updated “Winter wellness guide”<small>2 hours ago</small></p></div><div><i class="dot amber-dot"></i><p><strong>Dr N. Patel</strong> submitted an article for review<small>4 hours ago</small></p></div><div><i class="dot blue-dot"></i><p><strong>T. Sibiya</strong> published a company update<small>Yesterday</small></p></div></article>
+          </aside>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <dialog id="editorDialog">
+    <form method="dialog" class="editor-modal" id="editorForm">
+      <header><div><span class="eyebrow">NEW STORY</span><h2>Start with the idea.</h2><p>You can worry about metadata after the writing has a pulse.</p></div><button value="cancel" class="close" aria-label="Close">×</button></header>
+      <div class="editor-body">
+        <label>Article title<input id="newTitle" required placeholder="Give the story a clear, useful title"></label>
+        <div class="two-col"><label>Category<select id="newCategory"><option>Health Education</option><option>Patient Guides</option><option>Digital Health</option><option>Company News</option></select></label><label>Author<input value="TeleDoctorSA Editorial"></label></div>
+        <label>Short introduction<textarea rows="3" placeholder="What should the reader understand before they continue?"></textarea></label>
+        <label>Story<textarea rows="8" placeholder="Begin writing here…"></textarea></label>
+        <div class="review-note"><span>✓</span><p><strong>Clinical review is built into the workflow.</strong><br>Health education content can be routed to an assigned reviewer before publication.</p></div>
+      </div>
+      <footer><button value="cancel" class="secondary">Save as draft</button><button id="createDraft" value="default" class="primary">Create draft →</button></footer>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status"><span>✓</span><div><strong>Draft created</strong><small>Your story is safely in the workspace.</small></div></div>
+  <script src="./studio.js"></script>
+</body>
+</html>
