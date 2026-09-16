@@ -1,0 +1,35 @@
+name: Blog CMS CI
+
+on:
+  push:
+    branches:
+      - feature/blog-cms-studio
+    paths:
+      - 'blog-cms/**'
+      - '.github/workflows/blog-cms-ci.yml'
+  pull_request:
+    paths:
+      - 'blog-cms/**'
+      - '.github/workflows/blog-cms-ci.yml'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: blog-cms
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: blog-cms/package.json
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Run connected smoke test
+        run: npm run check
+      - name: Generate static blog from local backend
+        run: npm run build:blog
