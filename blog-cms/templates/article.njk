@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{ article.seoTitle or article.title }} | {{ site.name }}</title>
+  <meta name="description" content="{{ article.seoDescription or article.excerpt }}">
+  <link rel="canonical" href="{{ site.baseUrl }}/blog/{{ article.slug }}/">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="{{ article.title }}">
+  <meta property="og:description" content="{{ article.excerpt }}">
+  <meta property="og:image" content="{{ article.coverImage.url }}">
+  <link rel="stylesheet" href="/styles/blog.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":{{ article.title | dump | safe }},"datePublished":{{ article.publishedAt | dump | safe }},"author":{"@type":"Person","name":{{ article.author.name | dump | safe }}},"publisher":{"@type":"Organization","name":"TeleDoctorSA","url":"https://teledoctorsa.co.za"}}</script>
+</head>
+<body class="tdsa-article">
+  <main>
+    <article class="article-shell">
+      <a class="article-back" href="/blog/">← Blog & Insights</a>
+      <header class="article-header"><span>{{ article.category.title }}</span><h1>{{ article.title }}</h1><p>{{ article.excerpt }}</p><small>{{ article.author.name }} · {{ article.publishedAt | truncate(10, true, '') }}</small></header>
+      <figure class="article-cover"><img src="{{ article.coverImage.url }}" alt="{{ article.coverImage.alt }}"></figure>
+      <div class="article-copy">
+        <p>This template is ready for Portable Text rendering. The production generator will render Sanity body blocks here after the Sanity client connection is configured.</p>
+      </div>
+    </article>
+  </main>
+</body>
+</html>
