@@ -18,12 +18,12 @@ const query=`*[_type == "article" && defined(publishedAt)] | order(publishedAt d
   "category": {"title": category->title, "slug": category->slug.current},
   "coverImage": {"url": coverImage.asset->url, "alt": coverImage.alt},
   body,
-  "featured": coalesce(featuredInTelemedia, false),
-  "clinicalReviewRequired": coalesce(clinicalReview.required, false),
-  "clinicalReviewStatus": coalesce(clinicalReview.status, "not_required"),
+  "featured": coalesce(featured, false),
+  "clinicalReviewRequired": coalesce(clinicalReviewRequired, false),
+  "clinicalReviewStatus": coalesce(clinicalReviewStatus, "not_required"),
   publishedAt,
-  "seoTitle": coalesce(seo.title, ""),
-  "seoDescription": coalesce(seo.description, "")
+  "seoTitle": coalesce(seoTitle, ""),
+  "seoDescription": coalesce(seoDescription, "")
 }`
 
 const articles=await client.fetch(query)
