@@ -19,6 +19,8 @@ function json(res,status,payload){
   res.end(JSON.stringify(payload));
 }
 
+function redirect(res,location,status=302){res.writeHead(status,{Location:location,'Cache-Control':'no-store'});res.end();}
+
 async function body(req){
   const chunks=[];let total=0;
   for await(const chunk of req){total+=chunk.length;if(total>MAX_JSON_BYTES)throw Object.assign(new Error('Request is too large.'),{statusCode:413});chunks.push(chunk);}
@@ -64,6 +66,30 @@ async function api(req,res,url){
   return json(res,404,{error:'API route not found.'});
 }
 
+function publicFeed(articles){
+  return articles.map(({title,slug,excerpt,category,author,publishedAt,updatedAt,featured,coverImage})=>({title,slug,excerpt,category,author,publishedAt,updatedAt,featured,coverImage}));
+}
+
+async function devBlog(req,res,url){
+  if(req.method!=='GET')return false;
+  if(url.pathname==='/blog')return redirect(res,'/blog/'),true;
+  if(url.pathname==='/blog/' ){await serveFile(res,path.join(cmsRoot,'public-preview','index.html'));return true;}
+  if(url.pathname==='/blog/feed.json'){
+    const articles=publicFeed(await repo.listPublicArticles());json(res,200,{generatedAt:new Date().toISOString(),articles});return true;
+  }
+  if(url.pathname==='/blog/search-index.json'){
+    json(res,200,publicFeed(await repo.listPublicArticles()));return true;
+  }
+  const match=url.pathname.match(/^\/blog\/([^/]+)\/?$/);
+  if(match){
+    if(!url.pathname.endsWith('/'))return redirect(res,`${url.pathname}/`),true;
+    const article=await repo.getPublicArticleBySlug(decodeURIComponent(match[1]));
+    if(!article){res.writeHead(404,{'Content-Type':'text/plain; charset=utf-8'});res.end('Published article not found');return true;}
+    await serveFile(res,path.join(cmsRoot,'public-preview','article.html'));return true;
+  }
+  return false;
+}
+
 async function publishDueScheduled(){
   if(scheduleSweepRunning)return;
   scheduleSweepRunning=true;
@@ -89,7 +115,10 @@ const server=http.createServer(async(req,res)=>{
   try{
     const url=new URL(req.url,`http://${req.headers.host||'127.0.0.1'}`);
     if(url.pathname.startsWith('/api/'))return await api(req,res,url);
-    if(url.pathname==='/')return serveFile(res,path.join(cmsRoot,'prototype','index.html'));
+    if(url.pathname==='/')return redirect(res,'/prototype/');
+    if(await devBlog(req,res,url))return;
+    if(url.pathname==='/prototype')return redirect(res,'/prototype/');
+    if(url.pathname==='/public-preview')return redirect(res,'/public-preview/');
     if(url.pathname.startsWith('/uploads/'))return serveFile(res,path.join(cmsRoot,'server',url.pathname));
     if(url.pathname.startsWith('/prototype/')){const target=safeResolve(path.join(cmsRoot,'prototype'),url.pathname.replace('/prototype',''));return target?serveFile(res,target):json(res,400,{error:'Invalid path.'});}
     if(url.pathname.startsWith('/public-preview/')){const target=safeResolve(path.join(cmsRoot,'public-preview'),url.pathname.replace('/public-preview',''));return target?serveFile(res,target):json(res,400,{error:'Invalid path.'});}
@@ -100,9 +129,9 @@ const server=http.createServer(async(req,res)=>{
 });
 
 server.listen(port,'127.0.0.1',()=>{
-  console.log(`TeleDoctorSA Blog CMS running on http://127.0.0.1:${port}`);
+  console.log(`TeleDoctorSA Blog CMS running on http://127.0.0.1:${port}/prototype/`);
   console.log(`Backend: ${repo.backendName}`);
-  console.log(`Public preview: http://127.0.0.1:${port}/public-preview/`);
+  console.log(`Public blog: http://127.0.0.1:${port}/blog/`);
   publishDueScheduled().catch(console.error);
 });
 setInterval(()=>publishDueScheduled().catch(console.error),30000).unref();
