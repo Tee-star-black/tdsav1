@@ -52,7 +52,7 @@
   }
 
   function installTelemediaBlogFeed() {
-    if (!/\/telemedia-suite(?:\/|$)/.test(window.location.pathname)) return;
+    if (!/\/telemedia-suite(?:\.html)?(?:\/|$)/.test(window.location.pathname)) return;
     var anchor = document.querySelector('#featured-coverage');
     if (!anchor) return;
 
