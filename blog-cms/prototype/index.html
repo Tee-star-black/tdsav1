@@ -32,14 +32,12 @@
         <a class="nav-item" href="../../telemedia-suite.html" target="_blank" rel="noopener"><span>↗</span>TeleMedia Suite</a>
         <a class="nav-item" href="../public-preview/" target="_blank" rel="noopener"><span>⌂</span>Public blog preview</a>
       </nav>
-      <div class="profile"><span class="avatar">DEV</span><span><strong>Development workspace</strong><small>Authentication joins at deployment</small></span></div>
     </aside>
     <main class="main">
       <header class="topbar">
         <button class="menu" id="menuBtn" aria-label="Open menu">☰</button>
         <div class="global-search"><span>⌕</span><input id="globalSearch" type="search" placeholder="Search stories, authors, categories…"></div>
         <div class="environment" id="backendStatus"><span></span><b>Connecting backend…</b></div>
-        <div class="top-actions"><button aria-label="Help">?</button><button aria-label="Notifications">♢<i></i></button></div>
       </header>
       <div class="content">
         <section id="articlesView" class="view active">
@@ -100,7 +98,7 @@
           <div class="review-note"><span>✓</span><p><strong>Publishing guardrail</strong><br>The backend blocks clinical articles from publishing until review is approved.</p></div>
         </aside>
       </div></div>
-      <footer><button type="button" id="previewBtn" class="secondary">Preview</button><span class="save-state" id="saveState">Not saved</span><button type="button" id="saveArticle" class="primary">Save story →</button></footer>
+      <footer><button type="button" id="deleteArticle" class="danger" hidden>Delete article</button><button type="button" id="previewBtn" class="secondary">Preview</button><span class="save-state" id="saveState">Not saved</span><button type="button" id="saveArticle" class="primary">Save story →</button></footer>
     </form>
   </dialog>
 
