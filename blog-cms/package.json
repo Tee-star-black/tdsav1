@@ -1,0 +1,22 @@
+{
+  "name": "teledoctorsa-blog-cms",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "prototype": "npx serve prototype",
+    "build:blog": "node scripts/build-blog.mjs",
+    "validate:content": "node scripts/validate-content.mjs"
+  },
+  "dependencies": {
+    "@sanity/client": "^7.11.2",
+    "@sanity/vision": "^4.10.0",
+    "nunjucks": "^3.2.4",
+    "sanity": "^4.10.0",
+    "zod": "^4.1.11"
+  },
+  "devDependencies": {
+    "serve": "^14.2.4",
+    "typescript": "^5.9.2"
+  }
+}
