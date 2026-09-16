@@ -19,9 +19,7 @@
   <main>
     <section class="hero">
       <div class="hero-copy"><span class="eyebrow">BLOG & INSIGHTS</span><h1>Useful healthcare stories, made easier to understand.</h1><p>Practical guidance, digital-health education and updates from TeleDoctorSA.</p></div>
-      <article class="feature-card">
-        <span>FEATURED</span><h2>5 Ways Telemedicine Improves Access to Care</h2><p>How connected care can reduce distance and improve access across South Africa.</p><a href="./article.html">Read story →</a>
-      </article>
+      <article class="feature-card" id="featureCard"><span>FEATURED</span><h2>Loading latest story…</h2><p>The public preview is reading from the same content service as the editor.</p></article>
     </section>
 
     <section class="toolbar">
@@ -30,8 +28,9 @@
     </section>
 
     <section class="content-wrap">
-      <div class="section-heading"><div><span class="eyebrow">LATEST</span><h2>From the editorial desk</h2></div><p id="storyCount"></p></div>
+      <div class="section-heading"><div><span class="eyebrow">LATEST</span><h2>From the editorial desk</h2></div><p id="storyCount">Loading…</p></div>
       <div class="story-grid" id="storyGrid"></div>
+      <div class="public-error" id="publicError" hidden><strong>Content service unavailable</strong><p>Start the Blog CMS backend, then refresh this preview.</p></div>
     </section>
 
     <section class="newsletter">
@@ -40,7 +39,8 @@
     </section>
   </main>
 
-  <footer><img class="footer-logo" src="../../images/rebuild/logo.png" alt="TeleDoctorSA logo"><span>Healthcare. Anywhere.</span><small>Development preview · not for public indexing</small></footer>
+  <footer><img class="footer-logo" src="../../images/rebuild/logo.png" alt="TeleDoctorSA logo"><span>Healthcare. Anywhere.</span><small>Development preview · published API content only</small></footer>
+  <script src="../client/cms-api.js"></script>
   <script src="./preview.js"></script>
 </body>
 </html>
