@@ -1,18 +1,43 @@
-const stories=[
-{title:'5 Ways Telemedicine Improves Access to Care',excerpt:'How connected care can reduce distance and improve access across South Africa.',category:'Health Education',author:'Dr N. Patel',date:'16 Sep 2026',href:'./article.html'},
-{title:'A Guide to Your First Telehealth Appointment',excerpt:'What to expect, how to prepare and how to get more value from a virtual consultation.',category:'Patient Guides',author:'TeleDoctorSA Editorial',date:'12 Sep 2026',href:'./article.html'},
-{title:'Understanding Blood Pressure at Home',excerpt:'A practical introduction to home readings, healthy habits and when to seek clinical advice.',category:'Digital Health',author:'Dr N. Patel',date:'8 Sep 2026',href:'./article.html'},
-{title:'TeleDoctorSA at the African Health Conference',excerpt:'Highlights from the conversations, technology and people shaping connected care.',category:'Company News',author:'T. Sibiya',date:'1 Sep 2026',href:'./article.html'},
-{title:'Keeping Your Family Healthy This Winter',excerpt:'Useful guidance for families navigating colder months and seasonal illness.',category:'Health Education',author:'T. Maseko',date:'27 Aug 2026',href:'./article.html'},
-{title:'Why Connected Care Matters Between Appointments',excerpt:'Digital health can help people stay connected to care beyond the consultation room.',category:'Digital Health',author:'T. Maseko',date:'18 Aug 2026',href:'./article.html'}
-];
+const api=window.TDSACmsApi;
 const grid=document.querySelector('#storyGrid');
 const count=document.querySelector('#storyCount');
 const search=document.querySelector('#searchInput');
 const chips=document.querySelector('#categoryChips');
+const feature=document.querySelector('#featureCard');
+const errorBox=document.querySelector('#publicError');
+let stories=[];
 let active='All';
-const categories=['All',...new Set(stories.map(s=>s.category))];
-function esc(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-function renderChips(){chips.innerHTML=categories.map(c=>`<button class="${c===active?'active':''}" data-category="${esc(c)}">${esc(c)}</button>`).join('');chips.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{active=b.dataset.category;renderChips();render();}));}
-function render(){const q=search.value.trim().toLowerCase();const filtered=stories.filter(s=>(active==='All'||s.category===active)&&(!q||`${s.title} ${s.excerpt} ${s.category} ${s.author}`.toLowerCase().includes(q)));grid.innerHTML=filtered.map(s=>`<article class="story-card"><div class="story-visual"></div><div class="story-body"><span class="meta">${esc(s.category)} · ${esc(s.date)}</span><h3>${esc(s.title)}</h3><p>${esc(s.excerpt)}</p><a href="${s.href}">Read story →</a></div></article>`).join('');count.textContent=`${filtered.length} ${filtered.length===1?'story':'stories'}`;}
-search.addEventListener('input',render);renderChips();render();
+
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function formatDate(value){if(!value)return '';const d=new Date(value);return Number.isNaN(d.getTime())?'':new Intl.DateTimeFormat('en-ZA',{day:'numeric',month:'short',year:'numeric'}).format(d);}
+function categories(){return ['All',...new Set(stories.map(s=>s.category).filter(Boolean))];}
+
+function renderChips(){
+  chips.innerHTML=categories().map(c=>`<button class="${c===active?'active':''}" data-category="${esc(c)}">${esc(c)}</button>`).join('');
+  chips.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{active=b.dataset.category;renderChips();render();}));
+}
+
+function renderFeature(){
+  const story=stories.find(s=>s.featured)||stories[0];
+  if(!story){feature.innerHTML='<span>FEATURED</span><h2>No published stories yet.</h2><p>Publish an article from the Studio to populate this space.</p>';return;}
+  feature.innerHTML=`<span>FEATURED</span><h2>${esc(story.title)}</h2><p>${esc(story.excerpt)}</p><a href="./article.html?slug=${encodeURIComponent(story.slug)}">Read story →</a>`;
+}
+
+function render(){
+  const q=search.value.trim().toLowerCase();
+  const filtered=stories.filter(s=>(active==='All'||s.category===active)&&(!q||`${s.title} ${s.excerpt} ${s.category} ${s.author}`.toLowerCase().includes(q)));
+  grid.innerHTML=filtered.map(s=>`<article class="story-card">${s.coverImage?.url?`<div class="story-visual has-image"><img src="${esc(s.coverImage.url)}" alt="${esc(s.coverImage.alt||'')}"></div>`:'<div class="story-visual"></div>'}<div class="story-body"><span class="meta">${esc(s.category)} · ${esc(formatDate(s.publishedAt||s.updatedAt))}</span><h3>${esc(s.title)}</h3><p>${esc(s.excerpt)}</p><a href="./article.html?slug=${encodeURIComponent(s.slug)}">Read story →</a></div></article>`).join('');
+  count.textContent=`${filtered.length} ${filtered.length===1?'story':'stories'}`;
+}
+
+async function load(){
+  try{
+    stories=await api.listPublicArticles();
+    errorBox.hidden=true;renderFeature();renderChips();render();
+  }catch(error){
+    console.error(error);stories=[];renderFeature();renderChips();render();errorBox.hidden=false;count.textContent='0 stories';
+  }
+}
+
+search.addEventListener('input',render);
+load();
