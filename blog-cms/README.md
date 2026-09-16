@@ -23,7 +23,7 @@ CMS API (Node)
       v
 Published content API
       |
-      +---- Public Blog preview
+      +---- Clean development routes (/blog/...)
       |
       +---- Static production generator
                 |
@@ -46,11 +46,11 @@ Published content API
 - Clinical-review publication guardrail
 - Category create/list/delete with reference protection
 - Media list/upload and article cover-image selection
-- Cover-image alternative text
+- Persistent media name, alt text and tags in both local and Sanity repository models
 - SEO title and description fields
 - Public published-only content feed
-- Public Blog & Insights preview driven by that feed
-- Public article view driven by article slug
+- Clean `/blog/` development route driven by the same backend as the Studio
+- Clean `/blog/<slug>/` article routes
 - Static production Blog & Insights generator
 - Production search and category filtering
 - Article structured data
@@ -59,6 +59,7 @@ Published content API
 - TeleMedia featured-blog integration through `/blog/feed.json`
 - Local repository and Sanity repository behind the same API contract
 - Connected smoke test and GitHub Actions verification
+- Rebuild cleanup so withdrawn articles do not leave stale generated pages
 
 ## Run the connected app locally
 
@@ -72,11 +73,12 @@ npm run dev
 
 Then open:
 
-- Publishing Studio: `http://127.0.0.1:8787/`
-- Public blog preview: `http://127.0.0.1:8787/public-preview/`
+- Publishing Studio: `http://127.0.0.1:8787/` (redirects to `/prototype/`)
+- Public Blog & Insights: `http://127.0.0.1:8787/blog/`
+- TeleMedia integration: `http://127.0.0.1:8787/telemedia-suite.html`
 - API health: `http://127.0.0.1:8787/api/health`
 
-Do not use Live Server as the primary development runtime for this feature. Live Server can render the frontend, but the CMS requires the Node content service on port `8787` for connected behaviour.
+Do not use Live Server as the primary development runtime for this feature. Live Server can render files, but the CMS requires the Node content service on port `8787` for connected behaviour.
 
 ## Backend modes
 
@@ -100,7 +102,7 @@ The browser never receives the Sanity write token. Writes go through the server 
 npm run build:blog
 ```
 
-The build exports published content from the selected repository, validates it, generates the public blog files, updates the blog feed and search data, and injects blog URLs into the existing site sitemap.
+The build exports published content from the selected repository, validates it, clears the previous generated blog output, generates the current public blog files, updates the blog feed and search data, and injects current blog URLs into the existing site sitemap.
 
 ## Verification
 
@@ -110,17 +112,17 @@ Run the connected smoke test:
 npm run check
 ```
 
-The smoke test verifies that a draft stays private, unapproved clinical content cannot publish, approved content reaches the public feed, and article deletion works.
+The smoke test exercises the joined Studio/backend contract: category creation and reference protection, media upload, draft privacy, clinical-review blocking, approved publication, the TeleMedia feed, clean article routes, deletion/withdrawal, and category cleanup.
 
-GitHub Actions runs the smoke test and static build for changes under this workspace.
+GitHub Actions runs the smoke test and static build for changes under this workspace. Obsolete branch runs are cancelled automatically when a newer commit arrives.
 
 ## Repository areas
 
 - `prototype/` - custom TeleDoctorSA Publishing Studio UI
-- `public-preview/` - API-driven public blog preview
-- `client/` - browser API client shared by Studio and preview
+- `public-preview/` - API-driven public blog shell used by clean dev routes
+- `client/` - browser API client shared by Studio and public blog
 - `server/` - API server, validation and repository adapters
-- `sanity/` - Sanity configuration and schemas
+- `sanity/` - Sanity configuration and schemas, including editorial media metadata
 - `data/` - deterministic development seed data
 - `scripts/` - export, validation, smoke-test and static-generation tooling
 - `templates/` - production Nunjucks templates
