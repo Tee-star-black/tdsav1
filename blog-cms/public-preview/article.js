@@ -1,6 +1,8 @@
 const api=window.TDSACmsApi;
 const params=new URLSearchParams(location.search);
-const slug=params.get('slug')||'';
+const pathParts=location.pathname.split('/').filter(Boolean);
+const pathSlug=pathParts[0]==='blog'&&pathParts[1]?decodeURIComponent(pathParts[1]):'';
+const slug=params.get('slug')||pathSlug;
 const loading=document.querySelector('#articleLoading');
 const content=document.querySelector('#articleContent');
 const errorBox=document.querySelector('#articleError');
