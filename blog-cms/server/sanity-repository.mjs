@@ -2,18 +2,21 @@ import {createClient} from '@sanity/client';
 import {normalizeArticle,slugify,validateEditorialArticle} from './validation.mjs';
 
 function textToPortableText(text=''){
+  const stamp=Date.now();
   return String(text).split(/\n\n+/).map((paragraph,index)=>({
-    _key:`p${index}-${Date.now()}`,
+    _key:`p${index}-${stamp}`,
     _type:'block',
     style:'normal',
     markDefs:[],
-    children:[{_key:`s${index}-${Date.now()}`,_type:'span',marks:[],text:paragraph.trim()}]
+    children:[{_key:`s${index}-${stamp}`,_type:'span',marks:[],text:paragraph.trim()}]
   })).filter(block=>block.children[0].text);
 }
 
 function portableTextToText(blocks=[]){
   return (Array.isArray(blocks)?blocks:[]).filter(block=>block?._type==='block').map(block=>(block.children||[]).map(span=>span.text||'').join('')).join('\n\n');
 }
+
+const PROJECTION=`_id,title,"slug":slug.current,excerpt,body,editorialStatus,scheduledAt,featured,clinicalReviewRequired,clinicalReviewStatus,publishedAt,updatedAt,"category":category->title,"author":author->name,"coverImage":{"assetId":coverImage.asset._ref,"url":coverImage.asset->url,"alt":coverImage.alt},seoTitle,seoDescription`;
 
 export class SanityRepository{
   constructor(){
@@ -26,10 +29,10 @@ export class SanityRepository{
     this.client=createClient({projectId,dataset,apiVersion:process.env.SANITY_API_VERSION||'2026-09-01',token,useCdn:false,perspective:'published'});
   }
   async health(){await this.client.fetch('count(*[0...1])');return {ok:true,backend:this.backendName};}
-  async listArticles(){const docs=await this.client.fetch(`*[_type=="article"]|order(_updatedAt desc){_id,title,"slug":slug.current,excerpt,body,featured,clinicalReviewRequired,clinicalReviewStatus,publishedAt,updatedAt,"category":category->title,"author":author->name,"coverImage":{"assetId":coverImage.asset._ref,"url":coverImage.asset->url,"alt":coverImage.alt},seoTitle,seoDescription}`);return docs.map(doc=>this.#normalizeDoc(doc));}
-  async getArticle(id){const doc=await this.client.fetch(`*[_type=="article"&&_id==$id][0]{_id,title,"slug":slug.current,excerpt,body,featured,clinicalReviewRequired,clinicalReviewStatus,publishedAt,updatedAt,"category":category->title,"author":author->name,"coverImage":{"assetId":coverImage.asset._ref,"url":coverImage.asset->url,"alt":coverImage.alt},seoTitle,seoDescription}`,{id});return doc?this.#normalizeDoc(doc):null;}
-  async listPublicArticles(){const docs=await this.client.fetch(`*[_type=="article"&&defined(publishedAt)]|order(publishedAt desc){_id,title,"slug":slug.current,excerpt,body,featured,clinicalReviewRequired,clinicalReviewStatus,publishedAt,updatedAt,"category":category->title,"author":author->name,"coverImage":{"assetId":coverImage.asset._ref,"url":coverImage.asset->url,"alt":coverImage.alt},seoTitle,seoDescription}`);return docs.map(doc=>({...this.#normalizeDoc(doc),status:'Published'}));}
-  async getPublicArticleBySlug(slug){const doc=await this.client.fetch(`*[_type=="article"&&slug.current==$slug&&defined(publishedAt)][0]{_id,title,"slug":slug.current,excerpt,body,featured,clinicalReviewRequired,clinicalReviewStatus,publishedAt,updatedAt,"category":category->title,"author":author->name,"coverImage":{"assetId":coverImage.asset._ref,"url":coverImage.asset->url,"alt":coverImage.alt},seoTitle,seoDescription}`,{slug});return doc?{...this.#normalizeDoc(doc),status:'Published'}:null;}
+  async listArticles(){const docs=await this.client.fetch(`*[_type=="article"]|order(_updatedAt desc){${PROJECTION}}`);return docs.map(doc=>this.#normalizeDoc(doc));}
+  async getArticle(id){const doc=await this.client.fetch(`*[_type=="article"&&_id==$id][0]{${PROJECTION}}`,{id});return doc?this.#normalizeDoc(doc):null;}
+  async listPublicArticles(){const docs=await this.client.fetch(`*[_type=="article"&&editorialStatus=="Published"&&defined(publishedAt)]|order(publishedAt desc){${PROJECTION}}`);return docs.map(doc=>this.#normalizeDoc(doc));}
+  async getPublicArticleBySlug(slug){const doc=await this.client.fetch(`*[_type=="article"&&slug.current==$slug&&editorialStatus=="Published"&&defined(publishedAt)][0]{${PROJECTION}}`,{slug});return doc?this.#normalizeDoc(doc):null;}
   async saveArticle(input,id=''){
     const now=new Date().toISOString();
     const normalized=normalizeArticle({...input,id:id||input.id||''});
@@ -41,15 +44,17 @@ export class SanityRepository{
     const existing=await this.getArticle(documentId);
     let publishedAt=check.article.publishedAt||existing?.publishedAt||'';
     if(check.article.status==='Published'&&!publishedAt)publishedAt=now;
-    if(check.article.status!=='Published'&&existing?.status!=='Published')publishedAt='';
+    if(check.article.status!=='Published')publishedAt='';
     const doc={
       _id:documentId,_type:'article',title:check.article.title,slug:{_type:'slug',current:check.article.slug},excerpt:check.article.excerpt,
+      editorialStatus:check.article.status,scheduledAt:check.article.status==='Scheduled'?check.article.scheduledAt||undefined:undefined,
       author:{_type:'reference',_ref:author._id},category:{_type:'reference',_ref:category._id},featured:check.article.featured,
       clinicalReviewRequired:check.article.clinicalReviewRequired,clinicalReviewStatus:check.article.clinicalReviewStatus,
       body:textToPortableText(check.article.bodyText),seoTitle:check.article.seoTitle,seoDescription:check.article.seoDescription,
       publishedAt:publishedAt||undefined,updatedAt:now,
     };
     if(check.article.coverImage.assetId)doc.coverImage={_type:'image',asset:{_type:'reference',_ref:check.article.coverImage.assetId},alt:check.article.coverImage.alt};
+    else if(existing?.coverImage?.assetId)doc.coverImage={_type:'image',asset:{_type:'reference',_ref:existing.coverImage.assetId},alt:check.article.coverImage.alt||existing.coverImage.alt};
     await this.client.createOrReplace(doc);
     return this.getArticle(documentId);
   }
@@ -64,7 +69,7 @@ export class SanityRepository{
     const asset=await this.client.assets.upload('image',Buffer.from(match[2],'base64'),{filename:String(input.name||'upload-image')});
     return {id:asset._id,name:asset.originalFilename||input.name||'Uploaded image',mimeType:asset.mimeType,url:asset.url,alt:String(input.alt||'').trim(),tag:String(input.tag||'Uploaded').trim()||'Uploaded'};
   }
-  #normalizeDoc(doc){return normalizeArticle({id:doc._id,title:doc.title,slug:doc.slug,excerpt:doc.excerpt,bodyText:portableTextToText(doc.body),status:doc.publishedAt?'Published':'Draft',category:doc.category,author:doc.author,featured:doc.featured,clinicalReviewRequired:doc.clinicalReviewRequired,clinicalReviewStatus:doc.clinicalReviewStatus,coverImage:doc.coverImage,publishedAt:doc.publishedAt,updatedAt:doc.updatedAt,seoTitle:doc.seoTitle,seoDescription:doc.seoDescription});}
+  #normalizeDoc(doc){return normalizeArticle({id:doc._id,title:doc.title,slug:doc.slug,excerpt:doc.excerpt,bodyText:portableTextToText(doc.body),status:doc.editorialStatus|| (doc.publishedAt?'Published':'Draft'),scheduledAt:doc.scheduledAt,category:doc.category,author:doc.author,featured:doc.featured,clinicalReviewRequired:doc.clinicalReviewRequired,clinicalReviewStatus:doc.clinicalReviewStatus,coverImage:doc.coverImage,publishedAt:doc.publishedAt,updatedAt:doc.updatedAt,seoTitle:doc.seoTitle,seoDescription:doc.seoDescription});}
   async #ensureCategory(name){const slug=slugify(name);const _id=`category.${slug}`;await this.client.createIfNotExists({_id,_type:'category',title:name,slug:{_type:'slug',current:slug}});return {_id};}
   async #ensureAuthor(name){const slug=slugify(name);const _id=`author.${slug}`;await this.client.createIfNotExists({_id,_type:'author',name,slug:{_type:'slug',current:slug},role:'TeleDoctorSA Editorial'});return {_id};}
 }
