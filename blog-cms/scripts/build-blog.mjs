@@ -12,6 +12,8 @@ const styleSource=path.join(root,'assets','blog.css');
 const scriptSource=path.join(root,'assets','blog.js');
 const styleTargetDir=path.join(siteRoot,'styles');
 const scriptTargetDir=path.join(siteRoot,'scripts');
+const blogImageDir=path.join(siteRoot,'images','blog');
+const localUploadDir=path.join(root,'server','uploads');
 const sitemapPath=path.join(siteRoot,'sitemap.xml');
 const site={name:'TeleDoctorSA',baseUrl:'https://teledoctorsa.co.za'};
 
@@ -20,25 +22,36 @@ const input=Array.isArray(raw)?raw:raw.articles||[];
 const checked=validateArticles(input);
 const failures=checked.filter(result=>!result.ok);
 if(failures.length){console.error('Blog build blocked by content validation.');console.error(JSON.stringify(failures,null,2));process.exit(1);}
-const articles=checked.map(result=>{
-  const article={...result.data,bodyParagraphs:result.data.bodyText.split(/\n\n+/).filter(Boolean)};
+
+nunjucks.configure(templatesDir,{autoescape:true,noCache:true});
+await rm(outputDir,{recursive:true,force:true});
+await rm(blogImageDir,{recursive:true,force:true});
+await mkdir(outputDir,{recursive:true});
+await mkdir(styleTargetDir,{recursive:true});
+await mkdir(scriptTargetDir,{recursive:true});
+await mkdir(blogImageDir,{recursive:true});
+await copyFile(styleSource,path.join(styleTargetDir,'blog.css'));
+await copyFile(scriptSource,path.join(scriptTargetDir,'blog.js'));
+
+const articles=[];
+for(const result of checked){
+  const source=result.data;
+  const article={...source,coverImage:{...source.coverImage},bodyParagraphs:source.bodyText.split(/\n\n+/).filter(Boolean)};
+  if(article.coverImage.url.startsWith('/uploads/')){
+    const filename=path.basename(article.coverImage.url);
+    await copyFile(path.join(localUploadDir,filename),path.join(blogImageDir,filename));
+    article.coverImage.url=`/images/blog/${filename}`;
+  }
   article.schemaJson=JSON.stringify({
     '@context':'https://schema.org','@type':'Article',headline:article.title,description:article.seoDescription||article.excerpt,
     datePublished:article.publishedAt,dateModified:article.updatedAt||article.publishedAt,
     author:{'@type':'Person',name:article.author},publisher:{'@type':'Organization',name:'TeleDoctorSA',url:site.baseUrl},
     mainEntityOfPage:`${site.baseUrl}/blog/${article.slug}/`,image:article.coverImage.url
   }).replace(/</g,'\\u003c');
-  return article;
-}).sort((a,b)=>new Date(b.publishedAt||b.updatedAt)-new Date(a.publishedAt||a.updatedAt));
+  articles.push(article);
+}
+articles.sort((a,b)=>new Date(b.publishedAt||b.updatedAt)-new Date(a.publishedAt||a.updatedAt));
 const categories=[...new Set(articles.map(article=>article.category).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
-
-nunjucks.configure(templatesDir,{autoescape:true,noCache:true});
-await rm(outputDir,{recursive:true,force:true});
-await mkdir(outputDir,{recursive:true});
-await mkdir(styleTargetDir,{recursive:true});
-await mkdir(scriptTargetDir,{recursive:true});
-await copyFile(styleSource,path.join(styleTargetDir,'blog.css'));
-await copyFile(scriptSource,path.join(scriptTargetDir,'blog.js'));
 
 for(const article of articles){
   const dir=path.join(outputDir,article.slug);
@@ -61,4 +74,4 @@ const entries=[{loc:`${site.baseUrl}/blog/`,lastmod:new Date().toISOString().sli
 const xml=`${start}\n${entries.map(entry=>`    <url>\n        <loc>${entry.loc}</loc>\n        <lastmod>${entry.lastmod}</lastmod>\n        <changefreq>${entry.changefreq}</changefreq>\n        <priority>${entry.priority}</priority>\n    </url>`).join('\n\n')}\n${end}`;
 await writeFile(sitemapPath,cleaned.replace(/\s*<\/urlset>\s*$/,`\n\n${xml}\n\n</urlset>\n`),'utf8');
 
-console.log(`Built ${articles.length} blog article(s), interactions, feed, stylesheet and sitemap entries. Stale article output was removed first.`);
+console.log(`Built ${articles.length} blog article(s), interactions, feed, stylesheet, promoted local images and sitemap entries. Stale article output was removed first.`);
