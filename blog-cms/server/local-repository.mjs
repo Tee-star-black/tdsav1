@@ -34,8 +34,8 @@ export class LocalRepository{
       if(!check.ok)throw Object.assign(new Error(check.errors.join(' ')),{statusCode:400,details:check.errors});
       const existing=store.articles.find(a=>a.id===base.id);
       const article={...existing,...check.article,updatedAt:now};
-      if(article.status==='Published'&&!article.publishedAt)article.publishedAt=now;
-      if(article.status!=='Published'&&existing?.status!=='Published')article.publishedAt='';
+      if(article.status==='Published')article.publishedAt=article.publishedAt||existing?.publishedAt||now;else article.publishedAt='';
+      if(article.status!=='Scheduled')article.scheduledAt='';
       const index=store.articles.findIndex(a=>a.id===article.id);
       if(index>=0)store.articles[index]=article;else store.articles.unshift(article);
       return {store,value:article};
