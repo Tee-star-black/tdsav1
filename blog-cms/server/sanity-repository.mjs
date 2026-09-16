@@ -62,14 +62,20 @@ export class SanityRepository{
   async listCategories(){return this.client.fetch(`*[_type=="category"]|order(title asc){"id":_id,"name":title,"slug":slug.current}`);}
   async createCategory(name){const clean=String(name||'').trim();if(clean.length<2)throw Object.assign(new Error('Category name is too short.'),{statusCode:400});const slug=slugify(clean);const doc={_id:`category.${slug}`,_type:'category',title:clean,slug:{_type:'slug',current:slug}};await this.client.createIfNotExists(doc);return {id:doc._id,name:clean,slug};}
   async deleteCategory(id){const refs=await this.client.fetch('count(*[_type=="article"&&references($id)])',{id});if(refs)throw Object.assign(new Error('Move articles out of this category before deleting it.'),{statusCode:409});await this.client.delete(id);return {ok:true};}
-  async listMedia(){return this.client.fetch(`*[_type=="sanity.imageAsset"]|order(_createdAt desc)[0...100]{"id":_id,"name":coalesce(originalFilename,_id),mimeType,"url":url,"alt":"","tag":"Sanity asset"}`);}
+  async listMedia(){
+    return this.client.fetch(`*[_type=="mediaAsset"]|order(_createdAt desc)[0...100]{"id":image.asset._ref,"recordId":_id,"name":name,"mimeType":image.asset->mimeType,"url":image.asset->url,"alt":alt,"tag":coalesce(tag,"Uploaded")}`);
+  }
   async uploadMedia(input={}){
     const match=String(input.dataUrl||'').match(/^data:([^;]+);base64,(.+)$/);if(!match)throw Object.assign(new Error('A valid image upload is required.'),{statusCode:400});
     if(!match[1].startsWith('image/'))throw Object.assign(new Error('Only image uploads are supported.'),{statusCode:400});
+    const alt=String(input.alt||'').trim();if(alt.length<3)throw Object.assign(new Error('Alternative text is required for editorial images.'),{statusCode:400});
     const asset=await this.client.assets.upload('image',Buffer.from(match[2],'base64'),{filename:String(input.name||'upload-image')});
-    return {id:asset._id,name:asset.originalFilename||input.name||'Uploaded image',mimeType:asset.mimeType,url:asset.url,alt:String(input.alt||'').trim(),tag:String(input.tag||'Uploaded').trim()||'Uploaded'};
+    const name=String(input.name||asset.originalFilename||'Uploaded image').replace(/\.[^.]+$/,'');
+    const tag=String(input.tag||'Uploaded').trim()||'Uploaded';
+    const record=await this.client.create({_type:'mediaAsset',name,image:{_type:'image',asset:{_type:'reference',_ref:asset._id}},alt,tag});
+    return {id:asset._id,recordId:record._id,name,mimeType:asset.mimeType,url:asset.url,alt,tag};
   }
-  #normalizeDoc(doc){return normalizeArticle({id:doc._id,title:doc.title,slug:doc.slug,excerpt:doc.excerpt,bodyText:portableTextToText(doc.body),status:doc.editorialStatus|| (doc.publishedAt?'Published':'Draft'),scheduledAt:doc.scheduledAt,category:doc.category,author:doc.author,featured:doc.featured,clinicalReviewRequired:doc.clinicalReviewRequired,clinicalReviewStatus:doc.clinicalReviewStatus,coverImage:doc.coverImage,publishedAt:doc.publishedAt,updatedAt:doc.updatedAt,seoTitle:doc.seoTitle,seoDescription:doc.seoDescription});}
+  #normalizeDoc(doc){return normalizeArticle({id:doc._id,title:doc.title,slug:doc.slug,excerpt:doc.excerpt,bodyText:portableTextToText(doc.body),status:doc.editorialStatus||(doc.publishedAt?'Published':'Draft'),scheduledAt:doc.scheduledAt,category:doc.category,author:doc.author,featured:doc.featured,clinicalReviewRequired:doc.clinicalReviewRequired,clinicalReviewStatus:doc.clinicalReviewStatus,coverImage:doc.coverImage,publishedAt:doc.publishedAt,updatedAt:doc.updatedAt,seoTitle:doc.seoTitle,seoDescription:doc.seoDescription});}
   async #ensureCategory(name){const slug=slugify(name);const _id=`category.${slug}`;await this.client.createIfNotExists({_id,_type:'category',title:name,slug:{_type:'slug',current:slug}});return {_id};}
   async #ensureAuthor(name){const slug=slugify(name);const _id=`author.${slug}`;await this.client.createIfNotExists({_id,_type:'author',name,slug:{_type:'slug',current:slug},role:'TeleDoctorSA Editorial'});return {_id};}
 }
