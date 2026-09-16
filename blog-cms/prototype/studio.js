@@ -97,7 +97,7 @@ function syncConditionalFields(){
 }
 
 function resetEditor(){
-  editingId=null;$('#editorForm').reset();$('#articleAuthor').value='TeleDoctorSA Editorial';$('#articleStatus').value='Draft';$('#editorEyebrow').textContent='NEW STORY';$('#editorHeading').textContent='Start with the idea.';$('#saveState').textContent='Not saved';$('#articleSlug').value='';$('#articleSlug').dataset.touched='';$('#excerptCount').textContent='0';hydrateMediaSelect();syncConditionalFields();
+  editingId=null;$('#editorForm').reset();$('#articleAuthor').value='TeleDoctorSA Editorial';$('#articleStatus').value='Draft';$('#editorEyebrow').textContent='NEW STORY';$('#editorHeading').textContent='Start with the idea.';$('#saveState').textContent='Not saved';$('#articleSlug').value='';$('#articleSlug').dataset.touched='';$('#excerptCount').textContent='0';$('#deleteArticle').hidden=true;hydrateMediaSelect();syncConditionalFields();
 }
 
 function toLocalDateTime(value){if(!value)return '';const d=new Date(value);if(Number.isNaN(d.getTime()))return '';const local=new Date(d.getTime()-d.getTimezoneOffset()*60000);return local.toISOString().slice(0,16);}
@@ -106,7 +106,7 @@ function openEditor(id){
   resetEditor();
   if(id){
     const a=state.articles.find(item=>item.id===id);if(!a)return;editingId=id;
-    $('#editorEyebrow').textContent=a.status.toUpperCase();$('#editorHeading').textContent='Shape the story.';$('#articleTitle').value=a.title;$('#articleExcerpt').value=a.excerpt||'';$('#articleBody').value=a.bodyText||'';$('#articleStatus').value=a.status;$('#articleCategory').value=a.category;$('#articleAuthor').value=a.author;$('#articleSlug').value=a.slug;$('#articleFeatured').checked=Boolean(a.featured);$('#articleClinicalRequired').checked=Boolean(a.clinicalReviewRequired);$('#articleClinicalStatus').value=a.clinicalReviewStatus==='not_required'?'pending':a.clinicalReviewStatus;$('#articleScheduledAt').value=toLocalDateTime(a.scheduledAt);$('#articleSeoTitle').value=a.seoTitle||'';$('#articleSeoDescription').value=a.seoDescription||'';$('#excerptCount').textContent=(a.excerpt||'').length;$('#saveState').textContent=`Last updated ${prettyDate(a.updatedAt)}`;hydrateMediaSelect(a.coverImage?.url||'');$('#articleCoverAlt').value=a.coverImage?.alt||'';syncConditionalFields();
+    $('#editorEyebrow').textContent=a.status.toUpperCase();$('#editorHeading').textContent='Shape the story.';$('#articleTitle').value=a.title;$('#articleExcerpt').value=a.excerpt||'';$('#articleBody').value=a.bodyText||'';$('#articleStatus').value=a.status;$('#articleCategory').value=a.category;$('#articleAuthor').value=a.author;$('#articleSlug').value=a.slug;$('#articleFeatured').checked=Boolean(a.featured);$('#articleClinicalRequired').checked=Boolean(a.clinicalReviewRequired);$('#articleClinicalStatus').value=a.clinicalReviewStatus==='not_required'?'pending':a.clinicalReviewStatus;$('#articleScheduledAt').value=toLocalDateTime(a.scheduledAt);$('#articleSeoTitle').value=a.seoTitle||'';$('#articleSeoDescription').value=a.seoDescription||'';$('#excerptCount').textContent=(a.excerpt||'').length;$('#saveState').textContent=`Last updated ${prettyDate(a.updatedAt)}`;hydrateMediaSelect(a.coverImage?.url||'');$('#articleCoverAlt').value=a.coverImage?.alt||'';$('#deleteArticle').hidden=false;syncConditionalFields();
   }
   editor.showModal();
 }
@@ -141,6 +141,20 @@ $('#saveArticle').addEventListener('click',async()=>{
     render();editor.close();notify(saved.status==='Published'?'Story published':'Story saved',saved.status==='Published'?'The public content API now exposes this article.':'Changes are stored in the shared content backend.');
   }catch(err){notify('Story not saved',errorMessage(err));}
   finally{button.disabled=false;button.textContent='Save story →';}
+});
+
+$('#deleteArticle').addEventListener('click',async()=>{
+  if(!editingId)return;
+  const article=state.articles.find(item=>item.id===editingId);
+  if(!article)return;
+  if(!confirm(`Delete “${article.title}”? This removes it from the content backend and, if published, from the public feed.`))return;
+  const button=$('#deleteArticle');button.disabled=true;button.textContent='Deleting…';
+  try{
+    await api.deleteArticle(editingId);
+    state.articles=state.articles.filter(item=>item.id!==editingId);
+    editingId=null;editor.close();render();notify('Article deleted','The article was removed from the content backend and public API.');
+  }catch(error){notify('Article not deleted',errorMessage(error));}
+  finally{button.disabled=false;button.textContent='Delete article';}
 });
 
 function openPreview(){const data=editorData();$('#previewTitle').textContent=data.title||'Untitled story';$('#previewExcerpt').textContent=data.excerpt||'No introduction yet.';$('#previewCategory').textContent=data.category||'Uncategorised';$('#previewMeta').textContent=`${data.author} · ${data.status} preview`;$('#previewBody').innerHTML=(data.bodyText||'Start writing to see the article preview.').split(/\n\n+/).map(p=>`<p>${escapeHtml(p).replace(/\n/g,'<br>')}</p>`).join('');preview.showModal();}
