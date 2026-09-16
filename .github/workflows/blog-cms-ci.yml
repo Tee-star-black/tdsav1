@@ -6,10 +6,12 @@ on:
       - feature/blog-cms-studio
     paths:
       - 'blog-cms/**'
+      - 'scripts/site-ux-v4.js'
       - '.github/workflows/blog-cms-ci.yml'
   pull_request:
     paths:
       - 'blog-cms/**'
+      - 'scripts/site-ux-v4.js'
       - '.github/workflows/blog-cms-ci.yml'
 
 concurrency:
