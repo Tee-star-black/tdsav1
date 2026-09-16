@@ -1,4 +1,4 @@
-import {mkdir,readFile,writeFile,copyFile} from 'node:fs/promises';
+import {mkdir,readFile,writeFile,copyFile,rm} from 'node:fs/promises';
 import path from 'node:path';
 import nunjucks from 'nunjucks';
 import {validateArticles} from './validate-content.mjs';
@@ -33,6 +33,7 @@ const articles=checked.map(result=>{
 const categories=[...new Set(articles.map(article=>article.category).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
 
 nunjucks.configure(templatesDir,{autoescape:true,noCache:true});
+await rm(outputDir,{recursive:true,force:true});
 await mkdir(outputDir,{recursive:true});
 await mkdir(styleTargetDir,{recursive:true});
 await mkdir(scriptTargetDir,{recursive:true});
@@ -60,4 +61,4 @@ const entries=[{loc:`${site.baseUrl}/blog/`,lastmod:new Date().toISOString().sli
 const xml=`${start}\n${entries.map(entry=>`    <url>\n        <loc>${entry.loc}</loc>\n        <lastmod>${entry.lastmod}</lastmod>\n        <changefreq>${entry.changefreq}</changefreq>\n        <priority>${entry.priority}</priority>\n    </url>`).join('\n\n')}\n${end}`;
 await writeFile(sitemapPath,cleaned.replace(/\s*<\/urlset>\s*$/,`\n\n${xml}\n\n</urlset>\n`),'utf8');
 
-console.log(`Built ${articles.length} blog article(s), interactions, feed, stylesheet and sitemap entries.`);
+console.log(`Built ${articles.length} blog article(s), interactions, feed, stylesheet and sitemap entries. Stale article output was removed first.`);
