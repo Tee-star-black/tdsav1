@@ -9,7 +9,9 @@ const contentFile=process.env.BLOG_CONTENT_FILE||path.join(root,'content','artic
 const outputDir=process.env.BLOG_OUTPUT_DIR||path.join(siteRoot,'blog');
 const templatesDir=path.join(root,'templates');
 const styleSource=path.join(root,'assets','blog.css');
+const scriptSource=path.join(root,'assets','blog.js');
 const styleTargetDir=path.join(siteRoot,'styles');
+const scriptTargetDir=path.join(siteRoot,'scripts');
 const sitemapPath=path.join(siteRoot,'sitemap.xml');
 const site={name:'TeleDoctorSA',baseUrl:'https://teledoctorsa.co.za'};
 
@@ -28,11 +30,14 @@ const articles=checked.map(result=>{
   }).replace(/</g,'\\u003c');
   return article;
 }).sort((a,b)=>new Date(b.publishedAt||b.updatedAt)-new Date(a.publishedAt||a.updatedAt));
+const categories=[...new Set(articles.map(article=>article.category).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
 
 nunjucks.configure(templatesDir,{autoescape:true,noCache:true});
 await mkdir(outputDir,{recursive:true});
 await mkdir(styleTargetDir,{recursive:true});
+await mkdir(scriptTargetDir,{recursive:true});
 await copyFile(styleSource,path.join(styleTargetDir,'blog.css'));
+await copyFile(scriptSource,path.join(scriptTargetDir,'blog.js'));
 
 for(const article of articles){
   const dir=path.join(outputDir,article.slug);
@@ -41,7 +46,7 @@ for(const article of articles){
   await writeFile(path.join(dir,'index.html'),html,'utf8');
 }
 
-const indexHtml=nunjucks.render('index.njk',{articles,site,featured:articles.find(a=>a.featured)||articles[0]||null});
+const indexHtml=nunjucks.render('index.njk',{articles,categories,site,featured:articles.find(a=>a.featured)||articles[0]||null});
 await writeFile(path.join(outputDir,'index.html'),indexHtml,'utf8');
 const feed=articles.map(({title,slug,excerpt,category,author,publishedAt,updatedAt,featured,coverImage})=>({title,slug,excerpt,category,author,publishedAt,updatedAt,featured,coverImage}));
 await writeFile(path.join(outputDir,'search-index.json'),JSON.stringify(feed,null,2),'utf8');
@@ -55,4 +60,4 @@ const entries=[{loc:`${site.baseUrl}/blog/`,lastmod:new Date().toISOString().sli
 const xml=`${start}\n${entries.map(entry=>`    <url>\n        <loc>${entry.loc}</loc>\n        <lastmod>${entry.lastmod}</lastmod>\n        <changefreq>${entry.changefreq}</changefreq>\n        <priority>${entry.priority}</priority>\n    </url>`).join('\n\n')}\n${end}`;
 await writeFile(sitemapPath,cleaned.replace(/\s*<\/urlset>\s*$/,`\n\n${xml}\n\n</urlset>\n`),'utf8');
 
-console.log(`Built ${articles.length} blog article(s), feed, stylesheet and sitemap entries.`);
+console.log(`Built ${articles.length} blog article(s), interactions, feed, stylesheet and sitemap entries.`);
