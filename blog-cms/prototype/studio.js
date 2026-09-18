@@ -46,9 +46,19 @@ function hydrateCategories(){
   const current=categoryFilter.value||'all';
   categoryFilter.innerHTML='<option value="all">All categories</option>'+state.categories.map(c=>`<option value="${escapeHtml(c.name)}">${escapeHtml(c.name)}</option>`).join('');
   categoryFilter.value=state.categories.some(c=>c.name===current)?current:'all';
-  const editorCurrent=$('#articleCategory').value;
-  $('#articleCategory').innerHTML=state.categories.map(c=>`<option value="${escapeHtml(c.name)}">${escapeHtml(c.name)}</option>`).join('');
-  if(state.categories.some(c=>c.name===editorCurrent))$('#articleCategory').value=editorCurrent;
+
+  const editorSelect=$('#articleCategory');
+  const editorCurrent=editorSelect.value;
+  if(!state.categories.length){
+    editorSelect.innerHTML='<option value="">No categories available</option>';
+    editorSelect.value='';
+    editorSelect.disabled=true;
+    return;
+  }
+
+  editorSelect.disabled=false;
+  editorSelect.innerHTML=state.categories.map(c=>`<option value="${escapeHtml(c.name)}">${escapeHtml(c.name)}</option>`).join('');
+  editorSelect.value=state.categories.some(c=>c.name===editorCurrent)?editorCurrent:state.categories[0].name;
 }
 
 function hydrateMediaSelect(selectedUrl=''){
@@ -97,7 +107,7 @@ function syncConditionalFields(){
 }
 
 function resetEditor(){
-  editingId=null;$('#editorForm').reset();$('#articleAuthor').value='TeleDoctorSA Editorial';$('#articleStatus').value='Draft';$('#editorEyebrow').textContent='NEW STORY';$('#editorHeading').textContent='Start with the idea.';$('#saveState').textContent='Not saved';$('#articleSlug').value='';$('#articleSlug').dataset.touched='';$('#excerptCount').textContent='0';$('#deleteArticle').hidden=true;hydrateMediaSelect();syncConditionalFields();
+  editingId=null;$('#editorForm').reset();$('#articleAuthor').value='TeleDoctorSA Editorial';$('#articleStatus').value='Draft';$('#editorEyebrow').textContent='NEW STORY';$('#editorHeading').textContent='Start with the idea.';$('#saveState').textContent='Not saved';$('#articleSlug').value='';$('#articleSlug').dataset.touched='';$('#excerptCount').textContent='0';$('#deleteArticle').hidden=true;hydrateCategories();hydrateMediaSelect();syncConditionalFields();
 }
 
 function toLocalDateTime(value){if(!value)return '';const d=new Date(value);if(Number.isNaN(d.getTime()))return '';const local=new Date(d.getTime()-d.getTimezoneOffset()*60000);return local.toISOString().slice(0,16);}
@@ -129,7 +139,7 @@ function editorData(){
   };
 }
 
-function validateArticleClient(data){if(!data.title)return 'Add a title before saving.';if(!data.slug)return 'Add a valid URL slug.';if(data.status==='Scheduled'&&!data.scheduledAt)return 'Choose a schedule date and time.';return '';}
+function validateArticleClient(data){if(!data.title)return 'Add a title before saving.';if(!data.slug)return 'Add a valid URL slug.';if(!data.category)return 'Choose a category before saving.';if(data.status==='Scheduled'&&!data.scheduledAt)return 'Choose a schedule date and time.';return '';}
 
 $('#saveArticle').addEventListener('click',async()=>{
   const data=editorData(),error=validateArticleClient(data);if(error){notify('Check this story',error);return;}
