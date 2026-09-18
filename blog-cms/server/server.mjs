@@ -38,7 +38,7 @@ async function body(req){
 async function api(req,res,url){
   if(req.method==='OPTIONS'){res.writeHead(204,{'Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'Content-Type','Access-Control-Allow-Methods':'GET,POST,PUT,DELETE,OPTIONS'});return res.end();}
   const parts=url.pathname.replace(/^\/api\/?/,'').split('/').filter(Boolean);
-  if(parts[0]==='health'&&req.method==='GET')return json(res,200,await repo.health());
+  if(parts[0]==='health'&&req.method==='GET')return json(res,200,{...(await repo.health()),studioBuild:'2026.09.18.3'});
 
   if(parts[0]==='articles'){
     if(parts.length===1&&req.method==='GET')return json(res,200,{articles:await repo.listArticles()});
