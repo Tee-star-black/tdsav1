@@ -7,6 +7,13 @@ import {createRepository} from './repository.mjs';
 const here=path.dirname(fileURLToPath(import.meta.url));
 const cmsRoot=path.resolve(here,'..');
 const siteRoot=path.resolve(cmsRoot,'..');
+
+try{
+  process.loadEnvFile(path.join(cmsRoot,'.env'));
+}catch(error){
+  if(error?.code!=='ENOENT')throw error;
+}
+
 const repo=createRepository();
 const port=Number(process.env.PORT||8787);
 const MAX_JSON_BYTES=9*1024*1024;
