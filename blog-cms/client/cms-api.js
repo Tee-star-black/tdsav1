@@ -6,10 +6,19 @@
     return `http://${host}:8787/api`;
   }
   async function request(path,options={}){
-    const response=await fetch(`${baseUrl()}${path}`,{headers:{'Content-Type':'application/json',...(options.headers||{})},...options});
-    const payload=await response.json().catch(()=>({}));
-    if(!response.ok){const error=new Error(payload.error||`Request failed (${response.status})`);error.details=payload.details||[];error.status=response.status;throw error;}
-    return payload;
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),8000);
+    try{
+      const response=await fetch(`${baseUrl()}${path}`,{...options,headers:{'Content-Type':'application/json',...(options.headers||{})},signal:options.signal||controller.signal});
+      const payload=await response.json().catch(()=>({}));
+      if(!response.ok){const error=new Error(payload.error||`Request failed (${response.status})`);error.details=payload.details||[];error.status=response.status;throw error;}
+      return payload;
+    }catch(error){
+      if(error?.name==='AbortError')throw new Error(`Content service timed out while loading ${path}.`);
+      throw error;
+    }finally{
+      clearTimeout(timeout);
+    }
   }
   async function fileToDataUrl(file){return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(reader.error);reader.readAsDataURL(file);});}
   window.TDSACmsApi={
