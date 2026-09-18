@@ -23,15 +23,42 @@ function setBackendStatus(mode,message){
 
 async function loadWorkspace({quiet=false}={}){
   if(!quiet)setBackendStatus('','Connecting backend…');
-  try{
-    const [health,articles,categories,media]=await Promise.all([api.health(),api.listArticles(),api.listCategories(),api.listMedia()]);
-    state={health,articles,categories,media};
-    setBackendStatus('online',`${health.backend} backend connected`);
-    render();
-  }catch(error){
-    setBackendStatus('offline','Backend offline');
-    if(!quiet)notify('Content service unavailable',`${errorMessage(error)} Start the CMS with npm run dev.`);
-    render();
+
+  const requests=[
+    ['health',api.health()],
+    ['articles',api.listArticles()],
+    ['categories',api.listCategories()],
+    ['media',api.listMedia()],
+  ];
+  const results=await Promise.allSettled(requests.map(([,promise])=>promise));
+  const values={};
+  const failures=[];
+
+  results.forEach((result,index)=>{
+    const key=requests[index][0];
+    if(result.status==='fulfilled')values[key]=result.value;
+    else failures.push({key,error:result.reason});
+  });
+
+  state={
+    health:values.health||state.health,
+    articles:Array.isArray(values.articles)?values.articles:state.articles,
+    categories:Array.isArray(values.categories)?values.categories:state.categories,
+    media:Array.isArray(values.media)?values.media:state.media,
+  };
+
+  if(values.health){
+    const message=failures.length?`${values.health.backend} connected · partial data`:`${values.health.backend} backend connected`;
+    setBackendStatus('online',message);
+  }else{
+    setBackendStatus('offline','Backend unavailable');
+  }
+
+  render();
+
+  if(!quiet&&failures.length){
+    const failedNames=failures.map(item=>item.key).join(', ');
+    notify('Some CMS data could not load',`Failed: ${failedNames}. Other available content has still been loaded.`);
   }
 }
 
