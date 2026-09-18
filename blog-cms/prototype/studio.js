@@ -18,7 +18,7 @@ function setBackendStatus(mode,message){
   const el=$('#backendStatus');el.classList.remove('online','offline');el.classList.add(mode);
   el.querySelector('b').textContent=message;
   $('#backendMetric').textContent=mode==='online'?(state.health?.backend||'API').toUpperCase():'OFF';
-  $('#backendMetricNote').textContent=mode==='online'?'Connected content service':'Backend unavailable';
+  $('#backendMetricNote').textContent=mode==='online'?(state.health?.backend==='sanity'?`${state.health.projectId}/${state.health.dataset} · ${state.health.categoryCount??0} categories`:'Connected content service'):'Backend unavailable';
 }
 
 async function loadWorkspace({quiet=false}={}){
