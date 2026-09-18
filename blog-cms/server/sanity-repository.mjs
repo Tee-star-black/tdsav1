@@ -20,7 +20,7 @@ const PROJECTION=`_id,title,"slug":slug.current,excerpt,body,editorialStatus,sch
 
 export class SanityRepository{
   constructor(){
-    const projectId=process.env.SANITY_PROJECT_ID;
+    const projectId=process.env.SANITY_PROJECT_ID||'glz6ptd8';
     const dataset=process.env.SANITY_DATASET||'production';
     const token=process.env.SANITY_WRITE_TOKEN||process.env.SANITY_READ_TOKEN;
     if(!projectId)throw new Error('SANITY_PROJECT_ID is required when CMS_BACKEND=sanity.');
