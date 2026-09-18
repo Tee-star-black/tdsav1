@@ -23,12 +23,14 @@ export class SanityRepository{
     const projectId=process.env.SANITY_PROJECT_ID||'glz6ptd8';
     const dataset=process.env.SANITY_DATASET||'production';
     const token=process.env.SANITY_WRITE_TOKEN||process.env.SANITY_READ_TOKEN;
+    this.projectId=projectId;
+    this.dataset=dataset;
     if(!projectId)throw new Error('SANITY_PROJECT_ID is required when CMS_BACKEND=sanity.');
     if(!token)throw new Error('SANITY_WRITE_TOKEN is required when CMS_BACKEND=sanity.');
     this.backendName='sanity';
     this.client=createClient({projectId,dataset,apiVersion:process.env.SANITY_API_VERSION||'2026-09-01',token,useCdn:false,perspective:'published'});
   }
-  async health(){await this.client.fetch('count(*[0...1])');return {ok:true,backend:this.backendName};}
+  async health(){const categoryCount=await this.client.fetch('count(*[_type=="category"])');return {ok:true,backend:this.backendName,projectId:this.projectId,dataset:this.dataset,categoryCount};}
   async listArticles(){const docs=await this.client.fetch(`*[_type=="article"]|order(_updatedAt desc){${PROJECTION}}`);return docs.map(doc=>this.#normalizeDoc(doc));}
   async getArticle(id){const doc=await this.client.fetch(`*[_type=="article"&&_id==$id][0]{${PROJECTION}}`,{id});return doc?this.#normalizeDoc(doc):null;}
   async listPublicArticles(){const docs=await this.client.fetch(`*[_type=="article"&&editorialStatus=="Published"&&defined(publishedAt)]|order(publishedAt desc){${PROJECTION}}`);return docs.map(doc=>this.#normalizeDoc(doc));}
