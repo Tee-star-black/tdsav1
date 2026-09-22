@@ -121,7 +121,7 @@ async function api(req,res,url){
 
   const parts=url.pathname.replace(/^\/api\/?/,'').split('/').filter(Boolean);
   if(parts[0]==='health'&&req.method==='GET'){
-    return json(req,res,200,{...(await repo.health()),studioBuild:'2026.09.22.1',authRequired:Boolean(accessToken),deployWebhookConfigured:Boolean(deployWebhook)});
+    return json(req,res,200,{...(await repo.health()),studioBuild:'2026.09.22.3',authRequired:Boolean(accessToken),deployWebhookConfigured:Boolean(deployWebhook)});
   }
 
   if(parts[0]==='public'&&parts[1]==='articles'){
@@ -138,8 +138,8 @@ async function api(req,res,url){
     if(parts.length===1&&req.method==='GET')return json(req,res,200,{articles:await repo.listArticles()});
     if(parts.length===1&&req.method==='POST'){
       const article=await repo.saveArticle(await body(req));
-      if(article.status==='Published')void triggerDeploy(`article-published:${article.slug}`);
-      return json(req,res,201,{article});
+      const delivery=article.status==='Published'?await triggerDeploy(`article-published:${article.slug}`):null;
+      return json(req,res,201,{article,delivery});
     }
 
     const id=decodeURIComponent(parts[1]||'');
@@ -149,15 +149,17 @@ async function api(req,res,url){
     }
     if(id&&req.method==='PUT'){
       const before=await repo.getArticle(id);
+      if(!before)return json(req,res,404,{error:'Article not found.'});
       const article=await repo.saveArticle(await body(req),id);
-      if(article.status==='Published'||before?.status==='Published')void triggerDeploy(`article-updated:${article.slug}`);
-      return json(req,res,200,{article});
+      const delivery=article.status==='Published'||before?.status==='Published'?await triggerDeploy(`article-updated:${article.slug}`):null;
+      return json(req,res,200,{article,delivery});
     }
     if(id&&req.method==='DELETE'){
       const before=await repo.getArticle(id);
+      if(!before)return json(req,res,404,{error:'Article not found.'});
       const result=await repo.deleteArticle(id);
-      if(before?.status==='Published')void triggerDeploy(`article-deleted:${before.slug}`);
-      return json(req,res,200,result);
+      const delivery=before?.status==='Published'?await triggerDeploy(`article-deleted:${before.slug}`):null;
+      return json(req,res,200,{...result,delivery});
     }
   }
 
@@ -262,6 +264,7 @@ const server=http.createServer(async(req,res)=>{
       const target=safeResolve(path.join(cmsRoot,'client'),url.pathname.replace('/client',''));
       return target?serveFile(res,target):json(req,res,400,{error:'Invalid path.'});
     }
+    if(url.pathname.split('/').some(segment=>segment.startsWith('.'))||url.pathname.startsWith('/blog-cms/'))return json(req,res,404,{error:'Not found.'});
     const siteTarget=safeResolve(siteRoot,url.pathname);
     if(siteTarget)return serveFile(res,siteTarget);
     res.writeHead(404);
@@ -280,3 +283,4 @@ server.listen(port,host,()=>{
   publishDueScheduled().catch(console.error);
 });
 setInterval(()=>publishDueScheduled().catch(console.error),30000).unref();
+

@@ -1,21 +1,22 @@
-import {mkdir,readFile,writeFile,copyFile} from 'node:fs/promises';
+import {mkdir,readFile,writeFile,copyFile,rename} from 'node:fs/promises';
 import path from 'node:path';
+import {randomUUID} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {normalizeArticle,slugify,validateEditorialArticle} from './validation.mjs';
 
 const here=path.dirname(fileURLToPath(import.meta.url));
 const root=path.resolve(here,'..');
 const seedPath=path.join(root,'data','seed.json');
-const storePath=path.join(root,'data','store.local.json');
+const storePath=process.env.CMS_LOCAL_STORE||path.join(root,'data','store.local.json');
 const uploadDir=path.join(root,'server','uploads');
 
 async function ensureStore(){
-  try{await readFile(storePath,'utf8');}catch{await copyFile(seedPath,storePath);}
+  try{await readFile(storePath,'utf8');}catch(error){if(error.code!=='ENOENT')throw error;await mkdir(path.dirname(storePath),{recursive:true});await copyFile(seedPath,storePath);}
   await mkdir(uploadDir,{recursive:true});
 }
 
 async function readStore(){await ensureStore();return JSON.parse(await readFile(storePath,'utf8'));}
-async function writeStore(store){await writeFile(storePath,JSON.stringify(store,null,2),'utf8');return store;}
+async function writeStore(store){const temporary=storePath+'.tmp';await writeFile(temporary,JSON.stringify(store,null,2),'utf8');await rename(temporary,storePath);return store;}
 
 export class LocalRepository{
   constructor(){this.backendName='local';this.queue=Promise.resolve();}
@@ -26,14 +27,17 @@ export class LocalRepository{
   async listPublicArticles(){const store=await readStore();return store.articles.filter(a=>a.status==='Published').sort((a,b)=>new Date(b.publishedAt||b.updatedAt||0)-new Date(a.publishedAt||a.updatedAt||0));}
   async saveArticle(input,id=''){
     return this.#mutate(async store=>{
+      const existing=id?store.articles.find(a=>a.id===id):null;
+      if(id&&!existing)throw Object.assign(new Error('Article not found.'),{statusCode:404});
+      if(existing&&String(input.revision||'')!==String(existing.revision||''))throw Object.assign(new Error('This article changed since you opened it. Reopen the latest version before saving.'),{statusCode:409});
       const now=new Date().toISOString();
-      const base=normalizeArticle({...input,id:id||input.id||`article-${Date.now()}`,updatedAt:now});
+      const base=normalizeArticle({...input,id:id||`article-${randomUUID()}`,updatedAt:now});
       const duplicate=store.articles.find(a=>a.slug===base.slug&&a.id!==base.id);
       if(duplicate)throw Object.assign(new Error('That URL slug is already in use.'),{statusCode:409});
       const check=validateEditorialArticle(base,{forPublication:base.status==='Published'});
       if(!check.ok)throw Object.assign(new Error(check.errors.join(' ')),{statusCode:400,details:check.errors});
-      const existing=store.articles.find(a=>a.id===base.id);
-      const article={...existing,...check.article,updatedAt:now};
+      if(base.category&&!store.categories.some(c=>c.name===base.category))throw Object.assign(new Error('Choose an existing category.'),{statusCode:400});
+      const article={...existing,...check.article,updatedAt:now,revision:randomUUID()};
       if(article.status==='Published')article.publishedAt=article.publishedAt||existing?.publishedAt||now;else article.publishedAt='';
       if(article.status!=='Scheduled')article.scheduledAt='';
       const index=store.articles.findIndex(a=>a.id===article.id);
@@ -78,3 +82,4 @@ export class LocalRepository{
     return output;
   }
 }
+
