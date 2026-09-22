@@ -145,7 +145,14 @@ function renderMedia(){
 }
 
 function renderCategories(){
-  $('#categoryGrid').innerHTML=state.categories.map(c=>{const total=state.articles.filter(a=>a.category===c.name).length,published=state.articles.filter(a=>a.category===c.name&&a.status==='Published').length;return `<article class="category-card"><div class="category-symbol">${escapeHtml(c.name.slice(0,2).toUpperCase())}</div><div><h3>${escapeHtml(c.name)}</h3><p>${total} ${total===1?'story':'stories'} · ${published} published</p></div><button data-category-remove="${escapeHtml(c.id)}" ${total?'disabled title="Move articles before deleting this category"':''}>×</button></article>`;}).join('');
+  $('#categoryGrid').innerHTML=state.categories.map(c=>{
+    const total=state.articles.filter(a=>a.category===c.name).length;
+    const published=state.articles.filter(a=>a.category===c.name&&a.status==='Published').length;
+    const control=c.source==='code'
+      ?'<span class="category-source" title="Managed in config/editorial-categories.mjs">CODE</span>'
+      :`<button data-category-remove="${escapeHtml(c.id)}" ${total?'disabled title="Move articles before deleting this category"':''}>×</button>`;
+    return `<article class="category-card"><div class="category-symbol">${escapeHtml(c.name.slice(0,2).toUpperCase())}</div><div><h3>${escapeHtml(c.name)}</h3><p>${total} ${total===1?'story':'stories'} · ${published} published</p></div>${control}</article>`;
+  }).join('');
   document.querySelectorAll('[data-category-remove]').forEach(b=>b.addEventListener('click',async()=>{try{await api.deleteCategory(b.dataset.categoryRemove);await loadWorkspace({quiet:true,authRetry:false});render();notify('Category removed','The category was removed from the database and the Studio reloaded it.');}catch(error){notify('Category not removed',errorMessage(error));}}));
 }
 
