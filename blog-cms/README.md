@@ -18,7 +18,9 @@ CMS API (Node)
       |
       +---- Local JSON repository (development)
       |
-      +---- Sanity repository adapter (production CMS target)
+      +---- Sanity repository adapter
+             +---- staging dataset (prototype + CI)
+             +---- production dataset (live CMS)
       |
       v
 Published content API
@@ -88,11 +90,14 @@ Development uses the local repository by default:
 CMS_BACKEND=local
 ```
 
-To use Sanity, configure the variables in `.env.example` in the runtime environment and set:
+To run the prototype against the persistent Sanity staging database, configure the variables in `.env.example` and set:
 
 ```env
 CMS_BACKEND=sanity
+SANITY_DATASET=staging
 ```
+
+Prototype and CI tests use `staging`. The live deployment must explicitly set `SANITY_DATASET=production`. This prevents test articles, smoke tests and migrations from modifying the production editorial dataset.
 
 The browser never receives the Sanity write token. Writes go through the server repository adapter.
 
@@ -114,7 +119,7 @@ npm run check
 
 The smoke test exercises the joined Studio/backend contract: category creation and reference protection, media upload, draft privacy, clinical-review blocking, approved publication, the TeleMedia feed, clean article routes, deletion/withdrawal, and category cleanup.
 
-GitHub Actions runs the smoke test and static build for changes under this workspace. Obsolete branch runs are cancelled automatically when a newer commit arrives.
+GitHub Actions runs the local smoke test plus a read-only Sanity staging contract and staging static build. CI does not use the production dataset. Obsolete branch runs are cancelled automatically when a newer commit arrives.
 
 ## Repository areas
 
@@ -134,7 +139,6 @@ GitHub Actions runs the smoke test and static build for changes under this works
 The following are intentionally not represented as finished UI controls until their production companions are configured:
 
 - Staff authentication and role enforcement
-- Real Sanity project/dataset credentials and production connection
 - Signed publication webhook/deployment trigger
 - Production cPanel/hosting deployment credentials and atomic release step
 - Post-deployment live URL verification and rollback
