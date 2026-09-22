@@ -1,5 +1,5 @@
 const api=window.TDSACmsApi;
-let state={articles:[],categories:[],media:[],health:null};
+let state={articles:[],categories:Array.isArray(window.TDSA_EDITORIAL_CATEGORIES)?window.TDSA_EDITORIAL_CATEGORIES:[],media:[],health:null};
 let activeFilter='all';
 let editingId=null;
 
@@ -337,4 +337,5 @@ $('#addCategory').addEventListener('click',async()=>{
 
 const sidebar=$('#sidebar');$('#menuBtn').addEventListener('click',()=>sidebar.classList.toggle('open'));document.addEventListener('click',event=>{if(innerWidth<=760&&sidebar.classList.contains('open')&&!sidebar.contains(event.target)&&event.target.id!=='menuBtn')sidebar.classList.remove('open');});
 
+render();
 loadWorkspace();
