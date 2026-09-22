@@ -155,15 +155,25 @@ export class SanityRepository{
     });
   }
 
-  async createCategory(name){
+  async createCategory(input){
     this.#requireWriteAccess();
-    const clean=String(name||'').trim();
+    const definition=typeof input==='string'?{name:input}:input||{};
+    const clean=String(definition.name||'').trim();
     if(clean.length<2)throw Object.assign(new Error('Category name is too short.'),{statusCode:400});
-    const slug=slugify(clean);
+    const slug=slugify(definition.slug||clean);
+    const description=String(definition.description||'').trim();
     const existing=await this.#findCategoryBySlug(slug);
-    if(existing)return {id:existing._id,name:existing.title,slug:existing.slug?.current||slug};
 
-    const doc={_id:`category-${slug}`,_type:'category',title:clean,slug:{_type:'slug',current:slug}};
+    if(existing){
+      if(typeof input!=='string'){
+        const patch={title:clean,slug:{_type:'slug',current:slug}};
+        if(description)patch.description=description;
+        await this.client.patch(existing._id).set(patch).commit();
+      }
+      return {id:existing._id,name:clean,slug};
+    }
+
+    const doc={_id:`category-${slug}`,_type:'category',title:clean,slug:{_type:'slug',current:slug},...(description?{description}:{})};
     await this.client.createIfNotExists(doc);
     return {id:doc._id,name:clean,slug};
   }
