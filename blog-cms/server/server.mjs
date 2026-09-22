@@ -15,6 +15,12 @@ try{
   if(error?.code!=='ENOENT')throw error;
 }
 
+if(process.env.CMS_RUNTIME==='prototype-staging'){
+  process.env.CMS_BACKEND='sanity';
+  process.env.SANITY_DATASET='staging';
+  process.env.CMS_ALLOW_PRODUCTION_WRITES='false';
+}
+
 const repo=createRepository();
 const port=Number(process.env.PORT||8787);
 const host=process.env.CMS_HOST||'127.0.0.1';
