@@ -74,7 +74,8 @@ async function loadWorkspace({quiet=false,authRetry=true}={}){
 
   if(values.health){
     const secured=values.health.authRequired?' · secured':'';
-    const message=failures.length?`${values.health.backend} connected · partial data`:`${values.health.backend} backend connected${secured}`;
+    const identity=values.health.backend==='sanity'?`${values.health.backend}/${values.health.dataset}`:values.health.backend;
+    const message=failures.length?`${identity} connected · partial data`:`${identity} connected${secured}`;
     setBackendStatus('online',message);
   }else{
     setBackendStatus('offline','Backend unavailable');
@@ -104,15 +105,15 @@ function hydrateCategories(){
   const editorSelect=$('#articleCategory');
   const editorCurrent=editorSelect.value;
   if(!state.categories.length){
-    editorSelect.innerHTML='<option value="">No categories available</option>';
+    editorSelect.innerHTML='<option value="">No saved categories available</option>';
     editorSelect.value='';
     editorSelect.disabled=true;
     return;
   }
 
   editorSelect.disabled=false;
-  editorSelect.innerHTML=state.categories.map(c=>`<option value="${escapeHtml(c.name)}">${escapeHtml(c.name)}</option>`).join('');
-  editorSelect.value=state.categories.some(c=>c.name===editorCurrent)?editorCurrent:state.categories[0].name;
+  editorSelect.innerHTML=state.categories.map(c=>`<option value="${escapeHtml(c.id)}" data-name="${escapeHtml(c.name)}">${escapeHtml(c.name)}</option>`).join('');
+  editorSelect.value=state.categories.some(c=>c.id===editorCurrent)?editorCurrent:state.categories[0].id;
 }
 
 function hydrateMediaSelect(selectedUrl=''){
@@ -145,7 +146,7 @@ function renderMedia(){
 
 function renderCategories(){
   $('#categoryGrid').innerHTML=state.categories.map(c=>{const total=state.articles.filter(a=>a.category===c.name).length,published=state.articles.filter(a=>a.category===c.name&&a.status==='Published').length;return `<article class="category-card"><div class="category-symbol">${escapeHtml(c.name.slice(0,2).toUpperCase())}</div><div><h3>${escapeHtml(c.name)}</h3><p>${total} ${total===1?'story':'stories'} · ${published} published</p></div><button data-category-remove="${escapeHtml(c.id)}" ${total?'disabled title="Move articles before deleting this category"':''}>×</button></article>`;}).join('');
-  $$('[data-category-remove]').forEach(b=>b.addEventListener('click',async()=>{try{await api.deleteCategory(b.dataset.categoryRemove);state.categories=state.categories.filter(c=>c.id!==b.dataset.categoryRemove);render();notify('Category removed','The category was removed from the content service.');}catch(error){notify('Category not removed',errorMessage(error));}}));
+  $('[data-category-remove]').forEach(b=>b.addEventListener('click',async()=>{try{await api.deleteCategory(b.dataset.categoryRemove);await loadWorkspace({quiet:true,authRetry:false});render();notify('Category removed','The category was removed from the database and the Studio reloaded it.');}catch(error){notify('Category not removed',errorMessage(error));}}));
 }
 
 function render(){hydrateCategories();renderArticles();renderMedia();renderCategories();}
@@ -170,7 +171,7 @@ function openEditor(id){
   resetEditor();
   if(id){
     const a=state.articles.find(item=>item.id===id);if(!a)return;editingId=id;
-    $('#editorEyebrow').textContent=a.status.toUpperCase();$('#editorHeading').textContent='Shape the story.';$('#articleTitle').value=a.title;$('#articleExcerpt').value=a.excerpt||'';$('#articleBody').value=a.bodyText||'';$('#articleStatus').value=a.status;$('#articleCategory').value=a.category;$('#articleAuthor').value=a.author;$('#articleSlug').value=a.slug;$('#articleFeatured').checked=Boolean(a.featured);$('#articleClinicalRequired').checked=Boolean(a.clinicalReviewRequired);$('#articleClinicalStatus').value=a.clinicalReviewStatus==='not_required'?'pending':a.clinicalReviewStatus;$('#articleScheduledAt').value=toLocalDateTime(a.scheduledAt);$('#articleSeoTitle').value=a.seoTitle||'';$('#articleSeoDescription').value=a.seoDescription||'';$('#excerptCount').textContent=(a.excerpt||'').length;$('#saveState').textContent=`Last updated ${prettyDate(a.updatedAt)}`;hydrateMediaSelect(a.coverImage?.url||'');$('#articleCoverAlt').value=a.coverImage?.alt||'';$('#deleteArticle').hidden=false;syncConditionalFields();
+    $('#editorEyebrow').textContent=a.status.toUpperCase();$('#editorHeading').textContent='Shape the story.';$('#articleTitle').value=a.title;$('#articleExcerpt').value=a.excerpt||'';$('#articleBody').value=a.bodyText||'';$('#articleStatus').value=a.status;$('#articleCategory').value=a.categoryId||state.categories.find(c=>c.name===a.category)?.id||'';$('#articleAuthor').value=a.author;$('#articleSlug').value=a.slug;$('#articleFeatured').checked=Boolean(a.featured);$('#articleClinicalRequired').checked=Boolean(a.clinicalReviewRequired);$('#articleClinicalStatus').value=a.clinicalReviewStatus==='not_required'?'pending':a.clinicalReviewStatus;$('#articleScheduledAt').value=toLocalDateTime(a.scheduledAt);$('#articleSeoTitle').value=a.seoTitle||'';$('#articleSeoDescription').value=a.seoDescription||'';$('#excerptCount').textContent=(a.excerpt||'').length;$('#saveState').textContent=`Last updated ${prettyDate(a.updatedAt)}`;hydrateMediaSelect(a.coverImage?.url||'');$('#articleCoverAlt').value=a.coverImage?.alt||'';$('#deleteArticle').hidden=false;syncConditionalFields();
   }
   editor.showModal();
 }
@@ -186,8 +187,9 @@ $('#articleCoverImage').addEventListener('change',e=>{const option=e.target.sele
 
 function editorData(){
   const media=state.media.find(m=>m.url===$('#articleCoverImage').value);
+  const category=state.categories.find(c=>c.id===$('#articleCategory').value);
   return {
-    title:$('#articleTitle').value.trim(),excerpt:$('#articleExcerpt').value.trim(),bodyText:$('#articleBody').value.trim(),status:$('#articleStatus').value,category:$('#articleCategory').value,author:$('#articleAuthor').value.trim()||'TeleDoctorSA Editorial',slug:slugify($('#articleSlug').value||$('#articleTitle').value),featured:$('#articleFeatured').checked,
+    title:$('#articleTitle').value.trim(),excerpt:$('#articleExcerpt').value.trim(),bodyText:$('#articleBody').value.trim(),status:$('#articleStatus').value,categoryId:category?.id||'',category:category?.name||'',author:$('#articleAuthor').value.trim()||'TeleDoctorSA Editorial',slug:slugify($('#articleSlug').value||$('#articleTitle').value),featured:$('#articleFeatured').checked,
     clinicalReviewRequired:$('#articleClinicalRequired').checked,clinicalReviewStatus:$('#articleClinicalRequired').checked?$('#articleClinicalStatus').value:'not_required',scheduledAt:$('#articleStatus').value==='Scheduled'&&$('#articleScheduledAt').value?new Date($('#articleScheduledAt').value).toISOString():'',
     coverImage:{assetId:media?.id||'',url:$('#articleCoverImage').value,alt:$('#articleCoverAlt').value.trim()},seoTitle:$('#articleSeoTitle').value.trim(),seoDescription:$('#articleSeoDescription').value.trim()
   };
@@ -211,7 +213,7 @@ function validateArticleClient(data){
   const errors=[];
   if(data.title.length<5)errors.push('Title must be at least 5 characters.');
   if(!data.slug)errors.push('Add a valid URL slug.');
-  if(!data.category)errors.push('Choose a category.');
+  if(!data.categoryId||!data.category)errors.push('Choose a saved category.');
   if(!data.author)errors.push('Choose or enter an author.');
   if(data.excerpt.length>220)errors.push('Short introduction must be 220 characters or fewer.');
   if(data.seoTitle.length>60)errors.push('SEO title must be 60 characters or fewer.');
@@ -234,19 +236,21 @@ $('#saveArticle').addEventListener('click',async()=>{
   const button=$('#saveArticle');button.disabled=true;button.textContent='Saving…';
   try{
     const saved=editingId?await api.updateArticle(editingId,data):await api.createArticle(data);
-    editingId=saved.id;
-    const index=state.articles.findIndex(a=>a.id===saved.id);if(index>=0)state.articles[index]=saved;else state.articles.unshift(saved);
+    await loadWorkspace({quiet:true,authRetry:false});
+    const persisted=state.articles.find(article=>article.id===saved.id);
+    if(!persisted)throw new Error(`The API accepted this article, but it could not be read back from ${state.health?.backend||'the database'}${state.health?.dataset?'/'+state.health.dataset:''}.`);
+    editingId=persisted.id;
     render();
     editor.close();
-    if(saved.status==='Published'){
+    if(persisted.status==='Published'){
       $('#saveState').textContent='Checking public blog…';
       try{
-        const publicArticle=await verifyPublishedArticle(saved);
+        const publicArticle=await verifyPublishedArticle(persisted);
         if(publicArticle){
           notify(
             'Published end-to-end',
             'Prototype → Sanity → public blog verified successfully.',
-            {href:`/blog/${encodeURIComponent(saved.slug)}/`,label:'View on blog ↗'}
+            {href:`/blog/${encodeURIComponent(persisted.slug)}/`,label:'View on blog ↗'}
           );
         }else{
           notify('Published to Sanity','The article saved successfully, but the public blog did not return it yet. Refresh the blog and check again.');
@@ -288,12 +292,12 @@ $('#mediaFileInput').addEventListener('change',async event=>{
   const file=event.target.files?.[0];if(!file)return;
   if(file.size>6*1024*1024){notify('Image too large','Use an image smaller than 6 MB.');event.target.value='';return;}
   const alt=prompt('Describe this image for accessibility:','')??'';if(!alt.trim()){notify('Upload cancelled','Alternative text is required for editorial images.');event.target.value='';return;}
-  try{const media=await api.uploadMedia(file,{alt:alt.trim(),tag:'Uploaded'});state.media.unshift(media);renderMedia();notify('Media uploaded','The image is now available to article editors.');}catch(error){notify('Upload failed',errorMessage(error));}finally{event.target.value='';}
+  try{const media=await api.uploadMedia(file,{alt:alt.trim(),tag:'Uploaded'});await loadWorkspace({quiet:true,authRetry:false});if(!state.media.some(item=>item.id===media.id))throw new Error('The upload was accepted but could not be read back from the database.');renderMedia();notify('Media uploaded','The image was saved and read back from the database.');}catch(error){notify('Upload failed',errorMessage(error));}finally{event.target.value='';}
 });
 
 $('#addCategory').addEventListener('click',async()=>{
   const name=prompt('Category name');if(!name)return;
-  try{const category=await api.createCategory(name.trim());state.categories.push(category);state.categories.sort((a,b)=>a.name.localeCompare(b.name));render();notify('Category added',`${category.name} is now available to the editor.`);}catch(error){notify('Category not added',errorMessage(error));}
+  try{const category=await api.createCategory(name.trim());await loadWorkspace({quiet:true,authRetry:false});if(!state.categories.some(item=>item.id===category.id))throw new Error('The category was accepted but could not be read back from the database.');render();notify('Category added',`${category.name} was saved to the database and is now available to articles.`);}catch(error){notify('Category not added',errorMessage(error));}
 });
 
 const sidebar=$('#sidebar');$('#menuBtn').addEventListener('click',()=>sidebar.classList.toggle('open'));document.addEventListener('click',event=>{if(innerWidth<=760&&sidebar.classList.contains('open')&&!sidebar.contains(event.target)&&event.target.id!=='menuBtn')sidebar.classList.remove('open');});
