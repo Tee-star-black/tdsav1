@@ -32,6 +32,7 @@ export class SanityRepository{
     this.projectId=projectId;
     this.dataset=dataset;
     this.writeEnabled=Boolean(writeToken)||Boolean(client);
+    this.productionWritesAllowed=dataset!=='production'||String(process.env.CMS_ALLOW_PRODUCTION_WRITES||'').toLowerCase()==='true'||Boolean(client);
     if(!projectId)throw new Error('SANITY_PROJECT_ID is required when CMS_BACKEND=sanity.');
     this.backendName='sanity';
     this.client=client||require('@sanity/client').createClient({
@@ -50,7 +51,7 @@ export class SanityRepository{
       this.client.fetch('count(*[_type=="article"])'),
       this.client.fetch('count(*[_type=="mediaAsset"])')
     ]);
-    return {ok:true,backend:this.backendName,projectId:this.projectId,dataset:this.dataset,categoryCount,articleCount,mediaCount,writable:this.writeEnabled};
+    return {ok:true,backend:this.backendName,projectId:this.projectId,dataset:this.dataset,categoryCount,articleCount,mediaCount,writable:this.writeEnabled,productionWritesAllowed:this.productionWritesAllowed};
   }
 
   async listArticles(){
@@ -254,11 +255,18 @@ export class SanityRepository{
   }
 
   #requireWriteAccess(){
-    if(this.writeEnabled)return;
-    throw Object.assign(
-      new Error('Sanity write access is not configured. Set SANITY_WRITE_TOKEN for CMS mutations.'),
-      {statusCode:503}
-    );
+    if(!this.writeEnabled){
+      throw Object.assign(
+        new Error('Sanity write access is not configured. Set SANITY_WRITE_TOKEN for CMS mutations.'),
+        {statusCode:503}
+      );
+    }
+    if(!this.productionWritesAllowed){
+      throw Object.assign(
+        new Error('Production CMS writes are disabled. Set CMS_ALLOW_PRODUCTION_WRITES=true in the real CMS runtime.'),
+        {statusCode:503}
+      );
+    }
   }
 }
 
