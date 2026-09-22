@@ -81,7 +81,7 @@ export class SanityRepository{
 
     const requestedId=id||check.article.id||'';
     const isCreate=!requestedId;
-    const documentId=requestedId||`article.${check.article.slug}`;
+    const documentId=requestedId||`article-${check.article.slug}`;
     const slugOwner=await this.client.fetch(
       '*[_type=="article"&&slug.current==$slug][0]{_id,title}',
       {slug:check.article.slug}
@@ -163,7 +163,7 @@ export class SanityRepository{
     const existing=await this.#findCategoryBySlug(slug);
     if(existing)return {id:existing._id,name:existing.title,slug:existing.slug?.current||slug};
 
-    const doc={_id:`category.${slug}`,_type:'category',title:clean,slug:{_type:'slug',current:slug}};
+    const doc={_id:`category-${slug}`,_type:'category',title:clean,slug:{_type:'slug',current:slug}};
     await this.client.createIfNotExists(doc);
     return {id:doc._id,name:clean,slug};
   }
@@ -229,7 +229,7 @@ export class SanityRepository{
     const existing=await this.#findCategoryBySlug(slug);
     if(existing)return {_id:existing._id};
 
-    const _id=`category.${slug}`;
+    const _id=`category-${slug}`;
     await this.client.createIfNotExists({_id,_type:'category',title:name,slug:{_type:'slug',current:slug}});
     return {_id};
   }
@@ -239,7 +239,7 @@ export class SanityRepository{
     if(existing)return {_id:existing._id};
 
     const slug=slugify(name);
-    const _id=`author.${slug}`;
+    const _id=`author-${slug}`;
     await this.client.createIfNotExists({_id,_type:'author',name,role:'TeleDoctorSA Editorial'});
     return {_id};
   }
