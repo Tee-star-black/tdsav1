@@ -8,6 +8,7 @@ export function normalizeArticle(input={}){
   const status=STATUSES.has(input.status)?input.status:'Draft';
   return {
     id:String(input.id||input._id||''),
+    revision:String(input.revision||''),
     title:String(input.title||'').trim(),
     slug:slugify(input.slug||input.title||''),
     excerpt:String(input.excerpt||'').trim(),
@@ -36,14 +37,14 @@ export function validateEditorialArticle(article,{forPublication=false}={}){
   const errors=[];
   if(a.title.length<5)errors.push('Title must be at least 5 characters.');
   if(!a.slug)errors.push('A valid URL slug is required.');
-  if(!a.category)errors.push('Choose a category.');
+  if(a.status!=='Draft'&&!a.category)errors.push('Choose a category.');
   if(!a.author)errors.push('Choose or enter an author.');
   if(a.excerpt.length>220)errors.push('Short introduction must be 220 characters or fewer.');
   if(a.seoTitle.length>60)errors.push('SEO title must be 60 characters or fewer.');
   if(a.seoDescription.length>160)errors.push('SEO description must be 160 characters or fewer.');
-  if(a.status==='Scheduled'&&!a.scheduledAt)errors.push('Scheduled stories require a publication date and time.');
+  if(a.status==='Scheduled'&&(!a.scheduledAt||!Number.isFinite(Date.parse(a.scheduledAt))||Date.parse(a.scheduledAt)<=Date.now()))errors.push('Choose a valid future publication date and time.');
 
-  if(forPublication||a.status==='Published'){
+  if(forPublication||a.status==='Published'||a.status==='Scheduled'){
     if(a.excerpt.length<20)errors.push('Published stories need a short introduction of at least 20 characters.');
     if(a.bodyText.length<80)errors.push('Published stories need a complete article body.');
     if(!a.coverImage.url&&!a.coverImage.assetId)errors.push('Published stories require a cover image.');
@@ -52,3 +53,4 @@ export function validateEditorialArticle(article,{forPublication=false}={}){
   }
   return {ok:errors.length===0,errors,article:a};
 }
+

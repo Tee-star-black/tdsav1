@@ -1,4 +1,5 @@
-import {createClient} from '@sanity/client';
+import {createRequire} from 'node:module';
+const require=createRequire(import.meta.url);
 import {normalizeArticle,slugify,validateEditorialArticle} from './validation.mjs';
 
 function textToPortableText(text=''){
@@ -16,24 +17,24 @@ function portableTextToText(blocks=[]){
   return (Array.isArray(blocks)?blocks:[]).filter(block=>block?._type==='block').map(block=>(block.children||[]).map(span=>span.text||'').join('')).join('\n\n');
 }
 
-const PROJECTION=`_id,title,"slug":slug.current,excerpt,body,editorialStatus,scheduledAt,featured,clinicalReviewRequired,clinicalReviewStatus,publishedAt,updatedAt,"category":category->title,"author":author->name,"coverImage":{"assetId":coverImage.asset._ref,"url":coverImage.asset->url,"alt":coverImage.alt},seoTitle,seoDescription`;
+const PROJECTION=`_id,_rev,title,"slug":slug.current,excerpt,body,editorialStatus,scheduledAt,featured,clinicalReviewRequired,clinicalReviewStatus,publishedAt,updatedAt,"category":category->title,"author":author->name,"coverImage":{"assetId":coverImage.asset._ref,"url":coverImage.asset->url,"alt":coverImage.alt},seoTitle,seoDescription`;
 
 function conflict(message){
   return Object.assign(new Error(message),{statusCode:409});
 }
 
 export class SanityRepository{
-  constructor(){
+  constructor({client}={}){
     const projectId=process.env.SANITY_PROJECT_ID||'glz6ptd8';
     const dataset=process.env.SANITY_DATASET||'production';
     const readToken=process.env.SANITY_READ_TOKEN||'';
     const writeToken=process.env.SANITY_WRITE_TOKEN||'';
     this.projectId=projectId;
     this.dataset=dataset;
-    this.writeEnabled=Boolean(writeToken);
+    this.writeEnabled=Boolean(writeToken)||Boolean(client);
     if(!projectId)throw new Error('SANITY_PROJECT_ID is required when CMS_BACKEND=sanity.');
     this.backendName='sanity';
-    this.client=createClient({
+    this.client=client||require('@sanity/client').createClient({
       projectId,
       dataset,
       apiVersion:process.env.SANITY_API_VERSION||'2026-09-01',
@@ -75,11 +76,12 @@ export class SanityRepository{
   async saveArticle(input,id=''){
     this.#requireWriteAccess();
     const now=new Date().toISOString();
-    const normalized=normalizeArticle({...input,id:id||input.id||''});
+    const normalized=normalizeArticle({...input,id:id||''});
     const check=validateEditorialArticle(normalized,{forPublication:normalized.status==='Published'});
     if(!check.ok)throw Object.assign(new Error(check.errors.join(' ')),{statusCode:400,details:check.errors});
+    if(check.article.coverImage.url&&!check.article.coverImage.assetId)throw Object.assign(new Error('Choose a cover image from the Sanity media library.'),{statusCode:400});
 
-    const requestedId=id||check.article.id||'';
+    const requestedId=id||'';
     const isCreate=!requestedId;
     const documentId=requestedId||`article-${check.article.slug}`;
     const slugOwner=await this.client.fetch(
@@ -97,6 +99,9 @@ export class SanityRepository{
       isCreate?Promise.resolve(null):this.getArticle(documentId)
     ]);
 
+    if(!isCreate&&!existing)throw Object.assign(new Error('Article not found.'),{statusCode:404});
+    if(existing&&input.revision!==existing.revision)throw conflict('This article changed since you opened it. Reopen the latest version before saving.');
+
     let publishedAt=check.article.publishedAt||existing?.publishedAt||'';
     if(check.article.status==='Published'&&!publishedAt)publishedAt=now;
     if(check.article.status!=='Published')publishedAt='';
@@ -110,7 +115,7 @@ export class SanityRepository{
       editorialStatus:check.article.status,
       scheduledAt:check.article.status==='Scheduled'?check.article.scheduledAt||undefined:undefined,
       author:{_type:'reference',_ref:author._id},
-      category:{_type:'reference',_ref:category._id},
+      ...(category?{category:{_type:'reference',_ref:category._id}}:{}),
       featured:check.article.featured,
       clinicalReviewRequired:check.article.clinicalReviewRequired,
       clinicalReviewStatus:check.article.clinicalReviewStatus,
@@ -123,19 +128,23 @@ export class SanityRepository{
 
     if(check.article.coverImage.assetId){
       doc.coverImage={_type:'image',asset:{_type:'reference',_ref:check.article.coverImage.assetId},alt:check.article.coverImage.alt};
-    }else if(existing?.coverImage?.assetId){
-      doc.coverImage={_type:'image',asset:{_type:'reference',_ref:existing.coverImage.assetId},alt:check.article.coverImage.alt||existing.coverImage.alt};
     }
 
     try{
-      if(isCreate)await this.client.create(doc);
-      else await this.client.createOrReplace(doc);
+      let saved;
+      if(isCreate)saved=await this.client.create(doc,{visibility:'sync'});
+      else{
+        const {_id,_type,...fields}=doc;
+        const cleared=['coverImage','category','scheduledAt','publishedAt'].filter(key=>doc[key]===undefined);
+        saved=await this.client.patch(documentId).ifRevisionId(existing.revision).set(fields).unset(cleared).commit({visibility:'sync'});
+      }
+      // Return the acknowledged mutation, not an eventually consistent query.
+      return normalizeArticle({...check.article,id:documentId,revision:saved._rev,publishedAt,updatedAt:now,scheduledAt:doc.scheduledAt||''});
     }catch(error){
-      if(error?.statusCode===409)throw conflict('That article already exists. Refresh the Studio before trying again.');
+      if(error?.statusCode===409)throw conflict(isCreate?'That article already exists. Refresh the Studio before trying again.':'This article changed while saving. Reopen the latest version before saving.');
       throw error;
     }
 
-    return this.getArticle(documentId);
   }
 
   async deleteArticle(id){
@@ -198,6 +207,7 @@ export class SanityRepository{
   #normalizeDoc(doc){
     return normalizeArticle({
       id:doc._id,
+      revision:doc._rev,
       title:doc.title,
       slug:doc.slug,
       excerpt:doc.excerpt,
@@ -225,13 +235,12 @@ export class SanityRepository{
   }
 
   async #ensureCategory(name){
+    if(!name)return null;
     const slug=slugify(name);
     const existing=await this.#findCategoryBySlug(slug);
     if(existing)return {_id:existing._id};
 
-    const _id=`category-${slug}`;
-    await this.client.createIfNotExists({_id,_type:'category',title:name,slug:{_type:'slug',current:slug}});
-    return {_id};
+    throw Object.assign(new Error('Choose an existing category.'),{statusCode:400});
   }
 
   async #ensureAuthor(name){
@@ -252,3 +261,4 @@ export class SanityRepository{
     );
   }
 }
+

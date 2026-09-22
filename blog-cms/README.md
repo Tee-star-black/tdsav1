@@ -141,3 +141,25 @@ The following are intentionally not represented as finished UI controls until th
 - GA4 editorial analytics in the Studio
 
 Those items form the next vertical slices. They should be implemented frontend + backend + infrastructure together rather than added as decorative dashboard controls.
+
+
+## Editor reliability update — 22 September 2026
+
+See [the workflow audit](docs/WORKFLOW-AUDIT-2026-09-22.md) for findings, verified fixes and production acceptance requirements.
+
+- New articles begin as unsaved drafts. **Save draft** persists an article with a title; a category is required before review/publication.
+- Unsaved text has a same-tab recovery copy. Closing the editor asks before discarding changes. Recovery is not automatic backend saving.
+- Saving reveals the article in its status list. Pagination and filters are remembered in the same browser tab.
+- Categories and cover images can be added while writing. Errors remain visible inside the editor.
+- Existing articles carry a revision; stale changes must be reconciled with the latest saved version instead of silently overwriting it.
+- Scheduling requires complete content, approval where required, a future date and a running service.
+- Publishing confirms the CMS write and reports the website rebuild request separately. The live website must still finish deployment.
+
+Additional regression checks (after `npm install`):
+
+```powershell
+npm run check:workflow
+npm run check:editor
+```
+
+These checks cover isolated local workflow/server tests, editor DOM integration and mocked Sanity writes. They do not replace a real browser or production deployment acceptance test.
