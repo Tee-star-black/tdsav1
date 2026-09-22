@@ -1,17 +1,40 @@
 (function(){
   function baseUrl(){
     if(window.TDSA_CMS_API_BASE)return window.TDSA_CMS_API_BASE.replace(/\/$/,'');
-    if(location.port==='8787')return '/api';
-    const host=location.hostname||'127.0.0.1';
-    return `http://${host}:8787/api`;
+    return '/api';
   }
+
+  function storedToken(){
+    return sessionStorage.getItem('tdsaCmsAccessToken')||'';
+  }
+
+  function setAccessToken(token){
+    const clean=String(token||'').trim();
+    if(clean)sessionStorage.setItem('tdsaCmsAccessToken',clean);
+    else sessionStorage.removeItem('tdsaCmsAccessToken');
+  }
+
   async function request(path,options={}){
     const controller=new AbortController();
     const timeout=setTimeout(()=>controller.abort(),8000);
     try{
-      const response=await fetch(`${baseUrl()}${path}`,{...options,headers:{'Content-Type':'application/json',...(options.headers||{})},signal:options.signal||controller.signal});
+      const token=storedToken();
+      const response=await fetch(`${baseUrl()}${path}`,{
+        ...options,
+        headers:{
+          'Content-Type':'application/json',
+          ...(token?{'Authorization':`Bearer ${token}`}:{}),
+          ...(options.headers||{})
+        },
+        signal:options.signal||controller.signal
+      });
       const payload=await response.json().catch(()=>({}));
-      if(!response.ok){const error=new Error(payload.error||`Request failed (${response.status})`);error.details=payload.details||[];error.status=response.status;throw error;}
+      if(!response.ok){
+        const error=new Error(payload.error||`Request failed (${response.status})`);
+        error.details=payload.details||[];
+        error.status=response.status;
+        throw error;
+      }
       return payload;
     }catch(error){
       if(error?.name==='AbortError')throw new Error(`Content service timed out while loading ${path}.`);
@@ -20,7 +43,16 @@
       clearTimeout(timeout);
     }
   }
-  async function fileToDataUrl(file){return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(reader.error);reader.readAsDataURL(file);});}
+
+  async function fileToDataUrl(file){
+    return new Promise((resolve,reject)=>{
+      const reader=new FileReader();
+      reader.onload=()=>resolve(reader.result);
+      reader.onerror=()=>reject(reader.error);
+      reader.readAsDataURL(file);
+    });
+  }
+
   window.TDSACmsApi={
     health:()=>request('/health'),
     listArticles:()=>request('/articles').then(r=>r.articles),
@@ -36,5 +68,7 @@
     listPublicArticles:()=>request('/public/articles').then(r=>r.articles),
     getPublicArticle:slug=>request(`/public/articles/${encodeURIComponent(slug)}`).then(r=>r.article),
     baseUrl,
+    setAccessToken,
+    hasAccessToken:()=>Boolean(storedToken())
   };
 })();
