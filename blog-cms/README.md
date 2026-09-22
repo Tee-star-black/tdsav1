@@ -133,7 +133,7 @@ GitHub Actions runs the smoke test and static build for changes under this works
 
 The production-ready shape is now:
 
-- Staff access is protected by `CMS_ACCESS_TOKEN` and presented through a branded sign-in screen.
+- Staff use individual email/password accounts with hashed passwords and HttpOnly sessions; the legacy shared token remains only as an optional fallback.
 - Production Sanity writes require both `SANITY_WRITE_TOKEN` and `CMS_ALLOW_PRODUCTION_WRITES=true`.
 - The public editorial destination is `/blog/`.
 - TeleMedia remains a media/press surface and can showcase featured Blog & Insights stories.
