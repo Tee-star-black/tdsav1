@@ -8,16 +8,30 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./studio.css?v=20260922-3">
-  <link rel="stylesheet" href="./studio-v2.css?v=20260922-3">
+  <link rel="stylesheet" href="./studio.css?v=20260922-4">
+  <link rel="stylesheet" href="./studio-v2.css?v=20260922-4">
 </head>
 <body>
+  <section class="login-gate" id="loginGate" hidden>
+    <div class="login-card">
+      <img src="../../images/rebuild/logo.png" alt="TeleDoctorSA logo">
+      <span class="eyebrow">PUBLISHING STUDIO</span>
+      <h1>Welcome back.</h1>
+      <p>Enter your Publishing Studio access code to manage TeleDoctorSA Blog & Insights.</p>
+      <form id="loginForm">
+        <label>Access code<input id="loginToken" type="password" autocomplete="current-password" required placeholder="Enter access code"></label>
+        <div id="loginFeedback" class="login-feedback" role="alert" hidden></div>
+        <button class="primary" id="loginSubmit" type="submit">Open Publishing Studio</button>
+      </form>
+      <small>Authorised TeleDoctorSA staff only.</small>
+    </div>
+  </section>
   <div class="app-shell">
     <aside class="sidebar" id="sidebar">
       <a class="brand brand-official" href="#" data-view="articles" aria-label="TeleDoctorSA Publishing Studio home">
         <img class="brand-logo" src="../../images/rebuild/logo.png" alt="TeleDoctorSA logo">
         <span class="brand-studio-label">Publishing Studio</span>
-        <span class="studio-build">Build 2026.09.22.3</span>
+        <span class="studio-build">Build 2026.09.22.4</span>
       </a>
       <nav class="side-nav" aria-label="Publishing navigation">
         <p>Workspace</p>
@@ -30,15 +44,15 @@
         <button class="nav-item" data-status-view="Published"><span>✓</span>Published</button>
         <button class="nav-item" data-status-view="Scheduled"><span>◴</span>Scheduled</button>
         <p>Website</p>
-        <a class="nav-item" href="../../telemedia-suite.html" target="_blank" rel="noopener"><span>↗</span>TeleMedia Suite</a>
-        <a class="nav-item" href="../public-preview/" target="_blank" rel="noopener"><span>⌂</span>Public blog preview</a>
+        <a class="nav-item" href="/blog/" target="_blank" rel="noopener"><span>↗</span>Blog & Insights</a>
+        <a class="nav-item" href="/telemedia-suite" target="_blank" rel="noopener"><span>↗</span>TeleMedia Suite</a>
       </nav>
     </aside>
     <main class="main">
       <header class="topbar">
         <button class="menu" id="menuBtn" aria-label="Open menu">☰</button>
         <div class="global-search"><span>⌕</span><input id="globalSearch" type="search" placeholder="Search stories, authors, categories…"></div>
-        <div class="environment" id="backendStatus"><span></span><b>Connecting backend…</b></div>
+        <div class="environment" id="backendStatus"><span></span><b>Connecting backend…</b></div><button class="topbar-signout" id="signOutBtn" type="button" hidden>Sign out</button>
       </header>
       <div class="content">
         <section id="articlesView" class="view active">
@@ -105,7 +119,7 @@
 
   <dialog id="previewDialog"><article class="preview-sheet"><header><button type="button" class="close" id="closePreview">×</button><span id="previewCategory">Category</span><h1 id="previewTitle">Untitled story</h1><p id="previewExcerpt"></p><small id="previewMeta"></small></header><img id="previewCover" alt="" hidden><div id="previewBody" class="preview-body"></div></article></dialog>
   <div class="toast" id="toast" role="status"><span>✓</span><div><strong id="toastTitle">Saved</strong><small id="toastMessage">Your changes were saved.</small><a id="toastAction" href="#" target="_blank" rel="noopener" hidden>View on blog ↗</a></div></div>
-  <script src="../client/cms-api.js?v=20260922-3"></script>
-  <script src="./studio.js?v=20260922-3"></script>
+  <script src="../client/cms-api.js?v=20260922-4"></script>
+  <script src="./studio.js?v=20260922-4"></script>
 </body>
 </html>
