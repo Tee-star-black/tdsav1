@@ -39,8 +39,10 @@ try{
   if(!media.some(item=>item.id===uploaded.id))throw new Error('Uploaded media did not return through the media library.');
 
   const slug=`smoke-${Date.now()}`;
-  const draft=(await request('/articles',{method:'POST',body:JSON.stringify({title:'CMS vertical smoke article',slug,excerpt:'A temporary article created by the connected smoke test.',bodyText:'This temporary article verifies that the editor contract can write through the API, use shared media and categories, remain private as a draft, obey clinical review, publish to the public feed, and then withdraw cleanly.',status:'Draft',category:category.name,author:'Smoke Test',featured:true,clinicalReviewRequired:true,clinicalReviewStatus:'pending',coverImage:{assetId:uploaded.id,url:uploaded.url,alt:uploaded.alt}})})).article;
+  const draft=(await request('/articles',{method:'POST',body:JSON.stringify({title:'CMS vertical smoke article',slug,excerpt:'A temporary article created by the connected smoke test.',bodyText:'This temporary article verifies that the editor contract can write through the API, use shared media and categories, remain private as a draft, obey clinical review, publish to the public feed, and then withdraw cleanly.',status:'Draft',categoryId:category.id,category:category.name,author:'Smoke Test',featured:true,clinicalReviewRequired:true,clinicalReviewStatus:'pending',coverImage:{assetId:uploaded.id,url:uploaded.url,alt:uploaded.alt}})})).article;
   draftId=draft.id;
+  const persistedDraft=(await request(`/articles/${encodeURIComponent(draft.id)}`)).article;
+  if(persistedDraft.categoryId!==category.id||persistedDraft.category!==category.name)throw new Error('Article did not preserve its saved category reference.');
 
   await expectFailure(()=>request('/articles',{method:'POST',body:JSON.stringify({...draft,id:'',title:'Duplicate slug smoke article'})}),'Duplicate article slug was not blocked.');
 
