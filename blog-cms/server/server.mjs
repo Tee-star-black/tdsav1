@@ -3,6 +3,7 @@ import {readFile,stat} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {timingSafeEqual} from 'node:crypto';
+import {AuthStore} from './auth.mjs';
 import {createRepository} from './repository.mjs';
 
 const here=path.dirname(fileURLToPath(import.meta.url));
@@ -20,6 +21,11 @@ const port=Number(process.env.PORT||8790);
 const host=process.env.CMS_HOST||'127.0.0.1';
 const MAX_JSON_BYTES=9*1024*1024;
 const accessToken=String(process.env.CMS_ACCESS_TOKEN||'');
+const auth=new AuthStore({
+  filePath:process.env.CMS_AUTH_FILE||path.join(cmsRoot,'data','auth.local.json'),
+  sessionHours:Number(process.env.CMS_SESSION_HOURS||12),
+  cookieSecure:String(process.env.CMS_COOKIE_SECURE||'').toLowerCase()==='true'
+});
 const allowedOrigins=String(process.env.CMS_ALLOWED_ORIGINS||'')
   .split(',')
   .map(value=>value.trim())
@@ -64,9 +70,23 @@ function isAuthorized(req){
   return tokenMatches(header.slice(7));
 }
 
-function requireCmsAccess(req,res){
-  if(isAuthorized(req))return true;
-  json(req,res,401,{error:'CMS access is required.'});
+async function currentCmsUser(req){
+  const sessionUser=await auth.sessionUserFromRequest(req);
+  if(sessionUser)return sessionUser;
+  if(isAuthorized(req))return {id:'legacy-token',name:'Legacy CMS Access',email:'',role:'admin',legacy:true};
+  return null;
+}
+
+async function requireCmsAccess(req,res){
+  const user=await currentCmsUser(req);
+  if(user)return user;
+  json(req,res,401,{error:'CMS sign-in is required.'});
+  return null;
+}
+
+function requireRole(user,res,req,roles){
+  if(user&&roles.includes(user.role))return true;
+  json(req,res,403,{error:'You do not have permission to perform this action.'});
   return false;
 }
 
@@ -124,7 +144,27 @@ async function api(req,res,url){
 
   const parts=url.pathname.replace(/^\/api\/?/,'').split('/').filter(Boolean);
   if(parts[0]==='health'&&req.method==='GET'){
-    return json(req,res,200,{...(await repo.health()),studioBuild:'2026.09.22.4',authRequired:Boolean(accessToken),deployWebhookConfigured:Boolean(deployWebhook)});
+    return json(req,res,200,{...(await repo.health()),studioBuild:'2026.09.22.5',authRequired:(await auth.hasUsers())||Boolean(accessToken),deployWebhookConfigured:Boolean(deployWebhook)});
+  }
+
+  if(parts[0]==='auth'&&parts[1]==='login'&&req.method==='POST'){
+    const input=await body(req);
+    const user=await auth.authenticate(input.email,input.password);
+    if(!user)return json(req,res,401,{error:'Email or password is incorrect.'});
+    const session=await auth.createSession(user.id);
+    res.setHeader('Set-Cookie',auth.sessionCookie(session.token,Number(process.env.CMS_SESSION_HOURS||12)*3600));
+    return json(req,res,200,{user});
+  }
+
+  if(parts[0]==='auth'&&parts[1]==='logout'&&req.method==='POST'){
+    await auth.destroySessionFromRequest(req);
+    res.setHeader('Set-Cookie',auth.clearCookie());
+    return json(req,res,200,{ok:true});
+  }
+
+  if(parts[0]==='auth'&&parts[1]==='me'&&req.method==='GET'){
+    const user=await currentCmsUser(req);
+    return user?json(req,res,200,{user}):json(req,res,401,{error:'CMS sign-in is required.'});
   }
 
   if(parts[0]==='public'&&parts[1]==='articles'){
@@ -135,7 +175,34 @@ async function api(req,res,url){
     }
   }
 
-  if(!requireCmsAccess(req,res))return;
+  const cmsUser=await requireCmsAccess(req,res);
+  if(!cmsUser)return;
+
+  if(parts[0]==='users'){
+    if(parts.length===1&&req.method==='GET'){
+      if(!requireRole(cmsUser,res,req,['admin']))return;
+      return json(req,res,200,{users:await auth.listUsers()});
+    }
+    if(parts.length===1&&req.method==='POST'){
+      if(!requireRole(cmsUser,res,req,['admin']))return;
+      const input=await body(req);
+      const result=await auth.createUser(input);
+      return json(req,res,201,result);
+    }
+    if(parts[1]&&req.method==='DELETE'){
+      if(!requireRole(cmsUser,res,req,['admin']))return;
+      return json(req,res,200,await auth.deleteUser(decodeURIComponent(parts[1]),cmsUser.id));
+    }
+  }
+
+  if(parts[0]==='auth'&&parts[1]==='password'&&req.method==='POST'){
+    if(cmsUser.legacy)return json(req,res,400,{error:'Password changes are unavailable for legacy token access.'});
+    const input=await body(req);
+    const result=await auth.changePassword(cmsUser.id,input.currentPassword,input.newPassword);
+    await auth.destroySessionFromRequest(req);
+    res.setHeader('Set-Cookie',auth.clearCookie());
+    return json(req,res,200,result);
+  }
 
   if(parts[0]==='articles'){
     if(parts.length===1&&req.method==='GET')return json(req,res,200,{articles:await repo.listArticles()});
@@ -281,7 +348,7 @@ const server=http.createServer(async(req,res)=>{
 server.listen(port,host,()=>{
   console.log(`TeleDoctorSA Blog CMS running on http://${host}:${port}/prototype/`);
   console.log(`Backend: ${repo.backendName}`);
-  console.log(`CMS auth: ${accessToken?'required':'disabled (development mode)'}`);
+  auth.hasUsers().then(hasUsers=>console.log(`CMS auth: ${hasUsers?'staff accounts enabled':accessToken?'legacy token enabled':'disabled (development mode)'}`)).catch(console.error);
   console.log(`Public blog: http://${host}:${port}/blog/`);
   publishDueScheduled().catch(console.error);
 });
