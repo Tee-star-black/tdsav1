@@ -41,6 +41,8 @@ jobs:
         run: npm run check:workflow
       - name: Run editor DOM integration tests
         run: npm run check:editor
+      - name: Run staff authentication tests
+        run: npm run check:auth
       - name: Validate production Sanity contract
         run: npm run check:sanity
       - name: Generate static blog from local backend
