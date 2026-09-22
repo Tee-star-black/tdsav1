@@ -33,7 +33,15 @@ jobs:
           node-version: 22
       - name: Install runtime dependencies
         run: npm install --omit=dev --no-audit --no-fund
-      - name: Run connected smoke test
+      - name: Run authenticated local smoke test
         run: npm run check
+      - name: Validate production Sanity contract
+        run: npm run check:sanity
       - name: Generate static blog from local backend
         run: npm run build:blog
+      - name: Generate static blog from production Sanity
+        run: npm run build:blog
+        env:
+          CMS_BACKEND: sanity
+          SANITY_PROJECT_ID: glz6ptd8
+          SANITY_DATASET: production
