@@ -12,7 +12,8 @@
     "content:export": "node scripts/export-content.mjs",
     "content:validate": "node scripts/validate-content.mjs content/articles.json",
     "build:blog": "npm run content:export && node scripts/build-blog.mjs",
-    "check": "node scripts/smoke-vertical.mjs"
+    "check": "node scripts/smoke-vertical.mjs",
+    "check:sanity": "node scripts/sanity-contract.mjs"
   },
   "dependencies": {
     "@sanity/client": "^7.11.2",
