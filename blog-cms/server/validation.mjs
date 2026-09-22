@@ -13,6 +13,7 @@ export function normalizeArticle(input={}){
     excerpt:String(input.excerpt||'').trim(),
     bodyText:String(input.bodyText??input.body??'').trim(),
     status,
+    categoryId:String(input.categoryId||'').trim(),
     category:String(input.category||'').trim(),
     author:String(input.author||'TeleDoctorSA Editorial').trim(),
     featured:Boolean(input.featured),
@@ -36,7 +37,7 @@ export function validateEditorialArticle(article,{forPublication=false}={}){
   const errors=[];
   if(a.title.length<5)errors.push('Title must be at least 5 characters.');
   if(!a.slug)errors.push('A valid URL slug is required.');
-  if(!a.category)errors.push('Choose a category.');
+  if(!a.categoryId&&!a.category)errors.push('Choose a category.');
   if(!a.author)errors.push('Choose or enter an author.');
   if(a.excerpt.length>220)errors.push('Short introduction must be 220 characters or fewer.');
   if(a.seoTitle.length>60)errors.push('SEO title must be 60 characters or fewer.');
