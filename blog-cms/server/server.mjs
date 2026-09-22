@@ -149,6 +149,17 @@ async function api(req,res,url){
     }
 
     const id=decodeURIComponent(parts[1]||'');
+    if(id&&parts[2]==='publish'&&req.method==='POST'){
+      const before=await repo.getArticle(id);
+      if(!before)return json(req,res,404,{error:'Article not found.'});
+      const article=await repo.saveArticle({...before,status:'Published',scheduledAt:''},id);
+      const publicArticle=await repo.getPublicArticleBySlug(article.slug);
+      if(!publicArticle){
+        return json(req,res,500,{error:'Article was saved as Published but is not available through the public content feed.'});
+      }
+      void triggerDeploy(`article-published:${article.slug}`);
+      return json(req,res,200,{article,publicArticle,verified:true});
+    }
     if(id&&req.method==='GET'){
       const article=await repo.getArticle(id);
       return article?json(req,res,200,{article}):json(req,res,404,{error:'Article not found.'});
