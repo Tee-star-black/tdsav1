@@ -1,0 +1,75 @@
+name: Publish Blog to Production
+
+on:
+  repository_dispatch:
+    types: [blog_publish]
+  workflow_dispatch:
+
+concurrency:
+  group: production-blog-publish
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout production site
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install CMS dependencies
+        working-directory: blog-cms
+        run: npm install --include=dev --no-audit --no-fund
+
+      - name: Build Blog & Insights from Sanity
+        working-directory: blog-cms
+        env:
+          CMS_BACKEND: sanity
+          SANITY_PROJECT_ID: glz6ptd8
+          SANITY_DATASET: production
+          SANITY_API_VERSION: 2026-09-01
+          SANITY_READ_TOKEN: ${{ secrets.SANITY_READ_TOKEN }}
+        run: npm run build:blog
+
+      - name: Install FTP client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lftp
+
+      - name: Deploy generated blog to public_html
+        env:
+          FTP_HOST: ${{ secrets.TDSA_FTP_HOST }}
+          FTP_USERNAME: ${{ secrets.TDSA_FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.TDSA_FTP_PASSWORD }}
+          FTP_REMOTE_ROOT: ${{ secrets.TDSA_FTP_REMOTE_ROOT }}
+        run: |
+          test -n "$FTP_HOST"
+          test -n "$FTP_USERNAME"
+          test -n "$FTP_PASSWORD"
+          test -n "$FTP_REMOTE_ROOT"
+          lftp -c "
+            set cmd:fail-exit yes;
+            set net:max-retries 2;
+            open -u \"$FTP_USERNAME\",\"$FTP_PASSWORD\" \"$FTP_HOST\";
+            mkdir -p \"$FTP_REMOTE_ROOT/blog\";
+            mkdir -p \"$FTP_REMOTE_ROOT/styles\";
+            mkdir -p \"$FTP_REMOTE_ROOT/scripts\";
+            mirror -R --delete --verbose blog \"$FTP_REMOTE_ROOT/blog\";
+            put -O \"$FTP_REMOTE_ROOT/styles\" styles/blog.css;
+            put -O \"$FTP_REMOTE_ROOT/scripts\" scripts/blog.js;
+            put -O \"$FTP_REMOTE_ROOT\" sitemap.xml;
+          "
+
+      - name: Verify live blog
+        run: |
+          curl --fail --retry 5 --retry-delay 5 https://teledoctorsa.co.za/blog/ > /dev/null
+          curl --fail --retry 5 --retry-delay 5 https://teledoctorsa.co.za/blog/feed.json > /dev/null
