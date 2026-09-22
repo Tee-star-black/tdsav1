@@ -4,6 +4,7 @@
   "version": "0.3.0",
   "type": "module",
   "scripts": {
+    "start": "node server/server.mjs",
     "dev": "node server/server.mjs",
     "studio": "node server/server.mjs",
     "sanity:dev": "sanity dev --config sanity/sanity.config.ts",
