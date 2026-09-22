@@ -4,7 +4,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {timingSafeEqual} from 'node:crypto';
 import {createRepository} from './repository.mjs';
-import {syncEditorialCategories} from './category-catalog.mjs';
+import {EDITORIAL_CATEGORIES} from '../config/editorial-categories.mjs';
 
 const here=path.dirname(fileURLToPath(import.meta.url));
 const cmsRoot=path.resolve(here,'..');
@@ -23,11 +23,6 @@ if(process.env.CMS_RUNTIME==='prototype-staging'){
 }
 
 const repo=createRepository();
-let categorySync=null;
-if(process.env.CMS_RUNTIME==='prototype-staging'){
-  categorySync=await syncEditorialCategories(repo);
-}
-
 const port=Number(process.env.PORT||8787);
 const host=process.env.CMS_HOST||'127.0.0.1';
 const MAX_JSON_BYTES=9*1024*1024;
@@ -133,7 +128,7 @@ async function api(req,res,url){
 
   const parts=url.pathname.replace(/^\/api\/?/,'').split('/').filter(Boolean);
   if(parts[0]==='health'&&req.method==='GET'){
-    return json(req,res,200,{...(await repo.health()),studioBuild:'2026.09.22.1',authRequired:Boolean(accessToken),deployWebhookConfigured:Boolean(deployWebhook),codeCategoryCount:categorySync?.configured??null});
+    return json(req,res,200,{...(await repo.health()),studioBuild:'2026.09.22.2',authRequired:Boolean(accessToken),deployWebhookConfigured:Boolean(deployWebhook),codeCategoryCount:EDITORIAL_CATEGORIES.length});
   }
 
   if(parts[0]==='public'&&parts[1]==='articles'){
@@ -298,7 +293,7 @@ const server=http.createServer(async(req,res)=>{
 server.listen(port,host,()=>{
   console.log(`TeleDoctorSA Blog CMS running on http://${host}:${port}/prototype/`);
   console.log(`Backend: ${repo.backendName}${repo.dataset?`/${repo.dataset}`:''}`);
-  if(categorySync)console.log(`Editorial categories: ${categorySync.categories.length} synced from code (${categorySync.created.length} created)`);
+  console.log(`Editorial categories: ${EDITORIAL_CATEGORIES.length} loaded from code`);
   console.log(`CMS auth: ${accessToken?'required':'disabled (development mode)'}`);
   console.log(`Public blog: http://${host}:${port}/blog/`);
   publishDueScheduled().catch(console.error);
