@@ -18,6 +18,23 @@ const $=selector=>document.querySelector(selector);
 const $$=selector=>[...document.querySelectorAll(selector)];
 const list=$('#articleList'),empty=$('#emptyState'),count=$('#resultCount'),search=$('#articleSearch'),globalSearch=$('#globalSearch'),categoryFilter=$('#categoryFilter'),sortFilter=$('#sortFilter');
 const editor=$('#editorDialog'),preview=$('#previewDialog');
+const loginGate=$('#loginGate'),loginForm=$('#loginForm'),loginToken=$('#loginToken'),loginFeedback=$('#loginFeedback'),loginSubmit=$('#loginSubmit'),signOutBtn=$('#signOutBtn');
+
+function showLogin(message='Enter your Publishing Studio access code.'){
+  loginGate.hidden=false;
+  document.body.classList.add('studio-locked');
+  loginFeedback.textContent=message;
+  loginFeedback.hidden=!message;
+  signOutBtn.hidden=true;
+  setTimeout(()=>loginToken.focus(),0);
+}
+function hideLogin(){
+  loginGate.hidden=true;
+  document.body.classList.remove('studio-locked');
+  loginFeedback.hidden=true;
+  signOutBtn.hidden=!api.hasAccessToken();
+}
+
 
 function escapeHtml(value){return String(value??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 function slugify(value){return String(value||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,80);}
@@ -61,12 +78,9 @@ async function loadWorkspace({quiet=false,authRetry=true}={}){
   const results=await Promise.allSettled(requests.map(([,promise])=>promise));
 
   const unauthorized=results.some(result=>result.status==='rejected'&&result.reason?.status===401);
-  if(unauthorized&&authRetry){
-    const token=prompt('Enter the TeleDoctorSA Publishing Studio access token:','');
-    if(token?.trim()){
-      api.setAccessToken(token.trim());
-      return loadWorkspace({quiet,authRetry:false});
-    }
+  if(unauthorized){
+    showLogin(authRetry?'Enter your Publishing Studio access code.':'That access code was not accepted.');
+    return false;
   }
   const values={};
   const failures=[];
@@ -93,12 +107,14 @@ async function loadWorkspace({quiet=false,authRetry=true}={}){
   }
 
   render();
+  hideLogin();
 
   if(!quiet&&failures.length){
     const failedNames=failures.map(item=>item.key).join(', ');
     const authFailed=failures.some(item=>item.error?.status===401);
     notify(authFailed?'Studio access required':'Some CMS data could not load',authFailed?'The access token was not accepted. Refresh and enter the correct Studio token.':`Failed: ${failedNames}. Other available content has still been loaded.`);
   }
+  return true;
 }
 
 function updateCounts(){
@@ -309,6 +325,37 @@ search.addEventListener('input',resetPage);categoryFilter.addEventListener('chan
 $$('.tabs button').forEach(tab=>tab.addEventListener('click',()=>{$$('.tabs button').forEach(t=>t.classList.remove('active'));tab.classList.add('active');activeFilter=tab.dataset.filter;resetPage();}));
 $('#mediaSearch').addEventListener('input',renderMedia);
 $('#refreshBtn').addEventListener('click',()=>loadWorkspace());
+
+loginForm.addEventListener('submit',async event=>{
+  event.preventDefault();
+  const token=loginToken.value.trim();
+  if(!token){showLogin('Enter your Publishing Studio access code.');return;}
+  loginSubmit.disabled=true;
+  loginSubmit.textContent='Signing in…';
+  loginFeedback.hidden=true;
+  api.setAccessToken(token);
+  try{
+    const ok=await loadWorkspace({quiet:true,authRetry:false});
+    if(ok===false){
+      api.setAccessToken('');
+      loginToken.select();
+    }else{
+      loginToken.value='';
+    }
+  }catch(error){
+    api.setAccessToken('');
+    showLogin(errorMessage(error));
+  }finally{
+    loginSubmit.disabled=false;
+    loginSubmit.textContent='Open Publishing Studio';
+  }
+});
+signOutBtn.addEventListener('click',()=>{
+  api.setAccessToken('');
+  state={articles:[],categories:[],media:[],health:null};
+  render();
+  showLogin('You have signed out.');
+});
 
 $('#previousPage').addEventListener('click',()=>{page--;renderArticles();});
 $('#nextPage').addEventListener('click',()=>{page++;renderArticles();});
