@@ -1,12 +1,13 @@
 import {spawn} from 'node:child_process';
 
 const port=8799;
-const child=spawn(process.execPath,['server/server.mjs'],{cwd:process.cwd(),env:{...process.env,PORT:String(port),CMS_BACKEND:'local'},stdio:['ignore','pipe','pipe']});
+const accessToken='smoke-test-token';
+const child=spawn(process.execPath,['server/server.mjs'],{cwd:process.cwd(),env:{...process.env,PORT:String(port),CMS_BACKEND:'local',CMS_ACCESS_TOKEN:accessToken},stdio:['ignore','pipe','pipe']});
 const origin=`http://127.0.0.1:${port}`;
 const base=`${origin}/api`;
 
 function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
-async function request(path,options={}){const response=await fetch(`${base}${path}`,{headers:{'Content-Type':'application/json'},...options});const payload=await response.json().catch(()=>({}));if(!response.ok){const error=new Error(payload.error||`HTTP ${response.status}`);error.status=response.status;error.details=payload.details||[];throw error;}return payload;}
+async function request(path,options={}){const response=await fetch(`${base}${path}`,{...options,headers:{'Content-Type':'application/json','Authorization':`Bearer ${accessToken}`,...(options.headers||{})}});const payload=await response.json().catch(()=>({}));if(!response.ok){const error=new Error(payload.error||`HTTP ${response.status}`);error.status=response.status;error.details=payload.details||[];throw error;}return payload;}
 async function expectFailure(fn,message){let failed=false;try{await fn();}catch{failed=true;}if(!failed)throw new Error(message);}
 
 let draftId='';
@@ -15,6 +16,12 @@ try{
   let ready=false;
   for(let i=0;i<40;i++){try{await request('/health');ready=true;break;}catch{await sleep(100);}}
   if(!ready)throw new Error('CMS API did not start.');
+
+  const unauthorized=await fetch(`${base}/articles`);
+  if(unauthorized.status!==401)throw new Error('Protected CMS routes did not require authentication.');
+
+  const publicUnauthed=await fetch(`${base}/public/articles`);
+  if(!publicUnauthed.ok)throw new Error('Public article API should remain readable without CMS authentication.');
 
   const studioResponse=await fetch(`${origin}/prototype/`);
   if(!studioResponse.ok||!(await studioResponse.text()).includes('Publishing Studio'))throw new Error('Publishing Studio route is not serving the frontend.');
@@ -34,6 +41,8 @@ try{
   const slug=`smoke-${Date.now()}`;
   const draft=(await request('/articles',{method:'POST',body:JSON.stringify({title:'CMS vertical smoke article',slug,excerpt:'A temporary article created by the connected smoke test.',bodyText:'This temporary article verifies that the editor contract can write through the API, use shared media and categories, remain private as a draft, obey clinical review, publish to the public feed, and then withdraw cleanly.',status:'Draft',category:category.name,author:'Smoke Test',featured:true,clinicalReviewRequired:true,clinicalReviewStatus:'pending',coverImage:{assetId:uploaded.id,url:uploaded.url,alt:uploaded.alt}})})).article;
   draftId=draft.id;
+
+  await expectFailure(()=>request('/articles',{method:'POST',body:JSON.stringify({...draft,id:'',title:'Duplicate slug smoke article'})}),'Duplicate article slug was not blocked.');
 
   const publicBefore=(await request('/public/articles')).articles;
   if(publicBefore.some(a=>a.id===draft.id))throw new Error('Draft leaked into public feed.');
