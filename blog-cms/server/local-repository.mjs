@@ -49,8 +49,26 @@ export class LocalRepository{
     return this.#mutate(async store=>{const before=store.articles.length;store.articles=store.articles.filter(a=>a.id!==id);if(store.articles.length===before)throw Object.assign(new Error('Article not found.'),{statusCode:404});return {store,value:{ok:true}};});
   }
   async listCategories(){const store=await readStore();return store.categories;}
-  async createCategory(name){
-    return this.#mutate(async store=>{const clean=String(name||'').trim();if(clean.length<2)throw Object.assign(new Error('Category name is too short.'),{statusCode:400});const slug=slugify(clean);if(store.categories.some(c=>c.slug===slug))throw Object.assign(new Error('That category already exists.'),{statusCode:409});const category={id:`cat-${slug}`,name:clean,slug};store.categories.push(category);return {store,value:category};});
+  async createCategory(input){
+    return this.#mutate(async store=>{
+      const definition=typeof input==='string'?{name:input}:input||{};
+      const clean=String(definition.name||'').trim();
+      if(clean.length<2)throw Object.assign(new Error('Category name is too short.'),{statusCode:400});
+      const slug=slugify(definition.slug||clean);
+      const description=String(definition.description||'').trim();
+      const existing=store.categories.find(c=>c.slug===slug);
+      if(existing){
+        if(typeof input!=='string'){
+          existing.name=clean;
+          existing.slug=slug;
+          if(description)existing.description=description;
+        }
+        return {store,value:existing};
+      }
+      const category={id:`cat-${slug}`,name:clean,slug,...(description?{description}:{})};
+      store.categories.push(category);
+      return {store,value:category};
+    });
   }
   async deleteCategory(id){
     return this.#mutate(async store=>{const category=store.categories.find(c=>c.id===id);if(!category)throw Object.assign(new Error('Category not found.'),{statusCode:404});if(store.articles.some(a=>a.categoryId===category.id||a.category===category.name))throw Object.assign(new Error('Move articles out of this category before deleting it.'),{statusCode:409});store.categories=store.categories.filter(c=>c.id!==id);return {store,value:{ok:true}};});
