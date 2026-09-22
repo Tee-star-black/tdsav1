@@ -35,13 +35,13 @@ jobs:
         run: npm install --omit=dev --no-audit --no-fund
       - name: Run authenticated local smoke test
         run: npm run check
-      - name: Validate production Sanity contract
+      - name: Validate staging Sanity contract
         run: npm run check:sanity
       - name: Generate static blog from local backend
         run: npm run build:blog
-      - name: Generate static blog from production Sanity
+      - name: Generate static blog from staging Sanity
         run: npm run build:blog
         env:
           CMS_BACKEND: sanity
           SANITY_PROJECT_ID: glz6ptd8
-          SANITY_DATASET: production
+          SANITY_DATASET: staging
