@@ -21,3 +21,6 @@
 .topbar-signout{border:1px solid var(--line);background:#fff;color:#506174;padding:8px 12px;font:700 11px Manrope;cursor:pointer}
 .topbar-signout:hover{border-color:#bac8d3;color:#17314b}
 @media(max-width:640px){.login-card{padding:28px 22px}.login-card h1{font-size:28px}.topbar-signout{padding:7px 9px}}
+
+.topbar-user{font:700 11px Manrope;color:#3f5368;white-space:nowrap;max-width:180px;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:760px){.topbar-user{display:none}}
