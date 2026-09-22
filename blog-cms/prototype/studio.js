@@ -162,7 +162,7 @@ function syncConditionalFields(){
 }
 
 function resetEditor(){
-  editingId=null;$('#editorForm').reset();$('#articleAuthor').value='TeleDoctorSA Editorial';$('#articleStatus').value='Draft';$('#editorEyebrow').textContent='NEW STORY';$('#editorHeading').textContent='Start with the idea.';$('#saveState').textContent='Not saved';$('#articleSlug').value='';$('#articleSlug').dataset.touched='';$('#excerptCount').textContent='0';$('#deleteArticle').hidden=true;hydrateCategories();hydrateMediaSelect();syncConditionalFields();
+  editingId=null;$('#editorForm').reset();$('#articleAuthor').value='TeleDoctorSA Editorial';$('#articleStatus').value='Draft';$('#editorEyebrow').textContent='NEW STORY';$('#editorHeading').textContent='Start with the idea.';$('#saveState').textContent='Not saved';$('#articleSlug').value='';$('#articleSlug').dataset.touched='';$('#excerptCount').textContent='0';$('#deleteArticle').hidden=true;$('#publishArticle').hidden=true;hydrateCategories();hydrateMediaSelect();syncConditionalFields();
 }
 
 function toLocalDateTime(value){if(!value)return '';const d=new Date(value);if(Number.isNaN(d.getTime()))return '';const local=new Date(d.getTime()-d.getTimezoneOffset()*60000);return local.toISOString().slice(0,16);}
@@ -171,7 +171,7 @@ function openEditor(id){
   resetEditor();
   if(id){
     const a=state.articles.find(item=>item.id===id);if(!a)return;editingId=id;
-    $('#editorEyebrow').textContent=a.status.toUpperCase();$('#editorHeading').textContent='Shape the story.';$('#articleTitle').value=a.title;$('#articleExcerpt').value=a.excerpt||'';$('#articleBody').value=a.bodyText||'';$('#articleStatus').value=a.status;$('#articleCategory').value=a.categoryId||state.categories.find(c=>c.name===a.category)?.id||'';$('#articleAuthor').value=a.author;$('#articleSlug').value=a.slug;$('#articleFeatured').checked=Boolean(a.featured);$('#articleClinicalRequired').checked=Boolean(a.clinicalReviewRequired);$('#articleClinicalStatus').value=a.clinicalReviewStatus==='not_required'?'pending':a.clinicalReviewStatus;$('#articleScheduledAt').value=toLocalDateTime(a.scheduledAt);$('#articleSeoTitle').value=a.seoTitle||'';$('#articleSeoDescription').value=a.seoDescription||'';$('#excerptCount').textContent=(a.excerpt||'').length;$('#saveState').textContent=`Last updated ${prettyDate(a.updatedAt)}`;hydrateMediaSelect(a.coverImage?.url||'');$('#articleCoverAlt').value=a.coverImage?.alt||'';$('#deleteArticle').hidden=false;syncConditionalFields();
+    $('#editorEyebrow').textContent=a.status.toUpperCase();$('#editorHeading').textContent='Shape the story.';$('#publishArticle').hidden=a.status==='Published';$('#articleTitle').value=a.title;$('#articleExcerpt').value=a.excerpt||'';$('#articleBody').value=a.bodyText||'';$('#articleStatus').value=a.status;$('#articleCategory').value=a.categoryId||state.categories.find(c=>c.name===a.category)?.id||'';$('#articleAuthor').value=a.author;$('#articleSlug').value=a.slug;$('#articleFeatured').checked=Boolean(a.featured);$('#articleClinicalRequired').checked=Boolean(a.clinicalReviewRequired);$('#articleClinicalStatus').value=a.clinicalReviewStatus==='not_required'?'pending':a.clinicalReviewStatus;$('#articleScheduledAt').value=toLocalDateTime(a.scheduledAt);$('#articleSeoTitle').value=a.seoTitle||'';$('#articleSeoDescription').value=a.seoDescription||'';$('#excerptCount').textContent=(a.excerpt||'').length;$('#saveState').textContent=`Last updated ${prettyDate(a.updatedAt)}`;hydrateMediaSelect(a.coverImage?.url||'');$('#articleCoverAlt').value=a.coverImage?.alt||'';$('#deleteArticle').hidden=false;syncConditionalFields();
   }
   editor.showModal();
 }
@@ -263,6 +263,34 @@ $('#saveArticle').addEventListener('click',async()=>{
     }
   }catch(err){notify('Story not saved',errorMessage(err));}
   finally{button.disabled=false;button.textContent='Save story →';}
+});
+
+
+$('#publishArticle').addEventListener('click',async()=>{
+  if(!editingId){notify('Save first','Save this article as a draft before publishing it.');return;}
+  const button=$('#publishArticle');
+  button.disabled=true;
+  button.textContent='Publishing…';
+  try{
+    const result=await api.publishArticle(editingId);
+    await loadWorkspace({quiet:true,authRetry:false});
+    const persisted=state.articles.find(article=>article.id===result.article.id);
+    if(!persisted||persisted.status!=='Published')throw new Error('The database did not confirm the Published state.');
+    const publicArticle=await verifyPublishedArticle(persisted);
+    if(!publicArticle)throw new Error('The article is Published in the database but is not available through the public blog API.');
+    editor.close();
+    render();
+    notify(
+      'Published end-to-end',
+      'Sanity confirmed the article and the public blog API can read it.',
+      {href:`/blog/${encodeURIComponent(persisted.slug)}/`,label:'View on blog ↗'}
+    );
+  }catch(error){
+    notify('Publish failed',errorMessage(error));
+  }finally{
+    button.disabled=false;
+    button.textContent='Publish now';
+  }
 });
 
 $('#deleteArticle').addEventListener('click',async()=>{
