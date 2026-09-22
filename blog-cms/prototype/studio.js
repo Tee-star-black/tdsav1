@@ -18,7 +18,7 @@ const $=selector=>document.querySelector(selector);
 const $$=selector=>[...document.querySelectorAll(selector)];
 const list=$('#articleList'),empty=$('#emptyState'),count=$('#resultCount'),search=$('#articleSearch'),globalSearch=$('#globalSearch'),categoryFilter=$('#categoryFilter'),sortFilter=$('#sortFilter');
 const editor=$('#editorDialog'),preview=$('#previewDialog');
-const loginGate=$('#loginGate'),loginForm=$('#loginForm'),loginToken=$('#loginToken'),loginFeedback=$('#loginFeedback'),loginSubmit=$('#loginSubmit'),signOutBtn=$('#signOutBtn');
+const loginGate=$('#loginGate'),loginForm=$('#loginForm'),loginEmail=$('#loginEmail'),loginPassword=$('#loginPassword'),loginFeedback=$('#loginFeedback'),loginSubmit=$('#loginSubmit'),signOutBtn=$('#signOutBtn'),currentUserEl=$('#currentUser');
 
 function showLogin(message='Enter your Publishing Studio access code.'){
   loginGate.hidden=false;
@@ -26,13 +26,13 @@ function showLogin(message='Enter your Publishing Studio access code.'){
   loginFeedback.textContent=message;
   loginFeedback.hidden=!message;
   signOutBtn.hidden=true;
-  setTimeout(()=>loginToken.focus(),0);
+  setTimeout(()=>loginEmail.focus(),0);
 }
 function hideLogin(){
   loginGate.hidden=true;
   document.body.classList.remove('studio-locked');
   loginFeedback.hidden=true;
-  signOutBtn.hidden=!api.hasAccessToken();
+  signOutBtn.hidden=false;
 }
 
 
@@ -79,7 +79,7 @@ async function loadWorkspace({quiet=false,authRetry=true}={}){
 
   const unauthorized=results.some(result=>result.status==='rejected'&&result.reason?.status===401);
   if(unauthorized){
-    showLogin(authRetry?'Enter your Publishing Studio access code.':'That access code was not accepted.');
+    showLogin(authRetry?'Sign in to continue.':'Your session expired. Sign in again.');
     return false;
   }
   const values={};
@@ -107,6 +107,13 @@ async function loadWorkspace({quiet=false,authRetry=true}={}){
   }
 
   render();
+  try{
+    const user=await api.me();
+    currentUserEl.textContent=user?.name||user?.email||'Staff';
+    currentUserEl.hidden=false;
+  }catch{
+    currentUserEl.hidden=true;
+  }
   hideLogin();
 
   if(!quiet&&failures.length){
@@ -328,30 +335,31 @@ $('#refreshBtn').addEventListener('click',()=>loadWorkspace());
 
 loginForm.addEventListener('submit',async event=>{
   event.preventDefault();
-  const token=loginToken.value.trim();
-  if(!token){showLogin('Enter your Publishing Studio access code.');return;}
+  const email=loginEmail.value.trim();
+  const password=loginPassword.value;
+  if(!email||!password){showLogin('Enter your email address and password.');return;}
   loginSubmit.disabled=true;
   loginSubmit.textContent='Signing in…';
   loginFeedback.hidden=true;
-  api.setAccessToken(token);
   try{
+    const user=await api.login(email,password);
+    currentUserEl.textContent=user?.name||user?.email||'Staff';
+    currentUserEl.hidden=false;
+    loginPassword.value='';
     const ok=await loadWorkspace({quiet:true,authRetry:false});
-    if(ok===false){
-      api.setAccessToken('');
-      loginToken.select();
-    }else{
-      loginToken.value='';
-    }
+    if(ok===false)showLogin('Sign-in succeeded, but the workspace could not be loaded.');
   }catch(error){
-    api.setAccessToken('');
     showLogin(errorMessage(error));
+    loginPassword.select();
   }finally{
     loginSubmit.disabled=false;
     loginSubmit.textContent='Open Publishing Studio';
   }
 });
-signOutBtn.addEventListener('click',()=>{
+signOutBtn.addEventListener('click',async()=>{
+  try{await api.logout();}catch{}
   api.setAccessToken('');
+  currentUserEl.hidden=true;
   state={articles:[],categories:[],media:[],health:null};
   render();
   showLogin('You have signed out.');
@@ -396,6 +404,14 @@ const sidebar=$('#sidebar');$('#menuBtn').addEventListener('click',()=>sidebar.c
 
 async function startWorkspace(){
   const savedList=storedJson('tdsaCmsList');
+  try{
+    const user=await api.me();
+    currentUserEl.textContent=user?.name||user?.email||'Staff';
+    currentUserEl.hidden=false;
+  }catch{
+    showLogin('Sign in to continue.');
+    return;
+  }
   const loaded=await loadWorkspace();
   if(loaded===false)return;
   if(savedList){page=savedList.page||1;activeFilter=['all','Draft','Review','Published','Scheduled'].includes(savedList.activeFilter)?savedList.activeFilter:'all';search.value=savedList.query||'';categoryFilter.value=state.categories.some(c=>c.name===savedList.category)?savedList.category:'all';sortFilter.value=savedList.sort||'newest';$$('.tabs button').forEach(t=>t.classList.toggle('active',t.dataset.filter===activeFilter));renderArticles();}
