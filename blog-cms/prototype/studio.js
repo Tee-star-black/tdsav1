@@ -396,7 +396,8 @@ const sidebar=$('#sidebar');$('#menuBtn').addEventListener('click',()=>sidebar.c
 
 async function startWorkspace(){
   const savedList=storedJson('tdsaCmsList');
-  await loadWorkspace();
+  const loaded=await loadWorkspace();
+  if(loaded===false)return;
   if(savedList){page=savedList.page||1;activeFilter=['all','Draft','Review','Published','Scheduled'].includes(savedList.activeFilter)?savedList.activeFilter:'all';search.value=savedList.query||'';categoryFilter.value=state.categories.some(c=>c.name===savedList.category)?savedList.category:'all';sortFilter.value=savedList.sort||'newest';$$('.tabs button').forEach(t=>t.classList.toggle('active',t.dataset.filter===activeFilter));renderArticles();}
   const recovery=storedJson(recoveryKey);
   if(!recovery?.data)return;
