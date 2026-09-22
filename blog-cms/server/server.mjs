@@ -139,6 +139,19 @@ async function api(req,res,url){
     }
   }
 
+  if(parts[0]==='categories'&&parts.length===1&&req.method==='GET'){
+    const categories=EDITORIAL_CATEGORIES
+      .map(category=>({
+        id:`category-${category.slug}`,
+        name:category.name,
+        slug:category.slug,
+        description:category.description,
+        source:'code'
+      }))
+      .sort((a,b)=>a.name.localeCompare(b.name));
+    return json(req,res,200,{categories});
+  }
+
   if(!requireCmsAccess(req,res))return;
 
   if(parts[0]==='articles'){
@@ -180,18 +193,6 @@ async function api(req,res,url){
   }
 
   if(parts[0]==='categories'){
-    if(parts.length===1&&req.method==='GET'){
-      const categories=EDITORIAL_CATEGORIES
-        .map(category=>({
-          id:`category-${category.slug}`,
-          name:category.name,
-          slug:category.slug,
-          description:category.description,
-          source:'code'
-        }))
-        .sort((a,b)=>a.name.localeCompare(b.name));
-      return json(req,res,200,{categories});
-    }
     if(parts.length===1&&req.method==='POST')return json(req,res,201,{category:await repo.createCategory((await body(req)).name)});
     if(parts[1]&&req.method==='DELETE')return json(req,res,200,await repo.deleteCategory(decodeURIComponent(parts[1])));
   }
