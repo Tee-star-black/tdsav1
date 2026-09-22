@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>TeleDoctorSA Blog Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/public-preview/preview.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="TeleDoctorSA home"><img class="official-logo" src="/images/rebuild/logo.png" alt="TeleDoctorSA logo"></a>
+    <nav><a href="/telemedia-suite.html">TeleMedia Suite</a><a href="/our-services.html">Services</a><a href="/contact-us.html">Contact</a></nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy"><span class="eyebrow">BLOG & INSIGHTS</span><h1>Useful healthcare stories, made easier to understand.</h1><p>Practical guidance, digital-health education and updates from TeleDoctorSA.</p></div>
+      <article class="feature-card" id="featureCard"><span>FEATURED</span><h2>Loading latest story…</h2><p>The public preview is reading from the same content service as the editor.</p></article>
+    </section>
+
+    <section class="toolbar">
+      <div class="search"><span>⌕</span><input id="searchInput" type="search" placeholder="Search health stories…"></div>
+      <div class="chips" id="categoryChips"></div>
+    </section>
+
+    <section class="content-wrap">
+      <div class="section-heading"><div><span class="eyebrow">LATEST</span><h2>From the editorial desk</h2></div><p id="storyCount">Loading…</p></div>
+      <div class="story-grid" id="storyGrid"></div>
+      <div class="public-error" id="publicError" hidden><strong>Content service unavailable</strong><p>Start the Blog CMS backend, then refresh this preview.</p></div>
+    </section>
+  </main>
+
+  <footer><img class="footer-logo" src="/images/rebuild/logo.png" alt="TeleDoctorSA logo"><span>Healthcare. Anywhere.</span><small>Development preview · published API content only</small></footer>
+  <script src="/client/cms-api.js"></script>
+  <script src="/public-preview/preview.js"></script>
+</body>
+</html>

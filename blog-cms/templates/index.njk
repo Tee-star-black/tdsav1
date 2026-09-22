@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Blog & Insights | {{ site.name }}</title>
+  <meta name="description" content="Health education, company news and digital care insights from TeleDoctorSA.">
+  <link rel="canonical" href="{{ site.baseUrl }}/blog/">
+  <link rel="stylesheet" href="/styles/blog.css">
+</head>
+<body class="tdsa-blog">
+  <header class="blog-site-header"><a href="/" aria-label="TeleDoctorSA home"><img src="/images/rebuild/logo.png" alt="TeleDoctorSA logo"></a><nav><a href="/telemedia-suite">TeleMedia Suite</a><a href="/our-services">Services</a><a href="/contact-us">Contact</a></nav></header>
+  <main>
+    <section class="blog-hero"><div><p>TELEDOCTORSA EDITORIAL</p><h1>Useful healthcare stories, made easier to understand.</h1><span>Practical guidance, digital-health education and updates from TeleDoctorSA.</span></div>{% if featured %}<article class="blog-feature"><small>FEATURED</small><h2>{{ featured.title }}</h2><p>{{ featured.excerpt }}</p><a href="/blog/{{ featured.slug }}/">Read story →</a></article>{% endif %}</section>
+    <section class="blog-toolbar"><label><span>⌕</span><input id="blogSearch" type="search" placeholder="Search health stories…" aria-label="Search Blog & Insights"></label><div class="blog-chips"><button class="active" data-blog-category="all">All</button>{% for category in categories %}<button data-blog-category="{{ category }}">{{ category }}</button>{% endfor %}</div></section>
+    <section class="blog-content"><div class="blog-section-title"><div><p>LATEST</p><h2>From the editorial desk</h2></div><span id="blogResultCount">{{ articles | length }} published stories</span></div><section class="blog-grid" aria-label="Latest articles">
+      {% for article in articles %}
+      <article class="blog-card" data-category="{{ article.category }}" data-search="{{ article.title }} {{ article.excerpt }} {{ article.category }} {{ article.author }}">
+        <a href="/blog/{{ article.slug }}/" class="blog-card-image"><img src="{{ article.coverImage.url }}" alt="{{ article.coverImage.alt }}" loading="lazy"></a>
+        <div class="blog-card-copy"><span>{{ article.category }}</span><h2><a href="/blog/{{ article.slug }}/">{{ article.title }}</a></h2><p>{{ article.excerpt }}</p><small>{{ article.author }} · {{ article.publishedAt | truncate(10, true, '') }}</small></div>
+      </article>
+      {% endfor %}
+    </section></section>
+  </main>
+  <footer class="blog-footer"><img src="/images/rebuild/logo.png" alt="TeleDoctorSA logo"><span>Healthcare. Anywhere.</span></footer>
+  <script src="/scripts/blog.js"></script>
+</body>
+</html>

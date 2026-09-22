@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{ article.seoTitle or article.title }} | {{ site.name }}</title>
+  <meta name="description" content="{{ article.seoDescription or article.excerpt }}">
+  <link rel="canonical" href="{{ site.baseUrl }}/blog/{{ article.slug }}/">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="{{ article.title }}">
+  <meta property="og:description" content="{{ article.excerpt }}">
+  <meta property="og:image" content="{{ article.coverImage.url }}">
+  <link rel="stylesheet" href="/styles/blog.css">
+  <script type="application/ld+json">{{ article.schemaJson | safe }}</script>
+</head>
+<body class="tdsa-article">
+  <header class="blog-site-header"><a href="/" aria-label="TeleDoctorSA home"><img src="/images/rebuild/logo.png" alt="TeleDoctorSA logo"></a><nav><a href="/blog/">Blog & Insights</a><a href="/telemedia-suite">TeleMedia Suite</a><a href="/contact-us">Contact</a></nav></header>
+  <main class="article-shell">
+    <a class="article-back" href="/blog/">← Blog & Insights</a>
+    <header class="article-header"><span>{{ article.category }}</span><h1>{{ article.title }}</h1><p>{{ article.excerpt }}</p><small>{{ article.author }} · {{ article.publishedAt | truncate(10, true, '') }}</small></header>
+    <figure class="article-cover"><img src="{{ article.coverImage.url }}" alt="{{ article.coverImage.alt }}"></figure>
+    <div class="article-copy">{% for paragraph in article.bodyParagraphs %}<p>{{ paragraph }}</p>{% endfor %}</div>
+    {% if article.clinicalReviewRequired %}<aside class="clinical-note">This health education article passed the TeleDoctorSA clinical review workflow before publication.</aside>{% endif %}
+  </main>
+  <footer class="blog-footer"><img src="/images/rebuild/logo.png" alt="TeleDoctorSA logo"><span>Healthcare. Anywhere.</span></footer>
+</body>
+</html>

@@ -1,0 +1,108 @@
+{
+  "articles": [
+    {
+      "id": "a1",
+      "title": "5 Ways Telemedicine Improves Access to Care",
+      "slug": "telemedicine-improves-access-to-care",
+      "excerpt": "How connected care can reduce distance and improve access across South Africa.",
+      "bodyText": "Access to healthcare is not only about whether a clinician exists. It is also about whether a patient can reach that clinician at the right time, with the right information and without unnecessary friction.\n\nTelemedicine can help close some of those gaps by connecting patients and clinicians remotely while supporting continuity of care between physical visits.",
+      "status": "Published",
+      "category": "Health Education",
+      "author": "Dr N. Patel",
+      "featured": true,
+      "clinicalReviewRequired": true,
+      "clinicalReviewStatus": "approved",
+      "coverImage": {
+        "assetId": "",
+        "url": "/images/rebuild/03-doctor-video-consultation.jpg",
+        "alt": "Doctor speaking with a patient during a video consultation"
+      },
+      "scheduledAt": "",
+      "publishedAt": "2026-09-16T08:24:00.000Z",
+      "updatedAt": "2026-09-16T08:24:00.000Z",
+      "seoTitle": "5 Ways Telemedicine Improves Access to Care",
+      "seoDescription": "How connected care can reduce distance and improve access across South Africa."
+    },
+    {
+      "id": "a2",
+      "title": "Keeping Your Family Healthy This Winter",
+      "slug": "keeping-your-family-healthy-this-winter",
+      "excerpt": "Practical guidance for families navigating colder months and seasonal illness.",
+      "bodyText": "Seasonal illness can disrupt families quickly. Clear information can help people understand common symptoms, prevention and when professional care may be appropriate.",
+      "status": "Review",
+      "category": "Health Education",
+      "author": "T. Maseko",
+      "featured": false,
+      "clinicalReviewRequired": true,
+      "clinicalReviewStatus": "pending",
+      "coverImage": {
+        "assetId": "",
+        "url": "/images/rebuild/01-clinical-team-at-work.jpg",
+        "alt": "Clinical team working together"
+      },
+      "scheduledAt": "",
+      "publishedAt": "",
+      "updatedAt": "2026-09-15T14:03:00.000Z",
+      "seoTitle": "",
+      "seoDescription": ""
+    },
+    {
+      "id": "a3",
+      "title": "TeleDoctorSA at the African Health Conference",
+      "slug": "african-health-conference",
+      "excerpt": "Highlights from our team, our technology and the conversations shaping digital care.",
+      "bodyText": "TeleDoctorSA joined healthcare leaders to discuss accessible digital care and connected clinical workflows. The event created space to demonstrate how virtual care, remote monitoring and digital records can support patients and clinicians across the care journey.",
+      "status": "Published",
+      "category": "Company News",
+      "author": "T. Sibiya",
+      "featured": true,
+      "clinicalReviewRequired": false,
+      "clinicalReviewStatus": "not_required",
+      "coverImage": {
+        "assetId": "",
+        "url": "/images/rebuild/02-connected-care-ecosystem.jpg",
+        "alt": "TeleDoctorSA connected care ecosystem"
+      },
+      "scheduledAt": "",
+      "publishedAt": "2026-09-12T07:12:00.000Z",
+      "updatedAt": "2026-09-12T07:12:00.000Z",
+      "seoTitle": "",
+      "seoDescription": ""
+    },
+    {
+      "id": "a4",
+      "title": "A Guide to Your First Telehealth Appointment",
+      "slug": "first-telehealth-appointment",
+      "excerpt": "What to expect, how to prepare and how to get the most from a virtual consultation.",
+      "bodyText": "A little preparation can make a virtual consultation smoother. Keep your medication list, recent readings and key questions nearby so the conversation can focus on what matters most.",
+      "status": "Draft",
+      "category": "Patient Guides",
+      "author": "TeleDoctorSA Editorial",
+      "featured": false,
+      "clinicalReviewRequired": false,
+      "clinicalReviewStatus": "not_required",
+      "coverImage": {
+        "assetId": "",
+        "url": "/images/rebuild/07-mobile-health-app.jpg",
+        "alt": "Patient using the TeleDoctorSA mobile health application"
+      },
+      "scheduledAt": "",
+      "publishedAt": "",
+      "updatedAt": "2026-09-10T12:20:00.000Z",
+      "seoTitle": "",
+      "seoDescription": ""
+    }
+  ],
+  "categories": [
+    {"id":"cat-health-education","name":"Health Education","slug":"health-education"},
+    {"id":"cat-company-news","name":"Company News","slug":"company-news"},
+    {"id":"cat-patient-guides","name":"Patient Guides","slug":"patient-guides"},
+    {"id":"cat-digital-health","name":"Digital Health","slug":"digital-health"}
+  ],
+  "media": [
+    {"id":"media-1","name":"Doctor video consultation","mimeType":"image/jpeg","url":"/images/rebuild/03-doctor-video-consultation.jpg","alt":"Doctor speaking with a patient during a video consultation","tag":"Telemedicine"},
+    {"id":"media-2","name":"Connected care ecosystem","mimeType":"image/jpeg","url":"/images/rebuild/02-connected-care-ecosystem.jpg","alt":"Connected care ecosystem","tag":"Digital Health"},
+    {"id":"media-3","name":"Clinical team at work","mimeType":"image/jpeg","url":"/images/rebuild/01-clinical-team-at-work.jpg","alt":"Clinical team at work","tag":"Company"},
+    {"id":"media-4","name":"Patient mobile app","mimeType":"image/jpeg","url":"/images/rebuild/07-mobile-health-app.jpg","alt":"Patient using a mobile health app","tag":"Product"}
+  ]
+}

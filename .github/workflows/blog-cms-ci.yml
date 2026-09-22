@@ -1,0 +1,47 @@
+name: Blog CMS CI
+
+on:
+  push:
+    branches:
+      - feature/blog-cms-studio
+    paths:
+      - 'blog-cms/**'
+      - 'scripts/site-ux-v4.js'
+      - '.github/workflows/blog-cms-ci.yml'
+  pull_request:
+    paths:
+      - 'blog-cms/**'
+      - 'scripts/site-ux-v4.js'
+      - '.github/workflows/blog-cms-ci.yml'
+
+concurrency:
+  group: blog-cms-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: blog-cms
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install runtime dependencies
+        run: npm install --omit=dev --no-audit --no-fund
+      - name: Run authenticated local smoke test
+        run: npm run check
+      - name: Validate production Sanity contract
+        run: npm run check:sanity
+      - name: Generate static blog from local backend
+        run: npm run build:blog
+      - name: Generate static blog from production Sanity
+        run: npm run build:blog
+        env:
+          CMS_BACKEND: sanity
+          SANITY_PROJECT_ID: glz6ptd8
+          SANITY_DATASET: production
