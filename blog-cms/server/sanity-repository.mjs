@@ -16,7 +16,7 @@ function portableTextToText(blocks=[]){
   return (Array.isArray(blocks)?blocks:[]).filter(block=>block?._type==='block').map(block=>(block.children||[]).map(span=>span.text||'').join('')).join('\n\n');
 }
 
-const PROJECTION=`_id,title,"slug":slug.current,excerpt,body,editorialStatus,scheduledAt,featured,clinicalReviewRequired,clinicalReviewStatus,publishedAt,updatedAt,"category":category->title,"author":author->name,"coverImage":{"assetId":coverImage.asset._ref,"url":coverImage.asset->url,"alt":coverImage.alt},seoTitle,seoDescription`;
+const PROJECTION=`_id,title,"slug":slug.current,excerpt,body,editorialStatus,scheduledAt,featured,clinicalReviewRequired,clinicalReviewStatus,publishedAt,updatedAt,"categoryId":category._ref,"category":category->title,"author":author->name,"coverImage":{"assetId":coverImage.asset._ref,"url":coverImage.asset->url,"alt":coverImage.alt},seoTitle,seoDescription`;
 
 function conflict(message){
   return Object.assign(new Error(message),{statusCode:409});
@@ -25,7 +25,7 @@ function conflict(message){
 export class SanityRepository{
   constructor(){
     const projectId=process.env.SANITY_PROJECT_ID||'glz6ptd8';
-    const dataset=process.env.SANITY_DATASET||'production';
+    const dataset=process.env.SANITY_DATASET||'staging';
     const readToken=process.env.SANITY_READ_TOKEN||'';
     const writeToken=process.env.SANITY_WRITE_TOKEN||'';
     this.projectId=projectId;
@@ -92,7 +92,7 @@ export class SanityRepository{
     }
 
     const [category,author,existing]=await Promise.all([
-      this.#ensureCategory(check.article.category),
+      this.#requireCategory(check.article.categoryId,check.article.category),
       this.#ensureAuthor(check.article.author),
       isCreate?Promise.resolve(null):this.getArticle(documentId)
     ]);
@@ -204,6 +204,7 @@ export class SanityRepository{
       bodyText:portableTextToText(doc.body),
       status:doc.editorialStatus||(doc.publishedAt?'Published':'Draft'),
       scheduledAt:doc.scheduledAt,
+      categoryId:doc.categoryId,
       category:doc.category,
       author:doc.author,
       featured:doc.featured,
@@ -224,14 +225,28 @@ export class SanityRepository{
     );
   }
 
-  async #ensureCategory(name){
-    const slug=slugify(name);
-    const existing=await this.#findCategoryBySlug(slug);
-    if(existing)return {_id:existing._id};
+  async #requireCategory(categoryId,name){
+    let existing=null;
 
-    const _id=`category-${slug}`;
-    await this.client.createIfNotExists({_id,_type:'category',title:name,slug:{_type:'slug',current:slug}});
-    return {_id};
+    if(categoryId){
+      existing=await this.client.fetch(
+        '*[_type=="category"&&_id==$id][0]{_id,title,"slug":slug.current}',
+        {id:categoryId}
+      );
+    }
+
+    if(!existing&&name){
+      existing=await this.#findCategoryBySlug(slugify(name));
+    }
+
+    if(!existing){
+      throw Object.assign(
+        new Error('Choose a saved category before saving this article.'),
+        {statusCode:400,details:['The selected category does not exist in the active Sanity dataset.']}
+      );
+    }
+
+    return {_id:existing._id,title:existing.title};
   }
 
   async #ensureAuthor(name){
