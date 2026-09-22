@@ -73,12 +73,12 @@ npm run dev
 
 Then open:
 
-- Publishing Studio: `http://127.0.0.1:8787/` (redirects to `/prototype/`)
-- Public Blog & Insights: `http://127.0.0.1:8787/blog/`
-- TeleMedia integration: `http://127.0.0.1:8787/telemedia-suite.html`
-- API health: `http://127.0.0.1:8787/api/health`
+- Publishing Studio: `http://127.0.0.1:8790/` (redirects to `/prototype/`)
+- Public Blog & Insights: `http://127.0.0.1:8790/blog/`
+- TeleMedia integration: `http://127.0.0.1:8790/telemedia-suite.html`
+- API health: `http://127.0.0.1:8790/api/health`
 
-Do not use Live Server as the primary development runtime for this feature. Live Server can render files, but the CMS requires the Node content service on port `8787` for connected behaviour.
+Do not use Live Server as the primary development runtime for this feature. Live Server can render files, but the CMS requires the Node content service on port `8790` for connected behaviour.
 
 ## Backend modes
 
@@ -129,18 +129,19 @@ GitHub Actions runs the smoke test and static build for changes under this works
 - `assets/` - production blog CSS and JavaScript copied by the build
 - `docs/` - implementation and operational notes
 
-## Still gated before production
+## Production handover
 
-The following are intentionally not represented as finished UI controls until their production companions are configured:
+The production-ready shape is now:
 
-- Staff authentication and role enforcement
-- Real Sanity project/dataset credentials and production connection
-- Signed publication webhook/deployment trigger
-- Production cPanel/hosting deployment credentials and atomic release step
-- Post-deployment live URL verification and rollback
-- GA4 editorial analytics in the Studio
+- Staff access is protected by `CMS_ACCESS_TOKEN` and presented through a branded sign-in screen.
+- Production Sanity writes require both `SANITY_WRITE_TOKEN` and `CMS_ALLOW_PRODUCTION_WRITES=true`.
+- The public editorial destination is `/blog/`.
+- TeleMedia remains a media/press surface and can showcase featured Blog & Insights stories.
+- Publish/update/delete events can call a signed deploy webhook. GitHub repository dispatch is supported directly.
+- A production build workflow can rebuild the static blog and deploy the generated files to the current cPanel/public_html site once hosting secrets are configured.
+- The CMS server can be containerised and hosted at a staff-only URL such as `https://cms.teledoctorsa.co.za`.
 
-Those items form the next vertical slices. They should be implemented frontend + backend + infrastructure together rather than added as decorative dashboard controls.
+See `docs/PRODUCTION-HANDOVER.md` for the remaining account-side setup: CMS host/DNS, GitHub deployment token, and cPanel FTP credentials.
 
 
 ## Editor reliability update — 22 September 2026
