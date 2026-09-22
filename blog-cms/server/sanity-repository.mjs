@@ -1,5 +1,6 @@
 import {createClient} from '@sanity/client';
 import {normalizeArticle,slugify,validateEditorialArticle} from './validation.mjs';
+import {EDITORIAL_CATEGORIES} from '../config/editorial-categories.mjs';
 
 function textToPortableText(text=''){
   const stamp=Date.now();
@@ -145,14 +146,23 @@ export class SanityRepository{
   }
 
   async listCategories(){
-    const docs=await this.client.fetch(`*[_type=="category"]|order(title asc){"id":_id,"name":title,"slug":slug.current}`);
-    const seen=new Set();
-    return docs.filter(category=>{
-      const key=category.slug||slugify(category.name);
-      if(seen.has(key))return false;
-      seen.add(key);
-      return true;
+    const docs=await this.client.fetch(`*[_type=="category"]|order(title asc){"id":_id,"name":title,"slug":slug.current,"description":description}`);
+    const bySlug=new Map(docs.map(category=>[category.slug||slugify(category.name),category]));
+    const configured=EDITORIAL_CATEGORIES.map(definition=>{
+      const stored=bySlug.get(definition.slug);
+      return {
+        id:stored?.id||`category-${definition.slug}`,
+        name:definition.name,
+        slug:definition.slug,
+        description:definition.description,
+        source:'code'
+      };
     });
+    const configuredSlugs=new Set(EDITORIAL_CATEGORIES.map(category=>category.slug));
+    const custom=docs
+      .filter(category=>!configuredSlugs.has(category.slug||slugify(category.name)))
+      .map(category=>({...category,source:'sanity'}));
+    return [...configured,...custom].sort((a,b)=>a.name.localeCompare(b.name));
   }
 
   async createCategory(input){
@@ -249,14 +259,35 @@ export class SanityRepository{
       existing=await this.#findCategoryBySlug(slugify(name));
     }
 
-    if(!existing){
-      throw Object.assign(
-        new Error('Choose a saved category before saving this article.'),
-        {statusCode:400,details:['The selected category does not exist in the active Sanity dataset.']}
-      );
+    if(existing)return {_id:existing._id,title:existing.title};
+
+    const requestedSlug=slugify(
+      categoryId?.replace(/^category-/,'')||
+      name||
+      ''
+    );
+    const definition=EDITORIAL_CATEGORIES.find(category=>
+      category.slug===requestedSlug||
+      category.name===name||
+      `category-${category.slug}`===categoryId
+    );
+
+    if(definition){
+      const _id=`category-${definition.slug}`;
+      await this.client.createIfNotExists({
+        _id,
+        _type:'category',
+        title:definition.name,
+        slug:{_type:'slug',current:definition.slug},
+        description:definition.description
+      });
+      return {_id,title:definition.name};
     }
 
-    return {_id:existing._id,title:existing.title};
+    throw Object.assign(
+      new Error('Choose a category defined in the CMS catalogue or saved in Sanity.'),
+      {statusCode:400,details:['The selected category is not available in the active CMS category catalogue.']}
+    );
   }
 
   async #ensureAuthor(name){
