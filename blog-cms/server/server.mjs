@@ -124,7 +124,7 @@ async function api(req,res,url){
 
   const parts=url.pathname.replace(/^\/api\/?/,'').split('/').filter(Boolean);
   if(parts[0]==='health'&&req.method==='GET'){
-    return json(req,res,200,{...(await repo.health()),studioBuild:'2026.09.22.3',authRequired:Boolean(accessToken),deployWebhookConfigured:Boolean(deployWebhook)});
+    return json(req,res,200,{...(await repo.health()),studioBuild:'2026.09.22.4',authRequired:Boolean(accessToken),deployWebhookConfigured:Boolean(deployWebhook)});
   }
 
   if(parts[0]==='public'&&parts[1]==='articles'){
