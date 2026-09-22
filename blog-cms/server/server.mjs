@@ -288,6 +288,21 @@ const server=http.createServer(async(req,res)=>{
       const target=safeResolve(path.join(cmsRoot,'public-preview'),url.pathname.replace('/public-preview',''));
       return target?serveFile(res,target):json(req,res,400,{error:'Invalid path.'});
     }
+    if(url.pathname==='/client/editorial-categories.js'){
+      const categories=EDITORIAL_CATEGORIES.map(category=>({
+        id:`category-${category.slug}`,
+        name:category.name,
+        slug:category.slug,
+        description:category.description,
+        source:'code'
+      }));
+      res.writeHead(200,{
+        'Content-Type':'text/javascript; charset=utf-8',
+        'Cache-Control':'no-store'
+      });
+      res.end(`window.TDSA_EDITORIAL_CATEGORIES=${JSON.stringify(categories)};`);
+      return;
+    }
     if(url.pathname.startsWith('/client/')){
       const target=safeResolve(path.join(cmsRoot,'client'),url.pathname.replace('/client',''));
       return target?serveFile(res,target):json(req,res,400,{error:'Invalid path.'});
