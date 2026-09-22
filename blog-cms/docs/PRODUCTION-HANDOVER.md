@@ -25,7 +25,9 @@ Required production runtime variables:
 CMS_BACKEND=sanity
 CMS_HOST=0.0.0.0
 CMS_ALLOW_PRODUCTION_WRITES=true
-CMS_ACCESS_TOKEN=<staff access code>
+CMS_AUTH_FILE=/data/auth.local.json
+CMS_SESSION_HOURS=12
+CMS_COOKIE_SECURE=true
 CMS_ALLOWED_ORIGINS=https://cms.teledoctorsa.co.za,https://teledoctorsa.co.za,https://www.teledoctorsa.co.za
 
 SANITY_PROJECT_ID=glz6ptd8
@@ -59,11 +61,30 @@ When an editor publishes, updates or removes a published article:
 4. The workflow uploads only the generated blog assets to the existing production host.
 5. GitHub verifies the public blog and feed URLs respond successfully.
 
-## Colleague sign-in
+## Staff accounts and sign-in
 
-Set a strong `CMS_ACCESS_TOKEN` in the hosted CMS runtime. The Publishing Studio now presents a branded sign-in screen rather than a browser prompt. The token is held in session storage and is cleared when the user signs out or closes the browser session.
+The Publishing Studio now uses individual staff accounts with email + password.
 
-This is suitable for a small internal editorial team. If the team grows or needs per-user audit history, replace the shared access code with individual identity-provider accounts and roles.
+- Passwords are hashed server-side using scrypt.
+- Sessions use an HttpOnly cookie and expire after `CMS_SESSION_HOURS`.
+- Account records live in the private server-side `CMS_AUTH_FILE` and are excluded from Git.
+- In a container deployment, mount persistent storage at `/data` so accounts survive restarts.
+- Roles supported: `admin`, `editor`, and `reviewer`.
+- User-management API routes are admin-only.
+
+Create the first administrator from the CMS host:
+
+```powershell
+npm run user:create -- --email admin@teledoctorsa.co.za --name "TeleDoctorSA Admin" --role admin
+```
+
+The command generates a temporary password and prints it once. Create the colleague account the same way:
+
+```powershell
+npm run user:create -- --email colleague@teledoctorsa.co.za --name "Colleague Name" --role editor
+```
+
+The colleague then opens the hosted CMS URL and signs in with that email and password.
 
 ## Launch acceptance test
 
