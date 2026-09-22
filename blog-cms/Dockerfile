@@ -10,6 +10,8 @@ COPY telemedia-suite.html /app/telemedia-suite.html
 
 ENV NODE_ENV=production
 ENV CMS_HOST=0.0.0.0
+ENV CMS_AUTH_FILE=/data/auth.local.json
+VOLUME ["/data"]
 EXPOSE 8080
 
 CMD ["npm","start"]
