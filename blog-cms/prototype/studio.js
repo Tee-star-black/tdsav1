@@ -11,7 +11,23 @@ const editor=$('#editorDialog'),preview=$('#previewDialog');
 function escapeHtml(value){return String(value??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 function slugify(value){return String(value||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,80);}
 function prettyDate(value){if(!value)return 'Not published';const date=new Date(value);if(Number.isNaN(date.getTime()))return 'Unknown date';return new Intl.DateTimeFormat('en-ZA',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}).format(date);}
-function notify(title,message){$('#toastTitle').textContent=title;$('#toastMessage').textContent=message;const toast=$('#toast');toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),3200);}
+function notify(title,message,action=null){
+  $('#toastTitle').textContent=title;
+  $('#toastMessage').textContent=message;
+  const link=$('#toastAction');
+  if(action?.href){
+    link.href=action.href;
+    link.textContent=action.label||'View on blog ↗';
+    link.hidden=false;
+  }else{
+    link.hidden=true;
+    link.removeAttribute('href');
+  }
+  const toast=$('#toast');
+  toast.classList.add('show');
+  clearTimeout(notify.timer);
+  notify.timer=setTimeout(()=>toast.classList.remove('show'),action?.href?9000:4200);
+}
 function errorMessage(error){return error?.details?.length?error.details.join(' '):error?.message||'Something went wrong.';}
 
 function setBackendStatus(mode,message){
@@ -177,6 +193,20 @@ function editorData(){
   };
 }
 
+async function verifyPublishedArticle(article){
+  if(!article?.slug)return null;
+  for(let attempt=0;attempt<6;attempt++){
+    try{
+      const publicArticle=await api.getPublicArticle(article.slug);
+      if(publicArticle?.id===article.id||publicArticle?.slug===article.slug)return publicArticle;
+    }catch(error){
+      if(error?.status!==404)throw error;
+    }
+    await new Promise(resolve=>setTimeout(resolve,500));
+  }
+  return null;
+}
+
 function validateArticleClient(data){
   const errors=[];
   if(data.title.length<5)errors.push('Title must be at least 5 characters.');
@@ -206,7 +236,27 @@ $('#saveArticle').addEventListener('click',async()=>{
     const saved=editingId?await api.updateArticle(editingId,data):await api.createArticle(data);
     editingId=saved.id;
     const index=state.articles.findIndex(a=>a.id===saved.id);if(index>=0)state.articles[index]=saved;else state.articles.unshift(saved);
-    render();editor.close();notify(saved.status==='Published'?'Story published':'Story saved',saved.status==='Published'?'The public content API now exposes this article.':'Changes are stored in the shared content backend.');
+    render();
+    editor.close();
+    if(saved.status==='Published'){
+      $('#saveState').textContent='Checking public blog…';
+      try{
+        const publicArticle=await verifyPublishedArticle(saved);
+        if(publicArticle){
+          notify(
+            'Published end-to-end',
+            'Prototype → Sanity → public blog verified successfully.',
+            {href:`/blog/${encodeURIComponent(saved.slug)}/`,label:'View on blog ↗'}
+          );
+        }else{
+          notify('Published to Sanity','The article saved successfully, but the public blog did not return it yet. Refresh the blog and check again.');
+        }
+      }catch(verifyError){
+        notify('Published, verification failed',`Sanity accepted the article, but the public verification request failed: ${errorMessage(verifyError)}`);
+      }
+    }else{
+      notify('Story saved','Changes are stored in the shared content backend.');
+    }
   }catch(err){notify('Story not saved',errorMessage(err));}
   finally{button.disabled=false;button.textContent='Save story →';}
 });
