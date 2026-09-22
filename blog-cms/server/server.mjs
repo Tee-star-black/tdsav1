@@ -73,7 +73,9 @@ function isAuthorized(req){
 async function currentCmsUser(req){
   const sessionUser=await auth.sessionUserFromRequest(req);
   if(sessionUser)return sessionUser;
-  if(isAuthorized(req))return {id:'legacy-token',name:'Legacy CMS Access',email:'',role:'admin',legacy:true};
+  const hasUsers=await auth.hasUsers();
+  if(accessToken&&isAuthorized(req))return {id:'legacy-token',name:'Legacy CMS Access',email:'',role:'admin',legacy:true};
+  if(!hasUsers&&!accessToken)return {id:'development',name:'Local Development',email:'',role:'admin',development:true};
   return null;
 }
 
