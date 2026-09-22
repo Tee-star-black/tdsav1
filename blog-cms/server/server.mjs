@@ -274,7 +274,7 @@ const server=http.createServer(async(req,res)=>{
 
 server.listen(port,host,()=>{
   console.log(`TeleDoctorSA Blog CMS running on http://${host}:${port}/prototype/`);
-  console.log(`Backend: ${repo.backendName}`);
+  console.log(`Backend: ${repo.backendName}${repo.dataset?`/${repo.dataset}`:''}`);
   console.log(`CMS auth: ${accessToken?'required':'disabled (development mode)'}`);
   console.log(`Public blog: http://${host}:${port}/blog/`);
   publishDueScheduled().catch(console.error);
