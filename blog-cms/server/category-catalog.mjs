@@ -6,9 +6,9 @@ export async function syncEditorialCategories(repo){
   const created=[];
 
   for(const definition of EDITORIAL_CATEGORIES){
-    if(known.has(definition.slug))continue;
-    const category=await repo.createCategory(definition.name);
-    created.push(category);
+    const wasKnown=known.has(definition.slug);
+    const category=await repo.createCategory(definition);
+    if(!wasKnown)created.push(category);
     known.add(definition.slug);
   }
 
