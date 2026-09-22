@@ -21,7 +21,7 @@ function setBackendStatus(mode,message){
   $('#backendMetricNote').textContent=mode==='online'?(state.health?.backend==='sanity'?`${state.health.projectId}/${state.health.dataset} · ${state.health.categoryCount??0} categories`:'Connected content service'):'Backend unavailable';
 }
 
-async function loadWorkspace({quiet=false}={}){
+async function loadWorkspace({quiet=false,authRetry=true}={}){
   if(!quiet)setBackendStatus('','Connecting backend…');
 
   const requests=[
@@ -31,6 +31,15 @@ async function loadWorkspace({quiet=false}={}){
     ['media',api.listMedia()],
   ];
   const results=await Promise.allSettled(requests.map(([,promise])=>promise));
+
+  const unauthorized=results.some(result=>result.status==='rejected'&&result.reason?.status===401);
+  if(unauthorized&&authRetry){
+    const token=prompt('Enter the TeleDoctorSA Publishing Studio access token:','');
+    if(token?.trim()){
+      api.setAccessToken(token.trim());
+      return loadWorkspace({quiet,authRetry:false});
+    }
+  }
   const values={};
   const failures=[];
 
@@ -48,7 +57,8 @@ async function loadWorkspace({quiet=false}={}){
   };
 
   if(values.health){
-    const message=failures.length?`${values.health.backend} connected · partial data`:`${values.health.backend} backend connected`;
+    const secured=values.health.authRequired?' · secured':'';
+    const message=failures.length?`${values.health.backend} connected · partial data`:`${values.health.backend} backend connected${secured}`;
     setBackendStatus('online',message);
   }else{
     setBackendStatus('offline','Backend unavailable');
@@ -58,7 +68,8 @@ async function loadWorkspace({quiet=false}={}){
 
   if(!quiet&&failures.length){
     const failedNames=failures.map(item=>item.key).join(', ');
-    notify('Some CMS data could not load',`Failed: ${failedNames}. Other available content has still been loaded.`);
+    const authFailed=failures.some(item=>item.error?.status===401);
+    notify(authFailed?'Studio access required':'Some CMS data could not load',authFailed?'The access token was not accepted. Refresh and enter the correct Studio token.':`Failed: ${failedNames}. Other available content has still been loaded.`);
   }
 }
 
