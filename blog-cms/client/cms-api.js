@@ -59,6 +59,7 @@
     getArticle:id=>request(`/articles/${encodeURIComponent(id)}`).then(r=>r.article),
     createArticle:data=>request('/articles',{method:'POST',body:JSON.stringify(data)}).then(r=>r.article),
     updateArticle:(id,data)=>request(`/articles/${encodeURIComponent(id)}`,{method:'PUT',body:JSON.stringify(data)}).then(r=>r.article),
+    publishArticle:id=>request(`/articles/${encodeURIComponent(id)}/publish`,{method:'POST'}),
     deleteArticle:id=>request(`/articles/${encodeURIComponent(id)}`,{method:'DELETE'}),
     listCategories:()=>request('/categories').then(r=>r.categories),
     createCategory:name=>request('/categories',{method:'POST',body:JSON.stringify({name})}).then(r=>r.category),
