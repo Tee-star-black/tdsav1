@@ -177,7 +177,27 @@ function editorData(){
   };
 }
 
-function validateArticleClient(data){if(!data.title)return 'Add a title before saving.';if(!data.slug)return 'Add a valid URL slug.';if(!data.category)return 'Choose a category before saving.';if(data.status==='Scheduled'&&!data.scheduledAt)return 'Choose a schedule date and time.';return '';}
+function validateArticleClient(data){
+  const errors=[];
+  if(data.title.length<5)errors.push('Title must be at least 5 characters.');
+  if(!data.slug)errors.push('Add a valid URL slug.');
+  if(!data.category)errors.push('Choose a category.');
+  if(!data.author)errors.push('Choose or enter an author.');
+  if(data.excerpt.length>220)errors.push('Short introduction must be 220 characters or fewer.');
+  if(data.seoTitle.length>60)errors.push('SEO title must be 60 characters or fewer.');
+  if(data.seoDescription.length>160)errors.push('SEO description must be 160 characters or fewer.');
+  if(data.status==='Scheduled'&&!data.scheduledAt)errors.push('Choose a schedule date and time.');
+
+  if(data.status==='Published'){
+    if(data.excerpt.length<20)errors.push('Published stories need a short introduction of at least 20 characters.');
+    if(data.bodyText.length<80)errors.push('Published stories need a complete article body of at least 80 characters.');
+    if(!data.coverImage.url&&!data.coverImage.assetId)errors.push('Published stories require a cover image.');
+    if(!data.coverImage.alt)errors.push('Published cover images require alternative text.');
+    if(data.clinicalReviewRequired&&data.clinicalReviewStatus!=='approved')errors.push('Clinical content must be approved before publication.');
+  }
+
+  return errors.join(' ');
+}
 
 $('#saveArticle').addEventListener('click',async()=>{
   const data=editorData(),error=validateArticleClient(data);if(error){notify('Check this story',error);return;}
