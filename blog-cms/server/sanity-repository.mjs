@@ -260,10 +260,18 @@ export class SanityRepository{
   }
 
   #requireWriteAccess(){
-    if(this.writeEnabled)return;
-    throw Object.assign(
-      new Error('Sanity write access is not configured. Set SANITY_WRITE_TOKEN for CMS mutations.'),
-      {statusCode:503}
-    );
+    if(!this.writeEnabled){
+      throw Object.assign(
+        new Error('Sanity write access is not configured. Set SANITY_WRITE_TOKEN for CMS mutations.'),
+        {statusCode:503}
+      );
+    }
+
+    if(this.dataset==='production'&&process.env.CMS_ALLOW_PRODUCTION_WRITES!=='true'){
+      throw Object.assign(
+        new Error('Production CMS writes are locked. Use SANITY_DATASET=staging for prototype testing.'),
+        {statusCode:403,details:['Set CMS_ALLOW_PRODUCTION_WRITES=true only in the real production CMS runtime.']}
+      );
+    }
   }
 }
