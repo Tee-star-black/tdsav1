@@ -16,7 +16,7 @@ try{
 }
 
 const repo=createRepository();
-const port=Number(process.env.PORT||8787);
+const port=Number(process.env.PORT||8790);
 const host=process.env.CMS_HOST||'127.0.0.1';
 const MAX_JSON_BYTES=9*1024*1024;
 const accessToken=String(process.env.CMS_ACCESS_TOKEN||'');
@@ -87,13 +87,16 @@ async function triggerDeploy(reason){
   const controller=new AbortController();
   const timeout=setTimeout(()=>controller.abort(),10000);
   try{
+    const githubDispatch=/^https:\/\/api\.github\.com\/repos\/[^/]+\/[^/]+\/dispatches(?:\?.*)?$/.test(deployWebhook);
+    const payload={source:'teledoctorsa-blog-cms',reason,at:new Date().toISOString()};
     const response=await fetch(deployWebhook,{
       method:'POST',
       headers:{
         'Content-Type':'application/json',
+        ...(githubDispatch?{'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}:{}),
         ...(deployWebhookToken?{'Authorization':`Bearer ${deployWebhookToken}`}:{})
       },
-      body:JSON.stringify({source:'teledoctorsa-blog-cms',reason,at:new Date().toISOString()}),
+      body:JSON.stringify(githubDispatch?{event_type:'blog_publish',client_payload:payload}:payload),
       signal:controller.signal
     });
     if(!response.ok)throw new Error(`Deploy webhook returned HTTP ${response.status}.`);
