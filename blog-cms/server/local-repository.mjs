@@ -20,14 +20,18 @@ async function writeStore(store){await writeFile(storePath,JSON.stringify(store,
 export class LocalRepository{
   constructor(){this.backendName='local';this.queue=Promise.resolve();}
   async health(){await ensureStore();return {ok:true,backend:this.backendName};}
-  async listArticles(){const store=await readStore();return [...store.articles].sort((a,b)=>new Date(b.updatedAt||0)-new Date(a.updatedAt||0));}
-  async getArticle(id){const store=await readStore();return store.articles.find(a=>a.id===id)||null;}
-  async getPublicArticleBySlug(slug){const store=await readStore();return store.articles.find(a=>a.slug===slug&&a.status==='Published')||null;}
-  async listPublicArticles(){const store=await readStore();return store.articles.filter(a=>a.status==='Published').sort((a,b)=>new Date(b.publishedAt||b.updatedAt||0)-new Date(a.publishedAt||a.updatedAt||0));}
+  async listArticles(){const store=await readStore();return store.articles.map(article=>this.#withCategoryIdentity(store,article)).sort((a,b)=>new Date(b.updatedAt||0)-new Date(a.updatedAt||0));}
+  async getArticle(id){const store=await readStore();const article=store.articles.find(a=>a.id===id);return article?this.#withCategoryIdentity(store,article):null;}
+  async getPublicArticleBySlug(slug){const store=await readStore();const article=store.articles.find(a=>a.slug===slug&&a.status==='Published');return article?this.#withCategoryIdentity(store,article):null;}
+  async listPublicArticles(){const store=await readStore();return store.articles.filter(a=>a.status==='Published').map(article=>this.#withCategoryIdentity(store,article)).sort((a,b)=>new Date(b.publishedAt||b.updatedAt||0)-new Date(a.publishedAt||a.updatedAt||0));}
   async saveArticle(input,id=''){
     return this.#mutate(async store=>{
       const now=new Date().toISOString();
       const base=normalizeArticle({...input,id:id||input.id||`article-${Date.now()}`,updatedAt:now});
+      const category=store.categories.find(c=>c.id===base.categoryId)||(base.category?store.categories.find(c=>c.name===base.category):null);
+      if(!category)throw Object.assign(new Error('Choose a saved category before saving this article.'),{statusCode:400,details:['The selected category does not exist in the active repository.']});
+      base.categoryId=category.id;
+      base.category=category.name;
       const duplicate=store.articles.find(a=>a.slug===base.slug&&a.id!==base.id);
       if(duplicate)throw Object.assign(new Error('That URL slug is already in use.'),{statusCode:409});
       const check=validateEditorialArticle(base,{forPublication:base.status==='Published'});
@@ -49,7 +53,7 @@ export class LocalRepository{
     return this.#mutate(async store=>{const clean=String(name||'').trim();if(clean.length<2)throw Object.assign(new Error('Category name is too short.'),{statusCode:400});const slug=slugify(clean);if(store.categories.some(c=>c.slug===slug))throw Object.assign(new Error('That category already exists.'),{statusCode:409});const category={id:`cat-${slug}`,name:clean,slug};store.categories.push(category);return {store,value:category};});
   }
   async deleteCategory(id){
-    return this.#mutate(async store=>{const category=store.categories.find(c=>c.id===id);if(!category)throw Object.assign(new Error('Category not found.'),{statusCode:404});if(store.articles.some(a=>a.category===category.name))throw Object.assign(new Error('Move articles out of this category before deleting it.'),{statusCode:409});store.categories=store.categories.filter(c=>c.id!==id);return {store,value:{ok:true}};});
+    return this.#mutate(async store=>{const category=store.categories.find(c=>c.id===id);if(!category)throw Object.assign(new Error('Category not found.'),{statusCode:404});if(store.articles.some(a=>a.categoryId===category.id||a.category===category.name))throw Object.assign(new Error('Move articles out of this category before deleting it.'),{statusCode:409});store.categories=store.categories.filter(c=>c.id!==id);return {store,value:{ok:true}};});
   }
   async listMedia(){const store=await readStore();return store.media;}
   async uploadMedia(input={}){
@@ -64,6 +68,10 @@ export class LocalRepository{
       const media={id:`media-${Date.now()}`,name:path.parse(name).name||'Uploaded image',mimeType,url:`/uploads/${filename}`,alt:String(input.alt||'').trim(),tag:String(input.tag||'Uploaded').trim()||'Uploaded'};
       store.media.unshift(media);return {store,value:media};
     });
+  }
+  #withCategoryIdentity(store,article){
+    const category=store.categories.find(c=>c.id===article.categoryId)||store.categories.find(c=>c.name===article.category);
+    return {...article,categoryId:category?.id||article.categoryId||'',category:category?.name||article.category||''};
   }
   async #mutate(fn){
     let output;
