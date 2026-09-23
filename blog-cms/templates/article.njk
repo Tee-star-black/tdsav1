@@ -5,23 +5,36 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>{{ article.seoTitle or article.title }} | {{ site.name }}</title>
   <meta name="description" content="{{ article.seoDescription or article.excerpt }}">
+  <meta name="robots" content="index,follow">
   <link rel="canonical" href="{{ site.baseUrl }}/blog/{{ article.slug }}/">
   <meta property="og:type" content="article">
+  <meta property="og:site_name" content="{{ site.name }}">
   <meta property="og:title" content="{{ article.title }}">
-  <meta property="og:description" content="{{ article.excerpt }}">
+  <meta property="og:description" content="{{ article.seoDescription or article.excerpt }}">
+  <meta property="og:url" content="{{ site.baseUrl }}/blog/{{ article.slug }}/">
   <meta property="og:image" content="{{ article.coverImage.url }}">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles/blog.css">
   <script type="application/ld+json">{{ article.schemaJson | safe }}</script>
 </head>
-<body class="tdsa-article">
-  <header class="blog-site-header"><a href="/" aria-label="TeleDoctorSA home"><img src="/images/rebuild/logo.png" alt="TeleDoctorSA logo"></a><nav><a href="/blog/">Blog & Insights</a><a href="/telemedia-suite">TeleMedia Suite</a><a href="/contact-us">Contact</a></nav></header>
-  <main class="article-shell">
-    <a class="article-back" href="/blog/">← Blog & Insights</a>
-    <header class="article-header"><span>{{ article.category }}</span><h1>{{ article.title }}</h1><p>{{ article.excerpt }}</p><small>{{ article.author }} · {{ article.publishedAt | truncate(10, true, '') }}</small></header>
-    <figure class="article-cover"><img src="{{ article.coverImage.url }}" alt="{{ article.coverImage.alt }}"></figure>
-    <div class="article-copy">{% for paragraph in article.bodyParagraphs %}<p>{{ paragraph }}</p>{% endfor %}</div>
-    {% if article.clinicalReviewRequired %}<aside class="clinical-note">This health education article passed the TeleDoctorSA clinical review workflow before publication.</aside>{% endif %}
+<body class="article-public">
+  <header class="site-header"><a class="brand" href="/" aria-label="TeleDoctorSA home"><img class="official-logo" src="/images/rebuild/logo.png" alt="TeleDoctorSA"></a><nav aria-label="Primary navigation"><a class="active" href="/blog/">Blog & Insights</a><a href="/telemedia-suite">TeleMedia Suite</a><a href="/our-services">Services</a><a href="/contact-us">Contact</a></nav></header>
+  <main class="article-page">
+    <a class="article-back" href="/blog/">← Back to Blog & Insights</a>
+    <article>
+      <header class="article-header"><span class="eyebrow">{{ article.category }}</span><h1>{{ article.title }}</h1><p class="dek">{{ article.excerpt }}</p><div class="article-meta"><span>By {{ article.author }}</span><span>{{ article.publishedAt | truncate(10, true, '') }}</span></div></header>
+      <figure class="article-hero article-hero-image"><img src="{{ article.coverImage.url }}" alt="{{ article.coverImage.alt }}"><figcaption>{{ article.coverImage.alt }}</figcaption></figure>
+      <div class="article-layout">
+        <aside class="article-aside"><span>SHARE</span><a href="https://www.linkedin.com/sharing/share-offsite/?url={{ site.baseUrl }}/blog/{{ article.slug }}/" target="_blank" rel="noopener">LinkedIn</a><a href="https://www.facebook.com/sharer/sharer.php?u={{ site.baseUrl }}/blog/{{ article.slug }}/" target="_blank" rel="noopener">Facebook</a></aside>
+        <div class="article-copy">{% for paragraph in article.bodyParagraphs %}<p{% if loop.first %} class="article-lead"{% endif %}>{{ paragraph }}</p>{% endfor %}</div>
+      </div>
+      {% if article.clinicalReviewRequired %}<aside class="clinical-note"><strong>Clinical review</strong><p>This health-education article passed the TeleDoctorSA clinical review workflow before publication.</p></aside>{% endif %}
+      <nav class="article-end-nav"><a href="/blog/">Browse all stories</a><a href="/contact-us">Contact TeleDoctorSA</a></nav>
+    </article>
   </main>
-  <footer class="blog-footer"><img src="/images/rebuild/logo.png" alt="TeleDoctorSA logo"><span>Healthcare. Anywhere.</span></footer>
+  <footer class="site-footer"><a href="/"><img class="footer-logo" src="/images/rebuild/logo.png" alt="TeleDoctorSA"></a><span>Blog & Insights</span><nav><a href="/privacy-policy">Privacy</a><a href="/contact-us">Contact</a></nav></footer>
 </body>
 </html>
