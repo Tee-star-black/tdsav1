@@ -48,9 +48,10 @@ export class PostgresRepository{
       await client.query('BEGIN');
       let existing=null;
       if(id){
-        const current=await client.query(`${ARTICLE_SELECT} WHERE a.id=$1 FOR UPDATE`,[id]);
+        const locked=await client.query('SELECT id,revision FROM cms_articles WHERE id=$1 FOR UPDATE',[id]);
+        if(!locked.rowCount)throw Object.assign(new Error('Article not found.'),{statusCode:404});
+        const current=await client.query(`${ARTICLE_SELECT} WHERE a.id=$1`,[id]);
         existing=mapArticle(current.rows[0]);
-        if(!existing)throw Object.assign(new Error('Article not found.'),{statusCode:404});
         if(String(input.revision||'')!==String(existing.revision||''))throw Object.assign(new Error('This article changed since you opened it. Reopen the latest version before saving.'),{statusCode:409});
       }
 
