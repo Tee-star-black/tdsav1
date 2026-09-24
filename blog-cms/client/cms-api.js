@@ -63,6 +63,7 @@
     listUsers:()=>request('/users').then(r=>r.users),
     createUser:data=>request('/users',{method:'POST',body:JSON.stringify(data)}),
     deleteUser:id=>request(`/users/${encodeURIComponent(id)}`,{method:'DELETE'}),
+    resetUserPassword:id=>request(`/users/${encodeURIComponent(id)}/reset-password`,{method:'POST'}),
     listArticles:()=>request('/articles').then(r=>r.articles),
     getArticle:id=>request(`/articles/${encodeURIComponent(id)}`).then(r=>r.article),
     createArticle:data=>request('/articles',{method:'POST',body:JSON.stringify(data)}).then(r=>({...r.article,delivery:r.delivery})),
