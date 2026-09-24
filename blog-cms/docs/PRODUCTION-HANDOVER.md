@@ -1,116 +1,172 @@
 # TeleDoctorSA Publishing Studio - Production Handover
 
-## Public content structure
+## Final architecture
 
-The official editorial destination is:
+The target production path is:
 
-- **Blog & Insights:** https://teledoctorsa.co.za/blog/
-- **Article URLs:** https://teledoctorsa.co.za/blog/<slug>/
-- **TeleMedia Suite:** remains the press, interviews, announcements and media-facing page.
-- TeleMedia can display up to three recent/featured Blog & Insights articles from `/blog/feed.json`.
+```
+cms.teledoctorsa.co.za
+        |
+        v
+Google Cloud Run
+        |
+        +--> Cloud SQL PostgreSQL
+        |      articles, categories, users, sessions,
+        |      revisions and audit records
+        |
+        +--> Google Cloud Storage
+               editorial images
 
-This keeps long-form editorial content indexable under one clean URL family while still allowing TeleMedia to promote selected stories.
+Published content
+        |
+        v
+CMS public read API
+        |
+        v
+GitHub Actions static build
+        |
+        v
+Host Africa / cPanel
+        |
+        v
+teledoctorsa.co.za/blog/
+```
 
-## Staff CMS
+Sanity remains available only as a temporary migration/fallback source until the Cloud SQL cutover has been verified.
 
-Recommended staff URL:
+## Public content
+
+- Blog & Insights: `https://teledoctorsa.co.za/blog/`
+- Article URLs: `https://teledoctorsa.co.za/blog/<slug>/`
+- TeleMedia Suite remains the media/press destination and can surface featured Blog & Insights stories.
+
+The generated blog includes canonical URLs, article metadata/schema, search/filter data, feed JSON and sitemap entries.
+
+## Publishing Studio
+
+Recommended URL:
 
 `https://cms.teledoctorsa.co.za`
 
-The Node service is container-ready via `blog-cms/Dockerfile`. Run it as an always-on service because scheduled publishing is checked by the CMS process.
+The Studio supports:
 
-Required production runtime variables:
+- individual email/password sign-in;
+- HttpOnly sessions;
+- admin/editor/reviewer roles;
+- Account & staff management for administrators;
+- password changes;
+- drafts;
+- review status;
+- clinical-review publication guardrails;
+- categories;
+- media upload/reuse;
+- featured stories;
+- scheduling;
+- SEO title/description;
+- article preview;
+- optimistic concurrency protection;
+- article revision snapshots in PostgreSQL;
+- production audit events;
+- automatic live-site rebuild requests.
+
+## Production database
+
+Use:
 
 ```env
-CMS_BACKEND=sanity
-CMS_HOST=0.0.0.0
-CMS_ALLOW_PRODUCTION_WRITES=true
-CMS_AUTH_FILE=/data/auth.local.json
-CMS_SESSION_HOURS=12
-CMS_COOKIE_SECURE=true
-CMS_ALLOWED_ORIGINS=https://cms.teledoctorsa.co.za,https://teledoctorsa.co.za,https://www.teledoctorsa.co.za
-
-SANITY_PROJECT_ID=glz6ptd8
-SANITY_DATASET=production
-SANITY_API_VERSION=2026-09-01
-SANITY_WRITE_TOKEN=<server-side Sanity write token>
-
-CMS_DEPLOY_WEBHOOK_URL=https://api.github.com/repos/Tee-star-black/tdsav1/dispatches
-CMS_DEPLOY_WEBHOOK_TOKEN=<fine-grained GitHub token>
+CMS_BACKEND=postgres
+CMS_AUTH_BACKEND=postgres
 ```
 
-The browser never receives the Sanity write token or GitHub deployment token.
+Run schema migrations before launch:
 
-## GitHub production deployment
-
-The workflow `.github/workflows/blog-publish-production.yml` listens for `repository_dispatch: blog_publish`.
-
-Configure these repository secrets:
-
-- `TDSA_FTP_HOST`
-- `TDSA_FTP_USERNAME`
-- `TDSA_FTP_PASSWORD`
-- `TDSA_FTP_REMOTE_ROOT` (normally the cPanel `public_html` directory)
-- `SANITY_READ_TOKEN` only if the Sanity dataset is not publicly readable
-
-When an editor publishes, updates or removes a published article:
-
-1. CMS writes the content to Sanity.
-2. CMS sends a signed GitHub repository dispatch.
-3. GitHub rebuilds `/blog/`, article pages, feed/search JSON, stylesheet/script and sitemap.
-4. The workflow uploads only the generated blog assets to the existing production host.
-5. GitHub verifies the public blog and feed URLs respond successfully.
-
-## Staff accounts and sign-in
-
-The Publishing Studio now uses individual staff accounts with email + password.
-
-- Passwords are hashed server-side using scrypt.
-- Sessions use an HttpOnly cookie and expire after `CMS_SESSION_HOURS`.
-- Account records live in the private server-side `CMS_AUTH_FILE` and are excluded from Git.
-- In a container deployment, mount persistent storage at `/data` so accounts survive restarts.
-- Roles supported: `admin`, `editor`, and `reviewer`.
-- User-management API routes are admin-only.
-
-Create the first administrator from the CMS host:
-
-```powershell
-npm run user:create -- --email admin@teledoctorsa.co.za --name "TeleDoctorSA Admin" --role admin
+```bash
+npm run db:migrate
 ```
 
-The command generates a temporary password and prints it once. Create the colleague account the same way:
+The database schema is maintained in `blog-cms/db/migrations/`.
 
-```powershell
-npm run user:create -- --email colleague@teledoctorsa.co.za --name "Colleague Name" --role editor
+## Production media
+
+Use:
+
+```env
+CMS_MEDIA_BACKEND=gcs
+GCS_BUCKET=<bucket>
+GCS_PUBLIC_BASE_URL=<public bucket/CDN URL>
 ```
 
-The colleague then opens the hosted CMS URL and signs in with that email and password.
+Media bytes are stored in Cloud Storage. Cloud SQL stores only media metadata and URLs.
 
-## Launch acceptance test
+## Staff accounts
 
-Before handing the URL to staff, complete one production test:
+Bootstrap the first production admin on the configured production database:
 
-1. Sign in.
-2. Create a draft and reopen it.
-3. Add/select a category.
-4. Upload a cover image with alt text.
-5. Preview.
-6. Publish.
-7. Confirm the GitHub production publish workflow succeeds.
-8. Confirm the story appears at `/blog/` and its article URL.
-9. Confirm a featured story appears on TeleMedia.
-10. Edit and republish.
-11. Schedule a test article a few minutes ahead and confirm it publishes automatically.
-12. Withdraw/delete the test story and verify it disappears from the public blog after deployment.
+```bash
+npm run user:create -- --email publishing@teledoctorsa.co.za --name "TeleDoctorSA Publishing" --role admin
+```
 
-## Account-side items still required
+After that, administrators can create and remove staff accounts from **Account & staff** in the Publishing Studio.
 
-Repository code cannot create these without access to the relevant external accounts:
+## Scheduled publishing
 
-- DNS record for `cms.teledoctorsa.co.za`.
-- A running container/service for the CMS.
-- Production CMS environment variables/secrets.
-- cPanel/FTP credentials in GitHub Actions secrets.
-- A fine-grained GitHub token used by the CMS deployment webhook.
+Cloud Run should not be relied on as an always-awake timer.
 
-Once those are configured, the colleague workflow requires no Git, VS Code or manual `public_html` editing.
+Set:
+
+```env
+CMS_SCHEDULE_WORKER_ENABLED=false
+CMS_INTERNAL_TOKEN=<secret>
+```
+
+Use Cloud Scheduler to invoke:
+
+```
+POST /api/internal/publish-due
+```
+
+with the configured internal-token header.
+
+## Live blog deployment
+
+The production GitHub workflow can fetch published content from:
+
+```
+https://cms.teledoctorsa.co.za/api/public/articles
+```
+
+Set repository variable:
+
+```
+CMS_PUBLIC_API_URL=https://cms.teledoctorsa.co.za
+```
+
+The workflow then builds the static public blog and deploys the generated files to the existing cPanel host. GitHub does not need direct Cloud SQL credentials.
+
+## Existing-content migration
+
+Once Cloud SQL and the GCS bucket are available:
+
+```bash
+npm run db:migrate
+npm run migrate:sanity-to-postgres
+```
+
+Do not retire Sanity until content counts, media, drafts, published stories and public URLs have been checked.
+
+See `docs/CLOUDSQL-CUTOVER.md` for the ordered go-live procedure.
+
+## External access still required
+
+Code cannot complete these account-side operations by itself:
+
+- company Cloud SQL instance permission;
+- GCP project/service-account deployment permission;
+- Cloud Storage bucket permission;
+- Cloud Scheduler job creation;
+- DNS for `cms.teledoctorsa.co.za`;
+- cPanel/FTP credentials;
+- GitHub Actions secrets/variables;
+- creation/confirmation of official company email addresses.
+
+Everything else should be prepared in the repository before production cutover.
