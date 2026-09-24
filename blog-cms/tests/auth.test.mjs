@@ -37,12 +37,21 @@ test('staff account login uses an HttpOnly session and logout invalidates it',as
 
     assert.equal((await fetch(origin+'/api/articles',{headers:{Cookie:cookie}})).status,200);
 
-    const users=await fetch(origin+'/api/users',{headers:{Cookie:cookie}});
+    const reset=await auth.resetPassword(user.id);
+    assert.ok(reset.temporaryPassword);
+    assert.equal(await auth.sessionUserFromRequest({headers:{cookie}}),null);
+    const replacementUser=await auth.authenticate('editor@teledoctorsa.co.za',reset.temporaryPassword);
+    assert.equal(replacementUser.id,user.id);
+
+    const replacementSession=await auth.createSession(user.id);
+    const replacementCookie=`tdsa_cms_session=${replacementSession.token}`;
+
+    const users=await fetch(origin+'/api/users',{headers:{Cookie:replacementCookie}});
     assert.equal(users.status,403);
 
-    const logout=await fetch(origin+'/api/auth/logout',{method:'POST',headers:{Cookie:cookie}});
+    const logout=await fetch(origin+'/api/auth/logout',{method:'POST',headers:{Cookie:replacementCookie}});
     assert.equal(logout.status,200);
-    assert.equal((await fetch(origin+'/api/articles',{headers:{Cookie:cookie}})).status,401);
+    assert.equal((await fetch(origin+'/api/articles',{headers:{Cookie:replacementCookie}})).status,401);
   }finally{
     child.kill();
     await new Promise(r=>child.once('exit',r));
