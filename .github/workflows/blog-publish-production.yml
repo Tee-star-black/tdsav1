@@ -30,7 +30,20 @@ jobs:
         working-directory: blog-cms
         run: npm install --include=dev --no-audit --no-fund
 
-      - name: Build Blog & Insights from Sanity
+      - name: Fetch published content from CMS API
+        if: ${{ vars.CMS_PUBLIC_API_URL != '' }}
+        working-directory: blog-cms
+        env:
+          CMS_PUBLIC_API_URL: ${{ vars.CMS_PUBLIC_API_URL }}
+        run: npm run content:fetch-public
+
+      - name: Build Blog & Insights from CMS API
+        if: ${{ vars.CMS_PUBLIC_API_URL != '' }}
+        working-directory: blog-cms
+        run: npm run build:blog:from-file
+
+      - name: Build Blog & Insights from temporary Sanity fallback
+        if: ${{ vars.CMS_PUBLIC_API_URL == '' }}
         working-directory: blog-cms
         env:
           CMS_BACKEND: sanity
