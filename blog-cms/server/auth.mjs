@@ -99,6 +99,20 @@ export class AuthStore{
     return {ok:true};
   }
 
+  async resetPassword(id){
+    const data=await this.#read();
+    const user=data.users.find(item=>item.id===id&&item.active!==false);
+    if(!user)throw Object.assign(new Error('User not found.'),{statusCode:404});
+    const temporaryPassword=randomBytes(12).toString('base64url');
+    const salt=randomBytes(16).toString('hex');
+    user.passwordSalt=salt;
+    user.passwordHash=hashPassword(temporaryPassword,salt);
+    user.updatedAt=new Date().toISOString();
+    data.sessions=data.sessions.filter(session=>session.userId!==id);
+    await this.#write(data);
+    return {user:publicUser(user),temporaryPassword};
+  }
+
   async authenticate(email,password){
     const data=await this.#read();
     const user=data.users.find(item=>item.email===cleanEmail(email)&&item.active!==false);
