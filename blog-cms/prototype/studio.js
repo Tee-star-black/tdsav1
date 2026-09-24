@@ -1,5 +1,5 @@
 const api=window.TDSACmsApi;
-let state={articles:[],categories:[],media:[],health:null};
+let state={articles:[],categories:[],media:[],health:null,currentUser:null,users:[]};
 let activeFilter='all';
 let editingId=null;
 let editingRevision='', editorBaseline='', saving=false, page=1;
@@ -20,7 +20,7 @@ const list=$('#articleList'),empty=$('#emptyState'),count=$('#resultCount'),sear
 const editor=$('#editorDialog'),preview=$('#previewDialog');
 const loginGate=$('#loginGate'),loginForm=$('#loginForm'),loginEmail=$('#loginEmail'),loginPassword=$('#loginPassword'),loginFeedback=$('#loginFeedback'),loginSubmit=$('#loginSubmit'),signOutBtn=$('#signOutBtn'),currentUserEl=$('#currentUser');
 
-function showLogin(message='Enter your Publishing Studio access code.'){
+function showLogin(message='Sign in to continue.'){
   loginGate.hidden=false;
   document.body.classList.add('studio-locked');
   loginFeedback.textContent=message;
@@ -109,17 +109,20 @@ async function loadWorkspace({quiet=false,authRetry=true}={}){
   render();
   try{
     const user=await api.me();
+    state.currentUser=user;
     currentUserEl.textContent=user?.name||user?.email||'Staff';
     currentUserEl.hidden=false;
   }catch{
+    state.currentUser=null;
     currentUserEl.hidden=true;
   }
+  renderSettings();
   hideLogin();
 
   if(!quiet&&failures.length){
     const failedNames=failures.map(item=>item.key).join(', ');
     const authFailed=failures.some(item=>item.error?.status===401);
-    notify(authFailed?'Studio access required':'Some CMS data could not load',authFailed?'The access token was not accepted. Refresh and enter the correct Studio token.':`Failed: ${failedNames}. Other available content has still been loaded.`);
+    notify(authFailed?'Studio access required':'Some CMS data could not load',authFailed?'Your Publishing Studio session is no longer valid. Sign in again.':`Failed: ${failedNames}. Other available content has still been loaded.`);
   }
   return true;
 }
@@ -187,9 +190,40 @@ function renderCategories(){
   $$('[data-category-remove]').forEach(b=>b.addEventListener('click',async()=>{try{await api.deleteCategory(b.dataset.categoryRemove);state.categories=state.categories.filter(c=>c.id!==b.dataset.categoryRemove);render();notify('Category removed','The category was removed from the content service.');}catch(error){notify('Category not removed',errorMessage(error));}}));
 }
 
-function render(){hydrateCategories();renderArticles();renderMedia();renderCategories();}
+function render(){hydrateCategories();renderArticles();renderMedia();renderCategories();renderSettings();}
 
-function showView(name){$$('.view').forEach(v=>v.classList.toggle('active',v.id===`${name}View`));$$('[data-view]').forEach(n=>n.classList.toggle('active',n.dataset.view===name));if(innerWidth<=760)$('#sidebar').classList.remove('open');}
+function renderSettings(){
+  const user=state.currentUser;
+  const accountName=$('#accountName'),accountMeta=$('#accountMeta'),passwordForm=$('#passwordForm'),adminPanel=$('#staffAdminPanel');
+  if(!accountName||!accountMeta)return;
+  accountName.textContent=user?.name||'Publishing Studio account';
+  accountMeta.textContent=user?(user.email?`${user.email} · ${user.role||'staff'}`:(user.development?'Local development mode':'Authenticated staff account')):'Not signed in';
+  passwordForm.hidden=!user||Boolean(user.development)||Boolean(user.legacy);
+  adminPanel.hidden=!user||user.role!=='admin'||Boolean(user.development)||Boolean(user.legacy);
+  if(!adminPanel.hidden)renderStaffList();
+}
+
+function renderStaffList(){
+  const target=$('#staffList');if(!target)return;
+  if(!state.users.length){target.innerHTML='<div class="media-empty">No staff accounts loaded.</div>';return;}
+  target.innerHTML=state.users.map(user=>`<article class="staff-row"><div><h3>${escapeHtml(user.name)}</h3><p>${escapeHtml(user.email)}</p></div><span>${escapeHtml(user.role)}</span><button type="button" data-user-remove="${escapeHtml(user.id)}" ${user.id===state.currentUser?.id?'disabled title="This is your signed-in account"':''} aria-label="Remove ${escapeHtml(user.name)}">×</button></article>`).join('');
+  $('[data-user-remove]').forEach(button=>button.addEventListener('click',async()=>{
+    const user=state.users.find(item=>item.id===button.dataset.userRemove);if(!user)return;
+    if(!confirm(`Remove Publishing Studio access for ${user.name}?`))return;
+    button.disabled=true;
+    try{await api.deleteUser(user.id);state.users=state.users.filter(item=>item.id!==user.id);renderStaffList();notify('Access removed',`${user.name} can no longer sign in.`);}
+    catch(error){button.disabled=false;notify('Account not removed',errorMessage(error));}
+  }));
+}
+
+async function loadSettings(){
+  renderSettings();
+  if(state.currentUser?.role!=='admin'||state.currentUser?.development||state.currentUser?.legacy)return;
+  try{state.users=await api.listUsers();renderStaffList();}
+  catch(error){notify('Staff accounts unavailable',errorMessage(error));}
+}
+
+function showView(name){$('.view').forEach(v=>v.classList.toggle('active',v.id===`${name}View`));$('[data-view]').forEach(n=>n.classList.toggle('active',n.dataset.view===name));if(name==='settings')void loadSettings();if(innerWidth<=760)$('#sidebar').classList.remove('open');}
 $$('[data-view]').forEach(el=>el.addEventListener('click',e=>{if(el.tagName==='A'&&el.getAttribute('href')!=='#')return;e.preventDefault();showView(el.dataset.view);}));
 $$('[data-status-view]').forEach(el=>el.addEventListener('click',()=>{showView('articles');activeFilter=el.dataset.statusView;page=1;$$('.tabs button').forEach(t=>t.classList.toggle('active',t.dataset.filter===activeFilter));renderArticles();}));
 
@@ -343,6 +377,7 @@ loginForm.addEventListener('submit',async event=>{
   loginFeedback.hidden=true;
   try{
     const user=await api.login(email,password);
+    state.currentUser=user;
     currentUserEl.textContent=user?.name||user?.email||'Staff';
     currentUserEl.hidden=false;
     loginPassword.value='';
@@ -360,7 +395,7 @@ signOutBtn.addEventListener('click',async()=>{
   try{await api.logout();}catch{}
   api.setAccessToken('');
   currentUserEl.hidden=true;
-  state={articles:[],categories:[],media:[],health:null};
+  state={articles:[],categories:[],media:[],health:null,currentUser:null,users:[]};
   render();
   showLogin('You have signed out.');
 });
@@ -400,12 +435,52 @@ async function addCategory(inEditor=false){
 $('#addCategory').addEventListener('click',()=>addCategory());
 $('#editorAddCategory').addEventListener('click',()=>addCategory(true));
 
+$('#passwordForm').addEventListener('submit',async event=>{
+  event.preventDefault();
+  const current=$('#currentPassword').value,newPassword=$('#newPassword').value,confirmPassword=$('#confirmPassword').value,box=$('#passwordFeedback');
+  box.hidden=true;
+  if(newPassword!==confirmPassword){box.textContent='The new passwords do not match.';box.hidden=false;return;}
+  if(newPassword.length<10){box.textContent='Use a password of at least 10 characters.';box.hidden=false;return;}
+  const button=event.currentTarget.querySelector('button[type="submit"]');button.disabled=true;
+  try{
+    await api.changePassword(current,newPassword);
+    event.currentTarget.reset();
+    state.currentUser=null;
+    currentUserEl.hidden=true;
+    showLogin('Password changed. Sign in again with your new password.');
+  }catch(error){box.textContent=errorMessage(error);box.hidden=false;}
+  finally{button.disabled=false;}
+});
+
+$('#staffForm').addEventListener('submit',async event=>{
+  event.preventDefault();
+  const button=event.currentTarget.querySelector('button[type="submit"]');button.disabled=true;
+  try{
+    const result=await api.createUser({name:$('#staffName').value.trim(),email:$('#staffEmail').value.trim(),role:$('#staffRole').value});
+    event.currentTarget.reset();
+    const box=$('#temporaryPasswordBox');
+    $('#temporaryPassword').textContent=result.temporaryPassword||'Password supplied separately';
+    box.hidden=false;
+    state.users=await api.listUsers();
+    renderStaffList();
+    notify('Staff account created',`${result.user.name} can now use the Publishing Studio.`);
+  }catch(error){notify('Account not created',errorMessage(error));}
+  finally{button.disabled=false;}
+});
+
+$('#copyTemporaryPassword').addEventListener('click',async event=>{
+  const value=$('#temporaryPassword').textContent;
+  try{await navigator.clipboard.writeText(value);event.currentTarget.textContent='Copied';setTimeout(()=>event.currentTarget.textContent='Copy password',1600);}
+  catch{notify('Could not copy','Select the temporary password and copy it manually.');}
+});
+
 const sidebar=$('#sidebar');$('#menuBtn').addEventListener('click',()=>sidebar.classList.toggle('open'));document.addEventListener('click',event=>{if(innerWidth<=760&&sidebar.classList.contains('open')&&!sidebar.contains(event.target)&&event.target.id!=='menuBtn')sidebar.classList.remove('open');});
 
 async function startWorkspace(){
   const savedList=storedJson('tdsaCmsList');
   try{
     const user=await api.me();
+    state.currentUser=user;
     currentUserEl.textContent=user?.name||user?.email||'Staff';
     currentUserEl.hidden=false;
   }catch{
