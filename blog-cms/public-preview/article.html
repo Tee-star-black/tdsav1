@@ -3,28 +3,84 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="robots" content="noindex,nofollow">
-  <title>Article | TeleDoctorSA</title>
-  <meta name="description" content="TeleDoctorSA Blog & Insights article preview">
+  <title>Article | TeleDoctorSA Blog & Insights</title>
+  <meta name="description" content="TeleDoctorSA Blog & Insights article">
+  <meta name="robots" content="index,follow">
+  <link id="articleCanonical" rel="canonical" href="https://teledoctorsa.co.za/blog/">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="TeleDoctorSA">
+  <meta id="ogTitle" property="og:title" content="TeleDoctorSA Blog & Insights">
+  <meta id="ogDescription" property="og:description" content="Health education and digital-care insights from TeleDoctorSA.">
+  <meta id="ogUrl" property="og:url" content="https://teledoctorsa.co.za/blog/">
+  <meta id="ogImage" property="og:image" content="https://teledoctorsa.co.za/android-chrome-512x512.png">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/public-preview/preview.css">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/public-preview/preview.css?v=20260923-1">
 </head>
-<body>
-  <header class="site-header"><a class="brand" href="/blog/" aria-label="TeleDoctorSA Blog & Insights"><img class="official-logo" src="/images/rebuild/logo.png" alt="TeleDoctorSA logo"></a><nav><a href="/blog/">Blog & Insights</a><a href="/telemedia-suite.html">TeleMedia Suite</a><a href="/contact-us.html">Contact</a></nav></header>
+<body class="article-public">
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="TeleDoctorSA home"><img class="official-logo" src="/images/rebuild/logo.png" alt="TeleDoctorSA"></a>
+    <nav aria-label="Primary navigation"><a class="active" href="/blog/">Blog & Insights</a><a href="/telemedia-suite">TeleMedia Suite</a><a href="/our-services">Services</a><a href="/contact-us">Contact</a></nav>
+  </header>
+
   <main class="article-page" id="articlePage">
-    <a href="/blog/" style="text-decoration:none;font-size:11px;color:#6c7e90">← Back to Blog & Insights</a>
+    <a class="article-back" href="/blog/">← Back to Blog & Insights</a>
     <div id="articleLoading" class="article-loading">Loading published article…</div>
+
     <article id="articleContent" hidden>
-      <div style="margin-top:42px"><span class="eyebrow" id="articleCategory"></span><h1 id="articleTitle"></h1><p class="dek" id="articleExcerpt"></p><div class="article-meta"><span id="articleAuthor"></span><span id="articleDate"></span><span id="articleReadTime"></span></div></div>
-      <figure class="article-hero article-hero-image" id="articleHero"><img id="articleImage" alt=""></figure>
-      <div class="article-copy" id="articleBody"></div>
+      <header class="article-header">
+        <span class="eyebrow" id="articleCategory"></span>
+        <h1 id="articleTitle"></h1>
+        <p class="dek" id="articleExcerpt"></p>
+        <div class="article-meta">
+          <span id="articleAuthor"></span>
+          <span id="articleDate"></span>
+          <span id="articleReadTime"></span>
+        </div>
+      </header>
+
+      <figure class="article-hero article-hero-image" id="articleHero">
+        <img id="articleImage" alt="">
+        <figcaption id="articleImageCaption"></figcaption>
+      </figure>
+
+      <div class="article-layout">
+        <aside class="article-aside">
+          <span>SHARE</span>
+          <a id="shareLinkedIn" target="_blank" rel="noopener">LinkedIn</a>
+          <a id="shareFacebook" target="_blank" rel="noopener">Facebook</a>
+          <button id="copyArticleLink" type="button">Copy link</button>
+        </aside>
+        <div class="article-copy" id="articleBody"></div>
+      </div>
+
+      <aside class="clinical-note" id="clinicalNote" hidden>
+        <strong>Clinical review</strong>
+        <p>This health-education article passed the TeleDoctorSA clinical review workflow before publication.</p>
+      </aside>
+
+      <nav class="article-end-nav" aria-label="Article navigation">
+        <a href="/blog/">Browse all stories</a>
+        <a href="/contact-us">Contact TeleDoctorSA</a>
+      </nav>
     </article>
-    <div class="public-error" id="articleError" hidden><strong>Article unavailable</strong><p>This story is not published or the content service is offline.</p></div>
+
+    <div class="public-error" id="articleError" hidden>
+      <strong>Article unavailable.</strong>
+      <p>This story may no longer be published. Return to Blog & Insights for current articles.</p>
+      <a href="/blog/">Return to Blog & Insights</a>
+    </div>
   </main>
-  <footer><img class="footer-logo" src="/images/rebuild/logo.png" alt="TeleDoctorSA logo"><span>Healthcare. Anywhere.</span><small>Development article preview · published API content only</small></footer>
-  <script src="/client/cms-api.js"></script>
-  <script src="/public-preview/article.js"></script>
+
+  <footer class="site-footer">
+    <a href="/"><img class="footer-logo" src="/images/rebuild/logo.png" alt="TeleDoctorSA"></a>
+    <span>Blog & Insights</span>
+    <nav><a href="/privacy-policy">Privacy</a><a href="/contact-us">Contact</a></nav>
+  </footer>
+
+  <script src="/client/cms-api.js?v=20260923-1"></script>
+  <script src="/public-preview/article.js?v=20260923-1"></script>
 </body>
 </html>

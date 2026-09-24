@@ -996,6 +996,13 @@
             text-transform: uppercase;
         }
 
+        /* Blog & Insights feed */
+        .editorial-feed-actions { margin-top: 28px; text-align: center; }
+        .editorial-feed-actions .read-more { font-size: 1rem; }
+        .blog-card-image-live { background: #edf2f6; }
+        .blog-card-image-live img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .blog-feed-empty { grid-column: 1 / -1; padding: 28px; border: 1px solid var(--border); background: white; color: var(--slate-gray); text-align: center; }
+
         /* Contact Section */
         .media-contact {
             background: white;
@@ -1976,6 +1983,22 @@ footer.site-footer, .site-footer {
         </div>
     </section>
 
+    <!-- Blog & Insights Section -->
+    <section class="media-section" id="blog-insights">
+        <div class="section-inner">
+            <div class="section-header" data-aos="fade-up">
+                <h2>Blog &amp; Insights</h2>
+                <p class="subtitle">Health education, digital-care insights and TeleDoctorSA stories from our editorial team.</p>
+            </div>
+            <div class="media-grid" id="editorialBlogGrid">
+                <div class="blog-feed-empty">Loading the latest published stories…</div>
+            </div>
+            <div class="editorial-feed-actions">
+                <a href="/blog/" class="read-more">View all Blog &amp; Insights <i data-lucide="arrow-right" width="16" height="16"></i></a>
+            </div>
+        </div>
+    </section>
+
     <!-- Audience Highlights Section -->
     <section class="media-section">
         <div class="section-inner">
@@ -2184,6 +2207,7 @@ footer.site-footer, .site-footer {
                 <a href="/our-services">Services</a>
                 <a href="/about-us">About Us</a>
                 <a href="/telemedia-suite">TeleMedia Suite</a>
+                <a href="/blog/">Blog &amp; Insights</a>
                 <a href="/contact-us">Contact</a>
             </div>
             <div class="footer-column">
@@ -2199,6 +2223,64 @@ footer.site-footer, .site-footer {
         </div>
     </footer>
 
+    <script>
+        (async function loadEditorialHighlights(){
+            const grid=document.getElementById('editorialBlogGrid');
+            if(!grid)return;
+            try{
+                const response=await fetch('/blog/feed.json',{headers:{Accept:'application/json'}});
+                if(!response.ok)throw new Error('Blog feed unavailable');
+                const payload=await response.json();
+                const articles=Array.isArray(payload.articles)?payload.articles:[];
+                const ranked=[...articles].sort((a,b)=>Number(Boolean(b.featured))-Number(Boolean(a.featured))).slice(0,3);
+                grid.innerHTML='';
+                if(!ranked.length){
+                    grid.innerHTML='<div class="blog-feed-empty">New Blog &amp; Insights stories will appear here after publication.</div>';
+                    return;
+                }
+                ranked.forEach(article=>{
+                    const card=document.createElement('article');
+                    card.className='media-card';
+                    const visual=document.createElement('div');
+                    visual.className='media-card-image blog-card-image-live';
+                    if(article.coverImage?.url){
+                        const img=document.createElement('img');
+                        img.src=article.coverImage.url;
+                        img.alt=article.coverImage.alt||'';
+                        img.loading='lazy';
+                        visual.appendChild(img);
+                    }
+                    const content=document.createElement('div');
+                    content.className='media-card-content';
+                    const badge=document.createElement('span');
+                    badge.className='media-badge';
+                    badge.textContent=article.category||'BLOG & INSIGHTS';
+                    const date=document.createElement('div');
+                    date.className='media-date';
+                    date.textContent=article.publishedAt?new Date(article.publishedAt).toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'}):'TeleDoctorSA Editorial';
+                    const title=document.createElement('h3');
+                    title.textContent=article.title||'TeleDoctorSA story';
+                    const copy=document.createElement('p');
+                    copy.textContent=article.excerpt||'Read the latest from TeleDoctorSA.';
+                    const link=document.createElement('a');
+                    link.className='read-more';
+                    link.href='/blog/'+encodeURIComponent(article.slug)+'/';
+                    link.textContent='Read story ';
+                    const icon=document.createElement('i');
+                    icon.setAttribute('data-lucide','arrow-right');
+                    icon.setAttribute('width','16');
+                    icon.setAttribute('height','16');
+                    link.appendChild(icon);
+                    content.append(badge,date,title,copy,link);
+                    card.append(visual,content);
+                    grid.appendChild(card);
+                });
+                if(window.lucide)lucide.createIcons();
+            }catch(error){
+                grid.innerHTML='<div class="blog-feed-empty">Blog &amp; Insights is temporarily unavailable here. <a href="/blog/">Open the blog directly</a>.</div>';
+            }
+        })();
+    </script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         if (window.AOS) {

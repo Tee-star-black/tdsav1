@@ -3,7 +3,9 @@ name: Blog CMS CI
 on:
   push:
     branches:
+      - main
       - feature/blog-cms-studio
+      - fix/blog-cms-workflow
     paths:
       - 'blog-cms/**'
       - 'scripts/site-ux-v4.js'
@@ -32,9 +34,17 @@ jobs:
         with:
           node-version: 22
       - name: Install runtime dependencies
-        run: npm install --omit=dev --no-audit --no-fund
+        run: npm install --include=dev --no-audit --no-fund
       - name: Run authenticated local smoke test
         run: npm run check
+      - name: Run workflow regressions
+        run: npm run check:workflow
+      - name: Run editor DOM integration tests
+        run: npm run check:editor
+      - name: Run staff authentication tests
+        run: npm run check:auth
+      - name: Run Cloud SQL repository tests
+        run: npm run check:postgres
       - name: Validate production Sanity contract
         run: npm run check:sanity
       - name: Generate static blog from local backend
@@ -45,3 +55,4 @@ jobs:
           CMS_BACKEND: sanity
           SANITY_PROJECT_ID: glz6ptd8
           SANITY_DATASET: production
+

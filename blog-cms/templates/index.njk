@@ -4,25 +4,61 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Blog & Insights | {{ site.name }}</title>
-  <meta name="description" content="Health education, company news and digital care insights from TeleDoctorSA.">
+  <meta name="description" content="Health education, digital-care insights and TeleDoctorSA updates for patients, clinicians and communities across South Africa.">
+  <meta name="robots" content="index,follow">
   <link rel="canonical" href="{{ site.baseUrl }}/blog/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="{{ site.name }}">
+  <meta property="og:title" content="Blog & Insights | {{ site.name }}">
+  <meta property="og:description" content="Health education, digital-care insights and TeleDoctorSA updates.">
+  <meta property="og:url" content="{{ site.baseUrl }}/blog/">
+  <meta property="og:image" content="{{ site.baseUrl }}/android-chrome-512x512.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles/blog.css">
 </head>
-<body class="tdsa-blog">
-  <header class="blog-site-header"><a href="/" aria-label="TeleDoctorSA home"><img src="/images/rebuild/logo.png" alt="TeleDoctorSA logo"></a><nav><a href="/telemedia-suite">TeleMedia Suite</a><a href="/our-services">Services</a><a href="/contact-us">Contact</a></nav></header>
+<body class="blog-public">
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="TeleDoctorSA home"><img class="official-logo" src="/images/rebuild/logo.png" alt="TeleDoctorSA"></a>
+    <nav aria-label="Primary navigation"><a class="active" href="/blog/">Blog & Insights</a><a href="/telemedia-suite">TeleMedia Suite</a><a href="/our-services">Services</a><a href="/contact-us">Contact</a></nav>
+  </header>
+
   <main>
-    <section class="blog-hero"><div><p>TELEDOCTORSA EDITORIAL</p><h1>Useful healthcare stories, made easier to understand.</h1><span>Practical guidance, digital-health education and updates from TeleDoctorSA.</span></div>{% if featured %}<article class="blog-feature"><small>FEATURED</small><h2>{{ featured.title }}</h2><p>{{ featured.excerpt }}</p><a href="/blog/{{ featured.slug }}/">Read story →</a></article>{% endif %}</section>
-    <section class="blog-toolbar"><label><span>⌕</span><input id="blogSearch" type="search" placeholder="Search health stories…" aria-label="Search Blog & Insights"></label><div class="blog-chips"><button class="active" data-blog-category="all">All</button>{% for category in categories %}<button data-blog-category="{{ category }}">{{ category }}</button>{% endfor %}</div></section>
-    <section class="blog-content"><div class="blog-section-title"><div><p>LATEST</p><h2>From the editorial desk</h2></div><span id="blogResultCount">{{ articles | length }} published stories</span></div><section class="blog-grid" aria-label="Latest articles">
-      {% for article in articles %}
-      <article class="blog-card" data-category="{{ article.category }}" data-search="{{ article.title }} {{ article.excerpt }} {{ article.category }} {{ article.author }}">
-        <a href="/blog/{{ article.slug }}/" class="blog-card-image"><img src="{{ article.coverImage.url }}" alt="{{ article.coverImage.alt }}" loading="lazy"></a>
-        <div class="blog-card-copy"><span>{{ article.category }}</span><h2><a href="/blog/{{ article.slug }}/">{{ article.title }}</a></h2><p>{{ article.excerpt }}</p><small>{{ article.author }} · {{ article.publishedAt | truncate(10, true, '') }}</small></div>
+    <section class="publication-masthead"><div><span class="publication-label">TELEDOCTORSA • BLOG & INSIGHTS</span><p class="publication-date">Editorial publication</p></div><p>Health information, digital-care thinking and stories from across the TeleDoctorSA ecosystem.</p></section>
+
+    <section class="hero">
+      <div class="hero-copy"><span class="eyebrow">EDITORIAL</span><h1>Better health starts with better information.</h1><p>Useful, practical stories about healthcare, remote monitoring, digital health and the people building better access to care.</p><a class="text-link" href="#latestStories">Explore the latest stories <span>↓</span></a></div>
+      {% if featured %}
+      <article class="feature-card">
+        <a class="feature-media has-image" href="/blog/{{ featured.slug }}/"><img src="{{ featured.coverImage.url }}" alt="{{ featured.coverImage.alt }}" loading="eager"></a>
+        <div class="feature-copy"><span>FEATURED STORY · {{ featured.category }}</span><h2><a href="/blog/{{ featured.slug }}/">{{ featured.title }}</a></h2><p>{{ featured.excerpt }}</p><div class="feature-meta">{{ featured.author }} · {{ featured.publishedAt | truncate(10, true, '') }}</div><a class="feature-link" href="/blog/{{ featured.slug }}/">Read the story →</a></div>
       </article>
-      {% endfor %}
-    </section></section>
+      {% endif %}
+    </section>
+
+    <section class="toolbar" aria-label="Blog filters">
+      <label class="search"><span aria-hidden="true">⌕</span><input id="blogSearch" type="search" placeholder="Search Blog & Insights" aria-label="Search Blog & Insights"></label>
+      <div class="chips"><button class="active" data-blog-category="all">All</button>{% for category in categories %}<button data-blog-category="{{ category }}">{{ category }}</button>{% endfor %}</div>
+    </section>
+
+    <section class="content-wrap" id="latestStories">
+      <div class="section-heading"><div><span class="eyebrow">LATEST STORIES</span><h2>From the editorial desk</h2></div><p id="blogResultCount">{{ articles | length }} published stories</p></div>
+      <div class="story-grid" aria-label="Latest articles">
+        {% for article in articles %}
+        <article class="story-card blog-card" data-category="{{ article.category }}" data-search="{{ article.title }} {{ article.excerpt }} {{ article.category }} {{ article.author }}">
+          <a class="story-visual has-image" href="/blog/{{ article.slug }}/"><img src="{{ article.coverImage.url }}" alt="{{ article.coverImage.alt }}" loading="lazy"></a>
+          <div class="story-body"><span class="meta">{{ article.category }} · {{ article.publishedAt | truncate(10, true, '') }}</span><h3><a href="/blog/{{ article.slug }}/">{{ article.title }}</a></h3><p>{{ article.excerpt }}</p><div class="story-footer"><span>{{ article.author }}</span><a href="/blog/{{ article.slug }}/">Read →</a></div></div>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="editorial-footer-callout"><span class="eyebrow">TELEDOCTORSA</span><h2>Healthcare. Anywhere.</h2><p>Explore our care services, digital-health platform and remote monitoring solutions.</p><div><a href="/our-services">Explore services</a><a href="/telemedia-suite">Visit TeleMedia Suite</a></div></section>
   </main>
-  <footer class="blog-footer"><img src="/images/rebuild/logo.png" alt="TeleDoctorSA logo"><span>Healthcare. Anywhere.</span></footer>
+
+  <footer class="site-footer"><a href="/"><img class="footer-logo" src="/images/rebuild/logo.png" alt="TeleDoctorSA"></a><span>Blog & Insights</span><nav><a href="/privacy-policy">Privacy</a><a href="/contact-us">Contact</a></nav></footer>
   <script src="/scripts/blog.js"></script>
 </body>
 </html>

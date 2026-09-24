@@ -1,69 +1,75 @@
 # TeleDoctorSA Blog CMS
 
-A self-contained full-stack workspace for the TeleDoctorSA Blog & Insights publishing system.
+A connected publishing system for TeleDoctorSA Blog & Insights.
 
 ## Goal
 
-Give non-technical TeleDoctorSA staff one connected workflow to create, review, schedule, publish and manage website content without editing production HTML or using Git.
+Give non-technical staff one workflow to sign in, write, review, schedule and publish website content without editing production HTML, touching Git or manually creating article pages.
 
-The development rule for this workspace is **vertical slices**: a visible frontend capability is only considered implemented when its data/service/backend companion exists, and backend operations are surfaced through a real workflow rather than left as unused endpoints.
-
-## Current architecture
+## Target production architecture
 
 ```text
-Publishing Studio
-      |
-      v
-CMS API (Node)
-      |
-      +---- Local JSON repository (development)
-      |
-      +---- Sanity repository adapter (production CMS target)
-      |
-      v
-Published content API
-      |
-      +---- Clean development routes (/blog/...)
-      |
-      +---- Static production generator
-                |
-                +---- /blog/index.html
-                +---- /blog/<slug>/index.html
-                +---- /blog/feed.json
-                +---- /blog/search-index.json
-                +---- /styles/blog.css
-                +---- /scripts/blog.js
-                +---- sitemap.xml entries
-                +---- TeleMedia featured feed
+Publishing Studio / CMS API
+https://cms.teledoctorsa.co.za
+        |
+        +--> Cloud SQL PostgreSQL
+        |      content, staff accounts, sessions,
+        |      revisions and audit events
+        |
+        +--> Google Cloud Storage
+               editorial images
+
+Published-only CMS API
+        |
+        v
+GitHub Actions static build
+        |
+        v
+Host Africa / cPanel
+        |
+        v
+https://teledoctorsa.co.za/blog/
 ```
 
-## What is connected now
+Sanity remains supported only as a temporary migration/fallback backend until the Cloud SQL cutover is accepted.
 
-- Article create, read, edit and delete
-- Draft, In Review, Published and Scheduled states
-- Scheduled publication worker in the development service
-- Shared server-side publication validation
+## Implemented
+
+- Individual staff email/password accounts
+- HttpOnly sessions
+- Admin/editor/reviewer roles
+- Account & staff administration UI
+- Admin temporary-password generation and reset
+- Staff self-service password change
+- Draft, review, published and scheduled article states
 - Clinical-review publication guardrail
-- Category create/list/delete with reference protection
-- Media list/upload and article cover-image selection
-- Persistent media name, alt text and tags in both local and Sanity repository models
-- SEO title and description fields
-- Public published-only content feed
-- Clean `/blog/` development route driven by the same backend as the Studio
-- Clean `/blog/<slug>/` article routes
-- Static production Blog & Insights generator
-- Production search and category filtering
-- Article structured data
-- Search/feed JSON generation
-- Sitemap generation
-- TeleMedia featured-blog integration through `/blog/feed.json`
-- Local repository and Sanity repository behind the same API contract
-- Connected smoke test and GitHub Actions verification
-- Rebuild cleanup so withdrawn articles do not leave stale generated pages
+- Categories
+- Media library
+- Google Cloud Storage media adapter
+- Local media adapter for development
+- PostgreSQL / Cloud SQL content repository
+- File/local development repository
+- Temporary Sanity repository adapter
+- Optimistic concurrency protection
+- PostgreSQL article revision snapshots
+- PostgreSQL audit trail for production mutations
+- SEO title/description fields
+- Featured-story support for TeleMedia
+- Public published-only API
+- Official `/blog/` page
+- Individual `/blog/<slug>/` article pages
+- Static production generator
+- Search/category filtering
+- Article schema and canonical metadata
+- feed/search JSON
+- sitemap generation
+- GitHub deployment dispatch
+- cPanel production publish workflow
+- Cloud Scheduler-compatible scheduled-publication endpoint
+- Sanity → PostgreSQL/GCS migration utility
+- Automated local, auth, editor, Sanity-contract and PostgreSQL tests
 
-## Run the connected app locally
-
-From the repository root:
+## Local development
 
 ```powershell
 cd blog-cms
@@ -71,73 +77,128 @@ npm install
 npm run dev
 ```
 
-Then open:
+Open:
 
-- Publishing Studio: `http://127.0.0.1:8787/` (redirects to `/prototype/`)
-- Public Blog & Insights: `http://127.0.0.1:8787/blog/`
-- TeleMedia integration: `http://127.0.0.1:8787/telemedia-suite.html`
-- API health: `http://127.0.0.1:8787/api/health`
+- Studio: `http://127.0.0.1:8790/prototype/`
+- Blog: `http://127.0.0.1:8790/blog/`
+- API health: `http://127.0.0.1:8790/api/health`
 
-Do not use Live Server as the primary development runtime for this feature. Live Server can render files, but the CMS requires the Node content service on port `8787` for connected behaviour.
-
-## Backend modes
-
-Development uses the local repository by default:
+Local development defaults to:
 
 ```env
 CMS_BACKEND=local
+CMS_AUTH_BACKEND=file
+CMS_MEDIA_BACKEND=local
 ```
 
-To use Sanity, configure the variables in `.env.example` in the runtime environment and set:
+## Cloud SQL mode
+
+Configure PostgreSQL using `DATABASE_URL` or standard `PG*` variables, then:
+
+```powershell
+npm run db:migrate
+```
+
+Set:
 
 ```env
-CMS_BACKEND=sanity
+CMS_BACKEND=postgres
+CMS_AUTH_BACKEND=postgres
 ```
 
-The browser never receives the Sanity write token. Writes go through the server repository adapter.
+For production media:
 
-## Build production blog files
+```env
+CMS_MEDIA_BACKEND=gcs
+GCS_BUCKET=<bucket>
+GCS_PUBLIC_BASE_URL=<public bucket or CDN base URL>
+```
+
+## Bootstrap administrator
+
+After the production database has been migrated:
+
+```powershell
+npm run user:create -- --email publishing@teledoctorsa.co.za --name "TeleDoctorSA Publishing" --role admin
+```
+
+The generated temporary password is printed once. Further staff accounts can be managed from **Account & staff** inside the Studio.
+
+## Existing Sanity content migration
+
+With both source Sanity access and the target PostgreSQL/GCS configuration available:
+
+```powershell
+npm run migrate:sanity-to-postgres
+```
+
+Do not retire Sanity until the migrated content and public URLs have been verified.
+
+## Public blog build
+
+From the selected repository:
 
 ```powershell
 npm run build:blog
 ```
 
-The build exports published content from the selected repository, validates it, clears the previous generated blog output, generates the current public blog files, updates the blog feed and search data, and injects current blog URLs into the existing site sitemap.
+For production, GitHub can instead fetch published content through the CMS public API:
+
+```powershell
+$env:CMS_PUBLIC_API_URL="https://cms.teledoctorsa.co.za"
+npm run content:fetch-public
+npm run build:blog:from-file
+```
+
+This means GitHub never needs Cloud SQL credentials.
+
+## Scheduled publishing
+
+The CMS supports an internal scheduler endpoint:
+
+```
+POST /api/internal/publish-due
+X-CMS-Internal-Token: <configured secret>
+```
+
+Use Cloud Scheduler in production and set:
+
+```env
+CMS_SCHEDULE_WORKER_ENABLED=false
+```
+
+The built-in timer remains useful for local development.
 
 ## Verification
 
-Run the connected smoke test:
-
 ```powershell
 npm run check
+npm run check:workflow
+npm run check:editor
+npm run check:auth
+npm run check:postgres
+npm run check:sanity
 ```
 
-The smoke test exercises the joined Studio/backend contract: category creation and reference protection, media upload, draft privacy, clinical-review blocking, approved publication, the TeleMedia feed, clean article routes, deletion/withdrawal, and category cleanup.
+The Sanity check remains while Sanity is still the migration fallback.
 
-GitHub Actions runs the smoke test and static build for changes under this workspace. Obsolete branch runs are cancelled automatically when a newer commit arrives.
+## Important files
 
-## Repository areas
+- `prototype/` - Publishing Studio
+- `public-preview/` - API-driven public blog used locally
+- `server/postgres-repository.mjs` - Cloud SQL content adapter
+- `server/postgres-auth.mjs` - Cloud SQL staff authentication
+- `server/media-store.mjs` - local/GCS media storage
+- `db/migrations/` - production database schema
+- `scripts/migrate-db.mjs` - schema migration runner
+- `scripts/migrate-sanity-to-postgres.mjs` - content/media cutover utility
+- `scripts/fetch-public-content.mjs` - production build content fetcher
+- `templates/` - generated public blog templates
+- `docs/PRODUCTION-HANDOVER.md` - architecture/handover
+- `docs/CLOUDSQL-CUTOVER.md` - ordered production go-live procedure
 
-- `prototype/` - custom TeleDoctorSA Publishing Studio UI
-- `public-preview/` - API-driven public blog shell used by clean dev routes
-- `client/` - browser API client shared by Studio and public blog
-- `server/` - API server, validation and repository adapters
-- `sanity/` - Sanity configuration and schemas, including editorial media metadata
-- `data/` - deterministic development seed data
-- `scripts/` - export, validation, smoke-test and static-generation tooling
-- `templates/` - production Nunjucks templates
-- `assets/` - production blog CSS and JavaScript copied by the build
-- `docs/` - implementation and operational notes
+## Remaining external dependencies
 
-## Still gated before production
+The repository cannot supply company permissions or credentials. Production still requires access to Cloud SQL, Cloud Run, a GCS bucket, Cloud Scheduler, DNS, cPanel/FTP and GitHub Actions configuration.
 
-The following are intentionally not represented as finished UI controls until their production companions are configured:
-
-- Staff authentication and role enforcement
-- Real Sanity project/dataset credentials and production connection
-- Signed publication webhook/deployment trigger
-- Production cPanel/hosting deployment credentials and atomic release step
-- Post-deployment live URL verification and rollback
-- GA4 editorial analytics in the Studio
-
-Those items form the next vertical slices. They should be implemented frontend + backend + infrastructure together rather than added as decorative dashboard controls.
+Everything that can reasonably be prepared before those credentials are available lives in this branch.

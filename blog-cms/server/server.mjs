@@ -3,6 +3,7 @@ import {readFile,stat} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {timingSafeEqual} from 'node:crypto';
+import {createAuthStore} from './auth-factory.mjs';
 import {createRepository} from './repository.mjs';
 
 const here=path.dirname(fileURLToPath(import.meta.url));
@@ -16,16 +17,19 @@ try{
 }
 
 const repo=createRepository();
-const port=Number(process.env.PORT||8787);
+const port=Number(process.env.PORT||8790);
 const host=process.env.CMS_HOST||'127.0.0.1';
 const MAX_JSON_BYTES=9*1024*1024;
 const accessToken=String(process.env.CMS_ACCESS_TOKEN||'');
+const auth=createAuthStore();
 const allowedOrigins=String(process.env.CMS_ALLOWED_ORIGINS||'')
   .split(',')
   .map(value=>value.trim())
   .filter(Boolean);
 const deployWebhook=String(process.env.CMS_DEPLOY_WEBHOOK_URL||'').trim();
 const deployWebhookToken=String(process.env.CMS_DEPLOY_WEBHOOK_TOKEN||'').trim();
+const internalToken=String(process.env.CMS_INTERNAL_TOKEN||'').trim();
+const scheduleWorkerEnabled=String(process.env.CMS_SCHEDULE_WORKER_ENABLED||'true').toLowerCase()!=='false';
 let scheduleSweepRunning=false;
 
 const MIME={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp','.svg':'image/svg+xml','.ico':'image/x-icon'};
@@ -51,11 +55,12 @@ function json(req,res,status,payload){
 
 function redirect(res,location,status=302){res.writeHead(status,{Location:location,'Cache-Control':'no-store'});res.end();}
 
-function tokenMatches(candidate){
-  const expected=Buffer.from(accessToken);
+function secretMatches(expectedValue,candidate){
+  const expected=Buffer.from(String(expectedValue||''));
   const actual=Buffer.from(String(candidate||''));
   return expected.length===actual.length&&expected.length>0&&timingSafeEqual(expected,actual);
 }
+function tokenMatches(candidate){return secretMatches(accessToken,candidate);}
 
 function isAuthorized(req){
   if(!accessToken)return true;
@@ -64,9 +69,25 @@ function isAuthorized(req){
   return tokenMatches(header.slice(7));
 }
 
-function requireCmsAccess(req,res){
-  if(isAuthorized(req))return true;
-  json(req,res,401,{error:'CMS access is required.'});
+async function currentCmsUser(req){
+  const sessionUser=await auth.sessionUserFromRequest(req);
+  if(sessionUser)return sessionUser;
+  const hasUsers=await auth.hasUsers();
+  if(accessToken&&isAuthorized(req))return {id:'legacy-token',name:'Legacy CMS Access',email:'',role:'admin',legacy:true};
+  if(!hasUsers&&!accessToken)return {id:'development',name:'Local Development',email:'',role:'admin',development:true};
+  return null;
+}
+
+async function requireCmsAccess(req,res){
+  const user=await currentCmsUser(req);
+  if(user)return user;
+  json(req,res,401,{error:'CMS sign-in is required.'});
+  return null;
+}
+
+function requireRole(user,res,req,roles){
+  if(user&&roles.includes(user.role))return true;
+  json(req,res,403,{error:'You do not have permission to perform this action.'});
   return false;
 }
 
@@ -87,13 +108,16 @@ async function triggerDeploy(reason){
   const controller=new AbortController();
   const timeout=setTimeout(()=>controller.abort(),10000);
   try{
+    const githubDispatch=/^https:\/\/api\.github\.com\/repos\/[^/]+\/[^/]+\/dispatches(?:\?.*)?$/.test(deployWebhook);
+    const payload={source:'teledoctorsa-blog-cms',reason,at:new Date().toISOString()};
     const response=await fetch(deployWebhook,{
       method:'POST',
       headers:{
         'Content-Type':'application/json',
+        ...(githubDispatch?{'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}:{}),
         ...(deployWebhookToken?{'Authorization':`Bearer ${deployWebhookToken}`}:{})
       },
-      body:JSON.stringify({source:'teledoctorsa-blog-cms',reason,at:new Date().toISOString()}),
+      body:JSON.stringify(githubDispatch?{event_type:'blog_publish',client_payload:payload}:payload),
       signal:controller.signal
     });
     if(!response.ok)throw new Error(`Deploy webhook returned HTTP ${response.status}.`);
@@ -121,7 +145,33 @@ async function api(req,res,url){
 
   const parts=url.pathname.replace(/^\/api\/?/,'').split('/').filter(Boolean);
   if(parts[0]==='health'&&req.method==='GET'){
-    return json(req,res,200,{...(await repo.health()),studioBuild:'2026.09.22.1',authRequired:Boolean(accessToken),deployWebhookConfigured:Boolean(deployWebhook)});
+    return json(req,res,200,{...(await repo.health()),studioBuild:'2026.09.24.1',authBackend:auth.backendName||'file',authRequired:(await auth.hasUsers())||Boolean(accessToken),deployWebhookConfigured:Boolean(deployWebhook)});
+  }
+
+  if(parts[0]==='auth'&&parts[1]==='login'&&req.method==='POST'){
+    const input=await body(req);
+    const user=await auth.authenticate(input.email,input.password);
+    if(!user)return json(req,res,401,{error:'Email or password is incorrect.'});
+    const session=await auth.createSession(user.id);
+    res.setHeader('Set-Cookie',auth.sessionCookie(session.token,Number(process.env.CMS_SESSION_HOURS||12)*3600));
+    return json(req,res,200,{user});
+  }
+
+  if(parts[0]==='auth'&&parts[1]==='logout'&&req.method==='POST'){
+    await auth.destroySessionFromRequest(req);
+    res.setHeader('Set-Cookie',auth.clearCookie());
+    return json(req,res,200,{ok:true});
+  }
+
+  if(parts[0]==='auth'&&parts[1]==='me'&&req.method==='GET'){
+    const user=await currentCmsUser(req);
+    return user?json(req,res,200,{user}):json(req,res,401,{error:'CMS sign-in is required.'});
+  }
+
+  if(parts[0]==='internal'&&parts[1]==='publish-due'&&req.method==='POST'){
+    if(!internalToken||!secretMatches(internalToken,req.headers['x-cms-internal-token']))return json(req,res,401,{error:'Internal scheduler authentication failed.'});
+    const published=await publishDueScheduled();
+    return json(req,res,200,{ok:true,published});
   }
 
   if(parts[0]==='public'&&parts[1]==='articles'){
@@ -132,14 +182,53 @@ async function api(req,res,url){
     }
   }
 
-  if(!requireCmsAccess(req,res))return;
+  const cmsUser=await requireCmsAccess(req,res);
+  if(!cmsUser)return;
+
+  if(parts[0]==='users'){
+    if(parts.length===1&&req.method==='GET'){
+      if(!requireRole(cmsUser,res,req,['admin']))return;
+      return json(req,res,200,{users:await auth.listUsers()});
+    }
+    if(parts.length===1&&req.method==='POST'){
+      if(!requireRole(cmsUser,res,req,['admin']))return;
+      const input=await body(req);
+      const result=await auth.createUser(input);
+      await repo.recordAudit?.({actorUserId:cmsUser.id,action:'user.create',entityType:'user',entityId:result.user.id,metadata:{email:result.user.email,role:result.user.role}});
+      return json(req,res,201,result);
+    }
+    if(parts[1]&&parts[2]==='reset-password'&&req.method==='POST'){
+      if(!requireRole(cmsUser,res,req,['admin']))return;
+      const id=decodeURIComponent(parts[1]);
+      const result=await auth.resetPassword(id);
+      await repo.recordAudit?.({actorUserId:cmsUser.id,action:'user.password_reset',entityType:'user',entityId:id});
+      return json(req,res,200,result);
+    }
+    if(parts[1]&&req.method==='DELETE'){
+      if(!requireRole(cmsUser,res,req,['admin']))return;
+      const id=decodeURIComponent(parts[1]);const result=await auth.deleteUser(id,cmsUser.id);
+      await repo.recordAudit?.({actorUserId:cmsUser.id,action:'user.delete',entityType:'user',entityId:id});
+      return json(req,res,200,result);
+    }
+  }
+
+  if(parts[0]==='auth'&&parts[1]==='password'&&req.method==='POST'){
+    if(cmsUser.legacy)return json(req,res,400,{error:'Password changes are unavailable for legacy token access.'});
+    const input=await body(req);
+    const result=await auth.changePassword(cmsUser.id,input.currentPassword,input.newPassword);
+    await repo.recordAudit?.({actorUserId:cmsUser.id,action:'user.password_change',entityType:'user',entityId:cmsUser.id});
+    await auth.destroySessionFromRequest(req);
+    res.setHeader('Set-Cookie',auth.clearCookie());
+    return json(req,res,200,result);
+  }
 
   if(parts[0]==='articles'){
     if(parts.length===1&&req.method==='GET')return json(req,res,200,{articles:await repo.listArticles()});
     if(parts.length===1&&req.method==='POST'){
-      const article=await repo.saveArticle(await body(req));
-      if(article.status==='Published')void triggerDeploy(`article-published:${article.slug}`);
-      return json(req,res,201,{article});
+      const article=await repo.saveArticle({...await body(req),actorUserId:cmsUser.id});
+      await repo.recordAudit?.({actorUserId:cmsUser.id,action:'article.create',entityType:'article',entityId:article.id,metadata:{slug:article.slug,status:article.status}});
+      const delivery=article.status==='Published'?await triggerDeploy(`article-published:${article.slug}`):null;
+      return json(req,res,201,{article,delivery});
     }
 
     const id=decodeURIComponent(parts[1]||'');
@@ -149,27 +238,43 @@ async function api(req,res,url){
     }
     if(id&&req.method==='PUT'){
       const before=await repo.getArticle(id);
-      const article=await repo.saveArticle(await body(req),id);
-      if(article.status==='Published'||before?.status==='Published')void triggerDeploy(`article-updated:${article.slug}`);
-      return json(req,res,200,{article});
+      if(!before)return json(req,res,404,{error:'Article not found.'});
+      const article=await repo.saveArticle({...await body(req),actorUserId:cmsUser.id},id);
+      await repo.recordAudit?.({actorUserId:cmsUser.id,action:'article.update',entityType:'article',entityId:article.id,metadata:{slug:article.slug,status:article.status,previousStatus:before.status}});
+      const delivery=article.status==='Published'||before?.status==='Published'?await triggerDeploy(`article-updated:${article.slug}`):null;
+      return json(req,res,200,{article,delivery});
     }
     if(id&&req.method==='DELETE'){
       const before=await repo.getArticle(id);
+      if(!before)return json(req,res,404,{error:'Article not found.'});
       const result=await repo.deleteArticle(id);
-      if(before?.status==='Published')void triggerDeploy(`article-deleted:${before.slug}`);
-      return json(req,res,200,result);
+      await repo.recordAudit?.({actorUserId:cmsUser.id,action:'article.delete',entityType:'article',entityId:id,metadata:{slug:before.slug,title:before.title}});
+      const delivery=before?.status==='Published'?await triggerDeploy(`article-deleted:${before.slug}`):null;
+      return json(req,res,200,{...result,delivery});
     }
   }
 
   if(parts[0]==='categories'){
     if(parts.length===1&&req.method==='GET')return json(req,res,200,{categories:await repo.listCategories()});
-    if(parts.length===1&&req.method==='POST')return json(req,res,201,{category:await repo.createCategory((await body(req)).name)});
-    if(parts[1]&&req.method==='DELETE')return json(req,res,200,await repo.deleteCategory(decodeURIComponent(parts[1])));
+    if(parts.length===1&&req.method==='POST'){
+      const category=await repo.createCategory((await body(req)).name);
+      await repo.recordAudit?.({actorUserId:cmsUser.id,action:'category.create',entityType:'category',entityId:category.id,metadata:{name:category.name}});
+      return json(req,res,201,{category});
+    }
+    if(parts[1]&&req.method==='DELETE'){
+      const id=decodeURIComponent(parts[1]);const result=await repo.deleteCategory(id);
+      await repo.recordAudit?.({actorUserId:cmsUser.id,action:'category.delete',entityType:'category',entityId:id});
+      return json(req,res,200,result);
+    }
   }
 
   if(parts[0]==='media'){
     if(parts.length===1&&req.method==='GET')return json(req,res,200,{media:await repo.listMedia()});
-    if(parts.length===1&&req.method==='POST')return json(req,res,201,{media:await repo.uploadMedia(await body(req))});
+    if(parts.length===1&&req.method==='POST'){
+      const media=await repo.uploadMedia(await body(req));
+      await repo.recordAudit?.({actorUserId:cmsUser.id,action:'media.upload',entityType:'media',entityId:media.id,metadata:{name:media.name}});
+      return json(req,res,201,{media});
+    }
   }
 
   return json(req,res,404,{error:'API route not found.'});
@@ -204,20 +309,24 @@ async function devBlog(req,res,url){
 }
 
 async function publishDueScheduled(){
-  if(scheduleSweepRunning)return;
+  if(scheduleSweepRunning)return 0;
   scheduleSweepRunning=true;
+  let publishedCount=0;
   try{
     const now=Date.now();
     const due=(await repo.listArticles()).filter(article=>article.status==='Scheduled'&&article.scheduledAt&&new Date(article.scheduledAt).getTime()<=now);
     for(const article of due){
       try{
-        const published=await repo.saveArticle({...article,status:'Published',scheduledAt:''},article.id);
+        const published=await repo.saveArticle({...article,status:'Published',scheduledAt:'',actorUserId:'system'},article.id);
+        await repo.recordAudit?.({actorUserId:'system',action:'article.scheduled_publish',entityType:'article',entityId:published.id,metadata:{slug:published.slug}});
+        publishedCount++;
         console.log(`Published scheduled article: ${published.slug}`);
         void triggerDeploy(`scheduled-article-published:${published.slug}`);
       }catch(error){
         console.error(`Scheduled publication blocked for ${article.slug}:`,error.message);
       }
     }
+    return publishedCount;
   }finally{
     scheduleSweepRunning=false;
   }
@@ -262,6 +371,7 @@ const server=http.createServer(async(req,res)=>{
       const target=safeResolve(path.join(cmsRoot,'client'),url.pathname.replace('/client',''));
       return target?serveFile(res,target):json(req,res,400,{error:'Invalid path.'});
     }
+    if(url.pathname.split('/').some(segment=>segment.startsWith('.'))||url.pathname.startsWith('/blog-cms/'))return json(req,res,404,{error:'Not found.'});
     const siteTarget=safeResolve(siteRoot,url.pathname);
     if(siteTarget)return serveFile(res,siteTarget);
     res.writeHead(404);
@@ -275,8 +385,10 @@ const server=http.createServer(async(req,res)=>{
 server.listen(port,host,()=>{
   console.log(`TeleDoctorSA Blog CMS running on http://${host}:${port}/prototype/`);
   console.log(`Backend: ${repo.backendName}`);
-  console.log(`CMS auth: ${accessToken?'required':'disabled (development mode)'}`);
+  console.log(`Auth backend: ${auth.backendName||'file'}`);
+  auth.hasUsers().then(hasUsers=>console.log(`CMS auth: ${hasUsers?'staff accounts enabled':accessToken?'legacy token enabled':'disabled (development mode)'}`)).catch(console.error);
   console.log(`Public blog: http://${host}:${port}/blog/`);
   publishDueScheduled().catch(console.error);
 });
-setInterval(()=>publishDueScheduled().catch(console.error),30000).unref();
+if(scheduleWorkerEnabled)setInterval(()=>publishDueScheduled().catch(console.error),30000).unref();
+

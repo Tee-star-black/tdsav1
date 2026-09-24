@@ -3,3 +3,4 @@ node_modules/
 content/articles.json
 data/store.local.json
 server/uploads/
+data/auth.local.json
