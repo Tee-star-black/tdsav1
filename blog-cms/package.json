@@ -22,7 +22,8 @@
     "db:migrate": "node scripts/migrate-db.mjs",
     "content:fetch-public": "node scripts/fetch-public-content.mjs",
     "migrate:sanity-to-postgres": "node scripts/migrate-sanity-to-postgres.mjs",
-    "check:postgres": "node --test tests/postgres.test.mjs"
+    "check:postgres": "node --test tests/postgres.test.mjs",
+    "build:blog:from-file": "node scripts/build-blog.mjs"
   },
   "dependencies": {
     "@sanity/client": "^7.11.2",
