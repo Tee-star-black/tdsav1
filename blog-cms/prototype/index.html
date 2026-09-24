@@ -8,8 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./studio.css?v=20260922-5">
-  <link rel="stylesheet" href="./studio-v2.css?v=20260922-5">
+  <link rel="stylesheet" href="./studio.css?v=20260924-1">
+  <link rel="stylesheet" href="./studio-v2.css?v=20260924-1">
 </head>
 <body>
   <section class="login-gate" id="loginGate" hidden>
@@ -32,14 +32,14 @@
       <a class="brand brand-official" href="#" data-view="articles" aria-label="TeleDoctorSA Publishing Studio home">
         <img class="brand-logo" src="../../images/rebuild/logo.png" alt="TeleDoctorSA logo">
         <span class="brand-studio-label">Publishing Studio</span>
-        <span class="studio-build">Build 2026.09.22.5</span>
+        <span class="studio-build">Build 2026.09.24.1</span>
       </a>
       <nav class="side-nav" aria-label="Publishing navigation">
         <p>Workspace</p>
         <button class="nav-item active" data-view="articles"><span>▤</span>Articles <em id="articleNavCount">0</em></button>
         <button class="nav-item" data-action="new"><span>＋</span>New story</button>
         <button class="nav-item" data-view="media"><span>◫</span>Media library</button>
-        <button class="nav-item" data-view="categories"><span>◇</span>Categories</button>
+        <button class="nav-item" data-view="categories"><span>◇</span>Categories</button>\n        <button class="nav-item" data-view="settings"><span>⚙</span>Account & staff</button>
         <p>Editorial</p>
         <button class="nav-item" data-status-view="Review"><span>◷</span>Review queue <em class="alert" id="reviewNavCount">0</em></button>
         <button class="nav-item" data-status-view="Published"><span>✓</span>Published</button>
@@ -86,6 +86,39 @@
         <section id="categoriesView" class="view">
           <section class="welcome"><div><span class="eyebrow">CONTENT TAXONOMY</span><h1>Categories</h1><p>Organise stories into categories your readers can browse.</p></div><button class="primary" id="addCategory"><span>＋</span> Add category</button></section><div class="category-grid" id="categoryGrid"></div>
         </section>
+
+        <section id="settingsView" class="view">
+          <section class="welcome"><div><span class="eyebrow">ACCESS & SECURITY</span><h1>Account & staff</h1><p>Manage your password and, for administrators, Publishing Studio access.</p></div></section>
+          <div class="settings-grid">
+            <article class="settings-card">
+              <div class="settings-heading"><div><span class="eyebrow">MY ACCOUNT</span><h2 id="accountName">Signed-in user</h2><p id="accountMeta">Loading account…</p></div></div>
+              <form id="passwordForm" class="settings-form">
+                <label>Current password<input id="currentPassword" type="password" autocomplete="current-password" required></label>
+                <label>New password<input id="newPassword" type="password" autocomplete="new-password" minlength="10" required placeholder="At least 10 characters"></label>
+                <label>Confirm new password<input id="confirmPassword" type="password" autocomplete="new-password" minlength="10" required></label>
+                <div id="passwordFeedback" class="settings-feedback" hidden></div>
+                <button class="primary" type="submit">Change password</button>
+              </form>
+            </article>
+
+            <article class="settings-card" id="staffAdminPanel" hidden>
+              <div class="settings-heading"><div><span class="eyebrow">ADMINISTRATION</span><h2>Staff accounts</h2><p>Create individual Publishing Studio accounts and remove access when required.</p></div><span class="settings-role">ADMIN ONLY</span></div>
+              <form id="staffForm" class="staff-create-form">
+                <label>Name<input id="staffName" required placeholder="Staff member name"></label>
+                <label>Email<input id="staffEmail" type="email" required placeholder="name@teledoctorsa.co.za"></label>
+                <label>Role<select id="staffRole"><option value="editor">Editor</option><option value="reviewer">Reviewer</option><option value="admin">Administrator</option></select></label>
+                <button class="primary" type="submit">Create account</button>
+              </form>
+              <div class="temporary-password" id="temporaryPasswordBox" hidden>
+                <span>TEMPORARY PASSWORD</span>
+                <strong id="temporaryPassword"></strong>
+                <p>Shown once. Send it to the staff member securely and ask them to change it after signing in.</p>
+                <button class="secondary" id="copyTemporaryPassword" type="button">Copy password</button>
+              </div>
+              <div class="staff-list" id="staffList"></div>
+            </article>
+          </div>
+        </section>
       </div>
     </main>
   </div>
@@ -120,7 +153,7 @@
 
   <dialog id="previewDialog"><article class="preview-sheet"><header><button type="button" class="close" id="closePreview">×</button><span id="previewCategory">Category</span><h1 id="previewTitle">Untitled story</h1><p id="previewExcerpt"></p><small id="previewMeta"></small></header><img id="previewCover" alt="" hidden><div id="previewBody" class="preview-body"></div></article></dialog>
   <div class="toast" id="toast" role="status"><span>✓</span><div><strong id="toastTitle">Saved</strong><small id="toastMessage">Your changes were saved.</small><a id="toastAction" href="#" target="_blank" rel="noopener" hidden>View on blog ↗</a></div></div>
-  <script src="../client/cms-api.js?v=20260922-5"></script>
-  <script src="./studio.js?v=20260922-5"></script>
+  <script src="../client/cms-api.js?v=20260924-1"></script>
+  <script src="./studio.js?v=20260924-1"></script>
 </body>
 </html>
