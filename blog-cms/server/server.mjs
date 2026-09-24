@@ -197,6 +197,13 @@ async function api(req,res,url){
       await repo.recordAudit?.({actorUserId:cmsUser.id,action:'user.create',entityType:'user',entityId:result.user.id,metadata:{email:result.user.email,role:result.user.role}});
       return json(req,res,201,result);
     }
+    if(parts[1]&&parts[2]==='reset-password'&&req.method==='POST'){
+      if(!requireRole(cmsUser,res,req,['admin']))return;
+      const id=decodeURIComponent(parts[1]);
+      const result=await auth.resetPassword(id);
+      await repo.recordAudit?.({actorUserId:cmsUser.id,action:'user.password_reset',entityType:'user',entityId:id});
+      return json(req,res,200,result);
+    }
     if(parts[1]&&req.method==='DELETE'){
       if(!requireRole(cmsUser,res,req,['admin']))return;
       const id=decodeURIComponent(parts[1]);const result=await auth.deleteUser(id,cmsUser.id);
