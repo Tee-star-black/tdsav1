@@ -206,8 +206,20 @@ function renderSettings(){
 function renderStaffList(){
   const target=$('#staffList');if(!target)return;
   if(!state.users.length){target.innerHTML='<div class="media-empty">No staff accounts loaded.</div>';return;}
-  target.innerHTML=state.users.map(user=>`<article class="staff-row"><div><h3>${escapeHtml(user.name)}</h3><p>${escapeHtml(user.email)}</p></div><span>${escapeHtml(user.role)}</span><button type="button" data-user-remove="${escapeHtml(user.id)}" ${user.id===state.currentUser?.id?'disabled title="This is your signed-in account"':''} aria-label="Remove ${escapeHtml(user.name)}">×</button></article>`).join('');
-  $('[data-user-remove]').forEach(button=>button.addEventListener('click',async()=>{
+  target.innerHTML=state.users.map(user=>`<article class="staff-row"><div><h3>${escapeHtml(user.name)}</h3><p>${escapeHtml(user.email)}</p></div><span>${escapeHtml(user.role)}</span><div class="staff-actions"><button type="button" data-user-reset="${escapeHtml(user.id)}" aria-label="Reset password for ${escapeHtml(user.name)}">Reset</button><button class="remove" type="button" data-user-remove="${escapeHtml(user.id)}" ${user.id===state.currentUser?.id?'disabled title="This is your signed-in account"':''} aria-label="Remove ${escapeHtml(user.name)}">×</button></div></article>`).join('');
+  $$('[data-user-reset]').forEach(button=>button.addEventListener('click',async()=>{
+    const user=state.users.find(item=>item.id===button.dataset.userReset);if(!user)return;
+    if(!confirm(`Reset the password for ${user.name}? Their current sessions will be signed out.`))return;
+    button.disabled=true;
+    try{
+      const result=await api.resetUserPassword(user.id);
+      $('#temporaryPassword').textContent=result.temporaryPassword;
+      $('#temporaryPasswordBox').hidden=false;
+      notify('Password reset',`A new temporary password was generated for ${user.name}.`);
+    }catch(error){notify('Password not reset',errorMessage(error));}
+    finally{button.disabled=false;}
+  }));
+  $$('[data-user-remove]').forEach(button=>button.addEventListener('click',async()=>{
     const user=state.users.find(item=>item.id===button.dataset.userRemove);if(!user)return;
     if(!confirm(`Remove Publishing Studio access for ${user.name}?`))return;
     button.disabled=true;
@@ -223,7 +235,12 @@ async function loadSettings(){
   catch(error){notify('Staff accounts unavailable',errorMessage(error));}
 }
 
-function showView(name){$('.view').forEach(v=>v.classList.toggle('active',v.id===`${name}View`));$('[data-view]').forEach(n=>n.classList.toggle('active',n.dataset.view===name));if(name==='settings')void loadSettings();if(innerWidth<=760)$('#sidebar').classList.remove('open');}
+function showView(name){
+  $$('.view').forEach(v=>v.classList.toggle('active',v.id===`${name}View`));
+  $$('[data-view]').forEach(n=>n.classList.toggle('active',n.dataset.view===name));
+  if(name==='settings')void loadSettings();
+  if(innerWidth<=760)$('#sidebar').classList.remove('open');
+}
 $$('[data-view]').forEach(el=>el.addEventListener('click',e=>{if(el.tagName==='A'&&el.getAttribute('href')!=='#')return;e.preventDefault();showView(el.dataset.view);}));
 $$('[data-status-view]').forEach(el=>el.addEventListener('click',()=>{showView('articles');activeFilter=el.dataset.statusView;page=1;$$('.tabs button').forEach(t=>t.classList.toggle('active',t.dataset.filter===activeFilter));renderArticles();}));
 
