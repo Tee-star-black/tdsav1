@@ -43,6 +43,8 @@ jobs:
         run: npm run check:editor
       - name: Run staff authentication tests
         run: npm run check:auth
+      - name: Run Cloud SQL repository tests
+        run: npm run check:postgres
       - name: Validate production Sanity contract
         run: npm run check:sanity
       - name: Generate static blog from local backend
