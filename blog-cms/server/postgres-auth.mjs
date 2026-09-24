@@ -38,6 +38,14 @@ export class PostgresAuthStore{
       await client.query('COMMIT');return {ok:true};
     }catch(error){await client.query('ROLLBACK').catch(()=>{});throw error;}finally{client.release();}
   }
+  async resetPassword(id){
+    const user=(await this.pool.query('SELECT * FROM cms_users WHERE id=$1 AND active=TRUE LIMIT 1',[id])).rows[0];
+    if(!user)throw Object.assign(new Error('User not found.'),{statusCode:404});
+    const temporaryPassword=randomBytes(12).toString('base64url'),salt=randomBytes(16).toString('hex');
+    const updated=(await this.pool.query('UPDATE cms_users SET password_salt=$2,password_hash=$3,updated_at=NOW() WHERE id=$1 RETURNING *',[id,salt,hashPassword(temporaryPassword,salt)])).rows[0];
+    await this.pool.query('DELETE FROM cms_sessions WHERE user_id=$1',[id]);
+    return {user:publicUser(updated),temporaryPassword};
+  }
   async authenticate(email,password){
     const r=await this.pool.query('SELECT * FROM cms_users WHERE email=$1 AND active=TRUE LIMIT 1',[cleanEmail(email)]),row=r.rows[0];
     if(!row||!safeEqualHex(hashPassword(password,row.password_salt),row.password_hash))return null;return publicUser(row);
