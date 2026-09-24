@@ -3,7 +3,7 @@ import {readFile,stat} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {timingSafeEqual} from 'node:crypto';
-import {AuthStore} from './auth.mjs';
+import {createAuthStore} from './auth-factory.mjs';
 import {createRepository} from './repository.mjs';
 
 const here=path.dirname(fileURLToPath(import.meta.url));
@@ -21,11 +21,7 @@ const port=Number(process.env.PORT||8790);
 const host=process.env.CMS_HOST||'127.0.0.1';
 const MAX_JSON_BYTES=9*1024*1024;
 const accessToken=String(process.env.CMS_ACCESS_TOKEN||'');
-const auth=new AuthStore({
-  filePath:process.env.CMS_AUTH_FILE||path.join(cmsRoot,'data','auth.local.json'),
-  sessionHours:Number(process.env.CMS_SESSION_HOURS||12),
-  cookieSecure:String(process.env.CMS_COOKIE_SECURE||'').toLowerCase()==='true'
-});
+const auth=createAuthStore();
 const allowedOrigins=String(process.env.CMS_ALLOWED_ORIGINS||'')
   .split(',')
   .map(value=>value.trim())
@@ -146,7 +142,7 @@ async function api(req,res,url){
 
   const parts=url.pathname.replace(/^\/api\/?/,'').split('/').filter(Boolean);
   if(parts[0]==='health'&&req.method==='GET'){
-    return json(req,res,200,{...(await repo.health()),studioBuild:'2026.09.22.5',authRequired:(await auth.hasUsers())||Boolean(accessToken),deployWebhookConfigured:Boolean(deployWebhook)});
+    return json(req,res,200,{...(await repo.health()),studioBuild:'2026.09.24.1',authBackend:auth.backendName||'file',authRequired:(await auth.hasUsers())||Boolean(accessToken),deployWebhookConfigured:Boolean(deployWebhook)});
   }
 
   if(parts[0]==='auth'&&parts[1]==='login'&&req.method==='POST'){
@@ -209,7 +205,7 @@ async function api(req,res,url){
   if(parts[0]==='articles'){
     if(parts.length===1&&req.method==='GET')return json(req,res,200,{articles:await repo.listArticles()});
     if(parts.length===1&&req.method==='POST'){
-      const article=await repo.saveArticle(await body(req));
+      const article=await repo.saveArticle({...await body(req),actorUserId:cmsUser.id});
       const delivery=article.status==='Published'?await triggerDeploy(`article-published:${article.slug}`):null;
       return json(req,res,201,{article,delivery});
     }
@@ -222,7 +218,7 @@ async function api(req,res,url){
     if(id&&req.method==='PUT'){
       const before=await repo.getArticle(id);
       if(!before)return json(req,res,404,{error:'Article not found.'});
-      const article=await repo.saveArticle(await body(req),id);
+      const article=await repo.saveArticle({...await body(req),actorUserId:cmsUser.id},id);
       const delivery=article.status==='Published'||before?.status==='Published'?await triggerDeploy(`article-updated:${article.slug}`):null;
       return json(req,res,200,{article,delivery});
     }
@@ -230,6 +226,7 @@ async function api(req,res,url){
       const before=await repo.getArticle(id);
       if(!before)return json(req,res,404,{error:'Article not found.'});
       const result=await repo.deleteArticle(id);
+      await repo.recordAudit?.({actorUserId:cmsUser.id,action:'article.delete',entityType:'article',entityId:id,metadata:{slug:before.slug,title:before.title}});
       const delivery=before?.status==='Published'?await triggerDeploy(`article-deleted:${before.slug}`):null;
       return json(req,res,200,{...result,delivery});
     }
@@ -237,13 +234,25 @@ async function api(req,res,url){
 
   if(parts[0]==='categories'){
     if(parts.length===1&&req.method==='GET')return json(req,res,200,{categories:await repo.listCategories()});
-    if(parts.length===1&&req.method==='POST')return json(req,res,201,{category:await repo.createCategory((await body(req)).name)});
-    if(parts[1]&&req.method==='DELETE')return json(req,res,200,await repo.deleteCategory(decodeURIComponent(parts[1])));
+    if(parts.length===1&&req.method==='POST'){
+      const category=await repo.createCategory((await body(req)).name);
+      await repo.recordAudit?.({actorUserId:cmsUser.id,action:'category.create',entityType:'category',entityId:category.id,metadata:{name:category.name}});
+      return json(req,res,201,{category});
+    }
+    if(parts[1]&&req.method==='DELETE'){
+      const id=decodeURIComponent(parts[1]);const result=await repo.deleteCategory(id);
+      await repo.recordAudit?.({actorUserId:cmsUser.id,action:'category.delete',entityType:'category',entityId:id});
+      return json(req,res,200,result);
+    }
   }
 
   if(parts[0]==='media'){
     if(parts.length===1&&req.method==='GET')return json(req,res,200,{media:await repo.listMedia()});
-    if(parts.length===1&&req.method==='POST')return json(req,res,201,{media:await repo.uploadMedia(await body(req))});
+    if(parts.length===1&&req.method==='POST'){
+      const media=await repo.uploadMedia(await body(req));
+      await repo.recordAudit?.({actorUserId:cmsUser.id,action:'media.upload',entityType:'media',entityId:media.id,metadata:{name:media.name}});
+      return json(req,res,201,{media});
+    }
   }
 
   return json(req,res,404,{error:'API route not found.'});
@@ -350,6 +359,7 @@ const server=http.createServer(async(req,res)=>{
 server.listen(port,host,()=>{
   console.log(`TeleDoctorSA Blog CMS running on http://${host}:${port}/prototype/`);
   console.log(`Backend: ${repo.backendName}`);
+  console.log(`Auth backend: ${auth.backendName||'file'}`);
   auth.hasUsers().then(hasUsers=>console.log(`CMS auth: ${hasUsers?'staff accounts enabled':accessToken?'legacy token enabled':'disabled (development mode)'}`)).catch(console.error);
   console.log(`Public blog: http://${host}:${port}/blog/`);
   publishDueScheduled().catch(console.error);
