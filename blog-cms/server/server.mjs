@@ -28,6 +28,8 @@ const allowedOrigins=String(process.env.CMS_ALLOWED_ORIGINS||'')
   .filter(Boolean);
 const deployWebhook=String(process.env.CMS_DEPLOY_WEBHOOK_URL||'').trim();
 const deployWebhookToken=String(process.env.CMS_DEPLOY_WEBHOOK_TOKEN||'').trim();
+const internalToken=String(process.env.CMS_INTERNAL_TOKEN||'').trim();
+const scheduleWorkerEnabled=String(process.env.CMS_SCHEDULE_WORKER_ENABLED||'true').toLowerCase()!=='false';
 let scheduleSweepRunning=false;
 
 const MIME={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp','.svg':'image/svg+xml','.ico':'image/x-icon'};
@@ -53,11 +55,12 @@ function json(req,res,status,payload){
 
 function redirect(res,location,status=302){res.writeHead(status,{Location:location,'Cache-Control':'no-store'});res.end();}
 
-function tokenMatches(candidate){
-  const expected=Buffer.from(accessToken);
+function secretMatches(expectedValue,candidate){
+  const expected=Buffer.from(String(expectedValue||''));
   const actual=Buffer.from(String(candidate||''));
   return expected.length===actual.length&&expected.length>0&&timingSafeEqual(expected,actual);
 }
+function tokenMatches(candidate){return secretMatches(accessToken,candidate);}
 
 function isAuthorized(req){
   if(!accessToken)return true;
@@ -165,6 +168,12 @@ async function api(req,res,url){
     return user?json(req,res,200,{user}):json(req,res,401,{error:'CMS sign-in is required.'});
   }
 
+  if(parts[0]==='internal'&&parts[1]==='publish-due'&&req.method==='POST'){
+    if(!internalToken||!secretMatches(internalToken,req.headers['x-cms-internal-token']))return json(req,res,401,{error:'Internal scheduler authentication failed.'});
+    const published=await publishDueScheduled();
+    return json(req,res,200,{ok:true,published});
+  }
+
   if(parts[0]==='public'&&parts[1]==='articles'){
     if(parts.length===2&&req.method==='GET')return json(req,res,200,{articles:await repo.listPublicArticles()});
     if(parts[2]&&req.method==='GET'){
@@ -185,11 +194,14 @@ async function api(req,res,url){
       if(!requireRole(cmsUser,res,req,['admin']))return;
       const input=await body(req);
       const result=await auth.createUser(input);
+      await repo.recordAudit?.({actorUserId:cmsUser.id,action:'user.create',entityType:'user',entityId:result.user.id,metadata:{email:result.user.email,role:result.user.role}});
       return json(req,res,201,result);
     }
     if(parts[1]&&req.method==='DELETE'){
       if(!requireRole(cmsUser,res,req,['admin']))return;
-      return json(req,res,200,await auth.deleteUser(decodeURIComponent(parts[1]),cmsUser.id));
+      const id=decodeURIComponent(parts[1]);const result=await auth.deleteUser(id,cmsUser.id);
+      await repo.recordAudit?.({actorUserId:cmsUser.id,action:'user.delete',entityType:'user',entityId:id});
+      return json(req,res,200,result);
     }
   }
 
@@ -197,6 +209,7 @@ async function api(req,res,url){
     if(cmsUser.legacy)return json(req,res,400,{error:'Password changes are unavailable for legacy token access.'});
     const input=await body(req);
     const result=await auth.changePassword(cmsUser.id,input.currentPassword,input.newPassword);
+    await repo.recordAudit?.({actorUserId:cmsUser.id,action:'user.password_change',entityType:'user',entityId:cmsUser.id});
     await auth.destroySessionFromRequest(req);
     res.setHeader('Set-Cookie',auth.clearCookie());
     return json(req,res,200,result);
@@ -206,6 +219,7 @@ async function api(req,res,url){
     if(parts.length===1&&req.method==='GET')return json(req,res,200,{articles:await repo.listArticles()});
     if(parts.length===1&&req.method==='POST'){
       const article=await repo.saveArticle({...await body(req),actorUserId:cmsUser.id});
+      await repo.recordAudit?.({actorUserId:cmsUser.id,action:'article.create',entityType:'article',entityId:article.id,metadata:{slug:article.slug,status:article.status}});
       const delivery=article.status==='Published'?await triggerDeploy(`article-published:${article.slug}`):null;
       return json(req,res,201,{article,delivery});
     }
@@ -219,6 +233,7 @@ async function api(req,res,url){
       const before=await repo.getArticle(id);
       if(!before)return json(req,res,404,{error:'Article not found.'});
       const article=await repo.saveArticle({...await body(req),actorUserId:cmsUser.id},id);
+      await repo.recordAudit?.({actorUserId:cmsUser.id,action:'article.update',entityType:'article',entityId:article.id,metadata:{slug:article.slug,status:article.status,previousStatus:before.status}});
       const delivery=article.status==='Published'||before?.status==='Published'?await triggerDeploy(`article-updated:${article.slug}`):null;
       return json(req,res,200,{article,delivery});
     }
@@ -287,20 +302,24 @@ async function devBlog(req,res,url){
 }
 
 async function publishDueScheduled(){
-  if(scheduleSweepRunning)return;
+  if(scheduleSweepRunning)return 0;
   scheduleSweepRunning=true;
+  let publishedCount=0;
   try{
     const now=Date.now();
     const due=(await repo.listArticles()).filter(article=>article.status==='Scheduled'&&article.scheduledAt&&new Date(article.scheduledAt).getTime()<=now);
     for(const article of due){
       try{
-        const published=await repo.saveArticle({...article,status:'Published',scheduledAt:''},article.id);
+        const published=await repo.saveArticle({...article,status:'Published',scheduledAt:'',actorUserId:'system'},article.id);
+        await repo.recordAudit?.({actorUserId:'system',action:'article.scheduled_publish',entityType:'article',entityId:published.id,metadata:{slug:published.slug}});
+        publishedCount++;
         console.log(`Published scheduled article: ${published.slug}`);
         void triggerDeploy(`scheduled-article-published:${published.slug}`);
       }catch(error){
         console.error(`Scheduled publication blocked for ${article.slug}:`,error.message);
       }
     }
+    return publishedCount;
   }finally{
     scheduleSweepRunning=false;
   }
@@ -364,5 +383,5 @@ server.listen(port,host,()=>{
   console.log(`Public blog: http://${host}:${port}/blog/`);
   publishDueScheduled().catch(console.error);
 });
-setInterval(()=>publishDueScheduled().catch(console.error),30000).unref();
+if(scheduleWorkerEnabled)setInterval(()=>publishDueScheduled().catch(console.error),30000).unref();
 
