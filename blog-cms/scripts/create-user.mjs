@@ -1,6 +1,6 @@
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {AuthStore} from '../server/auth.mjs';
+import {createAuthStore} from '../server/auth-factory.mjs';
 
 const here=path.dirname(fileURLToPath(import.meta.url));
 const cmsRoot=path.resolve(here,'..');
@@ -17,7 +17,7 @@ if(!email||!name){
   process.exit(1);
 }
 
-const auth=new AuthStore({filePath:process.env.CMS_AUTH_FILE||path.join(cmsRoot,'data','auth.local.json')});
+const auth=createAuthStore();
 const result=await auth.createUser({email,name,role,password:password||undefined});
 console.log(`Created ${result.user.role} account for ${result.user.name} <${result.user.email}>.`);
 if(result.temporaryPassword){
