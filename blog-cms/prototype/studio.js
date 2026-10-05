@@ -92,6 +92,7 @@ async function loadWorkspace({quiet=false,authRetry=true}={}){
   });
 
   state={
+    ...state,
     health:values.health||state.health,
     articles:Array.isArray(values.articles)?values.articles:state.articles,
     categories:Array.isArray(values.categories)?values.categories:state.categories,
