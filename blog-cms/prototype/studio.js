@@ -18,7 +18,7 @@ const $=selector=>document.querySelector(selector);
 const $$=selector=>[...document.querySelectorAll(selector)];
 const list=$('#articleList'),empty=$('#emptyState'),count=$('#resultCount'),search=$('#articleSearch'),globalSearch=$('#globalSearch'),categoryFilter=$('#categoryFilter'),sortFilter=$('#sortFilter');
 const editor=$('#editorDialog'),preview=$('#previewDialog');
-const loginGate=$('#loginGate'),loginForm=$('#loginForm'),loginEmail=$('#loginEmail'),loginPassword=$('#loginPassword'),loginFeedback=$('#loginFeedback'),loginSubmit=$('#loginSubmit'),signOutBtn=$('#signOutBtn'),currentUserEl=$('#currentUser');
+const loginGate=$('#loginGate'),loginForm=$('#loginForm'),loginEmail=$('#loginEmail'),loginPassword=$('#loginPassword'),loginFeedback=$('#loginFeedback'),loginSubmit=$('#loginSubmit'),signOutBtn=$('#signOutBtn'),sidebarSignOutBtn=$('#sidebarSignOutBtn'),currentUserEl=$('#currentUser'),sidebarCurrentUserEl=$('#sidebarCurrentUser');
 
 function showLogin(message='Sign in to continue.'){
   loginGate.hidden=false;
@@ -113,6 +113,8 @@ async function loadWorkspace({quiet=false,authRetry=true}={}){
     state.currentUser=user;
     currentUserEl.textContent=user?.name||user?.email||'Staff';
     currentUserEl.hidden=false;
+    if(sidebarCurrentUserEl)sidebarCurrentUserEl.textContent=user?.name||user?.email||'TeleDoctorSA staff';
+    if(sidebarCurrentUserEl)sidebarCurrentUserEl.textContent=user?.name||user?.email||'TeleDoctorSA staff';
   }catch{
     state.currentUser=null;
     currentUserEl.hidden=true;
@@ -409,14 +411,21 @@ loginForm.addEventListener('submit',async event=>{
     loginSubmit.textContent='Open Publishing Studio';
   }
 });
-signOutBtn.addEventListener('click',async()=>{
+async function signOut(){
+  signOutBtn.disabled=true;
+  if(sidebarSignOutBtn)sidebarSignOutBtn.disabled=true;
   try{await api.logout();}catch{}
   api.setAccessToken('');
   currentUserEl.hidden=true;
+  if(sidebarCurrentUserEl)sidebarCurrentUserEl.textContent='TeleDoctorSA staff';
   state={articles:[],categories:[],media:[],health:null,currentUser:null,users:[]};
   render();
   showLogin('You have signed out.');
-});
+  signOutBtn.disabled=false;
+  if(sidebarSignOutBtn)sidebarSignOutBtn.disabled=false;
+}
+signOutBtn.addEventListener('click',signOut);
+sidebarSignOutBtn?.addEventListener('click',signOut);
 
 $('#previousPage').addEventListener('click',()=>{page--;renderArticles();});
 $('#nextPage').addEventListener('click',()=>{page++;renderArticles();});
