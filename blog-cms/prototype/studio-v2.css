@@ -51,3 +51,14 @@
 .staff-row button:disabled{opacity:.25}
 @media(max-width:1050px){.settings-grid{grid-template-columns:1fr}.staff-create-form{grid-template-columns:1fr 1fr}}
 @media(max-width:640px){.staff-create-form{grid-template-columns:1fr}.staff-row{grid-template-columns:1fr 70px 110px}.settings-card{padding:18px}}
+
+
+/* Persistent signed-in account controls */
+.sidebar-account{margin-top:auto;border-top:1px solid #29465d;padding:16px 8px 4px;display:grid;gap:12px}
+.sidebar-account-copy{display:grid;gap:3px;min-width:0}
+.sidebar-account-copy span{font:600 9px/1.2 Manrope,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#7890a2}
+.sidebar-account-copy strong{font:700 11px/1.35 Manrope,sans-serif;color:#e9f2f7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-signout{width:100%;border:1px solid #3b586d;background:transparent;color:#dce8ef;padding:10px 12px;display:flex;align-items:center;justify-content:center;gap:8px;font:700 11px Manrope,sans-serif;cursor:pointer}
+.sidebar-signout:hover{background:#183b54;border-color:#557187;color:#fff}
+.sidebar-signout:focus-visible{outline:2px solid #55cbc8;outline-offset:2px}
+.sidebar-signout span{font-size:15px;line-height:1}
