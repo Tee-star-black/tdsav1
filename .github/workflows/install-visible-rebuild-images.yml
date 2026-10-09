@@ -47,3 +47,12 @@ jobs:
           node scripts/verify-navbar.mjs
           node scripts/verify-home-hero.mjs
           node scripts/verify-updates.mjs
+          node scripts/verify-design.mjs
+      - name: Save website design screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: website-design-screenshots
+          path: website-screenshots/
+          retention-days: 7
+          if-no-files-found: ignore
