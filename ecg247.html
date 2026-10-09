@@ -689,6 +689,24 @@
             font-weight: 600;
         }
 
+        /* Official ECG247 guide: compact, accessible, responsive external CTA */
+        .ecg-guide-section { padding: 0 5% 64px; }
+        .ecg-guide-inner { max-width: 1400px; margin: 0 auto; padding: 30px 36px; background: #fff; border: 1px solid var(--border); border-left: 4px solid var(--primary-orange); display: flex; align-items: center; justify-content: space-between; gap: 28px; }
+        .ecg-guide-copy { max-width: 680px; }
+        .ecg-guide-eyebrow { color: #a54c13; font-size: .72rem; font-weight: 800; letter-spacing: .09em; }
+        .ecg-guide-copy h2 { margin: 7px 0 8px; font-size: clamp(1.35rem, 2vw, 1.75rem); line-height: 1.25; }
+        .ecg-guide-copy p { color: var(--slate-gray); font-size: .95rem; line-height: 1.65; }
+        .ecg-guide-link { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 48px; padding: 12px 20px; background: var(--deep-navy); color: white !important; font-size: .9rem; font-weight: 700; text-decoration: none; white-space: nowrap; transition: background-color .2s ease, transform .2s ease; }
+        .ecg-guide-link:hover { background: #29415e; transform: translateY(-2px); }
+        .ecg-guide-link:focus-visible { outline: 3px solid var(--primary-orange); outline-offset: 3px; }
+        .ecg-guide-link i, .ecg-guide-link svg { width: 17px; height: 17px; flex-shrink: 0; }
+        @media (max-width: 760px) {
+            .ecg-guide-section { padding: 0 20px 48px; }
+            .ecg-guide-inner { padding: 24px 20px; flex-direction: column; align-items: stretch; gap: 20px; }
+            .ecg-guide-link { width: 100%; white-space: normal; text-align: center; }
+        }
+        @media (prefers-reduced-motion: reduce) { .ecg-guide-link { transition: none; } .ecg-guide-link:hover { transform: none; } }
+
         .cta-section {
             text-align: center;
             padding: 56px 5%;
@@ -1554,6 +1572,21 @@
         </div>
     </div></section>
 
+
+    <!-- Official ECG247 setup and usage instructions -->
+    <section class="ecg-guide-section" aria-labelledby="ecg-guide-title">
+        <div class="ecg-guide-inner">
+            <div class="ecg-guide-copy">
+                <span class="ecg-guide-eyebrow">OFFICIAL ECG247 RESOURCE</span>
+                <h2 id="ecg-guide-title">Need help getting started?</h2>
+                <p>Follow the official ECG247 instructions for setting up the app, using your sensor, and finding answers to common questions.</p>
+            </div>
+            <a class="ecg-guide-link" href="https://ecg247.com/en/how-to-use-ecg247/" target="_blank" rel="noopener noreferrer" aria-label="View official ECG247 setup guide (opens in a new tab)">
+                View ECG247 Setup Guide
+                <i data-lucide="external-link" aria-hidden="true"></i>
+            </a>
+        </div>
+    </section>
 
     <section class="cta-section">
         <div class="section-inner"><h2>Protect Your Heart Health with ECG247</h2>
