@@ -18,7 +18,7 @@ Scope: the public website based on main at `33365178dd557a135ca8005d046eea73add9
 | Public `/blog/` returned 404, while TeleMedia had static links to it and two feed-rendering implementations. | Static links now lead to existing media coverage. Removed the duplicate feed renderer. The existing TeleMedia feed still renders articles if a published feed becomes available; its unavailable state has a usable destination. |
 | Several pages showed malformed punctuation and homepage copy describing editorial strategy. | Repaired encoding and changed the affected homepage copy to address visitors. |
 | Two favicon paths did not exist. | Reused the existing branded icon. |
-| Changed assets were loaded under old, long-cached URLs. | Updated release queries for changed shared scripts and styles. |
+| The existing site workflow rewrote every HTML page, including CMS pages, and pushed changes automatically. | Replaced it with read-only website verification and excluded CMS pages from website browser tests. Restored all automatic CMS edits to their original blobs. |\n| Changed assets were loaded under old, long-cached URLs. | Updated release queries for changed shared scripts and styles. |
 
 ## Validation
 
