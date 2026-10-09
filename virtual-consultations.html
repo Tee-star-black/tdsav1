@@ -9,9 +9,9 @@
   <meta name="theme-color" content="#0F172A">
   <link rel="canonical" href="https://teledoctorsa.co.za/virtual-consultations">
 
-  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="/android-chrome-192x192.png">
   <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/android-chrome-192x192.png">
   <link rel="manifest" href="/site.webmanifest">
 
   <meta property="og:title" content="Virtual Doctor Consultations | TeleDoctorSA">
@@ -553,7 +553,7 @@
       font-weight: 500;
     }
 
-    details[open] summary::after { content: 'âˆ’'; }
+    details[open] summary::after { content: '−'; }
 
     details p {
       margin: 0;
@@ -728,8 +728,9 @@
       *, *::before, *::after { transition: none !important; animation: none !important; }
     }
   </style>
+    <link rel="stylesheet" href="/styles/refined-design.css?v=20261009-design3">
 </head>
-<body>
+<body class="tds-refined">
   <nav class="site-nav" aria-label="Primary navigation">
     <a class="brand" href="index.html" aria-label="TeleDoctorSA home">
       <img src="/images/rebuild/logo.png" alt="TeleDoctorSA logo">
@@ -1032,12 +1033,12 @@
     </div>
   </footer>
 
-  <script src="/scripts/mobile-nav.js" defer></script>
+
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       if (window.lucide) window.lucide.createIcons();
     });
   </script>
-    <script src="/scripts/rebuild-images.js"></script>
+    <script src="/scripts/rebuild-images.js?v=20261009-design2"></script>
 </body>
 </html>

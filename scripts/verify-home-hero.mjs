@@ -17,7 +17,7 @@ async function inspectHero(page, mobile) {
     const hero = document.querySelector('.core-highlights-slider');
     const intro = document.querySelector('.core-highlights-slider .core-slider-intro');
     const title = intro?.querySelector('h1');
-    const copy = intro?.querySelector(':scope > p');
+    const copy = intro?.querySelector(':scope > p:not(.tds-eyebrow)');
     const actions = intro?.querySelector('.core-slider-actions');
     const buttons = actions ? [...actions.querySelectorAll('a')] : [];
 
@@ -59,13 +59,13 @@ async function inspectHero(page, mobile) {
 
 function assertHero(result, mobile) {
   if (result.error) throw new Error(result.error);
-  if (result.textAlign !== 'center' || result.titleAlign !== 'center' || result.copyAlign !== 'center') {
+  if (result.textAlign !== (mobile ? 'center' : 'left') || result.titleAlign !== (mobile ? 'center' : 'left') || result.copyAlign !== (mobile ? 'center' : 'left')) {
     throw new Error(`Hero text is not centered: ${JSON.stringify(result)}`);
   }
-  if (result.actionsJustify !== 'center') {
+  if (result.actionsJustify !== (mobile ? 'center' : 'flex-start')) {
     throw new Error(`Hero CTA group is not centered: ${result.actionsJustify}`);
   }
-  if (result.titleCenterDelta > 12) {
+  if (mobile && result.titleCenterDelta > 12) {
     throw new Error(`Hero heading is visually off-center by ${result.titleCenterDelta.toFixed(1)}px`);
   }
   if (!result.heroWithinViewport || !result.actionsWithinViewport) {
@@ -91,6 +91,32 @@ function assertHero(result, mobile) {
   }
 }
 
+async function assertCarousel(page) {
+  const activeId = () => page.locator('.core-slide.active').getAttribute('id');
+  const initial = await activeId();
+  await page.waitForFunction(id => document.querySelector('.core-slide.active')?.id !== id, initial, { timeout: 8500 });
+  if (await page.locator('.core-slide:not([hidden])').count() !== 1) throw new Error('Carousel shows more than one slide');
+  const active = await activeId();
+  const selectedDot = await page.locator('[data-core-slide-to][aria-current="true"]').getAttribute('aria-controls');
+  if (selectedDot !== active) throw new Error('Carousel dot does not match the automatic slide');
+
+  await page.locator('[data-core-slider-pause]').click();
+  await page.mouse.move(0, 0);
+  const pausedId = await activeId();
+  await page.waitForTimeout(6500);
+  if (await activeId() !== pausedId) throw new Error('Carousel advanced while paused');
+  await page.locator('[data-core-slider-pause]').click();
+  await page.mouse.move(0, 0);
+  await page.waitForFunction(id => document.querySelector('.core-slide.active')?.id !== id, pausedId, { timeout: 8500 });
+
+  await page.locator('[data-core-slide-to="3"]').click();
+  if (await activeId() !== 'core-slide-records') throw new Error('Carousel dot selection failed');
+  await page.locator('[data-core-slider-next]').click();
+  if (await activeId() !== 'core-slide-consultations') throw new Error('Carousel next did not wrap');
+  await page.locator('[data-core-slider-prev]').click();
+  if (await activeId() !== 'core-slide-records') throw new Error('Carousel previous did not wrap');
+}
+
 const browser = await chromium.launch({ headless: true });
 try {
   const desktop = await browser.newPage({ viewport: { width: 1440, height: 900 } });
@@ -98,6 +124,8 @@ try {
   const desktopResult = await inspectHero(desktop, false);
   assertHero(desktopResult, false);
   console.log('PASS homepage hero desktop centering');
+  await assertCarousel(desktop);
+  console.log('PASS desktop carousel automatic rotation, pause/resume, dots and arrows');
   await desktop.close();
 
   const mobile = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
@@ -105,7 +133,25 @@ try {
   const mobileResult = await inspectHero(mobile, true);
   assertHero(mobileResult, true);
   console.log('PASS homepage hero mobile centering and CTA optimisation');
+  await assertCarousel(mobile);
+  await mobile.locator('.core-highlights-slider').evaluate(slider => {
+    const touch = x => new Touch({ identifier: 1, target: slider, clientX: x, clientY: 300 });
+    slider.dispatchEvent(new TouchEvent('touchstart', { touches: [touch(260)], bubbles: true }));
+    slider.dispatchEvent(new TouchEvent('touchend', { changedTouches: [touch(100)], bubbles: true }));
+  });
+  if (await mobile.locator('.core-slide.active').getAttribute('id') !== 'core-slide-consultations') throw new Error('Mobile carousel swipe failed');
+  console.log('PASS mobile carousel automatic rotation, pause/resume, dots, arrows and swipe');
   await mobile.close();
+
+  const reduced = await browser.newPage({ reducedMotion: 'reduce' });
+  await waitForHero(reduced);
+  const stillId = await reduced.locator('.core-slide.active').getAttribute('id');
+  await reduced.waitForTimeout(6500);
+  if (await reduced.locator('.core-slide.active').getAttribute('id') !== stillId) throw new Error('Reduced-motion preference was ignored');
+  await reduced.locator('[data-core-slider-next]').click();
+  if (await reduced.locator('.core-slide.active').getAttribute('id') === stillId) throw new Error('Manual navigation failed with reduced motion');
+  console.log('PASS reduced-motion preference with manual navigation');
+  await reduced.close();
 } finally {
   await browser.close();
 }

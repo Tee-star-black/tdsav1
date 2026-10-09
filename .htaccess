@@ -18,6 +18,9 @@ RedirectMatch 301 ^/patients/?$ https://demo-patient.teledoctorsa.co.za/
     RewriteRule ^ecg247/?$ ecg247.html [END,NC]
     RewriteRule ^ehr/?$ ehr.html [END,NC]
 
+    # Retire sample catalogue and checkout pages while the shop is coming soon
+    RewriteRule ^(?:payment|product-detail)(?:\.html)?/?$ /shop [R=302,END,NC]
+
     # Redirect old URLs to new pages
     RewriteRule ^services/?$ /our-services [R=301,END,NC]
     RewriteRule ^about/?$ /about-us [R=301,END,NC]

@@ -26,6 +26,7 @@
     <meta name="twitter:title" content="Online Doctor Consultations & ECG Heart Monitoring in South Africa | TeleDoctorSA">
     <meta name="twitter:description" content="Start with the right digital care path: online consultation, ECG monitoring, TeleDoctorSA app access, or secure medical records.">
     <meta name="twitter:image" content="https://teledoctorsa.co.za/android-chrome-512x512.png">
+    <link rel="stylesheet" href="styles/tdsa-updates.css?v=20261009-updates1">
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -105,9 +106,9 @@
     <link rel="stylesheet" href="/site-polish.css?v=20260909" data-tds-production-polish>
     <link rel="stylesheet" href="/styles/homepage.css?v=20260909">
     <link rel="stylesheet" href="/styles/ux-v4.css?v=20260909" data-tds-ux-v4>
-    <link rel="stylesheet" href="/styles/editorial-mega-menu.css?v=20261009">
+    <link rel="stylesheet" href="/styles/refined-design.css?v=20261009-hero1">
 </head>
-<body>
+<body class="tds-refined">
 
     <!-- Floating Decorative Shapes -->
     <div class="floating-shapes">
@@ -235,14 +236,14 @@
 
     <section class="core-highlights-slider" aria-label="Homepage highlights">
         <div class="core-slider-shell">
+          <div class="tds-hero-lead">
             <div class="core-slider-intro" data-aos="fade-up">
-                <h1>See a doctor. <span class="core-accent">Track your heart.</span> Stay connected.</h1>
-                <p>Online consultations, ECG247 monitoring, app access, and secure records.</p>
+                <p class="tds-eyebrow">TeleDoctorSA / Connected healthcare</p>
+                <h1>Real care.<br><span class="core-accent">Closer to you.</span></h1>
+                <p>Speak to a clinician online, stay connected to your care team and explore ECG247 heart monitoring. Care that fits your everyday life.</p>
                 <div class="core-slider-actions">
-                    <a class="core-slide-cta" href="/virtual-consultations">Book Online Consultation <i data-lucide="calendar" style="width: 14px; height: 14px;"></i></a>
-                    <a class="core-slider-secondary" href="/ecg247">Start ECG Monitoring <i data-lucide="heart-pulse" style="width: 14px; height: 14px;"></i></a>
-                    <a class="core-slider-secondary" href="/app">Open Patient App <i data-lucide="smartphone" style="width: 14px; height: 14px;"></i></a>
-                    <a class="core-slider-secondary" href="/contact-us">Contact Support <i data-lucide="phone-call" style="width: 14px; height: 14px;"></i></a>
+                    <a class="core-slide-cta" href="/virtual-consultations">Book a consultation <i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i></a>
+                    <a class="core-slider-secondary" href="/contact-us" data-open-lead-modal data-service="practice-demo" data-intent="book-demo" data-source="homepage-hero">Book a demo <i data-lucide="arrow-up-right" style="width: 16px; height: 16px;"></i></a>
                 </div>
                 <div class="core-proof-strip" aria-label="Key trust signals">
                     <span class="core-proof-chip"><i data-lucide="stethoscope" style="width: 14px; height: 14px;"></i> HPCSA-aligned care</span>
@@ -257,19 +258,20 @@
                         Google for Startups
                     </span>
                 </div>
-                <figure class="home-hero-media">
-                    <img src="/images/rebuild/01-clinical-team-at-work.jpg" alt="TeleDoctorSA clinical team using connected digital healthcare tools" loading="eager" fetchpriority="high">
-                    <figcaption>Connected care, built around real clinical workflows.</figcaption>
-                </figure>
             </div>
 
+            <figure class="tds-hero-photograph">
+                <img src="images/rebuild/01-clinical-team-at-work.jpg" alt="Clinical team working together on connected healthcare" width="800" height="900" fetchpriority="high" loading="eager">
+                <figcaption><span>Built around people.</span><strong>Patients. Clinicians. Connected.</strong></figcaption>
+            </figure>
+          </div>
             <article class="core-slide active" id="core-slide-consultations">
                 <div class="core-slide-copy">
                     <div class="core-slide-title">
                         <i data-lucide="shield-check" style="width: 18px; height: 18px;"></i>
                         Speak to a Doctor
                     </div>
-                    <h2 class="core-slide-heading">Talk to a clinician without the waiting room.</h2>
+                    <h2 class="core-slide-heading">Your next consultation, wherever you are.</h2>
                     <p>Use secure video or phone consultations for follow-ups, chronic care review, and practical next-step guidance when you need care quickly.</p>
                     <div class="core-slide-meta">
                         <span>Video Consultations</span>
@@ -304,7 +306,7 @@
                         <i data-lucide="activity" style="width: 18px; height: 18px;"></i>
                         Monitor My Health
                     </div>
-                    <h2 class="core-slide-heading">Monitor heart rhythm when day-to-day patterns matter.</h2>
+                    <h2 class="core-slide-heading">A clearer picture of your heart rhythm.</h2>
                     <p>ECG247 supports continuous remote rhythm tracking so patients and clinicians can see changes earlier and plan follow-up with stronger evidence.</p>
                     <div class="core-slide-meta">
                         <span>ECG247</span>
@@ -339,7 +341,7 @@
                         <i data-lucide="smartphone" style="width: 18px; height: 18px;"></i>
                         Use the TeleDoctorSA App
                     </div>
-                    <h2 class="core-slide-heading">Open your patient app and stay connected to your care team.</h2>
+                    <h2 class="core-slide-heading">Your care team, closer at hand.</h2>
                     <p>The app rollout is underway for patient messaging, reading uploads, appointment support, and easier digital follow-up. Join the interest list for launch updates.</p>
                     <div class="core-slide-meta">
                         <span>Patient App</span>
@@ -374,7 +376,7 @@
                         <i data-lucide="clipboard-list" style="width: 18px; height: 18px;"></i>
                         Access Medical Records
                     </div>
-                    <h2 class="core-slide-heading">Keep notes, results, and follow-up history easier to reach.</h2>
+                    <h2 class="core-slide-heading">Your health information, in one place.</h2>
                     <p>Secure electronic records help patients and clinicians review previous care, spot trends, and stay aligned across consultations and monitoring.</p>
                     <div class="core-slide-meta">
                         <span>Secure EHR</span>
@@ -420,454 +422,73 @@
         </div>
     </section>
 
-    <section class="telemedicine-info">
-        <div class="info-grid">
-            <div class="info-content" data-aos="fade-right">
-                <span class="info-eyebrow">TDSA Focus Areas</span>
-                <h2>TeleDoctorSA is organised around three audience paths.</h2>
-                <p class="info-lead">Patients, nurses, and doctors do not need the same message or the same starting point. TDSA shapes each route around the audience first, then brings in the right tools and follow-up support.</p>
-                <div class="info-focus-grid">
-                    <article class="info-focus-card">
-                        <div class="info-focus-head">
-                            <span class="info-focus-icon"><i data-lucide="heart-pulse" style="width: 18px; height: 18px;"></i></span>
-                            <h3>Patients</h3>
-                        </div>
-                        <p>Lead with patient app access, ECG247 monitoring, and clearer next steps for everyday care, recovery, and return to play.</p>
-                    </article>
-                    <article class="info-focus-card">
-                        <div class="info-focus-head">
-                            <span class="info-focus-icon"><i data-lucide="badge-plus" style="width: 18px; height: 18px;"></i></span>
-                            <h3>Nurses</h3>
-                        </div>
-                        <p>Support nurse-led care with 73 Health, stronger follow-up visibility, and training routes for community and frontline teams.</p>
-                    </article>
-                    <article class="info-focus-card">
-                        <div class="info-focus-head">
-                            <span class="info-focus-icon"><i data-lucide="stethoscope" style="width: 18px; height: 18px;"></i></span>
-                            <h3>Doctors</h3>
-                        </div>
-                        <p>Bring together clinician platform access, patient continuity, ECG247 review, and practical follow-up inside one workflow.</p>
-                    </article>
-                </div>
-            </div>
-            <div class="info-highlight" data-aos="fade-left">
-                <div class="info-highlight-kicker">Three Audience Tracks</div>
-                <h3>One platform story, three clearer conversations.</h3>
-                <p>TeleDoctorSA starts with who the service is for, then matches the platform, monitoring, or workflow support around that role. That keeps the message clearer and the next step more relevant.</p>
-                <div class="info-highlight-list">
-                    <div class="info-highlight-item">
-                        <strong>Patients</strong>
-                        <span>Patient app access, ECG247, and reassurance between consultations.</span>
-                    </div>
-                    <div class="info-highlight-item">
-                        <strong>Nurses</strong>
-                        <span>73 Health, coordination support, and training routes for nurse-led care teams.</span>
-                    </div>
-                    <div class="info-highlight-item">
-                        <strong>Doctors</strong>
-                        <span>Clinician records, patient continuity, remote monitoring, and stronger review workflows.</span>
-                    </div>
-                </div>
+    <section class="tds-audience" aria-label="Care for every role">
+        <div class="tds-audience-inner">
+            <p>For the people receiving care. And the people delivering it.</p>
+            <div class="tds-audience-links" role="navigation" aria-label="Choose your role">
+                <a href="/patients">For patients &rarr;</a>
+                <a href="/nurses">For nurses &rarr;</a>
+                <a href="/doctors">For doctors &rarr;</a>
             </div>
         </div>
     </section>
 
-    <section class="services" id="services">
-        <div class="services-header" data-aos="fade-up">
-            <h2>Choose Your Care Path</h2>
-            <p style="max-width: 800px; margin: 16px auto 0; color: var(--slate-gray); font-size: 1.1rem;">Pick the route that matches your need today. Each path explains the service, who it helps, and the next step to take.</p>
+    <section class="services" id="services" aria-labelledby="care-paths-title">
+        <div class="services-header">
+            <span class="info-eyebrow">Your next step</span>
+            <h2 id="care-paths-title">Care that fits your life.</h2>
+            <p>Start with what you need. We will help you find the right path.</p>
         </div>
-
         <div class="services-grid">
-            <!-- Service 1: Electronic Health Records (EHR) -->
-            <div class="card">
-                <div class="card-img animated-card-img" style="background: linear-gradient(135deg, #0F172A 0%, #1e293b 100%); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
-                    <svg width="200" height="220" viewBox="0 0 200 200" style="position: relative; z-index: 2;">
-                        <!-- Tablet/Device -->
-                        <rect x="40" y="25" width="120" height="150" rx="8" fill="#1e293b" stroke="#FFA366" stroke-width="2.5"/>
-
-                        <!-- Screen -->
-                        <rect x="48" y="33" width="104" height="134" rx="4" fill="#f8f9fa"/>
-
-                        <!-- Header Bar -->
-                        <rect x="48" y="33" width="104" height="20" rx="4" fill="#FFA366"/>
-                        <text x="55" y="46" font-family="Arial" font-size="8" fill="white" font-weight="bold">PATIENT RECORDS</text>
-
-                        <!-- Medical Cross Icon -->
-                        <rect x="135" y="37" width="2" height="10" fill="white"/>
-                        <rect x="130" y="41" width="12" height="2" fill="white"/>
-
-                        <!-- Patient Info Section -->
-                        <rect x="55" y="60" width="40" height="40" rx="4" fill="#E8EDF3"/>
-                        <circle cx="75" cy="75" r="8" fill="#64748B"/>
-                        <rect x="67" y="83" width="16" height="12" rx="2" fill="#64748B"/>
-
-                        <!-- Patient Data Fields -->
-                        <g opacity="0.8">
-                            <rect x="100" y="62" width="38" height="4" rx="2" fill="#64748B"/>
-                            <rect x="100" y="70" width="33" height="4" rx="2" fill="#64748B"/>
-                            <rect x="100" y="78" width="36" height="4" rx="2" fill="#64748B"/>
-                            <rect x="100" y="86" width="30" height="4" rx="2" fill="#64748B"/>
-                        </g>
-
-                        <!-- Medical Records List -->
-                        <g opacity="0.7">
-                            <!-- Record 1 -->
-                            <rect x="55" y="108" width="90" height="14" rx="3" fill="#E8EDF3"/>
-                            <circle cx="62" cy="115" r="3" fill="#10B981"/>
-                            <rect x="70" y="112" width="50" height="2" rx="1" fill="#64748B"/>
-                            <rect x="70" y="117" width="35" height="2" rx="1" fill="#64748B" opacity="0.5"/>
-
-                            <!-- Record 2 -->
-                            <rect x="55" y="126" width="90" height="14" rx="3" fill="#E8EDF3"/>
-                            <circle cx="62" cy="133" r="3" fill="#FFA366"/>
-                            <rect x="70" y="130" width="45" height="2" rx="1" fill="#64748B"/>
-                            <rect x="70" y="135" width="30" height="2" rx="1" fill="#64748B" opacity="0.5"/>
-
-                            <!-- Record 3 -->
-                            <rect x="55" y="144" width="90" height="14" rx="3" fill="#E8EDF3"/>
-                            <circle cx="62" cy="151" r="3" fill="#10B981"/>
-                            <rect x="70" y="148" width="40" height="2" rx="1" fill="#64748B"/>
-                            <rect x="70" y="153" width="38" height="2" rx="1" fill="#64748B" opacity="0.5"/>
-                        </g>
-
-                        <!-- Security Badge -->
-                        <g transform="translate(130, 145)">
-                            <circle cx="10" cy="10" r="12.5" fill="#10B981"/>
-                            <!-- Shield -->
-                            <path d="M 10 4 L 15 7 L 15 12 Q 15 15 10 17 Q 5 15 5 12 L 5 7 Z" fill="white"/>
-                            <!-- Checkmark -->
-                            <polyline points="8,11 10,13 13,9" stroke="#10B981" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-                        </g>
-
-                        <!-- Sync/Cloud Icons -->
-                        <g opacity="0.6">
-                            <path d="M 60 183 Q 55 178 60 173 Q 65 173 67 178 Q 72 173 77 178 Q 77 183 72 183 Z" fill="#FFA366"/>
-                            <!-- Upload Arrow -->
-                            <polygon points="68,175 68,180 66,180 66,175 64,177 68,172 72,177 70,175" fill="white" opacity="0.8"/>
-                        </g>
-
-                        <!-- Data Encryption Lines -->
-                        <g opacity="0.4">
-                            <line x1="25" y1="100" x2="35" y2="100" stroke="#10B981" stroke-width="1">
-                                <animate attributeName="opacity" values="0.2;0.8;0.2" dur="2s" repeatCount="indefinite"/>
-                            </line>
-                            <line x1="165" y1="100" x2="175" y2="100" stroke="#10B981" stroke-width="1">
-                                <animate attributeName="opacity" values="0.2;0.8;0.2" dur="2s" begin="1s" repeatCount="indefinite"/>
-                            </line>
-                        </g>
-                    </svg>
-                </div>
+            <article class="card">
+                <div class="card-img"><img src="images/rebuild/03-doctor-video-consultation.jpg" alt="Doctor ready for a virtual consultation" loading="lazy" width="600" height="400"></div>
                 <div class="card-content">
-                    <div class="icon-wrap"><i data-lucide="clipboard-list"></i></div>
-                    <span class="card-kicker">Need: Access my records</span>
-                    <h3>Electronic Health Records (EHR)</h3>
-                    <p>Keep consultation notes, results, treatment history, and follow-up information in one secure record so care stays easier to review over time.</p>
-                    <div class="card-actions">
-                        <a href="/ehr" class="read-more">Explore Records <i data-lucide="arrow-right" size="18"></i></a>
-                        <a href="#contactModal" class="card-action-secondary" data-open-lead-modal data-service="records-access" data-intent="services-records" data-source="homepage-records-card">Talk to the team</a>
-                    </div>
+                    <span class="card-kicker">01 / Consultations</span>
+                    <h3>Speak to a clinician</h3>
+                    <p>Video and phone consultations for follow-ups, chronic care and non-emergency advice.</p>
+                    <div class="card-actions"><a href="/virtual-consultations" class="read-more">Explore consultations <i data-lucide="arrow-right" size="16"></i></a></div>
                 </div>
-            </div>
-
-            <!-- Service 2: TeleDoctorSA App -->
-            <div class="card">
-                <div class="card-img animated-card-img" style="background: linear-gradient(135deg, #0F172A 0%, #1e293b 100%); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
-                    <svg width="200" height="220" viewBox="0 0 200 200" style="position: relative; z-index: 2;">
-                        <!-- Smartphone Device -->
-                        <rect x="55" y="20" width="90" height="165" rx="10" fill="#1e293b" stroke="#FFA366" stroke-width="2.5"/>
-
-                        <!-- Screen -->
-                        <rect x="62" y="32" width="76" height="141" rx="4" fill="#0a0f1a"/>
-
-                        <!-- Status Bar -->
-                        <g opacity="0.6">
-                            <text x="68" y="42" font-family="Arial" font-size="6" fill="white">9:41</text>
-                            <rect x="120" y="37" width="10" height="4" rx="1" fill="#10B981"/>
-                            <text x="110" y="42" font-family="Arial" font-size="6" fill="white">100%</text>
-                        </g>
-
-                        <!-- App Header -->
-                        <rect x="62" y="47" width="76" height="18" fill="#FFA366"/>
-                        <text x="74" y="58" font-family="Arial" font-size="8" fill="white" font-weight="bold">TeleDoctorSA</text>
-
-                        <!-- Menu Icon -->
-                        <g transform="translate(68, 52)">
-                            <rect width="8" height="1.5" fill="white" rx="0.5"/>
-                            <rect y="3" width="8" height="1.5" fill="white" rx="0.5"/>
-                            <rect y="6" width="8" height="1.5" fill="white" rx="0.5"/>
-                        </g>
-
-                        <!-- Health Vitals Dashboard -->
-                        <g opacity="0.9">
-                            <!-- BP Card -->
-                            <rect x="68" y="72" width="30" height="28" rx="3" fill="#E8EDF3"/>
-                            <text x="72" y="82" font-family="Arial" font-size="6" fill="#64748B" font-weight="bold">BP</text>
-                            <text x="70" y="92" font-family="Arial" font-size="9" fill="#FFA366" font-weight="bold">120/80</text>
-                            <circle cx="91" cy="79" r="3" fill="#10B981"/>
-
-                            <!-- Glucose Card -->
-                            <rect x="104" y="72" width="30" height="28" rx="3" fill="#E8EDF3"/>
-                            <text x="107" y="82" font-family="Arial" font-size="6" fill="#64748B" font-weight="bold">Glucose</text>
-                            <text x="109" y="92" font-family="Arial" font-size="9" fill="#FFA366" font-weight="bold">5.2</text>
-                            <circle cx="127" cy="79" r="3" fill="#10B981"/>
-
-                            <!-- SpO2 Card -->
-                            <rect x="68" y="106" width="30" height="28" rx="3" fill="#E8EDF3"/>
-                            <text x="72" y="116" font-family="Arial" font-size="6" fill="#64748B" font-weight="bold">SpO2</text>
-                            <text x="73" y="126" font-family="Arial" font-size="9" fill="#FFA366" font-weight="bold">98%</text>
-                            <circle cx="91" cy="113" r="3" fill="#10B981"/>
-
-                            <!-- Heart Rate Card -->
-                            <rect x="104" y="106" width="30" height="28" rx="3" fill="#E8EDF3"/>
-                            <text x="110" y="116" font-family="Arial" font-size="6" fill="#64748B" font-weight="bold">HR</text>
-                            <text x="109" y="126" font-family="Arial" font-size="9" fill="#FFA366" font-weight="bold">72</text>
-                            <circle cx="127" cy="113" r="3" fill="#10B981"/>
-                        </g>
-
-                        <!-- Sync Status -->
-                        <rect x="68" y="141" width="64" height="22" rx="3" fill="#E8EDF3"/>
-                        <circle cx="78" cy="152" r="5" fill="#10B981" class="svg-pulse"/>
-                        <text x="87" y="150" font-family="Arial" font-size="6" fill="#64748B">Syncing Data...</text>
-                        <text x="87" y="157" font-family="Arial" font-size="5" fill="#64748B" opacity="0.6">Last sync: 2 min ago</text>
-
-                        <!-- Device Icons -->
-                        <g transform="translate(70, 168)" opacity="0.7">
-                            <!-- BP Monitor Icon -->
-                            <rect x="0" y="0" width="8" height="6" rx="1" fill="#FFA366"/>
-                            <circle cx="4" cy="3" r="1.5" fill="white"/>
-
-                            <!-- Glucose Meter -->
-                            <rect x="12" y="0" width="6" height="8" rx="1" fill="#FFA366"/>
-                            <rect x="13" y="5" width="4" height="2" fill="white"/>
-
-                            <!-- Oximeter -->
-                            <rect x="22" y="1" width="8" height="6" rx="1" fill="#FFA366"/>
-                            <rect x="24" y="3" width="4" height="2" fill="white"/>
-                        </g>
-
-                        <!-- Home Button -->
-                        <circle cx="100" cy="177" r="4" fill="#64748B" opacity="0.5"/>
-
-                        <!-- Notification Badge -->
-                        <circle cx="130" cy="30" r="6" fill="#FF4444"/>
-                        <text x="127" y="33" font-family="Arial" font-size="7" fill="white" font-weight="bold">3</text>
-                    </svg>
-                </div>
+            </article>
+            <article class="card">
+                <div class="card-img"><img src="images/rebuild/04-wearable-ecg-monitor.jpg" alt="Wearable ECG247 heart monitoring sensor" loading="lazy" width="600" height="400"></div>
                 <div class="card-content">
-                    <div class="icon-wrap"><i data-lucide="smartphone"></i></div>
-                    <span class="card-kicker">Need: Use the app</span>
-                    <h3>TeleDoctorSA App</h3>
-                    <p>App rollout is in progress for patient messaging, appointment support, and future device-linked reading uploads. Register interest to hear when onboarding opens.</p>
-                    <div class="card-actions">
-                        <a href="/app" class="read-more">Open Patient App <i data-lucide="arrow-right" size="18"></i></a>
-                        <a href="#contactModal" class="card-action-secondary" data-open-lead-modal data-service="app-access" data-intent="services-app" data-source="homepage-app-card">Join the interest list</a>
-                    </div>
+                    <span class="card-kicker">02 / Heart monitoring</span>
+                    <h3>See the bigger picture</h3>
+                    <p>Explore ECG247 monitoring to help your clinician review heart rhythm over time.</p>
+                    <div class="card-actions"><a href="/ecg247" class="read-more">Explore ECG247 <i data-lucide="arrow-right" size="16"></i></a></div>
                 </div>
-            </div>
-
-            <!-- Service 3: ECG247 Remote Monitoring -->
-            <div class="card">
-                <div class="card-img animated-card-img" style="background: linear-gradient(135deg, #0F172A 0%, #1e293b 100%); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
-                    <svg width="200" height="220" viewBox="0 0 200 200" style="position: relative; z-index: 2;">
-                        <!-- ECG Monitor Device -->
-                        <rect x="25" y="30" width="150" height="140" rx="10" fill="#1e293b" stroke="#FFA366" stroke-width="2.5"/>
-
-                        <!-- Screen -->
-                        <rect x="35" y="40" width="130" height="85" rx="4" fill="#0a0f1a"/>
-
-                        <!-- ECG Grid Lines -->
-                        <g opacity="0.2">
-                            <line x1="35" y1="55" x2="165" y2="55" stroke="#10B981" stroke-width="0.5"/>
-                            <line x1="35" y1="70" x2="165" y2="70" stroke="#10B981" stroke-width="0.5"/>
-                            <line x1="35" y1="85" x2="165" y2="85" stroke="#10B981" stroke-width="0.5"/>
-                            <line x1="35" y1="100" x2="165" y2="100" stroke="#10B981" stroke-width="0.5"/>
-                            <line x1="35" y1="115" x2="165" y2="115" stroke="#10B981" stroke-width="0.5"/>
-                        </g>
-
-                        <!-- Animated ECG Waveform -->
-                        <polyline points="35,85 50,85 55,70 60,100 65,85 80,85 85,75 90,95 95,85 110,85 115,65 120,105 125,85 165,85"
-                                  stroke="#10B981" stroke-width="2.5" fill="none" filter="url(#glow)"/>
-
-                        <!-- Heart Rate Display -->
-                        <text x="45" y="52" font-family="monospace" font-size="10" fill="#FFA366" font-weight="bold">HR</text>
-                        <text x="65" y="52" font-family="monospace" font-size="14" fill="#10B981" font-weight="bold" class="svg-heartbeat">
-                            72
-                        </text>
-                        <text x="85" y="52" font-family="monospace" font-size="8" fill="#64748B">bpm</text>
-
-                        <!-- 24/7 Badge -->
-                        <g transform="translate(110, 43)">
-                            <rect x="0" y="0" width="48" height="14" rx="7" fill="#FFA366"/>
-                            <text x="24" y="10" font-family="Arial" font-size="8" fill="white" font-weight="bold" text-anchor="middle">24/7</text>
-                        </g>
-
-                        <!-- Control Panel -->
-                        <rect x="40" y="133" width="120" height="28" rx="4" fill="#0a0f1a"/>
-
-                        <!-- Buttons -->
-                        <circle cx="55" cy="147" r="6" class="svg-button-glow"/>
-                        <circle cx="75" cy="147" r="6" fill="#64748B"/>
-                        <circle cx="95" cy="147" r="6" fill="#64748B"/>
-
-                        <!-- Status Indicators -->
-                        <circle cx="125" cy="142" r="2.5" fill="#10B981" class="svg-power-blink"/>
-                        <circle cx="135" cy="142" r="2.5" fill="#FFA366"/>
-                        <circle cx="145" cy="142" r="2.5" fill="#64748B"/>
-
-                        <text x="118" y="156" font-family="Arial" font-size="6" fill="#64748B">PWR</text>
-                        <text x="128" y="156" font-family="Arial" font-size="6" fill="#64748B">REC</text>
-                        <text x="138" y="156" font-family="Arial" font-size="6" fill="#64748B">ALM</text>
-
-                        <!-- Wireless Signal -->
-                        <g opacity="0.7">
-                            <path d="M 170 45 Q 175 40 180 45" stroke="#10B981" stroke-width="1.5" fill="none" class="svg-wireless-1"/>
-                            <path d="M 167 50 Q 175 42 183 50" stroke="#10B981" stroke-width="1.5" fill="none" class="svg-wireless-2"/>
-                            <path d="M 164 55 Q 175 44 186 55" stroke="#10B981" stroke-width="1.5" fill="none" class="svg-wireless-3"/>
-                        </g>
-
-                        <!-- Cloud Upload Icon -->
-                        <g transform="translate(45, 165)" opacity="0.6">
-                            <path d="M 5 5 Q 2 2 5 -1 Q 8 -1 9 2 Q 13 -1 17 2 Q 17 5 14 5 Z" fill="#FFA366"/>
-                            <polygon points="11,2 11,6 9,6 9,2 7,4 11,-1 15,4 13,2" fill="white" opacity="0.9"/>
-                        </g>
-
-                        <!-- Certification Badge -->
-                        <g transform="translate(135, 165)">
-                            <circle cx="10" cy="5" r="9" fill="#10B981"/>
-                            <text x="10" y="8" font-family="Arial" font-size="6" fill="white" font-weight="bold" text-anchor="middle">?</text>
-                            <text x="10" y="14" font-family="Arial" font-size="4" fill="white" text-anchor="middle">CERT</text>
-                        </g>
-
-                        <!-- Glow Filter -->
-                        <defs>
-                            <filter id="glow">
-                                <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
-                                <feMerge>
-                                    <feMergeNode in="coloredBlur"/>
-                                    <feMergeNode in="SourceGraphic"/>
-                                </feMerge>
-                            </filter>
-                        </defs>
-                    </svg>
-                </div>
+            </article>
+            <article class="card">
+                <div class="card-img"><img src="images/rebuild/07-mobile-health-app.jpg" alt="TeleDoctorSA mobile healthcare experience" loading="lazy" width="600" height="400"></div>
                 <div class="card-content">
-                    <div class="icon-wrap"><i data-lucide="activity"></i></div>
-                    <span class="card-kicker">Need: Monitor my health</span>
-                    <h3>ECG247 - 24/7 Remote ECG Monitoring</h3>
-                    <p>Use medically certified heart rhythm monitoring when symptoms, screening risk, or ongoing cardiac review need more than a single in-room reading.</p>
-                    <div class="card-actions">
-                        <a href="/ecg247" class="read-more">Explore ECG247 <i data-lucide="arrow-right" size="18"></i></a>
-                        <a href="#contactModal" class="card-action-secondary" data-open-lead-modal data-service="ecg247-monitoring" data-intent="services-monitoring" data-source="homepage-ecg-card">Ask if it fits my case</a>
-                    </div>
+                    <span class="card-kicker">03 / App access</span>
+                    <h3>Stay connected to care</h3>
+                    <p>Find patient and clinician access, download options and help getting started.</p>
+                    <div class="card-actions"><a href="/app" class="read-more">Explore the app <i data-lucide="arrow-right" size="16"></i></a></div>
                 </div>
-            </div>
-
-            <!-- Service 4: Virtual Medical Consultations -->
-            <div class="card">
-                <div class="card-img animated-card-img" style="background: linear-gradient(135deg, #0F172A 0%, #1e293b 100%); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
-                    <svg width="200" height="220" viewBox="0 0 200 200" style="position: relative; z-index: 2;">
-                        <!-- Video Screen -->
-                        <rect x="30" y="40" width="140" height="100" rx="8" fill="#1e293b" stroke="#FFA366" stroke-width="2"/>
-                        <rect x="35" y="45" width="130" height="90" rx="4" fill="#0F172A"/>
-
-                        <!-- Doctor in Screen -->
-                        <circle cx="100" cy="75" r="18" fill="#FFA366" class="svg-pulse"/>
-                        <rect x="82" y="93" width="36" height="35" rx="4" fill="#FFA366" opacity="0.8"/>
-
-                        <!-- Stethoscope Detail -->
-                        <circle cx="120" cy="70" r="4" fill="white" opacity="0.9"/>
-                        <path d="M 120 74 Q 125 80 130 85" stroke="white" stroke-width="2" fill="none" opacity="0.8"/>
-
-                        <!-- Medical Cross -->
-                        <rect x="138" y="62" width="3" height="12" fill="white" opacity="0.7"/>
-                        <rect x="133" y="67" width="13" height="3" fill="white" opacity="0.7"/>
-
-                        <!-- Video Call Indicators -->
-                        <circle cx="50" cy="55" r="3" fill="#10B981" class="svg-blink"/>
-                        <text x="58" y="58" font-family="Arial" font-size="8" fill="white" opacity="0.8">LIVE</text>
-
-                        <!-- Connection Signal -->
-                        <g opacity="0.7">
-                            <rect x="140" y="123" width="3" height="10" fill="#FFA366"/>
-                            <rect x="145" y="120" width="3" height="13" fill="#FFA366"/>
-                            <rect x="150" y="117" width="3" height="16" fill="#FFA366"/>
-                        </g>
-
-                        <!-- Monitor Base -->
-                        <rect x="85" y="145" width="30" height="4" rx="2" fill="#64748B"/>
-                        <rect x="95" y="140" width="10" height="5" fill="#64748B"/>
-
-                        <!-- Phone Icon (for telephone consultation option) -->
-                        <g transform="translate(15, 90)" opacity="0.5">
-                            <rect x="0" y="0" width="12" height="20" rx="2" fill="#FFA366"/>
-                            <rect x="2" y="2" width="8" height="14" rx="1" fill="#0F172A"/>
-                            <rect x="4" y="17" width="4" height="1.5" rx="0.5" fill="#0F172A"/>
-                        </g>
-
-                        <!-- Video Camera Icon -->
-                        <g transform="translate(173, 90)" opacity="0.5">
-                            <rect x="0" y="2" width="10" height="8" rx="1" fill="#FFA366"/>
-                            <polygon points="10,4 14,2 14,10 10,8" fill="#FFA366"/>
-                            <circle cx="5" cy="6" r="2" fill="#0F172A"/>
-                        </g>
-
-                        <!-- Data Transmission Lines -->
-                        <line x1="15" y1="100" x2="25" y2="100" stroke="#FFA366" stroke-width="1.5" class="svg-fade-1"/>
-                        <line x1="175" y1="100" x2="185" y2="100" stroke="#FFA366" stroke-width="1.5" class="svg-fade-2"/>
-
-                        <!-- Heartbeat Monitor Line -->
-                        <polyline points="40,165 60,165 65,155 70,175 75,165 160,165" stroke="#10B981" stroke-width="2" fill="none" opacity="0.6"/>
-
-                        <!-- Appointment Calendar Icon -->
-                        <g transform="translate(45, 150)" opacity="0.6">
-                            <rect x="0" y="2" width="16" height="14" rx="1" fill="#E8EDF3"/>
-                            <rect x="0" y="0" width="16" height="4" rx="1" fill="#FFA366"/>
-                            <rect x="2" y="-1" width="2" height="3" fill="#64748B"/>
-                            <rect x="12" y="-1" width="2" height="3" fill="#64748B"/>
-                            <text x="8" y="12" font-family="Arial" font-size="6" fill="#64748B" text-anchor="middle">24</text>
-                        </g>
-
-                        <!-- Secure Connection Badge -->
-                        <g transform="translate(140, 150)">
-                            <circle cx="8" cy="8" r="10" fill="#10B981" opacity="0.8"/>
-                            <path d="M 8 4 L 12 6 L 12 10 Q 12 12 8 14 Q 4 12 4 10 L 4 6 Z" fill="white"/>
-                            <polyline points="6,9 8,11 11,7" stroke="#10B981" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-                        </g>
-                    </svg>
-                </div>
+            </article>
+            <article class="card">
+                <div class="card-img"><img src="images/rebuild/06-healthcare-dashboard.jpg" alt="Digital health records and clinical information" loading="lazy" width="600" height="400"></div>
                 <div class="card-content">
-                    <div class="icon-wrap"><i data-lucide="video"></i></div>
-                    <span class="card-kicker">Need: Speak to a doctor</span>
-                    <h3>Virtual Medical Consultations</h3>
-                    <p>See a qualified practitioner by video or phone without leaving home. Ideal for follow-ups, chronic care, and faster access to trusted medical advice.</p>
-                    <div class="card-actions">
-                        <a href="/virtual-consultations" class="read-more">Explore Consultations <i data-lucide="arrow-right" size="18"></i></a>
-                        <a href="#contactModal" class="card-action-secondary" data-open-lead-modal data-service="virtual-consultation" data-intent="services-consultation" data-source="homepage-consultation-card">Request a callback</a>
-                    </div>
+                    <span class="card-kicker">04 / Health records</span>
+                    <h3>Keep your care in context</h3>
+                    <p>Bring notes, results and follow-up history together for better continuity of care.</p>
+                    <div class="card-actions"><a href="/ehr" class="read-more">Explore health records <i data-lucide="arrow-right" size="16"></i></a></div>
                 </div>
-            </div>
+            </article>
         </div>
     </section>
 
-    <section class="telemedicine-explainer">
-        <div class="telemedicine-explainer-grid">
-            <div class="telemedicine-explainer-copy" data-aos="fade-right">
-                <span class="telemedicine-explainer-kicker">Telemedicine Basics</span>
-                <h2>What is Telemedicine?</h2>
-                <p>Telemedicine delivers healthcare remotely through secure digital technology. Home devices such as a blood pressure machine, oximeter, or glucose monitor can send readings into secure digital records for your doctor to review without every check-in needing to happen in person.</p>
-                <p>Those records build a clearer picture over time, making it easier for you and your clinician to review past results, spot changes, and adjust care with better context.</p>
-                <p>For chronic care, that means more regular support, fewer unnecessary trips, and better continuity between consultations.</p>
-            </div>
-            <div class="telemedicine-explainer-card" data-aos="fade-left">
-                <div class="telemedicine-explainer-card-kicker">Home Devices</div>
-                <h3>Healthcare devices you can use in the comfort of your own home</h3>
-                <p>TeleDoctorSA focuses on practical innovations that improve care between visits. We currently feature <strong>ECG247</strong>, a medically certified wireless heart sensor that tracks heart rhythm during everyday life, giving patients and clinicians more accurate, real-time information.</p>
-                <div class="telemedicine-explainer-tags">
-                    <span>ECG247</span>
-                    <span>Blood Pressure</span>
-                    <span>Oximeter</span>
-                    <span>Glucose</span>
+    <section class="tds-ecg-feature" aria-labelledby="ecg-feature-title">
+        <div class="tds-ecg-inner">
+            <img class="tds-ecg-image" src="images/rebuild/04-wearable-ecg-monitor.jpg" alt="ECG247 wearable heart monitoring" loading="lazy" width="720" height="600">
+            <div class="tds-ecg-copy">
+                <p class="tds-eyebrow">Featured / ECG247</p>
+                <h2 id="ecg-feature-title">Heart monitoring.<br>Beyond the consultation.</h2>
+                <p>Your everyday activity can tell an important story. Explore wearable ECG monitoring and help your clinician see your heart rhythm over a longer period.</p>
+                <div class="tds-ecg-actions">
+                    <a href="/ecg247">Explore ECG247 &rarr;</a>
+                    <a href="https://ecg247.com/en/how-to-use-ecg247/" target="_blank" rel="noopener noreferrer" aria-label="View ECG247 setup guide (opens in a new tab)">View setup guide &nearr;</a>
                 </div>
             </div>
         </div>
@@ -877,24 +498,24 @@
         <div class="trust-assurance-grid">
             <div class="trust-assurance-panel" data-aos="fade-up">
                 <span class="trust-assurance-kicker"><i data-lucide="shield-check" style="width: 14px; height: 14px;"></i> Built for confidence</span>
-                <h2>Patients stay engaged when trust is easy to see.</h2>
-                <p>TeleDoctorSA combines clinician-led care, secure digital records, practical monitoring tools, and a real Johannesburg practice location so the experience feels credible before, during, and after the first enquiry.</p>
+                <h2>Connected to a real care team.</h2>
+                <p>Digital care with a human point of contact. Our team can help you choose a service, prepare for a consultation and plan your next step.</p>
                 <div class="trust-proof-grid">
                     <article class="trust-proof-card">
                         <strong>Clinician-led care</strong>
-                        <span>Consultations and monitoring decisions are tied to real healthcare workflows, not just a generic contact channel.</span>
+                        <span>Consultations, monitoring and follow-up guided by healthcare professionals.</span>
                     </article>
                     <article class="trust-proof-card">
                         <strong>Secure information handling</strong>
-                        <span>Electronic records and patient communication are supported by privacy-aware processes and healthcare compliance messaging.</span>
+                        <span>Privacy-aware processes for records and patient communication.</span>
                     </article>
                     <article class="trust-proof-card">
                         <strong>Human follow-up</strong>
-                        <span>Patients can choose phone, WhatsApp, or email so the response feels accessible instead of one-size-fits-all.</span>
+                        <span>Reach the team by phone, WhatsApp or email.</span>
                     </article>
                     <article class="trust-proof-card">
                         <strong>Physical and digital continuity</strong>
-                        <span>TeleDoctorSA supports remote care while still giving patients a real address, operating hours, and a clear escalation path.</span>
+                        <span>Remote care supported by a Johannesburg practice and clear contact options.</span>
                     </article>
                 </div>
                 <div class="trust-proof-actions">
@@ -904,16 +525,16 @@
             </div>
             <div class="trust-faq-card" data-aos="fade-up" data-aos-delay="120">
                 <span class="trust-assurance-kicker"><i data-lucide="help-circle" style="width: 14px; height: 14px;"></i> Before you enquire</span>
-                <h3>Quick answers that reduce uncertainty.</h3>
-                <p>These are the questions people usually ask before they choose a consultation, monitoring pathway, or records support option.</p>
+                <h3>Before you contact us</h3>
+                <p>A few useful answers before your first enquiry.</p>
                 <div class="trust-faq-list">
                     <details class="trust-faq-item" open>
                         <summary>How quickly will someone respond?</summary>
-                        <p>Website enquiries are routed within one business day. If you prefer faster back-and-forth for a non-emergency question, WhatsApp is the quickest live channel.</p>
+                        <p>Send your enquiry to the team using WhatsApp or email. Response times depend on operating hours. For a non-emergency question, you can also call us.</p>
                     </details>
                     <details class="trust-faq-item">
                         <summary>What if I do not know which service I need?</summary>
-                        <p>Use the callback form and choose â€œHelp me choose the right option.â€ TeleDoctorSA will route you to the most relevant starting point instead of making you guess first.</p>
+                        <p>Use the callback form and choose “Help me choose the right option.” TeleDoctorSA will route you to the most relevant starting point instead of making you guess first.</p>
                     </details>
                     <details class="trust-faq-item">
                         <summary>Can I ask about records or devices before I book?</summary>
@@ -933,7 +554,7 @@
         <div class="location-grid">
             <div class="location-content" data-aos="fade-right">
                 <h2>Visit Us <span>In Person</span></h2>
-                <p class="location-subtitle">Experience healthcare redefined. Our modern facility is equipped with the latest technology to serve you better.</p>
+                <p class="location-subtitle">Find our Johannesburg practice, contact the team or plan your visit.</p>
 
                 <div class="contact-cards">
                     <div class="contact-card">
@@ -988,18 +609,25 @@
             <div class="map-column" data-aos="fade-left" data-aos-delay="200">
                 <div class="map-container">
                     <iframe
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3583.6359167362757!2d28.0425!3d-26.1425!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1e950c1c8c8c8c8d%3A0x1c8c8c8c8c8c8c8c!2s29%20Landor%20St%2C%20Tulisa%20Park%2C%20Johannesburg%2C%202197!5e0!3m2!1sen!2sza!4v1234567890"
+                        src="https://www.google.com/maps?q=29%20Landor%20Street%2C%20Tulisa%20Park%2C%20Johannesburg&amp;output=embed"
+                        title="Map of TeleDoctorSA at 29 Landor Street, Tulisa Park, Johannesburg"
                         allowfullscreen=""
                         loading="lazy"
                         referrerpolicy="no-referrer-when-downgrade">
                     </iframe>
                     <div class="map-overlay">
-                        <h5>Find Us Here</h5>
-                        <p>Click the map to explore the area</p>
+                        <h5>Visit our Johannesburg practice</h5>
+                        <p><a href="https://www.google.com/maps/dir//29+Landor+St,+Tulisa+Park,+Johannesburg,+2197" target="_blank" rel="noopener noreferrer">Open directions in Google Maps &nearr;</a></p>
                     </div>
                 </div>
             </div>
         </div>
+    </section>
+
+    <section class="tds-closing" aria-labelledby="closing-title">
+        <h2 id="closing-title">Let us help you take the next step.</h2>
+        <p>Have a question about care, ECG247 or bringing TeleDoctorSA to your practice? Talk to our team.</p>
+        <a class="cta-btn" href="/contact-us">Contact TeleDoctorSA &rarr;</a>
     </section>
 
     <!-- Footer -->
@@ -1060,7 +688,7 @@
             </div>
 
             <div class="site-footer-bottom">
-      <span class="site-footer-copyright">Â© 2026 TeleDoctorSA Â· Dr. Mukudu & Partners Â· Johannesburg, South Africa</span>
+      <span class="site-footer-copyright">© 2026 TeleDoctorSA · Dr. Mukudu & Partners · Johannesburg, South Africa</span>
       <nav class="site-footer-legal-links" aria-label="Legal and policy links">
           <a href="/privacy-policy">Privacy</a>
           <a href="javascript:void(0)" onclick="openLegal('terms-conditions')">Terms</a>
@@ -1076,7 +704,7 @@
     <!-- Service Modals -->
     <div id="virtualModal" class="modal service-modal">
         <div class="modal-content">
-            <span class="modal-close">&times;</span>
+            <button type="button" class="modal-close" aria-label="Close dialog">&times;</button>
             <h3>About TeleDoctorSA</h3>
 
             <p style="font-size: 1.1rem; font-weight: 600; color: var(--deep-navy); margin-bottom: 16px;">
@@ -1111,7 +739,7 @@
 
     <div id="technologyModal" class="modal service-modal">
         <div class="modal-content">
-            <span class="modal-close">&times;</span>
+            <button type="button" class="modal-close" aria-label="Close dialog">&times;</button>
             <h3>Our Services</h3>
 
             <div style="text-align: center; margin-bottom: 30px;">
@@ -1210,7 +838,7 @@
 
     <div id="recordsModal" class="modal service-modal">
         <div class="modal-content">
-            <span class="modal-close">&times;</span>
+            <button type="button" class="modal-close" aria-label="Close dialog">&times;</button>
             <h3>Electronic Health Records</h3>
             <p>At our facility, we prioritize the secure digital storage of all your medical records, ensuring that they are not only protected but also easily accessible whenever you need them. This user-friendly approach allows you to effortlessly track your health progress over time, giving you a clearer view of your wellness journey.</p>
             <p>Additionally, by digitalizing your records, any healthcare professional examining your case can quickly and effectively identify patterns or correlations from your medical history. This streamlined access to comprehensive information ultimately enhances the efficiency and accuracy of their assessments, leading to better-informed healthcare decisions and improved patient outcomes.</p>
@@ -1220,9 +848,9 @@
     <!-- Contact Modal -->
     <div id="contactModal" class="modal">
         <div class="modal-content">
-            <span class="modal-close" id="modalClose">&times;</span>
-            <h2>Start Your Care Journey</h2>
-            <p id="contactModalIntro" class="contact-modal-intro">Share what you need and TeleDoctorSA will route you to the right service, clinician, or monitoring conversation within one business day.</p>
+            <button type="button" class="modal-close" aria-label="Close dialog" id="modalClose">&times;</button>
+            <h2>How can we help?</h2>
+            <p id="contactModalIntro" class="contact-modal-intro">Tell us what you need. Prepare your enquiry, then send it to our team using WhatsApp or email.</p>
             <div class="lead-assurance-strip" aria-label="What to expect after submitting">
                 <div class="lead-assurance-item">
                     <strong>Expected reply</strong>
@@ -1272,6 +900,7 @@
                             <option value="ecg247-monitoring">Monitor my health with ECG247</option>
                             <option value="app-access">Use the TeleDoctorSA app</option>
                             <option value="records-access">Access medical records</option>
+                            <option value="practice-demo">Book a practice demo</option>
                             <option value="general-guidance">Help me choose the right option</option>
                         </select>
                     </div>
@@ -1299,7 +928,8 @@
                 </div>
                 <input type="hidden" id="leadSource" name="leadSource" value="homepage-modal">
                 <input type="hidden" id="leadIntent" name="leadIntent" value="">
-                <button type="submit" class="submit-btn">Send Enquiry</button>
+                <p class="field-help">After preparing your enquiry, choose WhatsApp or email and send it from that app.</p>
+                <button type="submit" class="submit-btn">Prepare Enquiry</button>
                 <div id="formStatus" class="form-status" aria-live="polite"></div>
             </form>
         </div>
@@ -1308,7 +938,7 @@
     <!-- Legal Notice Modal -->
     <div id="legalNoticeModal" class="modal">
         <div class="modal-content" style="max-width: 900px;">
-            <span class="modal-close">&times;</span>
+            <button type="button" class="modal-close" aria-label="Close dialog">&times;</button>
             <h2 style="color: var(--deep-navy); margin-bottom: 30px; font-size: 2.2rem;">Legal Notice</h2>
 
             <div style="line-height: 1.8; color: var(--slate-gray);">
@@ -1400,25 +1030,62 @@
     <!-- Legal Modal -->
     <div id="legalModal" class="modal">
         <div class="modal-content" style="max-width: 800px; max-height: 80vh; overflow-y: auto;">
-            <span class="modal-close" onclick="closeLegalModal()">&times;</span>
+            <button type="button" class="modal-close" aria-label="Close dialog" onclick="closeLegalModal()">&times;</button>
             <div id="legalModalTitle" style="font-size: 2rem; font-weight: 700; margin-bottom: 20px; color: var(--deep-navy);"></div>
             <div id="legalModalBody" style="color: var(--slate-gray); line-height: 1.8;">
             </div>
         </div>
     </div>
 
+    <aside class="tdsa-updates" data-tdsa-updates aria-label="TeleDoctorSA updates">
+        <button class="tdsa-updates-launcher" type="button" data-updates-launcher aria-label="Open TeleDoctorSA updates and featured services" aria-haspopup="dialog" aria-controls="tdsa-updates-panel" aria-expanded="false" hidden>
+            <img src="images/rebuild/logo.png" alt="" width="40" height="40">
+            <span>Updates</span><span class="tdsa-updates-dot" aria-hidden="true"></span>
+        </button>
+        <div class="tdsa-updates-notice" data-updates-notice role="status" hidden>
+            <p class="tdsa-updates-eyebrow">Featured resource</p>
+            <p>Getting started with ECG247? Your official setup guide is here.</p>
+            <button class="tdsa-updates-text-button" type="button" data-updates-view>View TDSA updates &rarr;</button>
+            <button class="tdsa-updates-close" type="button" data-updates-dismiss aria-label="Dismiss ECG247 notification">&times;</button>
+        </div>
+        <dialog class="tdsa-updates-panel" id="tdsa-updates-panel" aria-labelledby="tdsa-updates-title">
+            <div class="tdsa-updates-header">
+                <div><p class="tdsa-updates-eyebrow">TeleDoctorSA</p><h2 id="tdsa-updates-title">Updates &amp; highlights</h2></div>
+                <button class="tdsa-updates-close" type="button" data-updates-close aria-label="Close TeleDoctorSA updates" autofocus>&times;</button>
+            </div>
+            <ul class="tdsa-updates-list">
+                <li>
+                    <p class="tdsa-updates-eyebrow">ECG247 guide</p>
+                    <h3>Set up your heart monitor</h3>
+                    <p>Find the official instructions for the ECG247 app and sensor, with answers to common setup questions.</p>
+                    <a class="tdsa-updates-primary" href="https://ecg247.com/en/how-to-use-ecg247/" target="_blank" rel="noopener noreferrer" aria-label="View ECG247 setup guide (opens in a new tab)">View setup guide &nearr;</a>
+                </li>
+                <li>
+                    <h3>Explore the TeleDoctorSA app</h3>
+                    <p>Find patient and clinician access options, download links and help getting started.</p>
+                    <a href="teledoctorsa-app.html">Explore app access &rarr;</a>
+                </li>
+                <li>
+                    <h3>Bring TDSA to your practice</h3>
+                    <p>Speak to our team about virtual consultations, remote monitoring and digital records.</p>
+                    <a href="contact-us.html">Enquire about a demo &rarr;</a>
+                </li>
+            </ul>
+            <p class="tdsa-updates-footer">Featured services and resources from TeleDoctorSA.</p>
+        </dialog>
+    </aside>
+    <script src="scripts/tdsa-updates.js?v=20261009-updates1" defer></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script src="/scripts/homepage.js"></script>
+    <script src="/scripts/homepage.js?v=20261009-site-audit1"></script>
 <script src="/scripts/homepage-slider.js"></script>
     <script src="scripts/support-chatbot.js"></script>
-<script src="/scripts/navigation.js"></script>
-    <script src="scripts/home-core-slide-images.js"></script>
+<script src="/scripts/navigation.js?v=20261009-design1"></script>
+    <script src="scripts/home-core-slide-images.js?v=20261009-carousel2"></script>
 
 
 
-    <script src="scripts/site-ux-v4.js"></script>
-    <script src="/scripts/rebuild-images.js"></script>
-    <script src="/scripts/editorial-mega-menu.js?v=20261009"></script>
+    <script src="scripts/site-ux-v4.js?v=20261009-site-audit1"></script>
+    <script src="/scripts/rebuild-images.js?v=20261009-design2"></script>
 </body>
 </html>
 

@@ -1,0 +1,32 @@
+.tdsa-updates { --updates-ink: #17213a; --updates-accent: #b84e15; color: var(--updates-ink); font-family: 'Plus Jakarta Sans', sans-serif; }
+.tdsa-updates *, .tdsa-updates *::before, .tdsa-updates *::after { box-sizing: border-box; }
+.tdsa-updates [hidden] { display: none !important; }
+.tdsa-updates button, .tdsa-updates a { -webkit-tap-highlight-color: transparent; }
+.tdsa-updates button { cursor: pointer; font: inherit; }
+.tdsa-updates a:focus-visible, .tdsa-updates button:focus-visible { outline: 3px solid #ed7835; outline-offset: 4px; }
+.tdsa-updates-launcher { position: fixed; right: max(20px, env(safe-area-inset-right)); bottom: max(20px, env(safe-area-inset-bottom)); z-index: 800; display: flex; align-items: center; gap: 10px; min-height: 56px; padding: 8px 16px 8px 8px; border: 1px solid #d9dce3; border-radius: 0; background: #fff; color: var(--updates-ink); box-shadow: 0 6px 24px #17213a1a; font-size: .8rem !important; font-weight: 700 !important; }
+.tdsa-updates-launcher img { display: block; width: 40px; height: 40px; object-fit: contain; }
+.tdsa-updates-dot { width: 7px; height: 7px; background: var(--updates-accent); border-radius: 50%; }
+.tdsa-updates-notice { position: fixed; right: max(20px, env(safe-area-inset-right)); bottom: calc(max(20px, env(safe-area-inset-bottom)) + 70px); z-index: 800; width: min(320px, calc(100vw - 40px)); padding: 20px; border: 1px solid #d9dce3; border-top: 3px solid var(--updates-accent); background: #fff; box-shadow: 0 8px 28px #17213a1a; }
+.tdsa-updates-eyebrow { margin: 0 0 10px; color: #934018; font-size: .65rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.tdsa-updates-notice p:not(.tdsa-updates-eyebrow) { margin: 0 20px 14px 0; font-size: .85rem; line-height: 1.6; }
+.tdsa-updates-text-button { padding: 0; border: 0; background: transparent; color: var(--updates-ink); font-size: .8rem !important; font-weight: 700 !important; text-decoration: underline; text-underline-offset: 4px; }
+.tdsa-updates-close { display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 1px solid #d9dce3; border-radius: 0; color: var(--updates-ink); background: #fff; font-size: 24px !important; }
+.tdsa-updates-notice .tdsa-updates-close { position: absolute; top: 4px; right: 4px; border: 0; }
+.tdsa-updates-panel { position: fixed; inset: auto max(20px, env(safe-area-inset-right)) calc(max(20px, env(safe-area-inset-bottom)) + 70px) auto; width: min(390px, calc(100vw - 40px)); max-width: none; max-height: calc(100dvh - 120px); margin: 0; padding: 0; overflow-y: auto; overscroll-behavior: contain; border: 1px solid #d9dce3; border-top: 3px solid var(--updates-accent); border-radius: 0; color: var(--updates-ink); background: #fff; box-shadow: 0 16px 50px #17213a33; }
+.tdsa-updates-panel::backdrop { background: #17213a33; }
+.tdsa-updates-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 24px 24px 20px; border-bottom: 1px solid #e5e7eb; }
+.tdsa-updates-header h2 { margin: 0; font-size: 1.3rem; line-height: 1.3; letter-spacing: -.03em; }
+.tdsa-updates-list { margin: 0; padding: 0; list-style: none; }
+.tdsa-updates-list li { padding: 22px 24px; border-bottom: 1px solid #e5e7eb; }
+.tdsa-updates-list h3 { margin: 0 0 8px; font-size: 1rem; line-height: 1.4; }
+.tdsa-updates-list p { margin: 0 0 14px; font-size: .83rem; line-height: 1.6; color: #536075; }
+.tdsa-updates-list a { display: inline-flex; align-items: center; min-height: 44px; color: var(--updates-ink); font-size: .8rem; font-weight: 700; text-decoration: underline; text-underline-offset: 4px; }
+.tdsa-updates-list .tdsa-updates-primary { display: flex; justify-content: center; padding: 12px 16px; background: var(--updates-ink); color: #fff; text-decoration: none; }
+.tdsa-updates-footer { margin: 0; padding: 16px 24px; color: #536075; font-size: .72rem; line-height: 1.5; }
+@media (max-width: 600px) {
+  .tdsa-updates-launcher { right: 12px; bottom: max(12px, env(safe-area-inset-bottom)); padding-right: 12px; min-height: 52px; }
+  .tdsa-updates-launcher img { width: 36px; height: 36px; }
+  .tdsa-updates-panel, .tdsa-updates-notice { right: 12px; width: min(390px, calc(100vw - 24px)); bottom: calc(max(12px, env(safe-area-inset-bottom)) + 64px); }
+  .tdsa-updates-panel { max-height: calc(100dvh - 100px); }
+}
