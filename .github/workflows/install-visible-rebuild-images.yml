@@ -44,10 +44,10 @@ jobs:
           SERVER_PID=$!
           trap 'kill $SERVER_PID || true' EXIT
           sleep 2
+          node scripts/verify-design.mjs
           node scripts/verify-navbar.mjs
           node scripts/verify-home-hero.mjs
           node scripts/verify-updates.mjs
-          node scripts/verify-design.mjs
       - name: Save website design screenshots
         if: always()
         uses: actions/upload-artifact@v4

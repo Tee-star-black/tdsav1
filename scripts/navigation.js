@@ -70,7 +70,7 @@
       var a = e.target.closest && e.target.closest('a[href]'); if (!a) return;
       if (window.innerWidth <= 900 && navLinks && navLinks.contains(a)) setMobile(false);
       var target = localTarget(a.getAttribute('href'));
-      if (!target || a.target === '_blank' || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+      if (!target || e.defaultPrevented || a.hasAttribute('data-open-lead-modal') || a.target === '_blank' || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
       e.preventDefault(); window.location.href = target;
     });
     document.addEventListener('keydown', function(e){ if (e.key === 'Escape') { setMobile(false); setPanel(false); setContact(false); } });
