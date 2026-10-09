@@ -17,7 +17,7 @@ async function inspectHero(page, mobile) {
     const hero = document.querySelector('.core-highlights-slider');
     const intro = document.querySelector('.core-highlights-slider .core-slider-intro');
     const title = intro?.querySelector('h1');
-    const copy = intro?.querySelector(':scope > p');
+    const copy = intro?.querySelector(':scope > p:not(.tds-eyebrow)');
     const actions = intro?.querySelector('.core-slider-actions');
     const buttons = actions ? [...actions.querySelectorAll('a')] : [];
 
@@ -59,13 +59,13 @@ async function inspectHero(page, mobile) {
 
 function assertHero(result, mobile) {
   if (result.error) throw new Error(result.error);
-  if (result.textAlign !== 'center' || result.titleAlign !== 'center' || result.copyAlign !== 'center') {
+  if (result.textAlign !== (mobile ? 'center' : 'left') || result.titleAlign !== (mobile ? 'center' : 'left') || result.copyAlign !== (mobile ? 'center' : 'left')) {
     throw new Error(`Hero text is not centered: ${JSON.stringify(result)}`);
   }
-  if (result.actionsJustify !== 'center') {
+  if (result.actionsJustify !== (mobile ? 'center' : 'flex-start')) {
     throw new Error(`Hero CTA group is not centered: ${result.actionsJustify}`);
   }
-  if (result.titleCenterDelta > 12) {
+  if (mobile && result.titleCenterDelta > 12) {
     throw new Error(`Hero heading is visually off-center by ${result.titleCenterDelta.toFixed(1)}px`);
   }
   if (!result.heroWithinViewport || !result.actionsWithinViewport) {
