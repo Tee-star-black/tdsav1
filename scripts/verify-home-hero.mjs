@@ -134,8 +134,11 @@ try {
   assertHero(mobileResult, true);
   console.log('PASS homepage hero mobile centering and CTA optimisation');
   await assertCarousel(mobile);
-  await mobile.locator('.core-highlights-slider').dispatchEvent('touchstart', { touches: [{ clientX: 260, clientY: 300 }] });
-  await mobile.locator('.core-highlights-slider').dispatchEvent('touchend', { changedTouches: [{ clientX: 100, clientY: 300 }] });
+  await mobile.locator('.core-highlights-slider').evaluate(slider => {
+    const touch = x => new Touch({ identifier: 1, target: slider, clientX: x, clientY: 300 });
+    slider.dispatchEvent(new TouchEvent('touchstart', { touches: [touch(260)], bubbles: true }));
+    slider.dispatchEvent(new TouchEvent('touchend', { changedTouches: [touch(100)], bubbles: true }));
+  });
   if (await mobile.locator('.core-slide.active').getAttribute('id') !== 'core-slide-consultations') throw new Error('Mobile carousel swipe failed');
   console.log('PASS mobile carousel automatic rotation, pause/resume, dots, arrows and swipe');
   await mobile.close();
