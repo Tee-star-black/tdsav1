@@ -34,6 +34,7 @@ try {
       assert.ok(await panel.evaluate(el => el.contains(document.activeElement)), 'Focus escaped updates dialog');
     }
     await page.keyboard.press('Escape');
+    await page.waitForFunction(() => document.querySelector('[data-updates-launcher]').getAttribute('aria-expanded') === 'false');
     assert.equal(await panel.isVisible(), false);
     assert.equal(await launcher.getAttribute('aria-expanded'), 'false');
     assert.ok(await launcher.evaluate(el => document.activeElement === el));
