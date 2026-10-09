@@ -28,12 +28,20 @@ try {
       assert.ok(report.documentWidth <= width + 1, `${file} overflows at ${width}px: ${JSON.stringify(report)}`);
       assert.ok(report.headingVisible, `${file} heading escapes viewport at ${width}px`);
       if (report.heroBackgroundImage) assert.equal(report.heroBackgroundImage, 'none', `${file} still uses a gradient hero`);
+      if (['ecg247.html','doctors.html','nurses.html','patients.html','teledoctorsa-app.html'].includes(file)) {
+        assert.equal(await page.locator('.tds-rescued-visual').count(), 0, `${file} has a duplicate photo introduction`);
+      }
+      if (file === 'teledoctorsa-app.html') {
+        assert.equal(await page.locator('.app-hero-secondary').evaluate(el => getComputedStyle(el).color), 'rgb(53, 38, 56)', 'App secondary action lacks contrast');
+      }
 
       if (file === 'index.html') {
         assert.equal(await page.locator('.core-slider-actions > a').count(), 2);
         assert.equal(await page.locator('#services .card').count(), 4);
         assert.equal(await page.locator('#services .card img').count(), 4);
         assert.equal(await page.locator('.tds-audience-links a').count(), 3);
+        const visual = await page.locator('.core-slide.active .core-slide-visual').boundingBox();
+        assert.ok(visual && visual.height >= 190, 'Carousel photo is missing');
         assert.equal(await page.locator('.tds-ecg-actions a').last().getAttribute('href'), 'https://ecg247.com/en/how-to-use-ecg247/');
         await page.getByRole('link', { name: 'Book a demo', exact: true }).click();
         await page.locator('#contactModal').waitFor({ state: 'visible' });

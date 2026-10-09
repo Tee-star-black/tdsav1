@@ -292,6 +292,8 @@
     if (page === 'index.html') return;
     var data = config[page];
     if (!data || document.querySelector('.tds-rescued-visual')) return;
+    // Existing photographic heroes already provide the page's visual introduction.
+    if (document.querySelector('.hero-section img, .hero img, .hero-card img, .hero-container img')) return;
 
     var section = document.createElement('section');
     section.className = 'tds-rescued-visual';
@@ -301,7 +303,7 @@
       '<div class="tds-rescued-visual-copy"><span class="tds-rescued-visual-kicker">' + data.eyebrow + '</span><h2>' + data.title + '</h2><p>' + data.copy + '</p></div>';
 
     var nav = document.querySelector('nav');
-    var hero = document.querySelector('.hero-section, .hero, .hero-container, header');
+    var hero = document.querySelector('.hero-section, .hero, .hero-card, .hero-container, header');
     var insertionPoint = hero && hero !== nav ? hero : null;
     if (insertionPoint && insertionPoint.parentNode) insertionPoint.parentNode.insertBefore(section, insertionPoint.nextSibling);
     else if (nav && nav.parentNode) nav.parentNode.insertBefore(section, nav.nextSibling);

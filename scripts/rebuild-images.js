@@ -19,7 +19,7 @@
     document.head.appendChild(link);
   }
 
-  var release = '20261009-site-audit1';
+  var release = '20261009-design2';
 
   loadStyleOnce('tds-editorial-nav-style', '/styles/editorial-mega-menu.css?v=' + release);
   loadStyleOnce('tds-center-alignment-loader', '/styles/center-alignment.css?v=' + release);
