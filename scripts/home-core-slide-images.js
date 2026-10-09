@@ -374,12 +374,92 @@
     });
   }
 
+  function installCarousel() {
+    var slider = document.querySelector('.core-highlights-slider');
+    if (!slider || slider.dataset.tdsCarouselReady === 'true') return;
+    var items = Array.from(slider.querySelectorAll('.core-slide'));
+    var dots = Array.from(slider.querySelectorAll('[data-core-slide-to]'));
+    var controls = slider.querySelector('.core-slider-controls');
+    if (items.length < 2 || !controls) return;
+    slider.dataset.tdsCarouselReady = 'true';
+    var index = Math.max(0, items.findIndex(function (item) { return item.classList.contains('active'); }));
+    var timer = null;
+    var hovered = false;
+    var focused = false;
+    var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var paused = reducedMotion.matches;
+    var toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'core-slider-arrow';
+    toggle.setAttribute('data-core-slider-pause', '');
+    controls.appendChild(toggle);
+
+    function updateToggle() {
+      var label = paused ? 'Play automatic highlights' : 'Pause automatic highlights';
+      toggle.setAttribute('aria-label', label);
+      toggle.title = label;
+      toggle.innerHTML = paused
+        ? '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>'
+        : '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>';
+    }
+    function schedule() {
+      window.clearTimeout(timer);
+      timer = null;
+      if (paused || hovered || focused || document.hidden) return;
+      timer = window.setTimeout(function () { show(index + 1); }, 6000);
+    }
+    function show(next) {
+      index = (next + items.length) % items.length;
+      items.forEach(function (item, position) {
+        var active = position === index;
+        item.hidden = !active;
+        item.inert = !active;
+        item.classList.toggle('active', active);
+        item.setAttribute('aria-hidden', String(!active));
+      });
+      dots.forEach(function (dot, position) {
+        dot.classList.toggle('active', position === index);
+        dot.setAttribute('aria-current', String(position === index));
+      });
+      schedule();
+    }
+    slider.querySelector('[data-core-slider-next]').addEventListener('click', function () { show(index + 1); });
+    slider.querySelector('[data-core-slider-prev]').addEventListener('click', function () { show(index - 1); });
+    dots.forEach(function (dot) {
+      dot.addEventListener('click', function () { show(Number(dot.getAttribute('data-core-slide-to'))); });
+    });
+    toggle.addEventListener('click', function () {
+      paused = !paused;
+      updateToggle();
+      schedule();
+    });
+    slider.addEventListener('mouseenter', function () { hovered = true; schedule(); });
+    slider.addEventListener('mouseleave', function () { hovered = false; schedule(); });
+    slider.addEventListener('focusin', function (event) {
+      focused = event.target !== toggle;
+      schedule();
+    });
+    slider.addEventListener('focusout', function (event) {
+      focused = slider.contains(event.relatedTarget) && event.relatedTarget !== toggle;
+      schedule();
+    });
+    document.addEventListener('visibilitychange', schedule);
+    reducedMotion.addEventListener('change', function (event) {
+      paused = event.matches;
+      updateToggle();
+      schedule();
+    });
+    updateToggle();
+    show(index);
+  }
+
   function init() {
     addStyles();
     applyImages();
     normalizeBookingLinks();
     enableCoreSwipe();
     ensureSingleVisibleSlide();
+    installCarousel();
 
     var attempts = 0;
     var timer = window.setInterval(function () {

@@ -91,6 +91,32 @@ function assertHero(result, mobile) {
   }
 }
 
+async function assertCarousel(page) {
+  const activeId = () => page.locator('.core-slide.active').getAttribute('id');
+  const initial = await activeId();
+  await page.waitForFunction(id => document.querySelector('.core-slide.active')?.id !== id, initial, { timeout: 8500 });
+  if (await page.locator('.core-slide:not([hidden])').count() !== 1) throw new Error('Carousel shows more than one slide');
+  const active = await activeId();
+  const selectedDot = await page.locator('[data-core-slide-to][aria-current="true"]').getAttribute('aria-controls');
+  if (selectedDot !== active) throw new Error('Carousel dot does not match the automatic slide');
+
+  await page.locator('[data-core-slider-pause]').click();
+  await page.mouse.move(0, 0);
+  const pausedId = await activeId();
+  await page.waitForTimeout(6500);
+  if (await activeId() !== pausedId) throw new Error('Carousel advanced while paused');
+  await page.locator('[data-core-slider-pause]').click();
+  await page.mouse.move(0, 0);
+  await page.waitForFunction(id => document.querySelector('.core-slide.active')?.id !== id, pausedId, { timeout: 8500 });
+
+  await page.locator('[data-core-slide-to="3"]').click();
+  if (await activeId() !== 'core-slide-records') throw new Error('Carousel dot selection failed');
+  await page.locator('[data-core-slider-next]').click();
+  if (await activeId() !== 'core-slide-consultations') throw new Error('Carousel next did not wrap');
+  await page.locator('[data-core-slider-prev]').click();
+  if (await activeId() !== 'core-slide-records') throw new Error('Carousel previous did not wrap');
+}
+
 const browser = await chromium.launch({ headless: true });
 try {
   const desktop = await browser.newPage({ viewport: { width: 1440, height: 900 } });
@@ -98,6 +124,8 @@ try {
   const desktopResult = await inspectHero(desktop, false);
   assertHero(desktopResult, false);
   console.log('PASS homepage hero desktop centering');
+  await assertCarousel(desktop);
+  console.log('PASS desktop carousel automatic rotation, pause/resume, dots and arrows');
   await desktop.close();
 
   const mobile = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
@@ -105,7 +133,22 @@ try {
   const mobileResult = await inspectHero(mobile, true);
   assertHero(mobileResult, true);
   console.log('PASS homepage hero mobile centering and CTA optimisation');
+  await assertCarousel(mobile);
+  await mobile.locator('.core-highlights-slider').dispatchEvent('touchstart', { touches: [{ clientX: 260, clientY: 300 }] });
+  await mobile.locator('.core-highlights-slider').dispatchEvent('touchend', { changedTouches: [{ clientX: 100, clientY: 300 }] });
+  if (await mobile.locator('.core-slide.active').getAttribute('id') !== 'core-slide-consultations') throw new Error('Mobile carousel swipe failed');
+  console.log('PASS mobile carousel automatic rotation, pause/resume, dots, arrows and swipe');
   await mobile.close();
+
+  const reduced = await browser.newPage({ reducedMotion: 'reduce' });
+  await waitForHero(reduced);
+  const stillId = await reduced.locator('.core-slide.active').getAttribute('id');
+  await reduced.waitForTimeout(6500);
+  if (await reduced.locator('.core-slide.active').getAttribute('id') !== stillId) throw new Error('Reduced-motion preference was ignored');
+  await reduced.locator('[data-core-slider-next]').click();
+  if (await reduced.locator('.core-slide.active').getAttribute('id') === stillId) throw new Error('Manual navigation failed with reduced motion');
+  console.log('PASS reduced-motion preference with manual navigation');
+  await reduced.close();
 } finally {
   await browser.close();
 }
