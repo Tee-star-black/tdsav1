@@ -1,141 +1,44 @@
-name: Install shared TeleDoctorSA experience
+name: Verify TeleDoctorSA website
 
 on:
   push:
     paths:
-      - 'scripts/rebuild-images.js'
-      - 'scripts/canonical-nav.js'
-      - 'scripts/verify-navbar.mjs'
-      - 'scripts/verify-home-hero.mjs'
-      - 'scripts/footer-full-bleed-guard.js'
-      - 'styles/center-alignment.css'
-      - 'styles/home-hero-center.css'
+      - '*.html'
+      - 'scripts/**'
+      - 'styles/**'
+      - 'images/qr/**'
+      - '.github/workflows/install-visible-rebuild-images.yml'
+  pull_request:
+    paths:
+      - '*.html'
+      - 'scripts/**'
+      - 'styles/**'
+      - 'images/qr/**'
       - '.github/workflows/install-visible-rebuild-images.yml'
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  group: website-verification-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  install:
-    if: github.actor != 'github-actions[bot]'
+  verify:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          fetch-depth: 0
-
-      - name: Normalize shared experience loader across HTML pages
-        shell: python
-        run: |
-          from pathlib import Path
-          import re
-
-          loader = '<script src="/scripts/rebuild-images.js"></script>'
-          loader_pattern = re.compile(
-              r'\s*<script\b[^>]*\bsrc=["\']/?scripts/rebuild-images\.js(?:\?[^"\']*)?["\'][^>]*>\s*</script>\s*',
-              re.I,
-          )
-          legacy_mobile_pattern = re.compile(
-              r'\s*<script\b[^>]*\bsrc=["\'][^"\']*mobile-navigation\.js(?:\?[^"\']*)?["\'][^>]*>\s*</script>\s*',
-              re.I,
-          )
-          marker_blocks = [
-              ('TDS_MOBILE_NAV_START', 'TDS_MOBILE_NAV_END'),
-              ('TDS_MOBILE_NAV_HTML_START', 'TDS_MOBILE_NAV_HTML_END'),
-              ('TDS_MOBILE_NAV_SCRIPT_START', 'TDS_MOBILE_NAV_SCRIPT_END'),
-          ]
-
-          for path in sorted(Path('.').rglob('*.html')):
-              if '.git' in path.parts or 'node_modules' in path.parts:
-                  continue
-
-              text = path.read_text(encoding='utf-8-sig')
-              original = text
-              text = text.replace('`r`n', '\n')
-
-              for start, end in marker_blocks:
-                  text = re.sub(
-                      rf'\s*<!--\s*{re.escape(start)}\s*-->.*?<!--\s*{re.escape(end)}\s*-->\s*',
-                      '\n',
-                      text,
-                      flags=re.S,
-                  )
-
-              text = legacy_mobile_pattern.sub('\n', text)
-              text = loader_pattern.sub('\n', text)
-
-              if '</body>' in text:
-                  text = text.replace('</body>', f'    {loader}\n</body>', 1)
-              else:
-                  print('skipped (no body):', path)
-                  continue
-
-              if text != original:
-                  path.write_text(text, encoding='utf-8')
-                  print('updated', path)
-
-      - name: Validate shared navigation wiring
-        shell: python
-        run: |
-          from pathlib import Path
-          import re
-
-          bad = []
-          loader_pattern = re.compile(r'<script\b[^>]*\bsrc=["\']/?scripts/rebuild-images\.js(?:\?[^"\']*)?["\'][^>]*>\s*</script>', re.I)
-
-          required_runtime_files = [
-              Path('scripts/rebuild-images.js'),
-              Path('scripts/rebuild-images-core.js'),
-              Path('scripts/canonical-nav.js'),
-              Path('scripts/footer-full-bleed-guard.js'),
-              Path('scripts/verify-navbar.mjs'),
-              Path('scripts/verify-home-hero.mjs'),
-              Path('styles/center-alignment.css'),
-              Path('styles/home-hero-center.css'),
-          ]
-
-          for required in required_runtime_files:
-              if not required.is_file():
-                  bad.append(f'missing runtime file: {required}')
-
-          loader = Path('scripts/rebuild-images.js').read_text(encoding='utf-8')
-          for expected in ['rebuild-images-core.js', 'canonical-nav.js', 'footer-full-bleed-guard.js', 'center-alignment.css', 'home-hero-center.css']:
-              if expected not in loader:
-                  bad.append(f'rebuild-images.js does not load {expected}')
-
-          for retired in ['mobile-nav.js', 'mega-menu.js']:
-              if retired in loader:
-                  bad.append(f'rebuild-images.js still loads retired competing navbar runtime {retired}')
-
-          for path in sorted(Path('.').rglob('*.html')):
-              if '.git' in path.parts or 'node_modules' in path.parts:
-                  continue
-              text = path.read_text(encoding='utf-8')
-              if '<body' not in text.lower():
-                  continue
-              count = len(loader_pattern.findall(text))
-              if count != 1:
-                  bad.append(f'{path}: loader_count={count}')
-              if '`r`n' in text:
-                  bad.append(f'{path}: contains literal PowerShell newline escape')
-              if re.search(r'<script\b[^>]*mobile-navigation\.js', text, re.I):
-                  bad.append(f'{path}: legacy mobile-navigation.js still referenced')
-
-          if bad:
-              raise SystemExit('Shared navbar validation failed:\n- ' + '\n- '.join(bad))
-
-          print('Static shared-navbar validation passed')
-
-      - name: Install browser smoke-test dependency
-        shell: bash
+          node-version: 22
+      - name: Check website links and JavaScript
+        run: node scripts/verify-site.mjs
+      - name: Install browser verification dependency
         run: |
           npm install --no-save --package-lock=false playwright
           npx playwright install --with-deps chromium
-
-      - name: Browser-test navbar on every interactive HTML page
-        shell: bash
+      - name: Browser-test website navigation and homepage
         run: |
           python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/tdsa-http.log 2>&1 &
           SERVER_PID=$!
@@ -143,17 +46,3 @@ jobs:
           sleep 2
           node scripts/verify-navbar.mjs
           node scripts/verify-home-hero.mjs
-
-      - name: Commit normalized HTML
-        shell: bash
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -u -- '*.html' ':(glob)**/*.html'
-          if git diff --cached --quiet; then
-            echo "Nothing to commit"
-            exit 0
-          fi
-          git diff --cached --check
-          git commit -m "chore: normalize shared TDSA experience loader"
-          git push
