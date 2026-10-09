@@ -1,0 +1,35 @@
+/* TeleDoctorSA editorial mega menu */
+.tds-mega { position: static !important; }
+.tds-mega-trigger { display:inline-flex; align-items:center; gap:9px; border:0; background:transparent; color:inherit; font:inherit; font-weight:700; cursor:pointer; padding:12px 4px; }
+.tds-mega-trigger svg { width:15px; height:15px; transition:transform .2s ease; }
+.tds-mega-trigger[aria-expanded="true"] svg { transform:rotate(180deg); }
+.tds-mega-trigger:focus-visible,.tds-mega-panel a:focus-visible { outline:2px solid #e97f48; outline-offset:3px; }
+.tds-mega-panel { display:none; position:absolute; top:100%; left:50%; transform:translateX(-50%); width:min(1120px,calc(100vw - 56px)); padding:26px; background:#fff; border:1px solid #dde4eb; border-top:3px solid #e97f48; box-shadow:0 25px 60px rgba(15,23,42,.14); z-index:5500; color:#13243a; }
+.tds-mega-panel.is-open { display:block; }
+.tds-mega-topline { display:flex; align-items:center; justify-content:space-between; gap:18px; border-bottom:1px solid #e4e9ee; padding-bottom:19px; margin-bottom:20px; }
+.tds-mega-kicker { display:block; font-size:10px; font-weight:800; letter-spacing:.16em; color:#ab512e; margin-bottom:5px; }
+.tds-mega-topline strong { display:block; font-size:22px; letter-spacing:-.04em; line-height:1.2; }
+.tds-mega-topline p { margin:6px 0 0; font-size:12px; color:#5b6b7c; }
+.tds-mega-feature { background:#17273d; color:white !important; padding:11px 15px; font-size:12px; font-weight:700; text-decoration:none; white-space:nowrap; }
+.tds-mega-items { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+.tds-mega-item { display:flex; align-items:flex-start; gap:14px; padding:17px; border:1px solid #e6eaf0; text-decoration:none !important; color:#14243b !important; background:#fff; transition:background .2s,border-color .2s; }
+.tds-mega-item:hover { background:#fcf8f5; border-color:#e99a70; }
+.tds-mega-icon { width:42px; height:42px; display:grid; place-items:center; background:#f7ede8; color:#b65b32; flex-shrink:0; }
+.tds-mega-icon svg { width:20px; height:20px; }
+.tds-mega-item strong { display:block; font-size:13px; line-height:1.35; }
+.tds-mega-item small { display:block; margin-top:6px; font-size:11px; line-height:1.55; color:#607080; }
+.tds-mega-footer { display:flex; justify-content:space-between; align-items:center; gap:14px; padding-top:19px; margin-top:20px; border-top:1px solid #e4e9ee; font-size:11px; color:#64748b; }
+.tds-mega-footer a { color:#a84d2f; font-weight:800; text-decoration:none; }
+@media(max-width:900px) {
+ .tds-mega { width:100%; }
+ .tds-mega-trigger { width:100%; display:flex; justify-content:space-between; padding:13px 14px; min-height:48px; }
+ .tds-mega-panel { position:static; transform:none; width:100%; max-width:100%; border:0; border-left:2px solid #e97f48; box-shadow:none; padding:15px 12px; background:#f7f9fb; }
+ .tds-mega-topline { align-items:flex-start; }
+ .tds-mega-topline strong { font-size:17px; }
+ .tds-mega-feature { white-space:normal; }
+ .tds-mega-items { grid-template-columns:1fr; gap:8px; }
+ .tds-mega-item { padding:12px; }
+ .tds-mega-footer { flex-direction:column; align-items:flex-start; }
+}
+@media(max-width:420px) { .tds-mega-topline { flex-direction:column; } }
+@media(prefers-reduced-motion:reduce) { .tds-mega-trigger svg,.tds-mega-item { transition:none; } }
