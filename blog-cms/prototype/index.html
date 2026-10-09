@@ -1,169 +1,765 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="robots" content="noindex,nofollow">
-  <title>TeleDoctorSA Publishing Studio</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./studio.css?v=20260924-1">
-  <link rel="stylesheet" href="./studio-v2.css?v=20260924-1">
-</head>
-<body>
-  <section class="login-gate" id="loginGate" hidden>
-    <div class="login-card">
-      <img src="../../images/rebuild/logo.png" alt="TeleDoctorSA logo">
-      <span class="eyebrow">PUBLISHING STUDIO</span>
-      <h1>Welcome back.</h1>
-      <p>Sign in with your TeleDoctorSA Publishing Studio account.</p>
-      <form id="loginForm">
-        <label>Email address<input id="loginEmail" type="email" autocomplete="username" required placeholder="name@teledoctorsa.co.za"></label>
-        <label>Password<input id="loginPassword" type="password" autocomplete="current-password" required placeholder="Enter password"></label>
-        <div id="loginFeedback" class="login-feedback" role="alert" hidden></div>
-        <button class="primary" id="loginSubmit" type="submit">Open Publishing Studio</button>
-      </form>
-      <small>Authorised TeleDoctorSA staff only.</small>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>TeleDoctorSA Publishing Studio</title>
+    <link rel="stylesheet" href="./studio.css?v=20261005-1" />
+  </head>
+  <body class="studio-loading">
+    <div id="bootStatus" class="boot-status" role="status">
+      <span class="spinner"></span> Opening Publishing Studio…
     </div>
-  </section>
-  <div class="app-shell">
-    <aside class="sidebar" id="sidebar">
-      <a class="brand brand-official" href="#" data-view="articles" aria-label="TeleDoctorSA Publishing Studio home">
-        <img class="brand-logo" src="../../images/rebuild/logo.png" alt="TeleDoctorSA logo">
-        <span class="brand-studio-label">Publishing Studio</span>
-        <span class="studio-build">Build 2026.09.24.1</span>
-      </a>
-      <nav class="side-nav" aria-label="Publishing navigation">
-        <p>Workspace</p>
-        <button class="nav-item active" data-view="articles"><span>▤</span>Articles <em id="articleNavCount">0</em></button>
-        <button class="nav-item" data-action="new"><span>＋</span>New story</button>
-        <button class="nav-item" data-view="media"><span>◫</span>Media library</button>
-        <button class="nav-item" data-view="categories"><span>◇</span>Categories</button>\n        <button class="nav-item" data-view="settings"><span>⚙</span>Account & staff</button>
-        <p>Editorial</p>
-        <button class="nav-item" data-status-view="Review"><span>◷</span>Review queue <em class="alert" id="reviewNavCount">0</em></button>
-        <button class="nav-item" data-status-view="Published"><span>✓</span>Published</button>
-        <button class="nav-item" data-status-view="Scheduled"><span>◴</span>Scheduled</button>
-        <p>Website</p>
-        <a class="nav-item" href="/blog/" target="_blank" rel="noopener"><span>↗</span>Blog & Insights</a>
-        <a class="nav-item" href="/telemedia-suite" target="_blank" rel="noopener"><span>↗</span>TeleMedia Suite</a>
-      </nav>
-      <div class="sidebar-account" aria-label="Signed-in account">
-        <div class="sidebar-account-copy">
-          <span>Signed in as</span>
-          <strong id="sidebarCurrentUser">TeleDoctorSA staff</strong>
-        </div>
-        <button class="sidebar-signout" id="sidebarSignOutBtn" type="button">
-          <span aria-hidden="true">↪</span>
-          Sign out
-        </button>
+    <section class="login-gate" id="loginGate" hidden>
+      <div class="login-intro">
+        <span class="eyebrow">TELEDOCTORSA · EDITORIAL</span>
+        <h2>Better stories.<br />Better care.</h2>
+        <p>
+          A dedicated space to write, review and share healthcare insights with
+          your community.
+        </p>
+        <span class="login-rule"></span><small>Publishing Studio</small>
       </div>
-    </aside>
-    <main class="main">
-      <header class="topbar">
-        <button class="menu" id="menuBtn" aria-label="Open menu">☰</button>
-        <div class="global-search"><span>⌕</span><input id="globalSearch" type="search" placeholder="Search stories, authors, categories…"></div>
-        <div class="environment" id="backendStatus"><span></span><b>Connecting backend…</b></div><span class="topbar-user" id="currentUser" hidden></span><button class="topbar-signout" id="signOutBtn" type="button" hidden>Sign out</button>
-      </header>
-      <div class="content">
-        <section id="articlesView" class="view active">
-          <section class="welcome"><div><span class="eyebrow">TELEDOCTORSA EDITORIAL</span><h1>Blog & Insights</h1><p>Create, review and publish through one connected editorial workflow.</p></div><button class="primary" data-action="new"><span>＋</span> New article</button></section>
-          <section class="metrics" aria-label="Publishing summary">
-            <article><span class="metric-icon mint">▤</span><div><strong id="publishedMetric">0</strong><small>Published stories</small></div><b>Available in published preview</b></article>
-            <article><span class="metric-icon amber">◷</span><div><strong id="reviewMetric">0</strong><small>Awaiting review</small></div><b>Needs attention</b></article>
-            <article><span class="metric-icon blue">✎</span><div><strong id="draftMetric">0</strong><small>Active drafts</small></div><b>Continue writing</b></article>
-            <article><span class="metric-icon violet">↗</span><div><strong id="backendMetric">API</strong><small>Content service</small></div><b id="backendMetricNote">Connecting…</b></article>
-          </section>
-          <section class="workspace-grid">
-            <div class="article-panel">
-              <div class="panel-heading"><div><h2>Your stories</h2><p>Find your saved drafts, review submissions and published articles.</p></div><button class="ghost" id="refreshBtn">Refresh</button></div>
-              <div class="tabs" aria-label="Filter by status"><button class="active" data-filter="all">All <span id="allCount">0</span></button><button data-filter="Published">Published <span id="publishedCount">0</span></button><button data-filter="Draft">Drafts <span id="draftCount">0</span></button><button data-filter="Review">In review <span id="reviewCount">0</span></button><button data-filter="Scheduled">Scheduled <span id="scheduledCount">0</span></button></div>
-              <div class="filters"><label><span>⌕</span><input id="articleSearch" type="search" placeholder="Find an article…"></label><select id="categoryFilter"><option value="all">All categories</option></select><select id="sortFilter"><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="az">A–Z</option></select></div>
-              <div class="article-list" id="articleList"></div><div class="empty" id="emptyState" hidden><span>⌕</span><h3>No stories found</h3><p>Try another search or filter.</p><button id="clearFilters" class="secondary">Clear filters</button></div>
-              <footer class="list-footer"><span id="resultCount">Loading stories…</span><div><button id="previousPage" aria-label="Previous page">‹</button><span id="pageLabel">Page 1 of 1</span><button id="nextPage" aria-label="Next page">›</button></div></footer>
-            </div>
-            <aside class="right-rail">
-              <article class="editorial-card"><span>EDITORIAL NOTE</span><h2>Make healthcare easier to understand.</h2><p>Useful, human stories build trust long before someone needs care.</p><div class="line"></div></article>
-              <article class="rail-card"><div class="rail-title"><h3>Quick actions</h3><span>CONNECTED</span></div><button data-action="new"><i>✎</i><span><strong>Write a story</strong><small>Save a draft and continue later</small></span><b>›</b></button><button data-view="media"><i>▧</i><span><strong>Media library</strong><small>Upload and reuse images</small></span><b>›</b></button><button data-view="categories"><i>◫</i><span><strong>Categories</strong><small>Organise your stories</small></span><b>›</b></button></article>
-              <article class="rail-card activity"><div class="rail-title"><h3>Workflow</h3><span>Publishing steps</span></div><div><i class="dot mint-dot"></i><p><strong>Write and save</strong><small>Save a draft, then return to it</small></p></div><div><i class="dot amber-dot"></i><p><strong>Review and approve</strong><small>Clinical stories need approval</small></p></div><div><i class="dot blue-dot"></i><p><strong>Publish or schedule</strong><small>Check the published preview</small></p></div></article>
-            </aside>
-          </section>
-        </section>
-        <section id="mediaView" class="view">
-          <section class="welcome"><div><span class="eyebrow">ASSET LIBRARY</span><h1>Media</h1><p>Upload once, then reuse the same asset across articles.</p></div><button class="primary" id="uploadMediaBtn"><span>＋</span> Upload media</button><input id="mediaFileInput" type="file" accept="image/*" hidden></section>
-          <div class="media-toolbar"><label class="search-box">⌕ <input id="mediaSearch" type="search" placeholder="Search media…"></label><div class="storage-note"><strong id="mediaBackendLabel">Connected media library</strong><span>Choose images with clear descriptions.</span></div></div><div class="media-grid" id="mediaGrid"></div>
-        </section>
-        <section id="categoriesView" class="view">
-          <section class="welcome"><div><span class="eyebrow">CONTENT TAXONOMY</span><h1>Categories</h1><p>Organise stories into categories your readers can browse.</p></div><button class="primary" id="addCategory"><span>＋</span> Add category</button></section><div class="category-grid" id="categoryGrid"></div>
-        </section>
-
-        <section id="settingsView" class="view">
-          <section class="welcome"><div><span class="eyebrow">ACCESS & SECURITY</span><h1>Account & staff</h1><p>Manage your password and, for administrators, Publishing Studio access.</p></div></section>
-          <div class="settings-grid">
-            <article class="settings-card">
-              <div class="settings-heading"><div><span class="eyebrow">MY ACCOUNT</span><h2 id="accountName">Signed-in user</h2><p id="accountMeta">Loading account…</p></div></div>
-              <form id="passwordForm" class="settings-form">
-                <label>Current password<input id="currentPassword" type="password" autocomplete="current-password" required></label>
-                <label>New password<input id="newPassword" type="password" autocomplete="new-password" minlength="10" required placeholder="At least 10 characters"></label>
-                <label>Confirm new password<input id="confirmPassword" type="password" autocomplete="new-password" minlength="10" required></label>
-                <div id="passwordFeedback" class="settings-feedback" hidden></div>
-                <button class="primary" type="submit">Change password</button>
-              </form>
-            </article>
-
-            <article class="settings-card" id="staffAdminPanel" hidden>
-              <div class="settings-heading"><div><span class="eyebrow">ADMINISTRATION</span><h2>Staff accounts</h2><p>Create individual Publishing Studio accounts and remove access when required.</p></div><span class="settings-role">ADMIN ONLY</span></div>
-              <form id="staffForm" class="staff-create-form">
-                <label>Name<input id="staffName" required placeholder="Staff member name"></label>
-                <label>Email<input id="staffEmail" type="email" required placeholder="name@teledoctorsa.co.za"></label>
-                <label>Role<select id="staffRole"><option value="editor">Editor</option><option value="reviewer">Reviewer</option><option value="admin">Administrator</option></select></label>
-                <button class="primary" type="submit">Create account</button>
-              </form>
-              <div class="temporary-password" id="temporaryPasswordBox" hidden>
-                <span>TEMPORARY PASSWORD</span>
-                <strong id="temporaryPassword"></strong>
-                <p>Shown once. Send it to the staff member securely and ask them to change it after signing in.</p>
-                <button class="secondary" id="copyTemporaryPassword" type="button">Copy password</button>
-              </div>
-              <div class="staff-list" id="staffList"></div>
-            </article>
+      <div class="login-card">
+        <div class="login-brand">
+          <img src="https://teledoctorsa.co.za/images/rebuild/logo.png" alt="TeleDoctorSA" />
+          <small>Publishing Studio</small>
+        </div>
+        <span class="eyebrow">PUBLISHING STUDIO</span>
+        <h1>Welcome back.</h1>
+        <p>Sign in with your TeleDoctorSA Publishing Studio account.</p>
+        <form id="loginForm">
+          <label
+            >Email address<input
+              id="loginEmail"
+              type="email"
+              autocomplete="username"
+              required
+              placeholder="name@teledoctorsa.co.za"
+          /></label>
+          <label
+            >Password<span class="password-input"
+              ><input
+                id="loginPassword"
+                type="password"
+                autocomplete="current-password"
+                required
+                placeholder="Enter password"
+              /><button
+                type="button"
+                id="togglePassword"
+                aria-label="Show password"
+                aria-pressed="false"
+              >
+                Show
+              </button></span
+            ></label
+          >
+          <div
+            id="loginFeedback"
+            class="login-feedback"
+            role="alert"
+            hidden
+          ></div>
+          <button class="primary" id="loginSubmit" type="submit">
+            Open Publishing Studio
+          </button>
+        </form>
+        <small>Authorised TeleDoctorSA staff only.</small>
+      </div>
+    </section>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar">
+        <a
+          class="brand brand-official"
+          href="#"
+          data-view="articles"
+          aria-label="TeleDoctorSA Publishing Studio home"
+        >
+          <img class="brand-logo" src="https://teledoctorsa.co.za/images/rebuild/logo.png" alt="TeleDoctorSA" />
+          <span class="brand-studio-label">Publishing Studio</span>
+          <span class="studio-build">TeleDoctorSA Editorial</span>
+        </a>
+        <nav class="side-nav" aria-label="Publishing navigation">
+          <p>Workspace</p>
+          <button class="nav-item active" data-view="articles">
+            <span>▤</span>Articles <em id="articleNavCount">0</em>
+          </button>
+          <button class="nav-item" data-action="new">
+            <span>+</span>New story
+          </button>
+          <button class="nav-item" data-view="media">
+            <span>◫</span>Media library
+          </button>
+          <button class="nav-item" data-view="categories">
+            <span>◇</span>Categories
+          </button>
+          <button class="nav-item" data-view="settings">
+            <span>⚙</span>Account & staff
+          </button>
+          <p>Editorial</p>
+          <button class="nav-item" data-status-view="Review">
+            <span>◷</span>Review queue
+            <em class="alert" id="reviewNavCount">0</em>
+          </button>
+          <button class="nav-item" data-status-view="Published">
+            <span>✓</span>Published
+          </button>
+          <button class="nav-item" data-status-view="Scheduled">
+            <span>◴</span>Scheduled
+          </button>
+          <p>Website</p>
+          <a class="nav-item" href="/blog/" target="_blank" rel="noopener"
+            ><span>↗</span>Blog & Insights</a
+          >
+          <a
+            class="nav-item"
+            href="https://teledoctorsa.co.za/telemedia-suite.html"
+            target="_blank"
+            rel="noopener"
+            ><span>↗</span>TeleMedia Suite</a
+          >
+        </nav>
+        <div class="sidebar-account" aria-label="Signed-in account">
+          <div class="sidebar-account-copy">
+            <span>Signed in as</span>
+            <strong id="sidebarCurrentUser">TeleDoctorSA staff</strong>
           </div>
-        </section>
-      </div>
-    </main>
-  </div>
-
-  <dialog id="editorDialog">
-    <form class="editor-modal" id="editorForm">
-      <header><div><span class="eyebrow" id="editorEyebrow">NEW STORY</span><h2 id="editorHeading">Start with the idea.</h2><p id="editorSubheading">Save your draft first, then send it for review or publish when ready.</p></div><button type="button" class="close" id="closeEditor" aria-label="Close">×</button></header>
-      <div class="editor-body"><div class="editor-layout">
-        <div class="editor-main">
-          <label>Article title<input id="articleTitle" required maxlength="120" placeholder="Give the story a clear, useful title"></label>
-          <label>Short introduction<textarea id="articleExcerpt" rows="3" maxlength="220" placeholder="What should the reader understand before they continue?"></textarea><small><span id="excerptCount">0</span>/220</small></label>
-          <label>Story<textarea id="articleBody" rows="14" placeholder="Begin writing here…"></textarea></label>
-          <div class="seo-box"><span class="eyebrow">SEARCH & SHARING</span><label>SEO title<input id="articleSeoTitle" maxlength="60" placeholder="Optional. Defaults to article title"></label><label>SEO description<textarea id="articleSeoDescription" rows="2" maxlength="160" placeholder="Optional. Defaults to the introduction"></textarea></label></div>
+          <button class="sidebar-signout" id="sidebarSignOutBtn" type="button">
+            <span aria-hidden="true">↪</span>
+            Sign out
+          </button>
         </div>
-        <aside class="editor-settings">
-          <label>Status<select id="articleStatus"><option value="Draft">Draft</option><option value="Review">In review</option><option value="Published">Published</option><option value="Scheduled">Scheduled</option></select></label>
-          <label id="scheduleField" hidden>Schedule date & time<input id="articleScheduledAt" type="datetime-local"></label>
-          <label>Category<select id="articleCategory"></select></label><button type="button" class="secondary" id="editorAddCategory">Add category</button>
-          <label>Author<input id="articleAuthor" value="TeleDoctorSA Editorial"></label>
-          <label>Slug<div class="slug-field"><span>/blog/</span><input id="articleSlug" placeholder="article-slug"></div></label>
-          <label>Cover image<select id="articleCoverImage"><option value="">Select from media library</option></select></label>
-          <button type="button" class="secondary" id="editorUpload">Upload cover image</button><input type="file" id="editorFileInput" accept="image/png,image/jpeg,image/webp,image/gif" hidden><label>Cover image alt text<input id="articleCoverAlt" placeholder="Describe the image for accessibility"></label>
-          <label class="check-row"><input id="articleFeatured" type="checkbox"> Feature in TeleMedia</label>
-          <label class="check-row"><input id="articleClinicalRequired" type="checkbox"> Clinical review required</label>
-          <label id="clinicalStatusField" hidden>Clinical review status<select id="articleClinicalStatus"><option value="pending">Pending</option><option value="approved">Approved</option><option value="changes_requested">Changes requested</option></select></label>
-          <div class="review-note"><span>✓</span><p><strong>Publishing guardrail</strong><br>Clinical articles need approval before they can be published or scheduled.</p></div>
-        </aside>
-      </div></div>
-      <div id="editorFeedback" class="editor-feedback" role="alert" hidden></div><footer><button type="button" id="deleteArticle" class="danger" hidden>Delete article</button><button type="button" id="previewBtn" class="secondary">Preview</button><span class="save-state" id="saveState">Not saved</span><button type="button" id="saveDraft" class="secondary">Save draft</button><button type="button" id="saveArticle" class="primary">Save draft</button></footer>
-    </form>
-  </dialog>
+      </aside>
+      <main class="main" id="mainContent" tabindex="-1">
+        <header class="topbar">
+          <button
+            class="menu"
+            id="menuBtn"
+            aria-label="Open menu"
+            aria-controls="sidebar"
+            aria-expanded="false"
+          >
+            ☰
+          </button>
+          <div class="global-search">
+            <span>⌕</span
+            ><input
+              id="globalSearch"
+              aria-label="Search all articles"
+              type="search"
+              placeholder="Search stories, authors, categories…"
+            />
+          </div>
+          <div class="environment" id="backendStatus">
+            <span></span><b>Connecting backend…</b>
+          </div>
+          <span class="topbar-user" id="currentUser" hidden></span
+          ><button class="topbar-signout" id="signOutBtn" type="button" hidden>
+            Sign out
+          </button>
+        </header>
+        <div class="content">
+          <div
+            id="workspaceFeedback"
+            class="workspace-feedback"
+            role="alert"
+            hidden
+          ></div>
+          <section id="articlesView" class="view active">
+            <section class="welcome">
+              <div>
+                <span class="eyebrow">TELEDOCTORSA EDITORIAL</span>
+                <h1>Blog & Insights</h1>
+                <p>Your stories, from first idea to published insight.</p>
+              </div>
+              <button class="primary" data-action="new">
+                <span>+</span> New article
+              </button>
+            </section>
+            <section class="metrics" aria-label="Publishing summary">
+              <article>
+                <span class="metric-icon mint">▤</span>
+                <div>
+                  <strong id="publishedMetric">0</strong
+                  ><small>Published stories</small>
+                </div>
+                <b>Available in published preview</b>
+              </article>
+              <article>
+                <span class="metric-icon amber">◷</span>
+                <div>
+                  <strong id="reviewMetric">0</strong
+                  ><small>Awaiting review</small>
+                </div>
+                <b>Needs attention</b>
+              </article>
+              <article>
+                <span class="metric-icon blue">✎</span>
+                <div>
+                  <strong id="draftMetric">0</strong
+                  ><small>Active drafts</small>
+                </div>
+                <b>Continue writing</b>
+              </article>
+              <article>
+                <span class="metric-icon violet">↗</span>
+                <div>
+                  <strong id="backendMetric">API</strong
+                  ><small>Content service</small>
+                </div>
+                <b id="backendMetricNote">Connecting…</b>
+              </article>
+            </section>
+            <section class="workspace-grid">
+              <div class="article-panel">
+                <div class="panel-heading">
+                  <div>
+                    <h2>Your stories</h2>
+                    <p>
+                      Find your saved drafts, review submissions and published
+                      articles.
+                    </p>
+                  </div>
+                  <button class="ghost" id="refreshBtn">Refresh</button>
+                </div>
+                <div class="tabs" aria-label="Filter by status">
+                  <button class="active" data-filter="all">
+                    All <span id="allCount">0</span></button
+                  ><button data-filter="Published">
+                    Published <span id="publishedCount">0</span></button
+                  ><button data-filter="Draft">
+                    Drafts <span id="draftCount">0</span></button
+                  ><button data-filter="Review">
+                    In review <span id="reviewCount">0</span></button
+                  ><button data-filter="Scheduled">
+                    Scheduled <span id="scheduledCount">0</span>
+                  </button>
+                </div>
+                <div class="filters">
+                  <label
+                    ><span>⌕</span
+                    ><input
+                      id="articleSearch"
+                      aria-label="Search articles"
+                      type="search"
+                      placeholder="Find an article…" /></label
+                  ><select id="categoryFilter" aria-label="Filter by category">
+                    <option value="all">All categories</option></select
+                  ><select id="sortFilter" aria-label="Sort articles">
+                    <option value="newest">Newest first</option>
+                    <option value="oldest">Oldest first</option>
+                    <option value="az">A–Z</option>
+                  </select>
+                </div>
+                <div class="article-list" id="articleList"></div>
+                <div class="empty" id="emptyState" hidden>
+                  <span>⌕</span>
+                  <h3>No stories found</h3>
+                  <p>Try another search or filter.</p>
+                  <button id="clearFilters" class="secondary">
+                    Clear filters
+                  </button>
+                </div>
+                <footer class="list-footer">
+                  <span id="resultCount">Loading stories…</span>
+                  <div>
+                    <button id="previousPage" aria-label="Previous page">
+                      ‹</button
+                    ><span id="pageLabel">Page 1 of 1</span
+                    ><button id="nextPage" aria-label="Next page">›</button>
+                  </div>
+                </footer>
+              </div>
+              <aside class="right-rail">
+                <article class="editorial-card">
+                  <span>EDITORIAL NOTE</span>
+                  <h2>Make healthcare easier to understand.</h2>
+                  <p>
+                    Useful, human stories build trust long before someone needs
+                    care.
+                  </p>
+                  <div class="line"></div>
+                </article>
+                <article class="rail-card">
+                  <div class="rail-title">
+                    <h3>Quick actions</h3>
+                    <span>CONNECTED</span>
+                  </div>
+                  <button data-action="new">
+                    <i>✎</i
+                    ><span
+                      ><strong>Write a story</strong
+                      ><small>Save a draft and continue later</small></span
+                    ><b>›</b></button
+                  ><button data-view="media">
+                    <i>▧</i
+                    ><span
+                      ><strong>Media library</strong
+                      ><small>Upload and reuse images</small></span
+                    ><b>›</b></button
+                  ><button data-view="categories">
+                    <i>◫</i
+                    ><span
+                      ><strong>Categories</strong
+                      ><small>Organise your stories</small></span
+                    ><b>›</b>
+                  </button>
+                </article>
+                <article class="rail-card activity">
+                  <div class="rail-title">
+                    <h3>Workflow</h3>
+                    <span>Publishing steps</span>
+                  </div>
+                  <div>
+                    <i class="dot mint-dot"></i>
+                    <p>
+                      <strong>Write and save</strong
+                      ><small>Save a draft, then return to it</small>
+                    </p>
+                  </div>
+                  <div>
+                    <i class="dot amber-dot"></i>
+                    <p>
+                      <strong>Review and approve</strong
+                      ><small>Clinical stories need approval</small>
+                    </p>
+                  </div>
+                  <div>
+                    <i class="dot blue-dot"></i>
+                    <p>
+                      <strong>Publish or schedule</strong
+                      ><small>Check the published preview</small>
+                    </p>
+                  </div>
+                </article>
+              </aside>
+            </section>
+          </section>
+          <section id="mediaView" class="view">
+            <section class="welcome">
+              <div>
+                <span class="eyebrow">ASSET LIBRARY</span>
+                <h1>Media</h1>
+                <p>Upload once, then reuse the same asset across articles.</p>
+              </div>
+              <button class="primary" id="uploadMediaBtn">
+                <span>+</span> Upload media</button
+              ><input
+                id="mediaFileInput"
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/gif"
+                hidden
+              />
+            </section>
+            <div class="media-toolbar">
+              <label class="search-box"
+                >⌕
+                <input
+                  id="mediaSearch"
+                  aria-label="Search media"
+                  type="search"
+                  placeholder="Search media…"
+              /></label>
+              <div class="storage-note">
+                <strong id="mediaBackendLabel">Connected media library</strong
+                ><span>Choose images with clear descriptions.</span>
+              </div>
+            </div>
+            <div class="media-grid" id="mediaGrid"></div>
+          </section>
+          <section id="categoriesView" class="view">
+            <section class="welcome">
+              <div>
+                <span class="eyebrow">CONTENT TAXONOMY</span>
+                <h1>Categories</h1>
+                <p>Organise stories into categories your readers can browse.</p>
+              </div>
+              <button class="primary" id="addCategory">
+                <span>+</span> Add category
+              </button>
+            </section>
+            <div class="category-grid" id="categoryGrid"></div>
+          </section>
 
-  <dialog id="previewDialog"><article class="preview-sheet"><header><button type="button" class="close" id="closePreview">×</button><span id="previewCategory">Category</span><h1 id="previewTitle">Untitled story</h1><p id="previewExcerpt"></p><small id="previewMeta"></small></header><img id="previewCover" alt="" hidden><div id="previewBody" class="preview-body"></div></article></dialog>
-  <div class="toast" id="toast" role="status"><span>✓</span><div><strong id="toastTitle">Saved</strong><small id="toastMessage">Your changes were saved.</small><a id="toastAction" href="#" target="_blank" rel="noopener" hidden>View on blog ↗</a></div></div>
-  <script src="../client/cms-api.js?v=20260924-1"></script>
-  <script src="./studio.js?v=20260924-1"></script>
-</body>
+          <section id="settingsView" class="view">
+            <section class="welcome">
+              <div>
+                <span class="eyebrow">ACCESS & SECURITY</span>
+                <h1>Account & staff</h1>
+                <p>
+                  Manage your password and, for administrators, Publishing
+                  Studio access.
+                </p>
+              </div>
+            </section>
+            <div class="settings-grid">
+              <article class="settings-card">
+                <div class="settings-heading">
+                  <div>
+                    <span class="eyebrow">MY ACCOUNT</span>
+                    <h2 id="accountName">Signed-in user</h2>
+                    <p id="accountMeta">Loading account…</p>
+                  </div>
+                </div>
+                <form id="passwordForm" class="settings-form">
+                  <label
+                    >Current password<input
+                      id="currentPassword"
+                      type="password"
+                      autocomplete="current-password"
+                      required
+                  /></label>
+                  <label
+                    >New password<input
+                      id="newPassword"
+                      type="password"
+                      autocomplete="new-password"
+                      minlength="10"
+                      required
+                      placeholder="At least 10 characters"
+                  /></label>
+                  <label
+                    >Confirm new password<input
+                      id="confirmPassword"
+                      type="password"
+                      autocomplete="new-password"
+                      minlength="10"
+                      required
+                  /></label>
+                  <div
+                    id="passwordFeedback"
+                    class="settings-feedback"
+                    role="alert"
+                    hidden
+                  ></div>
+                  <button class="primary" type="submit">Change password</button>
+                </form>
+              </article>
+
+              <article class="settings-card" id="staffAdminPanel" hidden>
+                <div class="settings-heading">
+                  <div>
+                    <span class="eyebrow">ADMINISTRATION</span>
+                    <h2>Staff accounts</h2>
+                    <p>
+                      Create individual Publishing Studio accounts and remove
+                      access when required.
+                    </p>
+                  </div>
+                  <span class="settings-role">ADMIN ONLY</span>
+                </div>
+                <form id="staffForm" class="staff-create-form">
+                  <label
+                    >Name<input
+                      id="staffName"
+                      required
+                      placeholder="Staff member name"
+                  /></label>
+                  <label
+                    >Email<input
+                      id="staffEmail"
+                      type="email"
+                      required
+                      placeholder="name@teledoctorsa.co.za"
+                  /></label>
+                  <label
+                    >Role<select id="staffRole">
+                      <option value="editor">Editor</option>
+                      <option value="reviewer">Reviewer</option>
+                      <option value="admin">Administrator</option>
+                    </select></label
+                  >
+                  <button class="primary" type="submit">Create account</button>
+                </form>
+                <div
+                  class="temporary-password"
+                  id="temporaryPasswordBox"
+                  hidden
+                >
+                  <span>TEMPORARY PASSWORD</span>
+                  <strong id="temporaryPassword"></strong>
+                  <p>
+                    Shown once. Send it to the staff member securely and ask
+                    them to change it after signing in.
+                  </p>
+                  <button
+                    class="secondary"
+                    id="copyTemporaryPassword"
+                    type="button"
+                  >
+                    Copy password
+                  </button>
+                </div>
+                <div class="staff-list" id="staffList"></div>
+              </article>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <dialog id="editorDialog" aria-labelledby="editorHeading">
+      <form class="editor-modal" id="editorForm">
+        <header>
+          <div>
+            <span class="eyebrow" id="editorEyebrow">NEW STORY</span>
+            <h2 id="editorHeading">Start with the idea.</h2>
+            <p id="editorSubheading">
+              Save your draft first, then send it for review or publish when
+              ready.
+            </p>
+          </div>
+          <button
+            type="button"
+            class="close"
+            id="closeEditor"
+            aria-label="Close"
+          >
+            ×
+          </button>
+        </header>
+        <div class="editor-body">
+          <div class="editor-layout">
+            <div class="editor-main">
+              <label
+                >Article title<input
+                  id="articleTitle"
+                  required
+                  maxlength="120"
+                  placeholder="Give the story a clear, useful title"
+              /></label>
+              <label
+                >Short introduction<textarea
+                  id="articleExcerpt"
+                  rows="3"
+                  maxlength="220"
+                  placeholder="What should the reader understand before they continue?"
+                ></textarea
+                ><small><span id="excerptCount">0</span>/220</small></label
+              >
+              <label
+                >Story
+                <div class="writing-summary">
+                  <span id="wordCount">0 words · 1 min read</span
+                  ><span>Separate paragraphs with a blank line</span>
+                </div>
+                <textarea
+                  id="articleBody"
+                  rows="14"
+                  placeholder="Begin writing here…"
+                ></textarea>
+              </label>
+              <div class="seo-box">
+                <span class="eyebrow">SEARCH & SHARING</span
+                ><label
+                  >SEO title<input
+                    id="articleSeoTitle"
+                    maxlength="60"
+                    placeholder="Optional. Defaults to article title" /></label
+                ><label
+                  >SEO description<textarea
+                    id="articleSeoDescription"
+                    rows="2"
+                    maxlength="160"
+                    placeholder="Optional. Defaults to the introduction"
+                  ></textarea>
+                </label>
+              </div>
+            </div>
+            <aside class="editor-settings">
+              <label
+                >Status<select id="articleStatus">
+                  <option value="Draft">Draft</option>
+                  <option value="Review">In review</option>
+                  <option value="Published">Published</option>
+                  <option value="Scheduled">Scheduled</option>
+                </select></label
+              >
+              <label id="scheduleField" hidden
+                >Schedule date & time<input
+                  id="articleScheduledAt"
+                  type="datetime-local" /><small id="scheduleTimezone"></small
+              ></label>
+              <label>Category<select id="articleCategory"></select></label
+              ><button type="button" class="secondary" id="editorAddCategory">
+                Add category
+              </button>
+              <label
+                >Author<input id="articleAuthor" value="TeleDoctorSA Editorial"
+              /></label>
+              <label
+                >Slug
+                <div class="slug-field">
+                  <span>/blog/</span
+                  ><input id="articleSlug" placeholder="article-slug" /></div
+              ></label>
+              <label
+                >Cover image<select id="articleCoverImage">
+                  <option value="">Select from media library</option>
+                </select></label
+              >
+              <button type="button" class="secondary" id="editorUpload">
+                Upload cover image</button
+              ><input
+                type="file"
+                id="editorFileInput"
+                accept="image/png,image/jpeg,image/webp,image/gif"
+                hidden
+              /><img
+                id="editorCoverPreview"
+                class="editor-cover-preview"
+                alt="Selected cover image"
+                hidden
+              /><label
+                >Cover image alt text<input
+                  id="articleCoverAlt"
+                  placeholder="Describe the image for accessibility"
+              /></label>
+              <label class="check-row"
+                ><input id="articleFeatured" type="checkbox" /> Feature in
+                TeleMedia</label
+              >
+              <label class="check-row"
+                ><input id="articleClinicalRequired" type="checkbox" /> Clinical
+                review required</label
+              >
+              <label id="clinicalStatusField" hidden
+                >Clinical review status<select id="articleClinicalStatus">
+                  <option value="pending">Pending</option>
+                  <option value="approved">Approved</option>
+                  <option value="changes_requested">Changes requested</option>
+                </select></label
+              >
+              <div class="review-note">
+                <span>✓</span>
+                <p>
+                  <strong>Publishing guardrail</strong><br />Clinical articles
+                  need approval before they can be published or scheduled.
+                </p>
+              </div>
+            </aside>
+          </div>
+        </div>
+        <div
+          id="editorFeedback"
+          class="editor-feedback"
+          role="alert"
+          hidden
+        ></div>
+        <footer>
+          <button type="button" id="deleteArticle" class="danger" hidden>
+            Delete article</button
+          ><button type="button" id="previewBtn" class="secondary">
+            Preview</button
+          ><span class="save-state" id="saveState">Not saved</span
+          ><button type="button" id="saveDraft" class="secondary">
+            Save draft</button
+          ><button type="button" id="saveArticle" class="primary">
+            Save draft
+          </button>
+        </footer>
+      </form>
+    </dialog>
+
+    <dialog id="previewDialog" aria-labelledby="previewTitle">
+      <article class="preview-sheet">
+        <header>
+          <button
+            type="button"
+            class="close"
+            id="closePreview"
+            aria-label="Close preview"
+          >
+            ×</button
+          ><span id="previewCategory">Category</span>
+          <h1 id="previewTitle">Untitled story</h1>
+          <p id="previewExcerpt"></p>
+          <small id="previewMeta"></small>
+        </header>
+        <img id="previewCover" alt="" hidden />
+        <div id="previewBody" class="preview-body"></div>
+      </article>
+    </dialog>
+    <dialog
+      id="categoryDialog"
+      class="action-dialog"
+      aria-labelledby="categoryHeading"
+    >
+      <form id="categoryForm">
+        <header>
+          <span class="eyebrow">ORGANISE YOUR STORIES</span>
+          <h2 id="categoryHeading">Add a category</h2>
+          <p>Use a short, clear name your readers will recognise.</p>
+        </header>
+        <label
+          >Category name<input
+            id="categoryName"
+            required
+            maxlength="80"
+            placeholder="e.g. Patient stories"
+            autofocus
+        /></label>
+        <p
+          id="categoryFeedback"
+          class="settings-feedback"
+          role="alert"
+          hidden
+        ></p>
+        <footer>
+          <button type="button" class="secondary" id="cancelCategory">
+            Cancel</button
+          ><button class="primary" type="submit">Add category</button>
+        </footer>
+      </form>
+    </dialog>
+    <dialog
+      id="uploadDialog"
+      class="action-dialog"
+      aria-labelledby="uploadHeading"
+    >
+      <form id="uploadForm">
+        <header>
+          <span class="eyebrow">MEDIA LIBRARY</span>
+          <h2 id="uploadHeading">Describe your image</h2>
+          <p>A clear description helps readers using screen readers.</p>
+        </header>
+        <img id="uploadPreview" class="upload-preview" alt="Image to upload" />
+        <p id="uploadFileName" class="file-note"></p>
+        <label
+          >Image description<input
+            id="uploadAlt"
+            required
+            minlength="3"
+            maxlength="500"
+            placeholder="Describe what is shown in the image"
+            autofocus
+        /></label>
+        <p
+          id="uploadFeedback"
+          class="settings-feedback"
+          role="alert"
+          hidden
+        ></p>
+        <footer>
+          <button type="button" class="secondary" id="cancelUpload">
+            Cancel</button
+          ><button class="primary" type="submit">Upload image</button>
+        </footer>
+      </form>
+    </dialog>
+    <div class="toast" id="toast" role="status">
+      <span>✓</span>
+      <div>
+        <strong id="toastTitle">Saved</strong
+        ><small id="toastMessage">Your changes were saved.</small
+        ><a id="toastAction" href="#" target="_blank" rel="noopener" hidden
+          >View on blog ↗</a
+        >
+      </div>
+    </div>
+    <script src="../client/cms-api.js?v=20261005-1"></script>
+    <script src="./studio.js?v=20261005-1"></script>
+  </body>
 </html>
