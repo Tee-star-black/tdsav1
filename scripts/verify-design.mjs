@@ -42,6 +42,8 @@ try {
         assert.equal(await page.locator('.tds-audience-links a').count(), 3);
         const visual = await page.locator('.core-slide.active .core-slide-visual').boundingBox();
         assert.ok(visual && visual.height >= 190, 'Carousel photo is missing');
+        assert.equal(await page.locator('.contact-card p').first().evaluate(el => getComputedStyle(el).color), 'rgb(101, 97, 107)', 'Address text lacks contrast');
+        assert.equal(await page.locator('.map-overlay a').getAttribute('target'), '_blank');
         assert.equal(await page.locator('.tds-ecg-actions a').last().getAttribute('href'), 'https://ecg247.com/en/how-to-use-ecg247/');
         await page.getByRole('link', { name: 'Book a demo', exact: true }).click();
         await page.locator('#contactModal').waitFor({ state: 'visible' });
