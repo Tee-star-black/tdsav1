@@ -738,41 +738,7 @@
   }
 
   function megaMenuMarkup() {
-    var next = arrow();
-    return '' +
-      '<div class="tds-mega-shell">' +
-        '<a class="tds-mega-feature" href="/virtual-consultations">' +
-          '<span class="tds-mega-feature-icon">' + svg('M15 10l4.6-2.3A1 1 0 0 1 21 8.6v6.8a1 1 0 0 1-1.4.9L15 14M4 6h11v12H4z') + '</span>' +
-          '<span class="tds-mega-kicker">Start with care</span>' +
-          '<span class="tds-mega-feature-title">Virtual Medical Consultations</span>' +
-          '<span class="tds-mega-feature-copy">Speak with a qualified practitioner remotely for assessment, follow-up and chronic care support.</span>' +
-          '<span class="tds-mega-feature-link">View consultation options ' + next + '</span>' +
-        '</a>' +
-        '<div class="tds-mega-index">' +
-          '<a class="tds-mega-service" href="/ecg247">' +
-            '<span class="tds-mega-service-icon">' + svg('M3 12h4l2-5 4 10 2-5h6') + '</span>' +
-            '<span class="tds-mega-service-label">Monitor</span>' +
-            '<span class="tds-mega-service-title">ECG247 Monitoring</span>' +
-            '<span class="tds-mega-service-copy">Continuous remote heart rhythm monitoring for stronger follow-up evidence.</span>' +
-          '</a>' +
-          '<a class="tds-mega-service" href="/app">' +
-            '<span class="tds-mega-service-icon">' + svg('M8 2h8a2 2 0 0 1 2 2v16H6V4a2 2 0 0 1 2-2zM10 17h4') + '</span>' +
-            '<span class="tds-mega-service-label">Connect</span>' +
-            '<span class="tds-mega-service-title">TeleDoctorSA App</span>' +
-            '<span class="tds-mega-service-copy">Messaging, appointment support and digital follow-up as onboarding expands.</span>' +
-          '</a>' +
-          '<a class="tds-mega-service" href="/ehr">' +
-            '<span class="tds-mega-service-icon">' + svg('M6 3h12v18H6zM9 7h6M9 11h6M9 15h4') + '</span>' +
-            '<span class="tds-mega-service-label">Records</span>' +
-            '<span class="tds-mega-service-title">Electronic Health Records</span>' +
-            '<span class="tds-mega-service-copy">Secure access to consultation notes, results and longitudinal care history.</span>' +
-          '</a>' +
-        '</div>' +
-        '<div class="tds-mega-rail">' +
-          '<span>Need a broader view of the platform?</span>' +
-          '<a href="/our-services">Explore all services ' + next + '</a>' +
-        '</div>' +
-      '</div>';
+    return `<div class="tds-editorial-content"><div class="tds-mega-topline"><div><span class="tds-mega-kicker">TELEDOCTORSA / SOLUTIONS</span><strong>Connected care, made simpler.</strong><p>Explore our digital healthcare services and patient solutions.</p></div><a class="tds-editorial-feature" href="/contact-us">Book a demo &#8599;</a></div><div class="tds-mega-items"><a class="tds-mega-item" href="/ehr"><span class="tds-mega-icon">${svg('M6 3h12v18H6zM9 7h6M9 11h6M9 15h4')}</span><span><strong>Electronic Health Records</strong><small>Access and manage secure digital patient information.</small></span></a><a class="tds-mega-item" href="/app"><span class="tds-mega-icon">${svg('M8 2h8a2 2 0 0 1 2 2v16H6V4a2 2 0 0 1 2-2zM10 17h4')}</span><span><strong>TeleDoctorSA App</strong><small>Connected patient monitoring and digital care pathways.</small></span></a><a class="tds-mega-item" href="/ecg247"><span class="tds-mega-icon">${svg('M3 12h4l2-5 4 10 2-5h6')}</span><span><strong>ECG247 Heart Monitoring</strong><small>Discover remote heart rhythm monitoring and device guidance.</small></span></a><a class="tds-mega-item" href="/virtual-consultations"><span class="tds-mega-icon">${svg('M15 10l4.6-2.3A1 1 0 0 1 21 8.6v6.8a1 1 0 0 1-1.4.9L15 14M4 6h11v12H4z')}</span><span><strong>Virtual Consultations</strong><small>Connect with a healthcare professional remotely.</small></span></a></div><div class="tds-mega-footer"><span>Care that connects patients and clinicians.</span><a href="/our-services">Explore all services &#8594;</a></div></div>`;
   }
 
   function buildNav() {
@@ -897,17 +863,20 @@
 
     function setOffer(open) {
       offerPanel.classList.toggle('is-open', !!open);
+      offerPanel.inert = !open;
       offerTrigger.setAttribute('aria-expanded', open ? 'true' : 'false');
     }
 
     function setContact(open) {
       contact.classList.toggle('is-open', !!open);
+      contact.querySelector('#tdsContactMenu').inert = !open;
       contactButton.setAttribute('aria-expanded', open ? 'true' : 'false');
     }
 
     function setMobileMenu(open) {
       if (!isMobile() && open) return;
       links.classList.toggle('is-open', !!open);
+      links.inert = isMobile() && !open;
       menuButton.classList.toggle('is-open', !!open);
       backdrop.classList.toggle('is-open', !!open);
       document.body.classList.toggle('tds-nav-open', !!open);
@@ -962,22 +931,38 @@
     });
 
     document.addEventListener('keydown', function (event) {
+      if (event.key === 'Tab' && isMobile() && links.classList.contains('is-open')) {
+        var controls = Array.from(nav.querySelectorAll('a[href], button')).filter(function (control) {
+          return !control.closest('[inert]') && control.getClientRects().length;
+        });
+        var first = controls[0], last = controls[controls.length - 1];
+        if (event.shiftKey && (document.activeElement === first || !nav.contains(document.activeElement))) {
+          event.preventDefault(); if (last) last.focus();
+        } else if (!event.shiftKey && (document.activeElement === last || !nav.contains(document.activeElement))) {
+          event.preventDefault(); if (first) first.focus();
+        }
+      }
       if (event.key !== 'Escape') return;
       if (links.classList.contains('is-open')) {
         setMobileMenu(false);
         menuButton.focus();
       } else {
+        if (offerPanel.classList.contains('is-open')) offerTrigger.focus();
+        else if (contact.classList.contains('is-open')) contactButton.focus();
         setOffer(false);
         setContact(false);
       }
     });
 
     window.addEventListener('resize', function () {
-      if (!isMobile()) setMobileMenu(false);
+      setMobileMenu(false);
       setOffer(false);
       setContact(false);
     }, { passive: true });
 
+    setOffer(false);
+    setContact(false);
+    setMobileMenu(false);
     markActive(nav);
     document.body.setAttribute('data-tds-canonical-nav-ready', 'true');
     window.__TDS_CANONICAL_NAV_READY__ = true;

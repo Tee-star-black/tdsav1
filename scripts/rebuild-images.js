@@ -19,8 +19,9 @@
     document.head.appendChild(link);
   }
 
-  var release = '20260915-navlogos1';
+  var release = '20261009-site-audit1';
 
+  loadStyleOnce('tds-editorial-nav-style', '/styles/editorial-mega-menu.css?v=' + release);
   loadStyleOnce('tds-center-alignment-loader', '/styles/center-alignment.css?v=' + release);
   loadStyleOnce('tds-home-hero-center-loader', '/styles/home-hero-center.css?v=' + release);
   loadOnce('tds-rebuild-images-core-loader', '/scripts/rebuild-images-core.js?v=' + release);

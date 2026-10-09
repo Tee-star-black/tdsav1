@@ -14,10 +14,10 @@
             });
         });
         // Initialize Icons
-        lucide.createIcons();
+        if (window.lucide) window.lucide.createIcons();
 
         // Initialize Scroll Animations with premium settings
-        AOS.init({
+        if (window.AOS) window.AOS.init({
             duration: 1000,
             once: true,
             easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
@@ -91,31 +91,22 @@
             return 'phone call';
         }
 
-        function showLeadSuccess(result, payload) {
-            if (!formStatus) {
-                return;
-            }
-
-            const reference = escapeHtml(result.leadId || '');
-            const responseWindow = escapeHtml(result.responseWindow || 'within one business day');
-            const nextStep = escapeHtml(result.nextStep || `TeleDoctorSA will follow up by ${preferredContactLabel(payload.preferredContact)}.`);
-            const whatsappUrl = escapeHtml((result.support && result.support.whatsappUrl) || 'https://api.whatsapp.com/send/?phone=27780336394&text=Hello%20TeleDoctorSA,%20I%20just%20submitted%20an%20enquiry%20and%20would%20like%20to%20share%20more%20details.&type=phone_number&app_absent=0');
-            const contactEmail = escapeHtml((result.support && result.support.email) || 'info@teledoctorsa.co.za');
-
-            formStatus.className = 'form-status is-visible is-success';
-            formStatus.innerHTML = `
-                <strong>Enquiry received.</strong>
-                <span>Reference ${reference !== '' ? reference : 'saved'}.</span>
-                <div class="form-status-meta">
-                    <span>Reply window: ${responseWindow}</span>
-                    <span>Preferred contact: ${escapeHtml(preferredContactLabel(payload.preferredContact))}</span>
-                </div>
-                <div style="margin-top: 10px;">${nextStep}</div>
-                <div class="form-status-actions">
-                    <a class="form-status-link" href="${whatsappUrl}" target="_blank" rel="noopener noreferrer">Continue on WhatsApp</a>
-                    <a class="form-status-link" href="mailto:${contactEmail}?subject=TeleDoctorSA%20Enquiry%20${reference}">Reply by email</a>
-                </div>
-            `;
+        function showLeadHandoff(payload) {
+            const message = [
+                'TeleDoctorSA website enquiry',
+                'Name: ' + payload.name, 'Email: ' + payload.email,
+                'Phone: ' + payload.phone, 'Preferred contact: ' + preferredContactLabel(payload.preferredContact),
+                'Service: ' + serviceField.options[serviceField.selectedIndex].textContent,
+                'Timeframe: ' + document.getElementById('timeframe').selectedOptions[0].textContent,
+                '', payload.message
+            ].join('\n');
+            const whatsapp = 'https://wa.me/27780336394?text=' + encodeURIComponent(message);
+            const email = 'mailto:info@teledoctorsa.co.za?subject=TeleDoctorSA%20website%20enquiry&body=' + encodeURIComponent(message);
+            formStatus.className = 'form-status is-visible';
+            formStatus.innerHTML = '<strong>Your enquiry is ready to send.</strong>' +
+                '<p>Choose WhatsApp or email below, then press Send in that app. Your enquiry has not been sent yet.</p>' +
+                '<div class="form-status-actions"><a class="form-status-link" href="' + escapeHtml(whatsapp) + '" target="_blank" rel="noopener noreferrer">Send using WhatsApp</a>' +
+                '<a class="form-status-link" href="' + escapeHtml(email) + '">Send using email</a></div>';
         }
 
         function setSelectValue(field, value) {
@@ -217,8 +208,6 @@
                     console.error('Legal Notice modal not found');
                 }
             });
-        } else {
-            console.error('Legal Notice button not found');
         }
 
         // Open service modals - only for links with data-service attribute
@@ -269,42 +258,8 @@
             });
         });
 
-        function collectTrackingParams() {
-            const params = new URLSearchParams(window.location.search);
-            const tracked = {};
-            ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'gclid', 'fbclid'].forEach(key => {
-                const value = params.get(key);
-                if (value) {
-                    tracked[key] = value;
-                }
-            });
-            return tracked;
-        }
-
-        async function submitLead(payload) {
-            const response = await fetch('api/leads.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify(payload)
-            });
-
-            const result = await response.json().catch(() => ({
-                ok: false,
-                error: 'Invalid server response.'
-            }));
-
-            if (!response.ok || result.ok !== true) {
-                throw new Error(result.error || 'We could not submit your enquiry right now.');
-            }
-
-            return result;
-        }
-
         if (contactForm) {
-            contactForm.addEventListener('submit', async function(e) {
+            contactForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 setFormStatus('', '');
 
@@ -315,7 +270,7 @@
                 const originalButtonText = submitButton ? submitButton.textContent : '';
                 if (submitButton) {
                     submitButton.disabled = true;
-                    submitButton.textContent = 'Sending enquiry...';
+                    submitButton.textContent = 'Preparing enquiry...';
                 }
 
                 const payload = {
@@ -331,17 +286,13 @@
                     leadIntent: leadIntentField ? leadIntentField.value : '',
                     pageUrl: window.location.href,
                     pagePath: window.location.pathname,
-                    referrer: document.referrer,
-                    tracking: collectTrackingParams()
+                    referrer: document.referrer
                 };
 
                 try {
-                    const result = await submitLead(payload);
-                    contactForm.reset();
-                    resetLeadModalContext(false);
-                    showLeadSuccess(result, payload);
+                    showLeadHandoff(payload);
                 } catch (error) {
-                    setFormStatus('error', error.message || 'We could not submit your enquiry right now.');
+                    setFormStatus('error', 'Please contact us at info@teledoctorsa.co.za or +27 78 033 6394.');
                 } finally {
                     if (submitButton) {
                         submitButton.disabled = false;
@@ -812,3 +763,53 @@
                 closeLegalModal();
             }
         });
+
+
+(function installDialogKeyboardSupport() {
+    const dialogs = Array.from(document.querySelectorAll('.modal'));
+    let previousFocus = null;
+    let previousOverflow = '';
+    let current = null;
+    function sync() {
+        const active = dialogs.find(dialog => dialog.classList.contains('active')) || null;
+        if (active === current) return;
+        if (active) {
+            if (!current) {
+                previousFocus = document.activeElement;
+                previousOverflow = document.body.style.overflow;
+            }
+            current = active;
+            document.body.style.overflow = 'hidden';
+            active.setAttribute('aria-modal', 'true');
+            (active.querySelector('button, input, select, textarea, a[href]') || active).focus();
+        } else {
+            current = null;
+            document.body.style.overflow = previousOverflow;
+            if (previousFocus && previousFocus.isConnected) previousFocus.focus();
+        }
+    }
+    dialogs.forEach(dialog => {
+        dialog.setAttribute('role', 'dialog');
+        dialog.tabIndex = -1;
+        const heading = dialog.querySelector('h2');
+        if (heading) {
+            if (!heading.id) heading.id = dialog.id + 'Title';
+            dialog.setAttribute('aria-labelledby', heading.id);
+        }
+        new MutationObserver(sync).observe(dialog, {attributes:true, attributeFilter:['class']});
+    });
+    document.addEventListener('keydown', event => {
+        if (!current) return;
+        if (event.key === 'Escape') {
+            event.preventDefault();
+            dialogs.forEach(dialog => dialog.classList.remove('active'));
+            sync();
+        } else if (event.key === 'Tab') {
+            const controls = Array.from(current.querySelectorAll('button, input, select, textarea, a[href], [tabindex="0"]')).filter(control => !control.disabled && control.type !== 'hidden' && control.getClientRects().length);
+            const first = controls[0], last = controls[controls.length - 1];
+            if (!first) { event.preventDefault(); current.focus(); }
+            else if (event.shiftKey && (document.activeElement === first || !current.contains(document.activeElement))) { event.preventDefault(); last.focus(); }
+            else if (!event.shiftKey && (document.activeElement === last || !current.contains(document.activeElement))) { event.preventDefault(); first.focus(); }
+        }
+    });
+})();

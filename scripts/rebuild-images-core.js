@@ -1,7 +1,9 @@
 (function () {
   'use strict';
 
-  var page = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
+  var route = location.pathname.replace(/\/$/, '').split('/').pop() || 'index';
+  var page = route.replace(/\.html$/i, '').toLowerCase() + '.html';
+  if (page === 'teledoctorsa-app.html') page = 'app.html';
 
   var config = {
     'about-us.html': {

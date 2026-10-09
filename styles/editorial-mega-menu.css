@@ -10,7 +10,7 @@
 .tds-mega-kicker { display:block; font-size:10px; font-weight:800; letter-spacing:.16em; color:#ab512e; margin-bottom:5px; }
 .tds-mega-topline strong { display:block; font-size:22px; letter-spacing:-.04em; line-height:1.2; }
 .tds-mega-topline p { margin:6px 0 0; font-size:12px; color:#5b6b7c; }
-.tds-mega-feature { background:#17273d; color:white !important; padding:11px 15px; font-size:12px; font-weight:700; text-decoration:none; white-space:nowrap; }
+.tds-editorial-feature { background:#17273d; color:white !important; padding:11px 15px; font-size:12px; font-weight:700; text-decoration:none; white-space:nowrap; }
 .tds-mega-items { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
 .tds-mega-item { display:flex; align-items:flex-start; gap:14px; padding:17px; border:1px solid #e6eaf0; text-decoration:none !important; color:#14243b !important; background:#fff; transition:background .2s,border-color .2s; }
 .tds-mega-item:hover { background:#fcf8f5; border-color:#e99a70; }
@@ -26,10 +26,18 @@
  .tds-mega-panel { position:static; transform:none; width:100%; max-width:100%; border:0; border-left:2px solid #e97f48; box-shadow:none; padding:15px 12px; background:#f7f9fb; }
  .tds-mega-topline { align-items:flex-start; }
  .tds-mega-topline strong { font-size:17px; }
- .tds-mega-feature { white-space:normal; }
+ .tds-editorial-feature { white-space:normal; }
  .tds-mega-items { grid-template-columns:1fr; gap:8px; }
  .tds-mega-item { padding:12px; }
  .tds-mega-footer { flex-direction:column; align-items:flex-start; }
 }
 @media(max-width:420px) { .tds-mega-topline { flex-direction:column; } }
 @media(prefers-reduced-motion:reduce) { .tds-mega-trigger svg,.tds-mega-item { transition:none; } }
+
+
+/* The shared navbar owns panel positioning, visibility and interactions. */
+#tdsOfferPanel .tds-editorial-content { padding:26px; text-align:left; }
+#tdsOfferPanel .tds-mega-topline p, #tdsOfferPanel .tds-mega-item small, #tdsOfferPanel .tds-mega-footer { font-size:14px; }
+#tdsOfferPanel .tds-mega-item strong, #tdsOfferPanel .tds-editorial-feature { font-size:16px; }
+#tdsOfferPanel .tds-mega-item { min-height:88px; }
+@media(max-width:900px) { #tdsOfferPanel .tds-editorial-content { padding:16px; } }

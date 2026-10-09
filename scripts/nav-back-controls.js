@@ -210,7 +210,7 @@
         event.stopPropagation();
 
         if (offerPanel && offerPanel.classList.contains('is-open')) {
-          offerPanel.classList.remove('is-open');
+          if (offerTrigger) offerTrigger.click();
           if (offerTrigger) {
             offerTrigger.setAttribute('aria-expanded', 'false');
             offerTrigger.focus();
@@ -220,7 +220,7 @@
         }
 
         if (contact && contact.classList.contains('is-open')) {
-          contact.classList.remove('is-open');
+          if (contactButton) contactButton.click();
           if (contactButton) {
             contactButton.setAttribute('aria-expanded', 'false');
             contactButton.focus();
