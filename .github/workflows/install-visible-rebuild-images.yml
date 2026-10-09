@@ -46,3 +46,4 @@ jobs:
           sleep 2
           node scripts/verify-navbar.mjs
           node scripts/verify-home-hero.mjs
+          node scripts/verify-updates.mjs
