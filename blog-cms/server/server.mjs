@@ -16,6 +16,32 @@ try{
   if(error?.code!=='ENOENT')throw error;
 }
 
+function assertProductionConfiguration(){
+  if(process.env.NODE_ENV!=='production')return;
+  const required={
+    CMS_BACKEND:'postgres',
+    CMS_AUTH_BACKEND:'postgres',
+    CMS_MEDIA_BACKEND:'gcs',
+    CMS_COOKIE_SECURE:'true',
+    CMS_SCHEDULE_WORKER_ENABLED:'false'
+  };
+  for(const [key,value] of Object.entries(required)){
+    if(String(process.env[key]||'').toLowerCase()!==value){
+      throw new Error(`Production configuration requires ${key}=${value}.`);
+    }
+  }
+  for(const key of ['CMS_ACCESS_TOKEN']){
+    if(String(process.env[key]||'').trim())throw new Error(`Production configuration prohibits ${key}.`);
+  }
+  for(const key of ['PGDATABASE','PGUSER','GCS_BUCKET','CMS_INTERNAL_TOKEN']){
+    if(!String(process.env[key]||'').trim())throw new Error(`Production configuration requires ${key}.`);
+  }
+  if(!process.env.DATABASE_URL&&!process.env.PGPASSWORD){
+    throw new Error('Production database credentials are missing.');
+  }
+}
+assertProductionConfiguration();
+
 const repo=createRepository();
 const port=Number(process.env.PORT||8790);
 const host=process.env.CMS_HOST||'127.0.0.1';
