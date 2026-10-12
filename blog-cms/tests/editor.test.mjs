@@ -7,7 +7,7 @@ import path from 'node:path';
 import {JSDOM} from 'jsdom';
 const directory=await mkdtemp(path.join(tmpdir(),'cms-editor-'));
 const origin='http://127.0.0.1:8801';
-const child=spawn(process.execPath,['server/server.mjs'],{env:{...process.env,PORT:'8801',CMS_BACKEND:'local',CMS_ACCESS_TOKEN:'',CMS_LOCAL_STORE:path.join(directory,'store.json'),CMS_DEPLOY_WEBHOOK_URL:''},stdio:'pipe'});
+const child=spawn(process.execPath,['server/server.mjs'],{env:{...process.env,PORT:'8801',NODE_ENV:'test',CMS_BACKEND:'local',CMS_AUTH_BACKEND:'file',CMS_AUTH_FILE:path.join(directory,'auth.json'),CMS_ACCESS_TOKEN:'',CMS_LOCAL_STORE:path.join(directory,'store.json'),CMS_DEPLOY_WEBHOOK_URL:''},stdio:'pipe'});
 const pause=ms=>new Promise(r=>setTimeout(r,ms));
 async function until(predicate){for(let n=0;n<100;n++){if(await predicate())return;await pause(30);}throw new Error('Expected editor state did not arrive');}
 await until(async()=>{try{return(await fetch(origin+'/api/health')).ok;}catch{return false;}});
