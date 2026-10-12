@@ -14,7 +14,8 @@ const baseline={
   PGUSER:'tdsa-cms-app',
   PGPASSWORD:'test-placeholder-not-real',
   GCS_BUCKET:'test-placeholder',
-  CMS_INTERNAL_TOKEN:'test-placeholder'
+  CMS_INTERNAL_TOKEN:'test-placeholder',
+  CMS_PUBLIC_ORIGIN:'https://cms.teledoctorsa.co.za'
 };
 
 function startup(overrides){
@@ -34,7 +35,8 @@ for(const [name,overrides,expected] of [
   ['in-process scheduler',{CMS_SCHEDULE_WORKER_ENABLED:'true'},'CMS_SCHEDULE_WORKER_ENABLED=false'],
   ['legacy admin token',{CMS_ACCESS_TOKEN:'not-for-production'},'prohibits CMS_ACCESS_TOKEN'],
   ['missing database user',{PGUSER:''},'requires PGUSER'],
-  ['missing internal token',{CMS_INTERNAL_TOKEN:''},'requires CMS_INTERNAL_TOKEN']
+  ['missing internal token',{CMS_INTERNAL_TOKEN:''},'requires CMS_INTERNAL_TOKEN'],
+  ['missing CMS origin',{CMS_PUBLIC_ORIGIN:''},'requires CMS_PUBLIC_ORIGIN']
 ]){
   test(`production startup rejects ${name}`,()=>{
     const result=startup(overrides);
