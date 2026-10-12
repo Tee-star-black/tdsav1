@@ -1,8 +1,10 @@
 import {spawn} from 'node:child_process';
+import {tmpdir} from 'node:os';
+import path from 'node:path';
 
 const port=8799;
 const accessToken='smoke-test-token';
-const child=spawn(process.execPath,['server/server.mjs'],{cwd:process.cwd(),env:{...process.env,PORT:String(port),CMS_BACKEND:'local',CMS_ACCESS_TOKEN:accessToken},stdio:['ignore','pipe','pipe']});
+const child=spawn(process.execPath,['server/server.mjs'],{cwd:process.cwd(),env:{...process.env,PORT:String(port),NODE_ENV:'test',CMS_BACKEND:'local',CMS_AUTH_BACKEND:'file',CMS_AUTH_FILE:path.join(tmpdir(),`tdsa-smoke-auth-${process.pid}.json`),CMS_ACCESS_TOKEN:accessToken},stdio:['ignore','pipe','pipe']});
 const origin=`http://127.0.0.1:${port}`;
 const base=`${origin}/api`;
 
