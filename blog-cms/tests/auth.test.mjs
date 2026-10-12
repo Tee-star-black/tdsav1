@@ -37,6 +37,13 @@ test('staff account login uses an HttpOnly session and logout invalidates it',as
 
     assert.equal((await fetch(origin+'/api/articles',{headers:{Cookie:cookie}})).status,200);
 
+    const draftResponse=await fetch(origin+'/api/articles',{method:'POST',headers:{Cookie:cookie,'Content-Type':'application/json'},body:JSON.stringify({title:'Editor permission test draft',status:'Draft'})});
+    assert.equal(draftResponse.status,201);
+    const draft=(await draftResponse.json()).article;
+    assert.equal((await fetch(origin+'/api/articles/'+encodeURIComponent(draft.id),{method:'PUT',headers:{Cookie:cookie,'Content-Type':'application/json'},body:JSON.stringify({...draft,status:'Published'})})).status,403);
+    assert.equal((await fetch(origin+'/api/articles/'+encodeURIComponent(draft.id),{method:'DELETE',headers:{Cookie:cookie}})).status,403);
+    assert.equal((await fetch(origin+'/api/articles',{method:'POST',headers:{Cookie:cookie,'Content-Type':'application/json'},body:JSON.stringify({title:'Unauthorized published story',status:'Published'})})).status,403);
+
     const reset=await auth.resetPassword(user.id);
     assert.ok(reset.temporaryPassword);
     assert.equal(await auth.sessionUserFromRequest({headers:{cookie}}),null);
