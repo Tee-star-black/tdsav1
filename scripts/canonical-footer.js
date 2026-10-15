@@ -44,7 +44,6 @@
       '        <a href="/privacy-policy">Privacy</a>',
       '        <a href="/legal-notice">Legal</a>',
       '        <a href="/cookies-policy">Cookies</a>',
-      '        <a href="/returns-policy">Returns</a>',
       '      </div>',
       '    </div>',
       '  </div>',

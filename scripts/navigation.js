@@ -6,7 +6,7 @@
     '/': '/index.html', '/about-us': '/about-us.html', '/our-services': '/our-services.html',
     '/telemedia-suite': '/telemedia-suite.html', '/contact-us': '/contact-us.html', '/ehr': '/ehr.html',
     '/app': '/teledoctorsa-app.html', '/ecg247': '/ecg247.html', '/virtual-consultations': '/virtual-consultations.html',
-    '/privacy-policy': '/privacy-policy.html', '/legal-notice': '/legal-notice.html', '/shop': '/shop.html'
+    '/privacy-policy': '/privacy-policy.html', '/legal-notice': '/legal-notice.html'
   };
   function localTarget(href) {
     if (!isLocalPreview || !href || href.charAt(0) !== '/' || href.indexOf('//') === 0) return '';

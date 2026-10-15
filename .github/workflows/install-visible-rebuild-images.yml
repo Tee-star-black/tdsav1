@@ -11,6 +11,7 @@ on:
       - 'scripts/navigation.js'
       - 'scripts/site-ux-v4.js'
       - 'scripts/verify-nav-sitewide.mjs'
+      - 'scripts/verify-retired-shop.mjs'
       - 'styles/unified-footer.css'
       - 'scripts/canonical-nav.js'
       - 'scripts/verify-navbar.mjs'
@@ -139,6 +140,9 @@ jobs:
 
       - name: Validate public-page links and footer styles
         run: node scripts/verify-nav-sitewide.mjs
+
+      - name: Verify retired shop URLs, links and sitemap
+        run: node scripts/verify-retired-shop.mjs
 
       - name: Install browser smoke-test dependency
         shell: bash
