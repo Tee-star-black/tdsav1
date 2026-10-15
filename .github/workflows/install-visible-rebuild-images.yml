@@ -5,6 +5,13 @@ on:
     paths:
       - 'scripts/rebuild-images.js'
       - 'scripts/canonical-nav.js'
+      - 'scripts/nav-back-controls.js'
+      - 'scripts/editorial-mega-menu.js'
+      - 'scripts/mobile-nav.js'
+      - 'scripts/navigation.js'
+      - 'scripts/verify-nav-sitewide.mjs'
+      - 'styles/unified-footer.css'
+      - 'scripts/canonical-nav.js'
       - 'scripts/verify-navbar.mjs'
       - 'scripts/verify-home-hero.mjs'
       - 'scripts/footer-full-bleed-guard.js'
@@ -32,7 +39,7 @@ jobs:
           from pathlib import Path
           import re
 
-          loader = '<script src="/scripts/rebuild-images.js"></script>'
+          loader = '<script src="/scripts/rebuild-images.js?v=20261015-navfix1"></script>'
           loader_pattern = re.compile(
               r'\s*<script\b[^>]*\bsrc=["\']/?scripts/rebuild-images\.js(?:\?[^"\']*)?["\'][^>]*>\s*</script>\s*',
               re.I,
@@ -47,7 +54,7 @@ jobs:
               ('TDS_MOBILE_NAV_SCRIPT_START', 'TDS_MOBILE_NAV_SCRIPT_END'),
           ]
 
-          for path in sorted(Path('.').rglob('*.html')):
+          for path in sorted(Path('.').glob('*.html')):
               if '.git' in path.parts or 'node_modules' in path.parts:
                   continue
 
@@ -109,7 +116,7 @@ jobs:
               if retired in loader:
                   bad.append(f'rebuild-images.js still loads retired competing navbar runtime {retired}')
 
-          for path in sorted(Path('.').rglob('*.html')):
+          for path in sorted(Path('.').glob('*.html')):
               if '.git' in path.parts or 'node_modules' in path.parts:
                   continue
               text = path.read_text(encoding='utf-8')
@@ -127,6 +134,9 @@ jobs:
               raise SystemExit('Shared navbar validation failed:\n- ' + '\n- '.join(bad))
 
           print('Static shared-navbar validation passed')
+
+      - name: Validate public-page links and footer styles
+        run: node scripts/verify-nav-sitewide.mjs
 
       - name: Install browser smoke-test dependency
         shell: bash

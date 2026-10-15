@@ -84,6 +84,13 @@ async function testDesktop(browser, file) {
 
     await page.keyboard.press('Escape');
     await page.waitForFunction(() => !document.querySelector('#tdsOfferPanel')?.classList.contains('is-open'), null, { timeout: 3000 });
+
+    await page.click('#tdsContactButton');
+    await page.waitForFunction(() => document.querySelector('#tdsContact')?.classList.contains('is-open'));
+    if (await page.getAttribute('#tdsContactButton', 'aria-expanded') !== 'true') {
+      throw new Error(`${file}: contact dropdown did not open`);
+    }
+    await page.keyboard.press('Escape');
   } finally {
     await page.close();
   }
@@ -146,6 +153,40 @@ async function testMobile(browser, file) {
   }
 }
 
+
+async function testLocalLinks(browser, file, width) {
+  const page = await browser.newPage({ viewport: { width, height: 900 } });
+  page.setDefaultTimeout(5000);
+  try {
+    await page.goto(toUrl(file), { waitUntil: 'load', timeout: 15000 });
+    await waitForSharedNav(page, file);
+
+    if (width <= 1100) {
+      await page.click('#tdsNavMenuButton');
+      if (await page.getAttribute('#tdsNavMenuButton', 'aria-expanded') !== 'true') {
+        throw new Error(file + ': expected tablet/mobile navigation drawer');
+      }
+      const menuVisible = await page.locator('#tdsNavMenuButton').isVisible();
+      if (!menuVisible) throw new Error(file + ': menu button is hidden at ' + width + 'px');
+    } else {
+      const visible = await page.locator('#tdsNavMenuButton').isVisible();
+      if (visible) throw new Error(file + ': mobile button still visible on desktop');
+    }
+
+    const href = '/our-services';
+    await page.click('#tdsNavLinks > a[href="' + href + '"]');
+    await page.waitForURL(url => url.pathname.endsWith('/our-services.html'), { timeout: 6500 });
+    await waitForSharedNav(page, file + ' -> services');
+
+    if (width <= 1100) {
+      const menu = page.locator('#tdsNavMenuButton');
+      if (!await menu.isVisible()) throw new Error(file + ': menu is not visible on destination page');
+    }
+  } finally {
+    await page.close();
+  }
+}
+
 const allFiles = await walk(ROOT);
 const pages = [];
 for (const file of allFiles.sort()) {
@@ -173,6 +214,20 @@ try {
   }
 } finally {
   await browser.close();
+}
+
+const criticalPages = ['index.html', 'about-us.html', 'ecg247.html', 'teledoctorsa-app.html', 'doctors.html', 'virtual-consultations.html', 'shop.html'];
+for (const name of criticalPages) {
+  const file = path.join(ROOT, name);
+  for (const width of [390, 1024, 1440]) {
+    try {
+      await testLocalLinks(browser, file, width);
+      console.log('PASS link navigation ' + name + ' at ' + width + 'px');
+    } catch (error) {
+      failures.push(name + ' (' + width + 'px): ' + error.message);
+      console.error('FAIL link navigation ' + name + ' at ' + width + 'px: ' + error.message);
+    }
+  }
 }
 
 if (failures.length) {

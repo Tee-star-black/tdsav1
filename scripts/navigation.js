@@ -69,6 +69,8 @@
       if (contactDropdown && !contactDropdown.contains(e.target)) setContact(false);
       var a = e.target.closest && e.target.closest('a[href]'); if (!a) return;
       if (window.innerWidth <= 900 && navLinks && navLinks.contains(a)) setMobile(false);
+      // The shared loader handles clean URLs consistently across every public page.
+      if (window.__TDS_LOCAL_ROUTE_BRIDGE__) return;
       var target = localTarget(a.getAttribute('href'));
       if (!target || a.target === '_blank' || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
       e.preventDefault(); window.location.href = target;

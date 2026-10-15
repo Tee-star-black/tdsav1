@@ -4,7 +4,7 @@
   if (window.__TDS_CANONICAL_NAV_V2__) return;
   window.__TDS_CANONICAL_NAV_V2__ = true;
 
-  var MOBILE_MAX = 900;
+  var MOBILE_MAX = 1100;
   var WHATSAPP_URL = 'https://wa.me/27780336394?text=Hi%20TeleDoctorSA%2C%20please%20may%20you%20contact%20me%3F%20Thanks.';
   var FACEBOOK_URL = 'https://www.facebook.com/DrMukudu/';
   var INSTAGRAM_URL = 'https://www.instagram.com/drmukudu_andpartners/';
@@ -44,13 +44,14 @@
         align-items: center !important;
         justify-content: space-between !important;
         gap: 24px !important;
-        background: rgba(255,255,255,.985) !important;
+        background: #fff !important;
         border: 0 !important;
         border-bottom: 1px solid #e2e8f0 !important;
         border-radius: 0 !important;
         box-shadow: 0 8px 28px rgba(15,23,42,.07) !important;
-        -webkit-backdrop-filter: blur(18px) saturate(140%) !important;
-        backdrop-filter: blur(18px) saturate(140%) !important;
+        -webkit-backdrop-filter: none !important;
+        backdrop-filter: none !important;
+        overflow: visible !important;
         z-index: 2147483000 !important;
       }
 
@@ -516,7 +517,7 @@
         display: none !important;
       }
 
-      @media (max-width: 900px) {
+      @media (max-width: 1100px) {
         #tdsSiteNav {
           min-height: 64px !important;
           padding: 10px 16px !important;
