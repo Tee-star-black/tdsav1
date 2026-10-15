@@ -1,0 +1,86 @@
+/* TeleDoctorSA App demo conversion. Public marketing page only. */
+.app-sales-hero, .app-sales-book {
+  color: #142239; font-family: 'Plus Jakarta Sans', Arial, sans-serif; box-sizing: border-box;
+}
+.app-sales-hero *, .app-sales-book *, .app-sales-hero *::before, .app-sales-book *::before { box-sizing: border-box; }
+.app-sales-shell { width: min(1200px, calc(100% - clamp(36px,7vw,110px))); max-width: 1200px; margin: 0 auto; }
+.app-sales-hero { padding: clamp(64px,8vw,110px) 0 clamp(70px,8vw,96px); background: #14243a; color: #f6f8fa; }
+.app-sales-hero-grid { display: grid; grid-template-columns: minmax(0,1.06fr) minmax(0,.94fr); gap: clamp(35px,7vw,85px); align-items: center; }
+.app-sales-eyebrow { margin: 0 0 19px; color: #f4a675; font-size: .78rem; font-weight: 800; letter-spacing: .16em; }
+.app-sales-status-dot { display: inline-block; vertical-align: middle; width: 7px; height: 7px; background: #f1a775; margin-right: 7px; }
+.app-sales-hero h1 { margin: 0 0 24px; color: #fff; font-family: 'Plus Jakarta Sans',Arial,sans-serif; font-size: clamp(3.25rem,5.5vw,5.4rem); line-height: 1.07; letter-spacing: -.058em; font-weight: 700; }
+.app-sales-hero h1 span { color: #ffb481; }
+.app-sales-lead { color: #c3d0de; font-size: clamp(1.05rem,1.3vw,1.15rem); line-height: 1.78; max-width: 600px; margin: 0 0 30px; }
+.app-sales-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.app-sales-button { display: inline-flex; align-items: center; justify-content: space-between; gap: 23px; min-height: 51px; padding: 13px 19px; font-size: .89rem; font-weight: 800; text-decoration: none; border: 1px solid transparent; transition: color .2s ease, background .2s ease, border-color .2s ease; }
+.app-sales-hero a:focus-visible, .app-sales-book a:focus-visible, .app-sales-book button:focus-visible, .app-sales-book input:focus-visible, .app-sales-book select:focus-visible, .app-sales-book textarea:focus-visible { outline: 3px solid #ffad72; outline-offset: 3px; }
+.app-sales-button-primary { background: #ffae77; border-color: #ffae77; color: #14243a; }
+.app-sales-button-primary:hover { background: #ffc39c; border-color: #ffc39c; color: #14243a; }
+.app-sales-button-outline { background: transparent; border-color: rgba(246,248,250,.5); color: #fff; }
+.app-sales-button-outline:hover { background: rgba(255,255,255,.08); border-color: #fff; color: #fff; }
+.app-sales-smallprint { color: #acbdcf; font-size: .78rem; margin: 17px 0 0; line-height: 1.7; }
+.app-sales-smallprint a { color: #ffbe93; text-decoration: underline; text-underline-offset: 3px; }
+.app-sales-tags { display: flex; flex-wrap: wrap; gap: 11px 22px; margin-top: 39px; }
+.app-sales-tags span { font-size: .78rem; color: #d9e4ef; padding-left: 10px; border-left: 2px solid #f3a773; }
+.app-sales-visual { margin: 0; background: #25374d; padding: 10px; border: 1px solid #40536a; min-width: 0; }
+.app-sales-visual img { display: block; width: 100%; height: clamp(350px,38vw,490px); object-fit: cover; object-position: center; }
+.app-sales-visual figcaption { padding: 15px 8px 5px; display: flex; align-items: center; gap: 10px; color: #d1dce9; font-size: .8rem; }
+.app-sales-caption-rule { width: 22px; height: 2px; background: #f4aa75; flex: 0 0 auto; }
+.app-sales-book { background: #f3f6f9; padding: clamp(72px,9vw,116px) 0; scroll-margin-top: 90px; }
+.app-sales-book-grid { display: grid; grid-template-columns: minmax(0,.86fr) minmax(0,1.14fr); align-items: start; gap: clamp(30px,7vw,100px); }
+.app-sales-book-copy > .app-sales-eyebrow { color: #a3562a; }
+.app-sales-book-copy h2 { margin: 0 0 24px; color: #142239; font-family: 'Plus Jakarta Sans',Arial,sans-serif; font-size: clamp(2.6rem,3.7vw,4rem); letter-spacing: -.055em; line-height: 1.12; font-weight: 700; }
+.app-sales-book-copy > p:not(.app-sales-eyebrow) { color: #526378; font-size: 1.03rem; line-height: 1.82; max-width: 490px; }
+.app-sales-process { border-top: 1px solid #d7e1eb; margin-top: 36px; }
+.app-sales-process > div { display: grid; grid-template-columns: 35px 1fr; gap: 0 12px; border-bottom: 1px solid #d7e1eb; padding: 19px 0; }
+.app-sales-process > div > span { grid-row: 1 / 3; font-size: .9rem; color: #b56839; font-weight: 800; }
+.app-sales-process strong { font-size: 1rem; color: #142239; }
+.app-sales-process p { margin: 4px 0 0; font-size: .9rem; color: #5e6f81; }
+.app-sales-contact { display: flex; align-items: flex-start; flex-direction: column; gap: 9px; margin-top: 33px; }
+.app-sales-contact strong { color: #142239; margin-bottom: 3px; }
+.app-sales-contact a { color: #a24e23; font-weight: 700; font-size: .9rem; text-decoration: underline; text-underline-offset: 4px; }
+.app-sales-form { width: 100%; background: #fff; border: 1px solid #d9e2ea; padding: clamp(22px,4vw,42px); box-shadow: 0 18px 40px rgba(18,34,57,.035); }
+.app-sales-form h3 { margin: 0 0 9px; color: #132138; font-family: 'Plus Jakarta Sans',Arial,sans-serif; font-size: 1.8rem; font-weight: 700; letter-spacing: -.035em; }
+.app-sales-form-description { margin: 0 0 26px; font-size: .89rem; color: #5c6c80; }
+.app-sales-fields { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px; }
+.app-sales-field { display: flex; flex-direction: column; min-width: 0; }
+.app-sales-field.app-sales-span { grid-column: 1 / -1; }
+.app-sales-field label { margin-bottom: 8px; font-size: .84rem; font-weight: 700; color: #25364d; }
+.app-sales-field label span { color: #7f8b9c; font-weight: 400; }
+.app-sales-field input, .app-sales-field select, .app-sales-field textarea {
+  display: block; width: 100%; min-width: 0; min-height: 46px; background: #fff; border: 1px solid #cbd6e2;
+  border-radius: 0; padding: 11px 12px; color: #142239; font: inherit; font-size: .92rem;
+}
+.app-sales-field textarea { min-height: 90px; resize: vertical; }
+.app-sales-field input::placeholder, .app-sales-field textarea::placeholder { color: #7c8a99; }
+.app-sales-field input:focus, .app-sales-field select:focus, .app-sales-field textarea:focus { border-color: #b76a3e; }
+.app-sales-consent { display: flex; gap: 11px; align-items: flex-start; margin: 21px 0 22px; font-size: .83rem; color: #4b5b70; line-height: 1.65; cursor: pointer; }
+.app-sales-consent input { flex: 0 0 auto; margin-top: 4px; accent-color: #18334c; width: 17px; height: 17px; }
+.app-sales-consent a { color: #9c4c25; text-decoration: underline; }
+.app-sales-submit { display: flex; align-items: center; justify-content: space-between; gap: 20px; cursor: pointer; width: 100%; min-height: 52px; border: 1px solid #14243a; background: #14243a; color: #fff; border-radius: 0; padding: 12px 19px; font: inherit; font-size: .93rem; font-weight: 700; }
+.app-sales-submit:hover { background: #293e58; }
+.app-sales-submit:disabled { opacity: .62; cursor: progress; }
+.app-sales-privacy { color: #768396; font-size: .75rem; line-height: 1.6; margin: 15px 0 0; }
+.app-sales-status { display: none; padding: 13px; margin-top: 14px; font-size: .86rem; line-height: 1.6; border-left: 3px solid; }
+.app-sales-status.is-success { display: block; border-color: #1d7f5a; background: #eaf5ef; color: #164e39; }
+.app-sales-status.is-error { display: block; border-color: #aa523c; background: #fff3f0; color: #743223; }
+.app-sales-status a { display: inline-block; margin: 10px 14px 0 0; color: inherit; font-weight: 800; text-decoration: underline; }
+.app-sales-honeypot { position: absolute !important; width: 1px !important; height: 1px !important; overflow: hidden !important; clip-path: inset(100%); white-space: nowrap; }
+@media(max-width:900px) {
+  .app-sales-hero-grid, .app-sales-book-grid { grid-template-columns: 1fr; gap: 40px; }
+  .app-sales-visual { max-width: 730px; }
+  .app-sales-visual img { height: clamp(270px,54vw,480px); }
+  .app-sales-book-grid { gap: 35px; }
+}
+@media(max-width:580px) {
+  .app-sales-shell { width: calc(100% - 36px); }
+  .app-sales-hero { padding: 58px 0 65px; }
+  .app-sales-hero h1 { font-size: clamp(2.7rem,11vw,4rem); }
+  .app-sales-hero .app-sales-actions { align-items: stretch; flex-direction: column; }
+  .app-sales-button { width: 100%; }
+  .app-sales-visual img { height: 275px; }
+  .app-sales-book { padding: 70px 0; }
+  .app-sales-form { padding: 23px 18px; }
+  .app-sales-fields { grid-template-columns: 1fr; gap: 17px; }
+  .app-sales-field.app-sales-span { grid-column: auto; }
+}
