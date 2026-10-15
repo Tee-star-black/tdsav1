@@ -56,9 +56,11 @@ body footer#tds-canonical-footer .tds-foot-logo-link img {
   flex: 0 0 auto !important;
   width: 54px !important;
   height: 54px !important;
-  padding: 6px !important;
+  padding: 0 !important;
   object-fit: contain !important;
-  background: #fff !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
   border-radius: 0 !important;
 }
 body footer#tds-canonical-footer .tds-foot-logo-link span {

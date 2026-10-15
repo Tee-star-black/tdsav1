@@ -957,6 +957,8 @@
   }
 
   function init() {
+    // Retired experience: the shared canonical navbar is installed by the site runtime.
+    if (document.querySelector('script[src*="scripts/rebuild-images.js"]')) return;
     addStyles();
     removeLegacyMobileNavigation();
     removeCostlyDecorativeNodes();
@@ -979,6 +981,6 @@
   }
 
   window.addEventListener('pageshow', function () {
-    removeLegacyMobileNavigation();
+    if (!document.querySelector('script[src*="scripts/rebuild-images.js"]')) removeLegacyMobileNavigation();
   });
 })();

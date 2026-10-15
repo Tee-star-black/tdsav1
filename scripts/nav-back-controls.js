@@ -4,7 +4,7 @@
   if (window.__TDS_NAV_BACK_CONTROLS__) return;
   window.__TDS_NAV_BACK_CONTROLS__ = true;
 
-  var MOBILE_MAX = 900;
+  var MOBILE_MAX = 1100;
 
   function backIcon() {
     return '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M19 12H5M11 18l-6-6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -85,7 +85,7 @@
         display: none !important;
       }
 
-      @media (max-width: 900px) {
+      @media (max-width: 1100px) {
         #tdsSiteNav {
           gap: 10px !important;
         }

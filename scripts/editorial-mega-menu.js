@@ -2,6 +2,8 @@
 (function () {
  'use strict';
  function init() {
+  // The canonical navbar owns the mega menu. Never bind a competing menu to a legacy nav.
+  if (document.querySelector('script[src*="scripts/rebuild-images.js"]') || document.getElementById('tdsSiteNav')) return;
   var legacy = document.getElementById('openPanelBtn');
   if (!legacy || document.getElementById('tdsMegaTrigger')) return;
   var container = legacy.closest('.dropdown');

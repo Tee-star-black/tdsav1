@@ -7,6 +7,8 @@
   function installAutoHideHeader() {
     var nav = document.querySelector('body > nav:not(.tds-mobile-nav), nav:not(.tds-mobile-nav)');
     if (!nav) return;
+    // The canonical navbar must remain visible regardless of scroll position.
+    if (nav.id === 'tdsSiteNav' || document.querySelector('script[src*="scripts/rebuild-images.js"]')) return;
 
     nav.classList.add('tds-autohide-nav');
 
