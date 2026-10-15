@@ -84,9 +84,7 @@
    - ehr.html
    - app.html
    - ecg247.html
-   - shop.html
    - telemedia-suite.html
-   - payment.html
 
 ---
 

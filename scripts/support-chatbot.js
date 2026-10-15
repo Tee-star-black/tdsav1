@@ -158,9 +158,7 @@
       'legal-notice (1).html': 'legal-notice.html',
       'privacy-policy (1).html': 'privacy-policy.html',
       'privacy-policy (2).html': 'privacy-policy.html',
-      'product-detail (1).html': 'product-detail.html',
       'qr-codes (1).html': 'qr-codes.html',
-      'shop (1).html': 'shop.html',
       'teledoctorsa-app (1).html': 'teledoctorsa-app.html',
       'telemedia-suite (2).html': 'telemedia-suite.html',
       'app (1).html': 'app.html'

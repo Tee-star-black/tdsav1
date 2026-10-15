@@ -42,11 +42,9 @@
       '/doctors': '/doctors.html',
       '/nurses': '/nurses.html',
       '/patients-portal': '/patients-portal.html',
-      '/shop': '/shop.html',
       '/privacy-policy': '/privacy-policy.html',
       '/legal-notice': '/legal-notice.html',
       '/cookies-policy': '/cookies-policy.html',
-      '/returns-policy': '/returns-policy.html',
       '/upvio': '/upvio.html',
       '/qr-codes': '/qr-codes.html',
       '/health-conference': '/health-conference.html'

@@ -6,6 +6,10 @@ RedirectMatch 301 ^/patients/?$ https://demo-patient.teledoctorsa.co.za/
     RewriteEngine On
     RewriteBase /
 
+    # Retired e-commerce URLs: permanently gone, even if old cPanel copies remain.
+    # Must precede clean-URL redirects and file rewrites.
+    RewriteRule ^(?:shop|product-detail|payment|returns-policy)(?:\.html)?/?$ - [G,L,NC]
+
     # Keep app aliases on one canonical public URL
     RewriteCond %{THE_REQUEST} \s/+app\.html(?:[?\s]) [NC]
     RewriteRule ^app\.html$ /app [R=301,END,NC]

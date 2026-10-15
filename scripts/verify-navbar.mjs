@@ -239,7 +239,7 @@ try {
 
 const routeBrowser = await chromium.launch({ headless: true });
 try {
-const criticalPages = ['index.html', 'about-us.html', 'ecg247.html', 'teledoctorsa-app.html', 'doctors.html', 'virtual-consultations.html', 'shop.html'];
+const criticalPages = ['index.html', 'about-us.html', 'ecg247.html', 'teledoctorsa-app.html', 'doctors.html', 'virtual-consultations.html', 'our-services.html'];
 for (const name of criticalPages) {
   const file = path.join(ROOT, name);
   for (const width of [390, 1024, 1440]) {
