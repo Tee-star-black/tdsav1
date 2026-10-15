@@ -52,6 +52,8 @@
         -webkit-backdrop-filter: none !important;
         backdrop-filter: none !important;
         overflow: visible !important;
+        /* Never let legacy scroll-hide transforms move this shared header out of view. */
+        transform: none !important;
         z-index: 2147483000 !important;
       }
 

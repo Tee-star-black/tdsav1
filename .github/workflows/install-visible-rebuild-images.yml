@@ -9,6 +9,7 @@ on:
       - 'scripts/editorial-mega-menu.js'
       - 'scripts/mobile-nav.js'
       - 'scripts/navigation.js'
+      - 'scripts/site-ux-v4.js'
       - 'scripts/verify-nav-sitewide.mjs'
       - 'styles/unified-footer.css'
       - 'scripts/canonical-nav.js'
@@ -155,6 +156,7 @@ jobs:
           node scripts/verify-home-hero.mjs
 
       - name: Commit normalized HTML
+        if: github.ref == 'refs/heads/main'
         shell: bash
         run: |
           git config user.name "github-actions[bot]"

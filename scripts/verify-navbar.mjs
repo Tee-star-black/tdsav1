@@ -55,6 +55,17 @@ async function waitForSharedNav(page, file) {
   for (const [name, count] of Object.entries(counts)) {
     if (count !== 1) throw new Error(`${file}: expected exactly one ${name}, found ${count}`);
   }
+
+  // Verify the shared footer logo has no white box or padding.
+  await page.waitForSelector('footer#tds-canonical-footer .tds-foot-logo-link img', { state: 'attached', timeout: 4500 });
+  const footerLogo = await page.locator('footer#tds-canonical-footer .tds-foot-logo-link img').evaluate(img => {
+    const css = getComputedStyle(img);
+    return { padding: css.padding, background: css.backgroundColor, shadow: css.boxShadow };
+  });
+  if (!footerLogo.padding.split(' ').every(value => parseFloat(value) === 0) ||
+      footerLogo.background !== 'rgba(0, 0, 0, 0)' || footerLogo.shadow !== 'none') {
+    throw new Error(file + ': footer logo still has a CSS badge: ' + JSON.stringify(footerLogo));
+  }
 }
 
 async function waitForOfferVisible(page, file, mobile = false) {
@@ -91,6 +102,11 @@ async function testDesktop(browser, file) {
       throw new Error(`${file}: contact dropdown did not open`);
     }
     await page.keyboard.press('Escape');
+
+    await page.evaluate(() => window.scrollTo(0, 600));
+    await page.waitForTimeout(200);
+    const navTop = await page.locator('#tdsSiteNav').evaluate(nav => nav.getBoundingClientRect().top);
+    if (Math.abs(navTop) > 3) throw new Error(file + ': shared navbar moved off-screen after scrolling');
   } finally {
     await page.close();
   }
@@ -148,6 +164,11 @@ async function testMobile(browser, file) {
 
     const collapsed = await page.getAttribute('#tdsNavMenuButton', 'aria-expanded');
     if (collapsed !== 'false') throw new Error(`${file}: mobile back control did not close the drawer cleanly`);
+
+    await page.evaluate(() => window.scrollTo(0, 500));
+    await page.waitForTimeout(200);
+    const navTop = await page.locator('#tdsSiteNav').evaluate(nav => nav.getBoundingClientRect().top);
+    if (Math.abs(navTop) > 3) throw new Error(file + ': shared mobile navbar moved off-screen after scrolling');
   } finally {
     await page.close();
   }
@@ -242,4 +263,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`\nNavbar verification passed on ${pages.length} interactive HTML pages at desktop and mobile widths, including back controls.`);
+console.log(`\nNavbar verification passed on ${pages.length} interactive HTML pages at desktop and mobile widths, with tablet navigation, scrolling and back controls.`);
