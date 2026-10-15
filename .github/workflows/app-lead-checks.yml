@@ -1,0 +1,54 @@
+name: App demo and lead checks
+
+on:
+  pull_request:
+    paths:
+      - "api/leads.php"
+      - "app.html"
+      - "teledoctorsa-app.html"
+      - "index.html"
+      - "telemedia-suite.html"
+      - "scripts/app-demo.js"
+      - "scripts/verify-app-demo.mjs"
+      - "styles/app-demo.css"
+      - ".github/workflows/app-lead-checks.yml"
+  push:
+    branches: [main]
+    paths:
+      - "api/leads.php"
+      - "app.html"
+      - "teledoctorsa-app.html"
+      - "index.html"
+      - "telemedia-suite.html"
+      - "scripts/app-demo.js"
+      - "scripts/verify-app-demo.mjs"
+      - "styles/app-demo.css"
+      - ".github/workflows/app-lead-checks.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout app site
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Check PHP and JavaScript syntax
+        run: |
+          php -v
+          php -l api/leads.php
+          node --check scripts/app-demo.js
+      - name: Check marketing pages and lead funnel wiring
+        run: node scripts/verify-app-demo.mjs
+      - name: Check basic HTTP failures without sending any lead email
+        shell: bash
+        run: |
+          set -euo pipefail
+          php -S 127.0.0.1:8787 -t . >/tmp/tdsa-lead-php.log 2>&1 &
+          PHP_PID=$!
+          trap 'kill "$PHP_PID" || true' EXIT
+          sleep 2
+          [[ "$(curl -s -o /dev/null -w '%{http_code}' 'http://127.0.0.1:8787/api/leads.php')" == "405" ]]
+          [[ "$(curl -s -o /dev/null -w '%{http_code}' -H 'Content-Type: application/json' -d '{"name":"X"}' 'http://127.0.0.1:8787/api/leads.php')" == "422" ]]
+          [[ "$(curl -s -o /dev/null -w '%{http_code}' -H 'Origin: https://unknown.example' -H 'Content-Type: application/json' -d '{"name":"X"}' 'http://127.0.0.1:8787/api/leads.php')" == "403" ]]
