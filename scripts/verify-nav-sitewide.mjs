@@ -23,8 +23,10 @@ assert.match(shared, /__TDS_LOCAL_ROUTE_BRIDGE__/);
 assert.match(shared, /'\/our-services': '\/our-services\.html'/);
 assert.match(shared, /'\/app': '\/teledoctorsa-app\.html'/);
 assert.match(shared, /'\/patients': 'https:\/\/demo-patient\.teledoctorsa\.co\.za\/'/);
-assert.match(footer, /tds-foot-logo-link img[\s\S]*?padding: 0 !important;/);
-assert.match(footer, /tds-foot-logo-link img[\s\S]*?background: transparent !important;/);
-assert.doesNotMatch(footer, /tds-foot-logo-link img[\s\S]*?background: #fff !important;/);
+const logoCss = footer.match(/\.tds-foot-logo-link img\s*\{([^}]+)\}/)?.[1];
+assert.ok(logoCss, 'Footer logo CSS rule exists');
+assert.match(logoCss, /padding: 0 !important;/);
+assert.match(logoCss, /background: transparent !important;/);
+assert.doesNotMatch(logoCss, /background: #fff !important;/);
 
 console.log('PASS: ' + publicPages.length + ' public pages use versioned shared navigation and the footer logo has no white badge.');
