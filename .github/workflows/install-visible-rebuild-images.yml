@@ -18,6 +18,7 @@ on:
       - 'scripts/footer-full-bleed-guard.js'
       - 'styles/center-alignment.css'
       - 'styles/home-hero-center.css'
+      - '*.html'
       - '.github/workflows/install-visible-rebuild-images.yml'
   workflow_dispatch:
 
