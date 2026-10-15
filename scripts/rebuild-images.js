@@ -28,4 +28,7 @@
   loadOnce('tds-nav-back-controls-loader', '/scripts/nav-back-controls.js?v=' + release);
   loadOnce('tds-nav-brand-icons-loader', '/scripts/nav-brand-icons.js?v=' + release);
   loadOnce('tds-footer-full-bleed-guard-loader', '/scripts/footer-full-bleed-guard.js?v=' + release);
+  // One minimal brand footer for every public page using this shared loader.
+  loadStyleOnce('tds-unified-footer-style', '/styles/unified-footer.css?v=20261015a');
+  loadOnce('tds-canonical-footer-loader', '/scripts/canonical-footer.js?v=20261015a');
 })();
