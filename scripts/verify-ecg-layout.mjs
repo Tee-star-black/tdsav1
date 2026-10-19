@@ -12,6 +12,7 @@ try {
     try {
       await page.goto(`${BASE_URL}/ecg247.html`, { waitUntil: 'load', timeout: 15000 });
       await page.waitForSelector('#tds-layout-refresh', { state: 'attached', timeout: 8000 });
+      await page.waitForSelector('#tdsSiteNav[data-tds-canonical-nav="true"]', { state: 'attached', timeout: 8000 });
 
       const result = await page.evaluate(() => {
         const main = document.querySelector('#ecg247-main');
@@ -30,12 +31,16 @@ try {
           return { error: 'Essential ECG247 page content is missing' };
         }
 
+        const nav = document.querySelector('#tdsSiteNav');
+        const guideBelowNav = !!nav && guide.getBoundingClientRect().top >= nav.getBoundingClientRect().bottom - 2;
+
         const overflowingWraps = [...main.querySelectorAll('.ecg24-wrap')]
           .map(el => el.getBoundingClientRect())
           .some(rect => rect.left < -2 || rect.right > window.innerWidth + 2);
 
         return {
           guideFirst: main.firstElementChild === guide,
+          guideBelowNav,
           guideUrl: guideLink.href,
           injectedHeroCount: document.querySelectorAll('.tds-rescued-visual').length,
           mainHeroCount: main.querySelectorAll('.ecg24-hero').length,
@@ -50,7 +55,7 @@ try {
       });
 
       if (result.error) throw new Error(result.error);
-      if (!result.guideFirst || !result.guideUrl.startsWith('https://ecg247.com/en/how-to-use-ecg247/')) {
+      if (!result.guideFirst || !result.guideBelowNav || !result.guideUrl.startsWith('https://ecg247.com/en/how-to-use-ecg247/')) {
         throw new Error('Official ECG247 setup guide is not the first page section');
       }
       if (result.injectedHeroCount !== 0 || result.mainHeroCount !== 1 || result.headingCount !== 1) {

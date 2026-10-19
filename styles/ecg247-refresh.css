@@ -1,5 +1,10 @@
 /* ECG247: focused patient-first editorial page, 2026-10-15 */
 #ecg247-main { background: #fff; color: #152239; font-family: 'Plus Jakarta Sans', Arial, sans-serif; overflow: clip; }
+/* The shared navigation is fixed: keep the setup guide visible immediately below it. */
+#tdsSiteNav ~ #ecg247-main { padding-top: 70px; }
+@media (max-width: 1100px) {
+  #tdsSiteNav ~ #ecg247-main { padding-top: 64px; }
+}
 #ecg247-main *, #ecg247-main *::before, #ecg247-main *::after { box-sizing: border-box; }
 #ecg247-main .ecg24-wrap { width: min(1200px, calc(100% - clamp(36px, 8vw, 112px))); max-width: 1200px; margin: 0 auto; }
 #ecg247-main h1, #ecg247-main h2, #ecg247-main h3, #ecg247-main p { margin-top: 0; }
