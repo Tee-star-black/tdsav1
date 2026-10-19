@@ -1597,7 +1597,7 @@
                 linear-gradient(180deg, rgba(248, 249, 251, 0.16) 0%, rgba(252, 247, 241, 0.48) 34%, rgba(255, 249, 244, 0.82) 100%),
                 radial-gradient(circle at 18% 18%, rgba(47, 171, 255, 0.12) 0%, rgba(47, 171, 255, 0) 34%),
                 radial-gradient(circle at 84% 16%, rgba(255, 163, 102, 0.16) 0%, rgba(255, 163, 102, 0) 28%),
-                url("images/rebuild/01-clinical-team-at-work.jpg") center center / cover no-repeat;
+                url("images/rebuild/hero-clinician.png") center center / cover no-repeat;
             position: relative;
             overflow: hidden;
             min-height: 88vh;

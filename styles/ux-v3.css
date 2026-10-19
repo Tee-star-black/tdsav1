@@ -9,7 +9,7 @@ body:has(.core-highlights-slider) .core-highlights-slider {
   background-color: #0f172a !important;
   background-image:
     linear-gradient(rgba(15, 23, 42, .78), rgba(15, 23, 42, .78)),
-    url('/images/rebuild/01-clinical-team-at-work.jpg') !important;
+    url('/images/rebuild/hero-clinician.png') !important;
   background-size: cover !important;
   background-position: center 34% !important;
   background-repeat: no-repeat !important;
