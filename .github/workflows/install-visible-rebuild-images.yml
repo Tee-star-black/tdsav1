@@ -42,7 +42,8 @@ jobs:
           from pathlib import Path
           import re
 
-          loader = '<script src="/scripts/rebuild-images.js?v=20261015-navfix1"></script>'
+          loader_default = '<script src="/scripts/rebuild-images.js?v=20261015-navfix1"></script>'
+          loader_ecg = '<script src="/scripts/rebuild-images.js?v=20261019-ecg-layout"></script>'
           loader_pattern = re.compile(
               r'\s*<script\b[^>]*\bsrc=["\']/?scripts/rebuild-images\.js(?:\?[^"\']*)?["\'][^>]*>\s*</script>\s*',
               re.I,
@@ -61,6 +62,7 @@ jobs:
               if '.git' in path.parts or 'node_modules' in path.parts:
                   continue
 
+              loader = loader_ecg if path.name == 'ecg247.html' else loader_default
               text = path.read_text(encoding='utf-8-sig')
               original = text
               text = text.replace('`r`n', '\n')
