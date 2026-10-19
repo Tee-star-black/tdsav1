@@ -5,55 +5,55 @@
 
   var config = {
     'about-us.html': {
-      image: 'images/rebuild/01-clinical-team-at-work.jpg',
+      image: 'images/rebuild/hero-clinician.png',
       eyebrow: 'TeleDoctorSA',
       title: 'Healthcare built around real clinical teams.',
       copy: 'Digital tools should support the people delivering care, not get in their way.'
     },
     'our-services.html': {
-      image: 'images/rebuild/03-doctor-video-consultation.jpg',
+      image: 'images/rebuild/apparatus.jpg',
       eyebrow: 'Virtual Care',
       title: 'Professional care, without the distance.',
       copy: 'Secure virtual consultation workflows connect patients with clinicians wherever care needs to happen.'
     },
     'app.html': {
-      image: 'images/rebuild/07-mobile-health-app.jpg',
+      image: 'images/rebuild/platform.jpg',
       eyebrow: 'TeleDoctorSA App',
       title: 'Your healthcare, carried with you.',
       copy: 'A mobile layer for connected readings, care access and health information.'
     },
     'ehr.html': {
-      image: 'images/rebuild/06-healthcare-dashboard.jpg',
+      image: 'images/rebuild/platform.jpg',
       eyebrow: 'Electronic Health Records',
       title: 'Clinical information that is easier to understand and act on.',
       copy: 'A digital record experience designed around continuity, access and secure clinical workflows.'
     },
     'ecg247.html': {
-      image: 'images/rebuild/04-wearable-ecg-monitor.jpg',
+      image: 'images/rebuild/ecg%20monitor.jpg',
       eyebrow: 'ECG247',
       title: 'Heart monitoring beyond the consultation room.',
       copy: 'Wearable ECG technology supports longer-duration monitoring while clinicians remain connected to the care pathway.'
     },
     'doctors.html': {
-      image: 'images/rebuild/09-clinician-platform-review.jpg',
+      image: 'images/rebuild/platform.jpg',
       eyebrow: 'For Doctors',
       title: 'A clearer view of the patient journey.',
       copy: 'Clinical information, monitoring and digital workflows brought together for the clinician.'
     },
     'nurses.html': {
-      image: 'images/rebuild/08-nurses-at-clinical-workstation.jpg',
+      image: 'images/rebuild/apparatus.jpg',
       eyebrow: 'For Nurses',
       title: 'Digital workflows designed for care on the ground.',
       copy: 'Practical clinical tools for patient support, monitoring and coordinated care.'
     },
     'patients.html': {
-      image: 'images/rebuild/05-remote-patient-monitoring.jpg',
+      image: 'images/rebuild/bpm.jpg',
       eyebrow: 'For Patients',
       title: 'Stay connected to care between appointments.',
       copy: 'Remote monitoring and digital access help make healthcare more continuous and easier to navigate.'
     },
     'telemedia-suite.html': {
-      image: 'images/rebuild/02-connected-care-ecosystem.jpg',
+      image: 'images/rebuild/platform.jpg',
       eyebrow: 'TeleMedia Suite',
       title: 'Connected infrastructure for digital healthcare.',
       copy: 'A joined-up platform view across patients, clinicians, monitoring and medical information.'
@@ -280,7 +280,7 @@
         '</div>' +
       '</div>' +
       '<div class="tds-home-hero-media">' +
-        '<img src="images/rebuild/07-mobile-health-app.jpg" alt="TeleDoctorSA mobile connected health platform">' +
+        '<img src="images/rebuild/platform.jpg" alt="TeleDoctorSA mobile connected health platform">' +
         '<span class="tds-home-media-label">TeleDoctorSA App · Connected Care Platform</span>' +
       '</div>';
     return true;
