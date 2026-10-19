@@ -398,7 +398,8 @@ body > section.app-sales-book { background: #f3f6f7 !important; padding: clamp(7
   .app-arrival-lead { font-size: .99rem; line-height: 1.72; }
   .app-arrival-actions { flex-direction: column; }
   .app-arrival-button { width: 100%; }
-  .app-arrival-overview { padding: 25px 22px 24px; }
+  /* The same features are explained in full just below: avoid repeating the overview on phones. */
+  .app-arrival-overview { display: none; }
   .app-arrival-overview h2 { font-size: 1.74rem !important; }
   .app-arrival-bottom > .app-sales-shell { flex-direction: column; align-items: flex-start; justify-content: center; padding: 19px 0; }
   body > section.app-story.app-chapters, body > section.app-device-section, body > section.app-journey-section { padding: 64px 0 !important; }

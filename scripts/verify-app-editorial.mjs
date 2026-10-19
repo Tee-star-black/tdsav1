@@ -4,10 +4,10 @@ import { mkdirSync } from 'node:fs';
 const BASE_URL = process.env.TDSA_TEST_BASE_URL || 'http://127.0.0.1:4173';
 const pages = ['teledoctorsa-app.html', 'app.html'];
 const viewports = [
-  { label: 'desktop', width: 1440, height: 900, mobile: false, heroColumns: 2, featureColumns: 2 },
-  { label: 'tablet', width: 820, height: 1024, mobile: false, heroColumns: 1, featureColumns: 2 },
-  { label: 'mobile', width: 390, height: 844, mobile: true, heroColumns: 1, featureColumns: 1 },
-  { label: 'small mobile', width: 320, height: 700, mobile: true, heroColumns: 1, featureColumns: 1 }
+  { label: 'desktop', width: 1440, height: 900, mobile: false, heroColumns: 2, featureColumns: 2, overviewExpected: true },
+  { label: 'tablet', width: 820, height: 1024, mobile: false, heroColumns: 1, featureColumns: 2, overviewExpected: true },
+  { label: 'mobile', width: 390, height: 844, mobile: true, heroColumns: 1, featureColumns: 1, overviewExpected: false },
+  { label: 'small mobile', width: 320, height: 700, mobile: true, heroColumns: 1, featureColumns: 1, overviewExpected: false }
 ];
 
 const browser = await chromium.launch({ headless: true });
@@ -52,7 +52,7 @@ try {
             fontFamily: headlineStyle.fontFamily,
             fontStyle: headlineStyle.fontStyle,
             featureBackground: getComputedStyle(capability).backgroundColor,
-            overviewVisible: box(overview).height >= 180,
+            overviewVisible: getComputedStyle(overview).display !== 'none' && box(overview).height >= 180,
             chapters: document.querySelectorAll('.app-chapter').length,
             capabilities: document.querySelectorAll('.app-chapter .app-capability').length,
             devices: document.querySelectorAll('.app-device-item').length,
@@ -74,7 +74,7 @@ try {
             result.background !== 'rgb(246, 248, 248)' ||
             result.fontStyle !== 'normal' || /Playfair|Georgia|cursive/i.test(result.fontFamily) ||
             result.featureBackground !== 'rgba(0, 0, 0, 0)' ||
-            !result.overviewVisible || result.chapters !== 3 || result.capabilities !== 6 ||
+            result.overviewVisible !== viewport.overviewExpected || result.chapters !== 3 || result.capabilities !== 6 ||
             result.devices !== 6 || result.steps !== 4 || !result.noMockup || !result.noCursiveOrItalic ||
             result.overflow.length || result.mojibake || !result.primaryDemo || !result.guidedDemo ||
             !result.phoneLink || !result.leadForm || result.duplicatedGenericVisual !== 0) {
