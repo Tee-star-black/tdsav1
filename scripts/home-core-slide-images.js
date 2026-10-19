@@ -8,22 +8,22 @@
 
   var slides = [
     {
-      image: '/images/rebuild/03-doctor-video-consultation.jpg',
+      image: '/images/rebuild/apparatus.jpg',
       label: 'Virtual Consultations',
       alt: 'Doctor providing a TeleDoctorSA video consultation'
     },
     {
-      image: '/images/rebuild/04-wearable-ecg-monitor.jpg',
+      image: '/images/rebuild/ecg%20monitor.jpg',
       label: 'ECG247 Monitoring',
       alt: 'Wearable ECG monitoring technology used for remote cardiac monitoring'
     },
     {
-      image: '/images/rebuild/07-mobile-health-app.jpg',
+      image: '/images/rebuild/platform.jpg',
       label: 'TeleDoctorSA App',
       alt: 'TeleDoctorSA mobile digital health app experience'
     },
     {
-      image: '/images/rebuild/06-healthcare-dashboard.jpg',
+      image: '/images/rebuild/platform.jpg',
       label: 'Electronic Health Records',
       alt: 'Digital healthcare dashboard and electronic health record interface'
     }
