@@ -1,17 +1,18 @@
 import { chromium } from 'playwright';
+import { mkdirSync } from 'node:fs';
 
 const BASE_URL = process.env.TDSA_TEST_BASE_URL || 'http://127.0.0.1:4173';
 const pages = ['teledoctorsa-app.html', 'app.html'];
 const viewports = [
-  { label: 'desktop', width: 1440, height: 900, mobile: false, expectedColumns: 2 },
-  { label: 'tablet', width: 820, height: 1024, mobile: false, expectedColumns: 2 },
-  { label: 'mobile', width: 390, height: 844, mobile: true, expectedColumns: 1 },
-  { label: 'small mobile', width: 320, height: 700, mobile: true, expectedColumns: 1 }
+  { label: 'desktop', width: 1440, height: 900, mobile: false, heroColumns: 2, featureColumns: 2, overviewExpected: true },
+  { label: 'tablet', width: 820, height: 1024, mobile: false, heroColumns: 1, featureColumns: 2, overviewExpected: true },
+  { label: 'mobile', width: 390, height: 844, mobile: true, heroColumns: 1, featureColumns: 1, overviewExpected: false },
+  { label: 'small mobile', width: 320, height: 700, mobile: true, heroColumns: 1, featureColumns: 1, overviewExpected: false }
 ];
 
 const browser = await chromium.launch({ headless: true });
 try {
-  for (const pageFile of pages) {
+  for (const file of pages) {
     for (const viewport of viewports) {
       const page = await browser.newPage({
         viewport: { width: viewport.width, height: viewport.height },
@@ -19,62 +20,82 @@ try {
         hasTouch: viewport.mobile
       });
       try {
-        await page.goto(BASE_URL + '/' + pageFile, { waitUntil: 'load', timeout: 20000 });
+        const errors = [];
+        page.on('pageerror', error => errors.push(error.message));
+        await page.goto(BASE_URL + '/' + file, { waitUntil: 'load', timeout: 18000 });
         await page.waitForSelector('#tdsSiteNav[data-tds-canonical-nav="true"]', { state: 'attached', timeout: 10000 });
-        await page.waitForSelector('.app-editorial-hero', { state: 'visible', timeout: 10000 });
-        await page.locator('.app-editorial-visuals').scrollIntoViewIfNeeded();
-        await page.waitForFunction(() => [...document.querySelectorAll('.app-editorial-visuals img')]
-          .every(img => img.complete && img.naturalWidth > 0), null, { timeout: 8000 });
+        await page.waitForSelector('section.app-arrival', { state: 'visible', timeout: 8000 });
 
         const result = await page.evaluate(() => {
-          const hero = document.querySelector('.app-editorial-hero');
+          const hero = document.querySelector('section.app-arrival');
           const nav = document.querySelector('#tdsSiteNav');
-          const heading = hero?.querySelector('h1');
-          const capGrid = document.querySelector('.app-capability-grid');
-          const story = document.querySelector('.app-story');
-          const heroImages = [...document.querySelectorAll('.app-editorial-visuals img')];
-          if (!nav || !hero || !heading || !capGrid || !story) {
-            return { error: 'Required app editorial elements are missing' };
+          const headline = hero?.querySelector('#app-sales-hero-heading');
+          const overview = hero?.querySelector('.app-arrival-overview');
+          const heroGrid = hero?.querySelector('.app-arrival-layout');
+          const chapters = document.querySelector('.app-chapter-list');
+          const features = document.querySelector('.app-chapter-features');
+          const capability = features?.querySelector('.app-capability');
+          const contact = document.querySelector('#tds-canonical-footer a[href="tel:+27698317264"]');
+          if (!hero || !nav || !headline || !overview || !heroGrid || !chapters || !features || !capability || !contact) {
+            return { error: 'Required patient-portal layout element missing' };
           }
-          const rect = element => element.getBoundingClientRect();
-          const siteSections = [...document.querySelectorAll('.app-editorial-hero, .app-story, .app-device-section, .app-journey-section, .app-sales-book')];
+          const box = element => element.getBoundingClientRect();
+          const countCols = element => getComputedStyle(element).gridTemplateColumns.split(' ').filter(Boolean).length;
+          const sections = [...document.querySelectorAll('.app-arrival, .app-chapters, .app-device-section, .app-journey-section, .app-sales-book')];
+          const headlineStyle = getComputedStyle(headline);
           return {
-            heroBelowNav: rect(heading).top + window.scrollY - rect(nav).height >= -1,
-            heroCssApplied: getComputedStyle(hero).backgroundColor === 'rgb(247, 246, 242)',
-            capabilities: document.querySelectorAll('.app-capability').length,
-            featured: document.querySelectorAll('.app-capability-featured').length,
+            heroBelowNav: box(headline).top + scrollY >= box(nav).height - 1,
+            heroColumns: countCols(heroGrid),
+            featureColumns: countCols(features),
+            background: getComputedStyle(hero).backgroundColor,
+            textColor: headlineStyle.color,
+            fontFamily: headlineStyle.fontFamily,
+            fontStyle: headlineStyle.fontStyle,
+            featureBackground: getComputedStyle(capability).backgroundColor,
+            overviewVisible: getComputedStyle(overview).display !== 'none' && box(overview).height >= 180,
+            chapters: document.querySelectorAll('.app-chapter').length,
+            capabilities: document.querySelectorAll('.app-chapter .app-capability').length,
             devices: document.querySelectorAll('.app-device-item').length,
             steps: document.querySelectorAll('.app-journey-list > li').length,
-            capColumns: getComputedStyle(capGrid).gridTemplateColumns.split(' ').filter(Boolean).length,
-            roomySpacing: parseFloat(getComputedStyle(story).paddingTop) >= 55,
-            missingImages: heroImages.filter(img => !img.complete || img.naturalWidth === 0).map(img => img.src),
-            overflowedSections: siteSections.filter(s => rect(s).left < -2 || rect(s).right > window.innerWidth + 2).map(s => s.className),
-            corruptedText: /Â©|Â·|â€”|â€™|�/.test(document.body.innerText),
-            demoLink: hero.querySelector('a[href="#book-demo"]') !== null,
-            portalDemoLink: [...hero.querySelectorAll('a')].some(a => a.href === 'https://demo-patient.teledoctorsa.co.za/'),
-            appForm: document.querySelector('#appDemoForm[action="/api/leads.php"]') !== null,
-            contactNumber: !!document.querySelector('.app-editorial-hero a[href="tel:+27698317264"]') &&
-              !!document.querySelector('#tds-canonical-footer a[href="tel:+27698317264"]'),
-            injectedGenericHero: document.querySelectorAll('.tds-rescued-visual').length
+            noMockup: !hero.querySelector('img, .app-portal-window, .app-arrival-phone'),
+            noCursiveOrItalic: !document.querySelector('.app-arrival em, .app-chapters em, .app-journey-section em'),
+            overflow: sections.filter(s => box(s).left < -2 || box(s).right > innerWidth + 2).map(s => s.className),
+            mojibake: /Â©|Â·|â€”|â€™|�/.test(document.body.innerText),
+            primaryDemo: !!hero.querySelector('a[href="https://demo-patient.teledoctorsa.co.za/"]'),
+            guidedDemo: !!hero.querySelector('a[href="#book-demo"]'),
+            phoneLink: !!hero.querySelector('a[href="tel:+27698317264"]'),
+            leadForm: !!document.querySelector('#appDemoForm[action="/api/leads.php"]'),
+            duplicatedGenericVisual: document.querySelectorAll('.tds-rescued-visual').length
           };
         });
 
-        if (result.error || !result.heroBelowNav || !result.heroCssApplied ||
-            result.capabilities !== 6 || result.featured !== 2 ||
-            result.devices !== 6 || result.steps !== 4 ||
-            result.capColumns !== viewport.expectedColumns ||
-            !result.roomySpacing || result.missingImages.length ||
-            result.overflowedSections.length || result.corruptedText ||
-            !result.demoLink || !result.portalDemoLink || !result.appForm ||
-            !result.contactNumber || result.injectedGenericHero !== 0) {
-          throw new Error('App layout assertion failed: ' + JSON.stringify(result));
+        if (result.error || !result.heroBelowNav || result.heroColumns !== viewport.heroColumns ||
+            result.featureColumns !== viewport.featureColumns ||
+            result.background !== 'rgb(246, 248, 248)' ||
+            result.fontStyle !== 'normal' || /Playfair|Georgia|cursive/i.test(result.fontFamily) ||
+            result.featureBackground !== 'rgba(0, 0, 0, 0)' ||
+            result.overviewVisible !== viewport.overviewExpected || result.chapters !== 3 || result.capabilities !== 6 ||
+            result.devices !== 6 || result.steps !== 4 || !result.noMockup || !result.noCursiveOrItalic ||
+            result.overflow.length || result.mojibake || !result.primaryDemo || !result.guidedDemo ||
+            !result.phoneLink || !result.leadForm || result.duplicatedGenericVisual !== 0) {
+          throw new Error('App layout regression: ' + JSON.stringify(result));
         }
 
-        await page.locator('.app-editorial-hero a[href="#book-demo"]').click();
-        if (new URL(page.url()).hash !== '#book-demo') {
-          throw new Error('Guided demo CTA does not scroll to the lead form');
+        if (file === 'teledoctorsa-app.html' && ['desktop', 'mobile'].includes(viewport.label)) {
+          mkdirSync('artifacts', { recursive: true });
+          await page.screenshot({
+            path: 'artifacts/app-care-journey-' + viewport.label + '.png',
+            fullPage: true,
+            animations: 'disabled'
+          });
         }
-        console.log('PASS ' + pageFile + ' / ' + viewport.label);
+
+        await page.locator('.app-arrival a[href="#book-demo"]').click();
+        if (new URL(page.url()).hash !== '#book-demo') {
+          throw new Error('Guided demo CTA did not open the lead form');
+        }
+        if (errors.length) console.warn('WARN ' + file + '/' + viewport.label + ': ' + errors.join('; '));
+        console.log('PASS ' + file + ' / ' + viewport.label + ': clean typography, 3 feature groups, demo CTA');
       } finally {
         await page.close();
       }
