@@ -19,7 +19,7 @@
     document.head.appendChild(link);
   }
 
-  var release = '20261015-nav-fix1';
+  var release = '20261019-app-refresh';
   // Local static servers do not read production .htaccess URL rewrites.
   // This delegated bridge keeps all public-page navigation working in VS Code Live Server
   // and python -m http.server, including links created by the canonical nav and footer.
@@ -82,5 +82,5 @@
   loadOnce('tds-footer-full-bleed-guard-loader', '/scripts/footer-full-bleed-guard.js?v=' + release);
   // One minimal brand footer for every public page using this shared loader.
   loadStyleOnce('tds-unified-footer-style', '/styles/unified-footer.css?v=20261015-navfix1');
-  loadOnce('tds-canonical-footer-loader', '/scripts/canonical-footer.js?v=20261015-navfix1');
+  loadOnce('tds-canonical-footer-loader', '/scripts/canonical-footer.js?v=20261019-app-refresh');
 })();

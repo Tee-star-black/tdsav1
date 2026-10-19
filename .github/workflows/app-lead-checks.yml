@@ -10,7 +10,9 @@ on:
       - "telemedia-suite.html"
       - "scripts/app-demo.js"
       - "scripts/verify-app-demo.mjs"
+      - "scripts/verify-app-editorial.mjs"
       - "styles/app-demo.css"
+      - "styles/app-editorial.css"
       - ".github/workflows/app-lead-checks.yml"
   push:
     branches: [main]
@@ -22,7 +24,9 @@ on:
       - "telemedia-suite.html"
       - "scripts/app-demo.js"
       - "scripts/verify-app-demo.mjs"
+      - "scripts/verify-app-editorial.mjs"
       - "styles/app-demo.css"
+      - "styles/app-editorial.css"
       - ".github/workflows/app-lead-checks.yml"
 
 permissions:

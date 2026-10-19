@@ -31,7 +31,7 @@
       '      <div class="tds-foot-col">',
       '        <h2>Get in touch</h2>',
       '        <div class="tds-foot-links">',
-      '          <a href="tel:+27780336394">+27 78 033 6394</a>',
+      '          <a href="tel:+27698317264">069 831 7264</a>',
       '          <a href="mailto:info@teledoctorsa.co.za">info@teledoctorsa.co.za</a>',
       '          <a href="https://wa.me/27780336394?text=Hello%20TeleDoctorSA" target="_blank" rel="noopener noreferrer">WhatsApp us <span aria-hidden="true">&nearr;</span></a>',
       '          <a href="/contact-us">Contact page</a>',
