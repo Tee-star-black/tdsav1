@@ -46,7 +46,7 @@
     }
     </script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
 
@@ -102,7 +102,7 @@
         }
 
         .logo-text {
-            font-family: 'Playfair Display', serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: 1.6rem;
             color: var(--deep-navy);
             font-weight: 700;
@@ -142,7 +142,7 @@
         .logo-text span {
             color: var(--primary-orange);
             font-weight: 800;
-            font-style: italic;
+            font-style: normal;
         }
 
         .logo:hover .logo-text {
@@ -1383,7 +1383,7 @@ footer.site-footer, .site-footer {
 <link rel="stylesheet" href="/styles/ux-v4.css?v=20260909" data-tds-ux-v4>
     
     <link rel="stylesheet" href="/styles/app-demo.css?v=20261015a">
-    <link rel="stylesheet" href="/styles/app-editorial.css?v=20261019-care-story">
+    <link rel="stylesheet" href="/styles/app-editorial.css?v=20261019-clean">
 </head>
 <body>
 <div class="mobile-overlay" id="mobileOverlay"></div>
@@ -1506,154 +1506,94 @@ footer.site-footer, .site-footer {
 
 
     <section class="app-sales-hero app-arrival" data-tds-custom-hero aria-labelledby="app-sales-hero-heading">
-        <div class="app-arrival-main">
-            <div class="app-arrival-content">
-                <div class="app-arrival-content-inner">
-                    <p class="app-arrival-eyebrow"><span class="app-arrival-eyebrow-line" aria-hidden="true"></span> TELEDOCTORSA / PATIENT EXPERIENCE</p>
-                    <h1 id="app-sales-hero-heading">Care happens <em>between</em> appointments, too.</h1>
-                    <p class="app-arrival-lead">Your health journey is bigger than one visit. The TeleDoctorSA patient portal helps bring appointments, shared health information and care updates into one accessible place.</p>
-                    <div class="app-arrival-actions">
-                        <a class="app-arrival-button app-arrival-button-primary" href="https://demo-patient.teledoctorsa.co.za/" target="_blank" rel="noopener noreferrer">Explore the patient demo <span aria-hidden="true">&nearr;</span></a>
-                        <a class="app-arrival-button app-arrival-button-secondary" href="#book-demo">Book a guided walkthrough <span aria-hidden="true">&rarr;</span></a>
-                    </div>
-                    <p class="app-arrival-signin">Already have access? <a href="https://demo-patient.teledoctorsa.co.za/" target="_blank" rel="noopener noreferrer">Open the patient portal <span aria-hidden="true">&nearr;</span></a></p>
-                </div>
-                <div class="app-arrival-content-foot" aria-label="Patient portal highlights">
-                    <span>Browser-based experience</span>
-                    <span>Care information in one place</span>
-                </div>
+    <div class="app-sales-shell app-arrival-layout">
+        <div class="app-arrival-primary">
+            <p class="app-kicker">TeleDoctorSA patient portal</p>
+            <h1 id="app-sales-hero-heading">Your care, in one place.</h1>
+            <p class="app-arrival-lead">View your appointments, access information shared by your healthcare provider and stay in touch with your care team through one browser-based portal.</p>
+            <div class="app-arrival-actions">
+                <a class="app-arrival-button app-arrival-button-primary" href="https://demo-patient.teledoctorsa.co.za/" target="_blank" rel="noopener noreferrer">View patient demo <span aria-hidden="true">&nearr;</span></a>
+                <a class="app-arrival-button app-arrival-button-secondary" href="#book-demo">Request a walkthrough <span aria-hidden="true">&rarr;</span></a>
             </div>
-
-            <div class="app-arrival-stage" aria-label="Illustration of the TeleDoctorSA patient portal experience">
-                <div class="app-arrival-stage-top"><span>THE PATIENT SPACE</span><span>01 / 03</span></div>
-                <div class="app-arrival-stage-body">
-                    <div class="app-portal-window" aria-label="Illustrative patient portal interface">
-                        <div class="app-portal-titlebar">
-                            <div class="app-portal-brand"><span class="app-portal-brand-mark" aria-hidden="true">+</span> TeleDoctor<span>SA</span></div>
-                            <span class="app-portal-titlebar-label">PATIENT PORTAL</span>
-                        </div>
-                        <div class="app-portal-layout">
-                            <aside class="app-portal-navigation" aria-label="Illustrative navigation">
-                                <span class="app-portal-navigation-current">Overview</span>
-                                <span>Appointments</span>
-                                <span>Care information</span>
-                                <span>Messages</span>
-                            </aside>
-                            <div class="app-portal-summary">
-                                <span class="app-portal-summary-eyebrow">YOUR CARE AT A GLANCE</span>
-                                <h2>Everything a little easier to find.</h2>
-                                <div class="app-portal-summary-item">
-                                    <span class="app-portal-item-symbol" aria-hidden="true">01</span>
-                                    <div><strong>Appointments</strong><small>Keep track of your next visit</small></div>
-                                </div>
-                                <div class="app-portal-summary-item">
-                                    <span class="app-portal-item-symbol" aria-hidden="true">02</span>
-                                    <div><strong>Care information</strong><small>Review what's been shared with you</small></div>
-                                </div>
-                                <div class="app-portal-summary-item">
-                                    <span class="app-portal-item-symbol" aria-hidden="true">03</span>
-                                    <div><strong>Care-team updates</strong><small>Know when to follow up</small></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <img class="app-arrival-phone" src="/images/rebuild/phone.png" alt="Illustrative TeleDoctorSA patient dashboard on a mobile phone" width="1086" height="1448" loading="eager" decoding="async">
-                    <div class="app-arrival-stage-index" aria-hidden="true">TDSA <span>+</span></div>
-                </div>
-                <p class="app-arrival-stage-note">Illustrative layout, not an actual patient record. Features vary by account and care provider.</p>
-            </div>
+            <p class="app-arrival-signin">Already registered? <a href="https://demo-patient.teledoctorsa.co.za/" target="_blank" rel="noopener noreferrer">Open the patient portal</a></p>
         </div>
-        <div class="app-arrival-bottom">
-            <div class="app-sales-shell">
-                <p>ONE PLACE. MORE CONTINUITY.</p>
-                <a href="#app-features">Discover how it works <span aria-hidden="true">&darr;</span></a>
-                <a href="tel:+27698317264">Need assistance? 069 831 7264 <span aria-hidden="true">&nearr;</span></a>
+        <aside class="app-arrival-overview" aria-labelledby="app-overview-heading">
+            <p class="app-kicker">An overview of the portal</p>
+            <h2 id="app-overview-heading">Simple access to the things you need.</h2>
+            <div class="app-overview-list">
+                <div class="app-overview-item"><strong>Appointments</strong><p>View upcoming visits and booking information.</p></div>
+                <div class="app-overview-item"><strong>Health information</strong><p>Find documents and records your provider has shared.</p></div>
+                <div class="app-overview-item"><strong>Care-team communication</strong><p>Follow up and receive updates where supported.</p></div>
             </div>
+            <p class="app-overview-note">Available features depend on your account and healthcare provider.</p>
+        </aside>
+    </div>
+    <div class="app-arrival-bottom">
+        <div class="app-sales-shell">
+            <a href="#app-features">Explore the features <span aria-hidden="true">&darr;</span></a>
+            <a href="tel:+27698317264">Questions? Call 069 831 7264</a>
         </div>
-    </section>
+    </div>
+</section>
 
 
     <section class="app-story app-chapters" id="app-features" aria-labelledby="app-story-title">
-        <div class="app-sales-shell">
-            <div class="app-chapters-intro">
-                <div class="app-chapters-intro-head">
-                    <p class="app-story-eyebrow">THE TELEDOCTORSA APP / EXPLAINED</p>
-                    <h2 id="app-story-title">A better way to <em>keep up with your care.</em></h2>
-                </div>
-                <div class="app-chapters-intro-copy">
-                    <p>Think of it as your personal space for the care that happens outside the consultation room. You can follow what's next, find information shared by your provider and stay connected to your healthcare team.</p>
-                    <a href="#book-demo">See the experience with us <span aria-hidden="true">&rarr;</span></a>
-                </div>
+    <div class="app-sales-shell">
+        <div class="app-chapters-intro">
+            <div class="app-chapters-intro-head">
+                <p class="app-kicker">Patient portal features</p>
+                <h2 id="app-story-title">What you can do in the app.</h2>
             </div>
-
-            <div class="app-chapter-list">
-                <article class="app-chapter" aria-labelledby="app-chapter-plan">
-                    <div class="app-chapter-index"><span>01</span><small>PLAN &amp; PREPARE</small></div>
-                    <div class="app-chapter-headline"><h3 id="app-chapter-plan">Know what's <em>coming up.</em></h3><p>Less searching for the next step. More clarity about where you need to be.</p></div>
-                    <div class="app-chapter-features">
-                        <div class="app-capability">
-                            <div class="app-capability-marker"><i data-lucide="calendar-days" aria-hidden="true"></i><span>01 / APPOINTMENTS</span></div>
-                            <h4>Appointments in view</h4>
-                            <p>Review appointment details and, where your care provider offers it, request or manage bookings.</p>
-                        </div>
-                        <div class="app-capability">
-                            <div class="app-capability-marker"><i data-lucide="bell" aria-hidden="true"></i><span>02 / CARE UPDATES</span></div>
-                            <h4>Relevant reminders</h4>
-                            <p>See appointment updates and care notifications when they are enabled for your account.</p>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="app-chapter" aria-labelledby="app-chapter-understand">
-                    <div class="app-chapter-index"><span>02</span><small>REVIEW &amp; UNDERSTAND</small></div>
-                    <div class="app-chapter-headline"><h3 id="app-chapter-understand">See the <em>bigger picture.</em></h3><p>Keep important information from your care journey easier to find.</p></div>
-                    <div class="app-chapter-features">
-                        <div class="app-capability">
-                            <div class="app-capability-marker"><i data-lucide="file-text" aria-hidden="true"></i><span>03 / HEALTH INFORMATION</span></div>
-                            <h4>Information you can revisit</h4>
-                            <p>Access records and documents that your healthcare provider has shared with you.</p>
-                        </div>
-                        <div class="app-capability">
-                            <div class="app-capability-marker"><i data-lucide="activity" aria-hidden="true"></i><span>04 / MONITORING</span></div>
-                            <h4>Readings that tell a story</h4>
-                            <p>Follow supported health measurements when connected monitoring forms part of your care.</p>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="app-chapter" aria-labelledby="app-chapter-connect">
-                    <div class="app-chapter-index"><span>03</span><small>CONNECT &amp; CONTINUE</small></div>
-                    <div class="app-chapter-headline"><h3 id="app-chapter-connect">Keep the conversation <em>going.</em></h3><p>Stay involved in your care, even when you're not at the practice.</p></div>
-                    <div class="app-chapter-features">
-                        <div class="app-capability">
-                            <div class="app-capability-marker"><i data-lucide="message-circle" aria-hidden="true"></i><span>05 / COMMUNICATION</span></div>
-                            <h4>A line to your care team</h4>
-                            <p>Share updates or follow up through communication options available to your account.</p>
-                        </div>
-                        <div class="app-capability">
-                            <div class="app-capability-marker"><i data-lucide="shield-check" aria-hidden="true"></i><span>06 / PRIVATE ACCESS</span></div>
-                            <h4>A space built around you</h4>
-                            <p>Sign in to your personal patient portal to access the information made available to you.</p>
-                        </div>
-                    </div>
-                </article>
-            </div>
-            <div class="app-chapters-footer">
-                <p>Functionality varies by healthcare provider, account setup and supported integrations.</p>
-                <a href="https://demo-patient.teledoctorsa.co.za/" target="_blank" rel="noopener noreferrer">Explore the patient demo <span aria-hidden="true">&nearr;</span></a>
-            </div>
+            <p>TeleDoctorSA brings key parts of your healthcare experience together. Your provider determines which services are available to your account.</p>
         </div>
-    </section>
+        <div class="app-chapter-list">
+            <article class="app-chapter" aria-labelledby="app-chapter-plan">
+                <div class="app-chapter-heading">
+                    <p class="app-chapter-label">Appointments</p>
+                    <h3 id="app-chapter-plan">Plan your next visit.</h3>
+                </div>
+                <div class="app-chapter-features">
+                    <div class="app-capability"><h4>View appointments</h4><p>Check consultation details and, where available, request or manage bookings.</p></div>
+                    <div class="app-capability"><h4>Stay informed</h4><p>Receive appointment updates and reminders when enabled for your account.</p></div>
+                </div>
+            </article>
+            <article class="app-chapter" aria-labelledby="app-chapter-understand">
+                <div class="app-chapter-heading">
+                    <p class="app-chapter-label">Health information</p>
+                    <h3 id="app-chapter-understand">Keep track of your health.</h3>
+                </div>
+                <div class="app-chapter-features">
+                    <div class="app-capability"><h4>Access shared records</h4><p>Review health information and documents shared by your healthcare provider.</p></div>
+                    <div class="app-capability"><h4>Monitor readings</h4><p>View supported measurements when remote monitoring is part of your care.</p></div>
+                </div>
+            </article>
+            <article class="app-chapter" aria-labelledby="app-chapter-connect">
+                <div class="app-chapter-heading">
+                    <p class="app-chapter-label">Communication and access</p>
+                    <h3 id="app-chapter-connect">Stay connected.</h3>
+                </div>
+                <div class="app-chapter-features">
+                    <div class="app-capability"><h4>Contact your care team</h4><p>Send messages and updates through communication options enabled by your provider.</p></div>
+                    <div class="app-capability"><h4>Secure account access</h4><p>Sign in to the personal patient portal to access information available to you.</p></div>
+                </div>
+            </article>
+        </div>
+        <div class="app-chapters-footer">
+            <p>Features and device integrations may vary. The patient demo is for demonstration purposes only.</p>
+            <a href="https://demo-patient.teledoctorsa.co.za/" target="_blank" rel="noopener noreferrer">View patient demo <span aria-hidden="true">&nearr;</span></a>
+        </div>
+    </div>
+</section>
 
 
     <section class="app-device-section" aria-labelledby="app-devices-title">
         <div class="app-sales-shell">
             <div class="app-secondary-intro">
                 <div>
-                    <p class="app-story-eyebrow">CONNECTED HEALTH / WHERE SUPPORTED</p>
-                    <h2 id="app-devices-title">Monitoring tools that can <span>work with your care.</span></h2>
+                    <p class="app-story-eyebrow">Supported health monitoring</p>
+                    <h2 id="app-devices-title">Health monitoring and devices</h2>
                 </div>
-                <p>Some care pathways include readings from home health devices. Compatibility and data-sharing options depend on the devices and integrations supported by your provider.</p>
+                <p>Your care team may use information from home monitoring devices. Ask your provider which devices and integrations are supported.</p>
             </div>
             <div class="app-device-grid">
                 <article class="app-device-item"><span class="app-device-symbol"><i data-lucide="heart-pulse" aria-hidden="true"></i></span><div><h3>Blood pressure</h3><p>Track systolic and diastolic readings.</p></div></article>
@@ -1671,10 +1611,10 @@ footer.site-footer, .site-footer {
         <div class="app-sales-shell">
             <div class="app-secondary-intro">
                 <div>
-                    <p class="app-story-eyebrow">GETTING STARTED / FOUR SIMPLE STEPS</p>
-                    <h2 id="app-journey-title">A straightforward way <span>to get started.</span></h2>
+                    <p class="app-story-eyebrow">Getting started</p>
+                    <h2 id="app-journey-title">How to use the patient portal</h2>
                 </div>
-                <p>No app-store download is needed for the browser-based portal. Here is what getting connected can look like.</p>
+                <p>Access the portal from your web browser. Your account and available services are set up by your healthcare provider.</p>
             </div>
             <ol class="app-journey-list">
                 <li><span class="app-journey-number">01</span><h3>Open the portal</h3><p>Use a phone, tablet or computer to open your patient portal and sign in.</p></li>
@@ -1688,9 +1628,9 @@ footer.site-footer, .site-footer {
     <section class="app-sales-book" id="book-demo" aria-labelledby="app-sales-book-title">
         <div class="app-sales-shell app-sales-book-grid">
             <div class="app-sales-book-copy">
-                <p class="app-sales-eyebrow">SEE IT FOR YOURSELF</p>
-                <h2 id="app-sales-book-title">A closer look at the platform, tailored to you.</h2>
-                <p>Tell us a little about yourself and what you would like to explore. The TeleDoctorSA team can arrange a guided walkthrough and answer practical questions about access, onboarding and the right next steps.</p>
+                <p class="app-sales-eyebrow">Book a demonstration</p>
+                <h2 id="app-sales-book-title">Request a TeleDoctorSA app demo</h2>
+                <p>Complete the form to request a guided demonstration of the patient portal or clinician platform. Our team will contact you to arrange a suitable time.</p>
                 <div class="app-sales-process">
                     <div><span>01</span><strong>Send your request</strong><p>Share your contact details and area of interest.</p></div>
                     <div><span>02</span><strong>We get in touch</strong><p>Our team follows up using your preferred channel.</p></div>
