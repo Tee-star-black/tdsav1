@@ -75,7 +75,7 @@
 
   loadStyleOnce('tds-center-alignment-loader', '/styles/center-alignment.css?v=' + release);
   loadStyleOnce('tds-home-hero-center-loader', '/styles/home-hero-center.css?v=' + release);
-  loadOnce('tds-rebuild-images-core-loader', '/scripts/rebuild-images-core.js?v=' + release);
+  loadOnce('tds-rebuild-images-core-loader', '/scripts/rebuild-images-core.js?v=20261019-ecg-layout');
   loadOnce('tds-canonical-nav-loader', '/scripts/canonical-nav.js?v=' + release);
   loadOnce('tds-nav-back-controls-loader', '/scripts/nav-back-controls.js?v=' + release);
   loadOnce('tds-nav-brand-icons-loader', '/scripts/nav-brand-icons.js?v=' + release);

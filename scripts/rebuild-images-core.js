@@ -28,12 +28,6 @@
       title: 'Clinical information that is easier to understand and act on.',
       copy: 'A digital record experience designed around continuity, access and secure clinical workflows.'
     },
-    'ecg247.html': {
-      image: 'images/rebuild/ecg%20monitor.jpg',
-      eyebrow: 'ECG247',
-      title: 'Heart monitoring beyond the consultation room.',
-      copy: 'Wearable ECG technology supports longer-duration monitoring while clinicians remain connected to the care pathway.'
-    },
     'doctors.html': {
       image: 'images/rebuild/platform.jpg',
       eyebrow: 'For Doctors',
@@ -287,7 +281,9 @@
   }
 
   function insertPageVisual() {
-    if (page === 'index.html') return;
+    // Pages with a complete editorial hero own their own first impression.
+    // Never prepend the generic rescue panel over the official ECG247 guide.
+    if (page === 'index.html' || document.querySelector('[data-tds-custom-hero]')) return;
     var data = config[page];
     if (!data || document.querySelector('.tds-rescued-visual')) return;
 

@@ -1,5 +1,10 @@
 /* ECG247: focused patient-first editorial page, 2026-10-15 */
 #ecg247-main { background: #fff; color: #152239; font-family: 'Plus Jakarta Sans', Arial, sans-serif; overflow: clip; }
+/* The shared navigation is fixed: keep the setup guide visible immediately below it. */
+#tdsSiteNav ~ #ecg247-main { padding-top: 70px; }
+@media (max-width: 1100px) {
+  #tdsSiteNav ~ #ecg247-main { padding-top: 64px; }
+}
 #ecg247-main *, #ecg247-main *::before, #ecg247-main *::after { box-sizing: border-box; }
 #ecg247-main .ecg24-wrap { width: min(1200px, calc(100% - clamp(36px, 8vw, 112px))); max-width: 1200px; margin: 0 auto; }
 #ecg247-main h1, #ecg247-main h2, #ecg247-main h3, #ecg247-main p { margin-top: 0; }
@@ -66,11 +71,95 @@
 #ecg247-main .ecg24-contact h2 { color: #fff; margin-bottom: 14px; }
 #ecg247-main .ecg24-contact p { color: #c5d0de; max-width: 530px; line-height: 1.75; margin-bottom: 0; }
 #ecg247-main .ecg24-contact .ecg24-actions { flex: 0 0 auto; max-width: 450px; }
+
+/* ECG247 text alignment: editorial introductions, readable details, and focused CTAs. */
+#ecg247-main h1,
+#ecg247-main h2,
+#ecg247-main h3 { text-wrap: balance; }
+#ecg247-main p { text-wrap: pretty; }
+#ecg247-main .ecg24-guide-intro,
+#ecg247-main .ecg24-hero-copy,
+#ecg247-main .ecg24-section-heading,
+#ecg247-main .ecg24-feature,
+#ecg247-main .ecg24-use-list article,
+#ecg247-main .ecg24-steps li { text-align: left; }
+#ecg247-main .ecg24-hero-grid > *,
+#ecg247-main .ecg24-explainer-grid > *,
+#ecg247-main .ecg24-use-grid > *,
+#ecg247-main .ecg24-feature > div { min-width: 0; }
+#ecg247-main .ecg24-explainer-grid,
+#ecg247-main .ecg24-use-grid { align-items: start; gap: clamp(30px, 6vw, 100px); }
+#ecg247-main .ecg24-section-heading { width: 100%; max-width: 560px; }
+#ecg247-main .ecg24-section-heading h2,
+#ecg247-main .ecg24-section-header h2,
+#ecg247-main .ecg24-contact h2 {
+  font-size: clamp(2.05rem, 3.6vw, 3.45rem) !important;
+  line-height: 1.12 !important;
+}
+#ecg247-main .ecg24-section-heading > p {
+  max-width: 58ch;
+  margin-bottom: 18px;
+}
+#ecg247-main .ecg24-section-header {
+  max-width: 740px;
+  margin: 0 auto 48px;
+  text-align: center;
+}
+#ecg247-main .ecg24-section-header > p {
+  max-width: 60ch;
+  margin: 0 auto;
+  text-align: center;
+}
+#ecg247-main .ecg24-section-header h2 { margin-inline: auto; }
+#ecg247-main .ecg24-feature-list,
+#ecg247-main .ecg24-use-list { width: 100%; }
+#ecg247-main .ecg24-process-foot > span {
+  max-width: 68ch;
+  line-height: 1.65;
+  text-align: left;
+}
+#ecg247-main .ecg24-contact-inner {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+}
+#ecg247-main .ecg24-contact-inner > div:first-child {
+  width: 100%;
+  max-width: 760px;
+  text-align: center;
+}
+#ecg247-main .ecg24-contact h2 { margin-inline: auto; }
+#ecg247-main .ecg24-contact p {
+  max-width: 620px;
+  margin: 0 auto;
+}
+#ecg247-main .ecg24-contact .ecg24-actions {
+  flex: none;
+  max-width: 100%;
+  justify-content: center;
+}
+@media(max-width: 760px) {
+  #ecg247-main .ecg24-hero-copy { text-align: center; }
+  #ecg247-main .ecg24-hero h1,
+  #ecg247-main .ecg24-lead { margin-inline: auto; }
+  #ecg247-main .ecg24-hero .ecg24-actions,
+  #ecg247-main .ecg24-hero-points { justify-content: center; }
+  #ecg247-main .ecg24-hero-points span { text-align: left; }
+  #ecg247-main .ecg24-hero-visual { max-width: 560px; margin-inline: auto; }
+  #ecg247-main .ecg24-section-header { margin-bottom: 36px; }
+  #ecg247-main .ecg24-contact-inner { gap: 24px; }
+}
+@media(max-width: 480px) {
+  #ecg247-main .ecg24-contact .ecg24-actions { width: 100%; }
+  #ecg247-main .ecg24-guide-link { width: 100%; }
+}
+
 @media(max-width: 1020px) {
   #ecg247-main .ecg24-hero-grid { grid-template-columns: minmax(0,1fr) minmax(0,.88fr); gap: 34px; }
   #ecg247-main .ecg24-hero h1 { font-size: clamp(2.7rem,5.4vw,4.3rem); }
   #ecg247-main .ecg24-steps { grid-template-columns: repeat(2,minmax(0,1fr)); }
-  #ecg247-main .ecg24-contact-inner { align-items: flex-start; flex-direction: column; }
+  #ecg247-main .ecg24-contact-inner { align-items: center; flex-direction: column; }
 }
 @media(max-width: 760px) {
   #ecg247-main .ecg24-wrap { width: calc(100% - 40px); }
