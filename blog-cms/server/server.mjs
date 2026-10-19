@@ -4,6 +4,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {timingSafeEqual} from 'node:crypto';
 import {createAuthStore} from './auth-factory.mjs';
+import {canUseLocalDevelopmentAdmin} from './dev-auth.mjs';
 import {createRepository} from './repository.mjs';
 
 const here=path.dirname(fileURLToPath(import.meta.url));
@@ -121,7 +122,7 @@ async function currentCmsUser(req){
   if(sessionUser)return sessionUser;
   const hasUsers=await auth.hasUsers();
   if(accessToken&&isAuthorized(req))return {id:'legacy-token',name:'Legacy CMS Access',email:'',role:'admin',legacy:true};
-  if(!hasUsers&&!accessToken)return {id:'development',name:'Local Development',email:'',role:'admin',development:true};
+  if(canUseLocalDevelopmentAdmin({environment:process.env.NODE_ENV,hasUsers,accessToken}))return {id:'development',name:'Local Development',email:'',role:'admin',development:true};
   return null;
 }
 
