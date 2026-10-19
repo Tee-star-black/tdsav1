@@ -1379,211 +1379,10 @@ footer.site-footer, .site-footer {
 <!-- TDS_DIRECT_PRODUCTION_LAYOUT_END -->
     <link rel="stylesheet" href="/site-polish.css?v=20260909" data-tds-production-polish>
 
-<style id="app-live-hero-styles">
-    .hero-section.app-live-hero {
-        min-height: 0;
-        padding: 104px 28px 64px;
-        background: #0f172a;
-        color: #ffffff;
-        text-align: left;
-        overflow: hidden;
-    }
-
-    .app-live-hero .app-hero-grid {
-        width: min(1180px, calc(100% - 48px));
-        max-width: 1180px;
-        margin: 0 auto;
-        display: grid;
-        grid-template-columns: minmax(0, .88fr) minmax(360px, 1.12fr);
-        gap: clamp(34px, 5vw, 72px);
-        align-items: center;
-    }
-
-    .app-live-hero .app-hero-copy {
-        min-width: 0;
-    }
-
-    .app-live-hero .app-live-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 18px;
-        padding: 7px 10px;
-        border: 1px solid rgba(255, 163, 102, .55);
-        border-radius: 2px;
-        color: #ffb886;
-        font-size: .75rem;
-        line-height: 1;
-        font-weight: 700;
-        letter-spacing: .08em;
-        text-transform: uppercase;
-    }
-
-    .app-live-hero .app-live-badge::before {
-        content: '';
-        width: 7px;
-        height: 7px;
-        background: #10b981;
-        border-radius: 1px;
-    }
-
-    .app-live-hero h1 {
-        max-width: 640px;
-        margin: 0 0 16px;
-        color: #ffffff;
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        font-size: clamp(2.35rem, 4vw, 4rem);
-        line-height: 1.02;
-        letter-spacing: -.055em;
-        font-weight: 800;
-    }
-
-    .app-live-hero .subtitle {
-        max-width: 610px;
-        margin: 0 0 26px;
-        color: rgba(255, 255, 255, .74);
-        font-size: clamp(.98rem, 1.25vw, 1.12rem);
-        line-height: 1.65;
-    }
-
-    .app-live-hero .app-hero-actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-bottom: 18px;
-    }
-
-    .app-live-hero .app-hero-primary,
-    .app-live-hero .app-hero-secondary {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 42px;
-        padding: 11px 16px;
-        border-radius: 2px;
-        text-decoration: none;
-        font-size: .84rem;
-        line-height: 1.2;
-        font-weight: 700;
-        transition: background-color .2s ease, border-color .2s ease, color .2s ease;
-    }
-
-    .app-live-hero .app-hero-primary {
-        background: #ff9559;
-        border: 1px solid #ff9559;
-        color: #0f172a;
-    }
-
-    .app-live-hero .app-hero-primary:hover {
-        background: #ffad7d;
-        border-color: #ffad7d;
-    }
-
-    .app-live-hero .app-hero-secondary {
-        background: transparent;
-        border: 1px solid rgba(255, 255, 255, .28);
-        color: #ffffff;
-    }
-
-    .app-live-hero .app-hero-secondary:hover {
-        border-color: rgba(255, 255, 255, .6);
-        background: rgba(255, 255, 255, .06);
-    }
-
-    .app-live-hero .app-hero-proof {
-        color: rgba(255, 255, 255, .52);
-        font-size: .76rem;
-        line-height: 1.5;
-    }
-
-    .app-live-hero .app-hero-visual {
-        position: relative;
-        min-width: 0;
-        border: 1px solid rgba(255, 255, 255, .12);
-        background: #111c31;
-        overflow: hidden;
-    }
-
-    .app-live-hero .app-hero-visual::before {
-        content: '';
-        position: absolute;
-        z-index: 2;
-        top: 0;
-        left: 0;
-        width: 64px;
-        height: 3px;
-        background: #ff9559;
-    }
-
-    .app-live-hero .app-hero-visual img {
-        display: block;
-        width: 100%;
-        height: clamp(330px, 36vw, 480px);
-        object-fit: cover;
-        object-position: center;
-    }
-
-    .app-live-hero .app-hero-image-caption {
-        position: absolute;
-        z-index: 3;
-        left: 16px;
-        bottom: 16px;
-        padding: 8px 10px;
-        background: rgba(15, 23, 42, .9);
-        border: 1px solid rgba(255, 255, 255, .12);
-        color: rgba(255, 255, 255, .84);
-        font-size: .72rem;
-        line-height: 1.35;
-    }
-
-    @media (max-width: 900px) {
-        .hero-section.app-live-hero {
-            padding: 88px 24px 48px;
-        }
-
-        .app-live-hero .app-hero-grid {
-            width: min(760px, 100%);
-            grid-template-columns: 1fr;
-            gap: 28px;
-        }
-
-        .app-live-hero .app-hero-visual img {
-            height: clamp(300px, 58vw, 430px);
-        }
-    }
-
-    @media (max-width: 560px) {
-        .hero-section.app-live-hero {
-            padding: 80px 18px 38px;
-        }
-
-        .app-live-hero .app-hero-grid {
-            width: 100%;
-        }
-
-        .app-live-hero h1 {
-            font-size: clamp(2rem, 10vw, 2.7rem);
-        }
-
-        .app-live-hero .app-hero-actions {
-            display: grid;
-            grid-template-columns: 1fr;
-        }
-
-        .app-live-hero .app-hero-primary,
-        .app-live-hero .app-hero-secondary {
-            width: 100%;
-        }
-
-        .app-live-hero .app-hero-visual img {
-            height: 300px;
-        }
-    }
-</style>
-
-    <link rel="stylesheet" href="/styles/ux-v4.css?v=20260909" data-tds-ux-v4>
+<link rel="stylesheet" href="/styles/ux-v4.css?v=20260909" data-tds-ux-v4>
     
     <link rel="stylesheet" href="/styles/app-demo.css?v=20261015a">
+    <link rel="stylesheet" href="/styles/app-editorial.css?v=20261019b">
 </head>
 <body>
 <div class="mobile-overlay" id="mobileOverlay"></div>
@@ -1704,170 +1503,167 @@ footer.site-footer, .site-footer {
 
 
 
-    <section class="app-sales-hero" aria-labelledby="app-sales-hero-heading">
-        <div class="app-sales-shell app-sales-hero-grid">
-            <div class="app-sales-hero-copy">
-                <p class="app-sales-eyebrow"><span class="app-sales-status-dot" aria-hidden="true"></span> TELEDOCTORSA APP / NOW AVAILABLE</p>
-                <h1 id="app-sales-hero-heading">See connected care <span>in action.</span></h1>
-                <p class="app-sales-lead">The TeleDoctorSA patient portal brings appointments, health information and communication with your care team into one connected experience. Explore the working application or let us take you through it.</p>
-                <div class="app-sales-actions">
-                    <a class="app-sales-button app-sales-button-primary" href="#book-demo">Book a guided demo <span aria-hidden="true">&rarr;</span></a>
-                    <a class="app-sales-button app-sales-button-outline" href="https://demo-patient.teledoctorsa.co.za/" target="_blank" rel="noopener noreferrer">Explore patient demo <span aria-hidden="true">&nearr;</span></a>
+
+    <section class="app-sales-hero app-editorial-hero" data-tds-custom-hero aria-labelledby="app-sales-hero-heading">
+        <div class="app-sales-shell">
+            <div class="app-editorial-intro">
+                <div class="app-editorial-headline">
+                    <p class="app-editorial-kicker"><span class="app-editorial-kicker-line" aria-hidden="true"></span> THE TELEDOCTORSA PATIENT PORTAL</p>
+                    <h1 id="app-sales-hero-heading">Your care.<br><span>More connected.</span></h1>
                 </div>
-                <p class="app-sales-smallprint">No sales pressure. Demo access may require a sign-in. <a href="/patients">Already have an account? Open the portal.</a></p>
-                <div class="app-sales-tags" aria-label="Key app capabilities">
-                    <span>Patient access</span><span>Appointments</span><span>Connected care</span>
+                <div class="app-editorial-intro-aside">
+                    <p class="app-editorial-lead">Appointments, health information and communication with your care team, brought together in a browser-based patient experience.</p>
+                    <div class="app-sales-actions app-editorial-actions">
+                        <a class="app-sales-button app-sales-button-primary" href="#book-demo">Request a guided demo <span aria-hidden="true">&rarr;</span></a>
+                        <a class="app-sales-button app-sales-button-outline" href="https://demo-patient.teledoctorsa.co.za/" target="_blank" rel="noopener noreferrer">Explore the patient demo <span aria-hidden="true">&nearr;</span></a>
+                    </div>
+                    <p class="app-editorial-access">Already registered? <a href="https://demo-patient.teledoctorsa.co.za/" target="_blank" rel="noopener noreferrer">Open your patient portal</a></p>
                 </div>
             </div>
-            <figure class="app-sales-visual">
-                <img src="/images/rebuild/platform.jpg" alt="TeleDoctorSA connected patient experience displayed on a mobile device" loading="eager" fetchpriority="high">
-                <figcaption><span class="app-sales-caption-rule" aria-hidden="true"></span> Built for patients and the healthcare teams supporting them</figcaption>
-            </figure>
+
+            <div class="app-editorial-showcase" aria-label="TeleDoctorSA product visuals">
+                <div class="app-editorial-showcase-head">
+                    <span>TELEDOCTORSA / CONNECTED CARE</span>
+                    <span>WEB &amp; MOBILE EXPERIENCE</span>
+                </div>
+                <div class="app-editorial-showcase-main">
+                    <div class="app-editorial-showcase-copy">
+                        <span class="app-editorial-stage-index">01 / PATIENT EXPERIENCE</span>
+                        <h2>Care continues beyond the consultation.</h2>
+                        <p>A clearer place to follow your care journey and stay in touch between visits.</p>
+                        <a href="#app-features">See what the portal brings together <span aria-hidden="true">&rarr;</span></a>
+                    </div>
+                    <div class="app-editorial-visuals">
+                        <img class="app-editorial-platform" src="/images/rebuild/platform.jpg" alt="Illustrative TeleDoctorSA patient and clinician dashboards on a phone and laptop" width="1408" height="768" fetchpriority="high">
+                        <img class="app-editorial-phone" src="/images/rebuild/phone.png" alt="Illustrative patient dashboard on a mobile phone" width="1086" height="1448" loading="lazy" decoding="async">
+                    </div>
+                </div>
+                <p class="app-editorial-visual-note">Illustrative platform visuals. Available functions depend on your account and care provider.</p>
+            </div>
+
+            <div class="app-editorial-hero-foot">
+                <span>Browser-based access</span>
+                <span>Appointments and care updates</span>
+                <a href="tel:+27698317264">Questions? Call 069 831 7264 <span aria-hidden="true">&nearr;</span></a>
+            </div>
         </div>
     </section>
 
-    <section class="content-section">
-        <div class="section-inner"><h2 class="section-title">What is the TeleDoctorSA App?</h2>
-        <p class="section-subtitle">
-            The TeleDoctorSA App is your secure patient portal for connected care. Sign in to share health information with your clinical team, access your electronic health records, manage appointments, and communicate securely from your phone, tablet, or computer.
-        </p>
 
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i data-lucide="activity" style="width: 30px; height: 30px; color: white;"></i>
+    <section class="app-story" id="app-features" aria-labelledby="app-story-title">
+        <div class="app-sales-shell">
+            <div class="app-story-intro">
+                <div>
+                    <p class="app-story-eyebrow">THE PATIENT EXPERIENCE / AT A GLANCE</p>
+                    <h2 id="app-story-title">What is the <span>TeleDoctorSA App?</span></h2>
                 </div>
-                <h3>Real-Time Health Data</h3>
-                <p>Send vital signs and health measurements directly to your clinicians in real-time. Sync readings from your BP monitor, glucose meter, oximeter, and more.</p>
+                <p>It is a secure, browser-based space for staying involved in your care. Instead of hunting through messages and paperwork, you can find the information and tools your healthcare provider has made available in one place.</p>
             </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i data-lucide="calendar" style="width: 30px; height: 30px; color: white;"></i>
-                </div>
-                <h3>Appointment Booking</h3>
-                <p>Schedule virtual consultations with ease. View available time slots, book appointments, and receive remindersâ€”all within the app.</p>
+            <div class="app-capability-grid">
+                <article class="app-capability app-capability-featured app-capability-dark">
+                    <div class="app-capability-top">
+                        <span class="app-capability-number">01 / APPOINTMENTS</span>
+                        <span class="app-capability-icon"><i data-lucide="calendar-days" aria-hidden="true"></i></span>
+                    </div>
+                    <div class="app-capability-copy">
+                        <h3>Make space for care in your schedule.</h3>
+                        <p>View appointment information and, where offered, request or manage bookings and virtual consultations.</p>
+                    </div>
+                </article>
+                <article class="app-capability app-capability-featured app-capability-soft">
+                    <div class="app-capability-top">
+                        <span class="app-capability-number">02 / MONITORING</span>
+                        <span class="app-capability-icon"><i data-lucide="activity" aria-hidden="true"></i></span>
+                    </div>
+                    <div class="app-capability-copy">
+                        <h3>Bring your health readings into the picture.</h3>
+                        <p>Keep track of supported measurements and share relevant readings when connected monitoring is available.</p>
+                    </div>
+                </article>
+                <article class="app-capability">
+                    <div class="app-capability-top">
+                        <span class="app-capability-number">03 / COMMUNICATION</span>
+                        <span class="app-capability-icon"><i data-lucide="message-circle" aria-hidden="true"></i></span>
+                    </div>
+                    <div class="app-capability-copy">
+                        <h3>Stay in touch with your care team.</h3>
+                        <p>Send updates and follow up using the communication options available to your account.</p>
+                    </div>
+                </article>
+                <article class="app-capability">
+                    <div class="app-capability-top">
+                        <span class="app-capability-number">04 / HEALTH RECORDS</span>
+                        <span class="app-capability-icon"><i data-lucide="file-text" aria-hidden="true"></i></span>
+                    </div>
+                    <div class="app-capability-copy">
+                        <h3>Your health information, easier to find.</h3>
+                        <p>Access the records and documents your healthcare provider has shared with you.</p>
+                    </div>
+                </article>
+                <article class="app-capability">
+                    <div class="app-capability-top">
+                        <span class="app-capability-number">05 / UPDATES</span>
+                        <span class="app-capability-icon"><i data-lucide="bell" aria-hidden="true"></i></span>
+                    </div>
+                    <div class="app-capability-copy">
+                        <h3>Know what comes next.</h3>
+                        <p>See relevant reminders, appointment updates and care notifications when enabled.</p>
+                    </div>
+                </article>
+                <article class="app-capability">
+                    <div class="app-capability-top">
+                        <span class="app-capability-number">06 / PRIVACY</span>
+                        <span class="app-capability-icon"><i data-lucide="shield-check" aria-hidden="true"></i></span>
+                    </div>
+                    <div class="app-capability-copy">
+                        <h3>A personal space for your care.</h3>
+                        <p>Sign in to a patient account designed to help keep your health information private.</p>
+                    </div>
+                </article>
             </div>
+            <p class="app-story-footnote">Feature access varies by healthcare provider, account setup and supported integrations. The demo shows an illustrative experience.</p>
+        </div>
+    </section>
 
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i data-lucide="message-circle" style="width: 30px; height: 30px; color: white;"></i>
+
+    <section class="app-device-section" aria-labelledby="app-devices-title">
+        <div class="app-sales-shell">
+            <div class="app-secondary-intro">
+                <div>
+                    <p class="app-story-eyebrow">CONNECTED HEALTH / WHERE SUPPORTED</p>
+                    <h2 id="app-devices-title">Monitoring tools that can <span>work with your care.</span></h2>
                 </div>
-                <h3>Secure Messaging</h3>
-                <p>Communicate with your healthcare providers through encrypted messaging. Ask questions, share updates, and receive guidance securely.</p>
+                <p>Some care pathways include readings from home health devices. Compatibility and data-sharing options depend on the devices and integrations supported by your provider.</p>
             </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i data-lucide="bell" style="width: 30px; height: 30px; color: white;"></i>
-                </div>
-                <h3>Push Notifications</h3>
-                <p>Stay informed with instant notifications for appointments, medication reminders, test results, and important health alerts.</p>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i data-lucide="file-text" style="width: 30px; height: 30px; color: white;"></i>
-                </div>
-                <h3>EHR Access</h3>
-                <p>View your complete electronic health records on the go. Access medical history, lab results, prescriptions, and consultation notes anytime.</p>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i data-lucide="shield" style="width: 30px; height: 30px; color: white;"></i>
-                </div>
-                <h3>Secure Login</h3>
-                <p>Your data is protected with advanced security measures including encrypted login, biometric authentication, and secure data transmission.</p>
+            <div class="app-device-grid">
+                <article class="app-device-item"><span class="app-device-symbol"><i data-lucide="heart-pulse" aria-hidden="true"></i></span><div><h3>Blood pressure</h3><p>Track systolic and diastolic readings.</p></div></article>
+                <article class="app-device-item"><span class="app-device-symbol"><i data-lucide="droplet" aria-hidden="true"></i></span><div><h3>Blood glucose</h3><p>Record or share supported glucose readings.</p></div></article>
+                <article class="app-device-item"><span class="app-device-symbol"><i data-lucide="wind" aria-hidden="true"></i></span><div><h3>Oxygen saturation</h3><p>Review measurements from pulse oximeters.</p></div></article>
+                <article class="app-device-item"><span class="app-device-symbol"><i data-lucide="thermometer" aria-hidden="true"></i></span><div><h3>Temperature</h3><p>Keep relevant temperature readings together.</p></div></article>
+                <article class="app-device-item"><span class="app-device-symbol"><i data-lucide="scale" aria-hidden="true"></i></span><div><h3>Weight</h3><p>Follow changes in weight over time.</p></div></article>
+                <article class="app-device-item"><span class="app-device-symbol"><i data-lucide="activity" aria-hidden="true"></i></span><div><h3>Heart rhythm</h3><p>Explore ECG monitoring when recommended.</p></div></article>
             </div>
         </div>
-    </div></section>
+    </section>
 
-    <section class="app-preview">
-        <div class="section-inner"><h2 class="section-title">Compatible Health Devices</h2>
-        <p class="section-subtitle">
-            The TeleDoctorSA App seamlessly integrates with home health devices, allowing you to track and share vital signs with your healthcare team automatically.
-        </p>
 
-        <div class="device-grid">
-            <div class="device-item">
-                <div class="device-icon">
-                    <i data-lucide="heart" style="width: 30px; height: 30px; color: white;"></i>
+    <section class="app-journey-section" aria-labelledby="app-journey-title">
+        <div class="app-sales-shell">
+            <div class="app-secondary-intro">
+                <div>
+                    <p class="app-story-eyebrow">GETTING STARTED / FOUR SIMPLE STEPS</p>
+                    <h2 id="app-journey-title">A straightforward way <span>to get started.</span></h2>
                 </div>
-                <h4>Blood Pressure Monitors</h4>
-                <p style="color: var(--slate-gray); font-size: 0.9rem; margin-top: 8px;">Track systolic & diastolic pressure</p>
+                <p>No app-store download is needed for the browser-based portal. Here is what getting connected can look like.</p>
             </div>
-
-            <div class="device-item">
-                <div class="device-icon">
-                    <i data-lucide="droplet" style="width: 30px; height: 30px; color: white;"></i>
-                </div>
-                <h4>Glucose Meters</h4>
-                <p style="color: var(--slate-gray); font-size: 0.9rem; margin-top: 8px;">Monitor blood sugar levels</p>
-            </div>
-
-            <div class="device-item">
-                <div class="device-icon">
-                    <i data-lucide="wind" style="width: 30px; height: 30px; color: white;"></i>
-                </div>
-                <h4>Pulse Oximeters</h4>
-                <p style="color: var(--slate-gray); font-size: 0.9rem; margin-top: 8px;">Measure oxygen saturation</p>
-            </div>
-
-            <div class="device-item">
-                <div class="device-icon">
-                    <i data-lucide="thermometer" style="width: 30px; height: 30px; color: white;"></i>
-                </div>
-                <h4>Digital Thermometers</h4>
-                <p style="color: var(--slate-gray); font-size: 0.9rem; margin-top: 8px;">Record body temperature</p>
-            </div>
-
-            <div class="device-item">
-                <div class="device-icon">
-                    <i data-lucide="scale" style="width: 30px; height: 30px; color: white;"></i>
-                </div>
-                <h4>Smart Scales</h4>
-                <p style="color: var(--slate-gray); font-size: 0.9rem; margin-top: 8px;">Track weight & BMI</p>
-            </div>
-
-            <div class="device-item">
-                <div class="device-icon">
-                    <i data-lucide="activity" style="width: 30px; height: 30px; color: white;"></i>
-                </div>
-                <h4>ECG Devices</h4>
-                <p style="color: var(--slate-gray); font-size: 0.9rem; margin-top: 8px;">Monitor heart rhythm</p>
-            </div>
+            <ol class="app-journey-list">
+                <li><span class="app-journey-number">01</span><h3>Open the portal</h3><p>Use a phone, tablet or computer to open your patient portal and sign in.</p></li>
+                <li><span class="app-journey-number">02</span><h3>Explore your care space</h3><p>Find the appointments, records and services available to your account.</p></li>
+                <li><span class="app-journey-number">03</span><h3>Add readings when supported</h3><p>Use compatible monitoring tools as advised by your healthcare provider.</p></li>
+                <li><span class="app-journey-number">04</span><h3>Stay connected</h3><p>Follow updates and share relevant information with your care team.</p></li>
+            </ol>
         </div>
-    </div></section>
-
-    <section class="content-section">
-        <div class="section-inner"><h2 class="section-title">How It Works</h2>
-        <div class="features-grid">
-            <div class="feature-card">
-                <div style="font-size: 2rem; font-weight: 800; color: var(--primary-orange); margin-bottom: 15px;">1</div>
-                <h3>Open the App</h3>
-                <p>Open the secure TeleDoctorSA patient app in your browser and sign in to your account. No app-store download is required.</p>
-            </div>
-
-            <div class="feature-card">
-                <div style="font-size: 2rem; font-weight: 800; color: var(--primary-orange); margin-bottom: 15px;">2</div>
-                <h3>Connect Your Devices</h3>
-                <p>Pair your health monitoring devices with the app via Bluetooth or Wi-Fi for automatic data syncing.</p>
-            </div>
-
-            <div class="feature-card">
-                <div style="font-size: 2rem; font-weight: 800; color: var(--primary-orange); margin-bottom: 15px;">3</div>
-                <h3>Track Your Health</h3>
-                <p>Take measurements with your devices and watch as data automatically uploads to your health dashboard.</p>
-            </div>
-
-            <div class="feature-card">
-                <div style="font-size: 2rem; font-weight: 800; color: var(--primary-orange); margin-bottom: 15px;">4</div>
-                <h3>Share with Clinicians</h3>
-                <p>Your healthcare team receives real-time updates, enabling proactive care and timely interventions.</p>
-            </div>
-        </div>
-    </div></section>
+    </section>
 
     <section class="app-sales-book" id="book-demo" aria-labelledby="app-sales-book-title">
         <div class="app-sales-shell app-sales-book-grid">
@@ -1882,7 +1678,7 @@ footer.site-footer, .site-footer {
                 </div>
                 <div class="app-sales-contact">
                     <strong>Prefer to speak to someone now?</strong>
-                    <a href="https://wa.me/27780336394?text=Hello%20TeleDoctorSA%2C%20I%20would%20like%20to%20book%20a%20demo%20of%20your%20app." target="_blank" rel="noopener noreferrer">Request a demo on WhatsApp <span aria-hidden="true">&nearr;</span></a>
+                    <a href="tel:+27698317264">Call 069 831 7264 <span aria-hidden="true">&nearr;</span></a>
                     <a href="mailto:info@teledoctorsa.co.za?subject=TeleDoctorSA%20App%20Demo%20Request">Or email info@teledoctorsa.co.za <span aria-hidden="true">&nearr;</span></a>
                 </div>
             </div>
@@ -1995,7 +1791,7 @@ footer.site-footer, .site-footer {
                     <h3>Contact</h3>
                     <div class="site-footer-list">
                         <a href="https://wa.me/27780336394?text=Hi%20TeleDoctorSA%2C%20please%20may%20you%20contact%20me%3F%20Thanks." target="_blank" rel="noopener noreferrer">WhatsApp: +27 78 033 6394</a>
-                        <a href="tel:+27780336394">Phone: +27 78 033 6394</a>
+                        <a href="tel:+27698317264">Phone: 069 831 7264</a>
                         <a href="mailto:info@teledoctorsa.co.za">Email: info@teledoctorsa.co.za</a>
                         <span>29 Landor Street, Tulisa Park, Johannesburg, 2197</span>
                     </div>
@@ -2014,7 +1810,7 @@ footer.site-footer, .site-footer {
             </div>
 
             <div class="site-footer-bottom">
-      <span class="site-footer-copyright">Â© 2026 TeleDoctorSA Â· Dr. Mukudu & Partners Â· Johannesburg, South Africa</span>
+      <span class="site-footer-copyright">&copy; 2026 TeleDoctorSA &middot; Dr. Mukudu & Partners &middot; Johannesburg, South Africa</span>
       <nav class="site-footer-legal-links" aria-label="Legal and policy links">
           <a href="/privacy-policy">Privacy</a>
           <a href="javascript:void(0)" onclick="openLegal('terms-conditions')">Terms</a>
@@ -2112,7 +1908,7 @@ footer.site-footer, .site-footer {
 </script>
 <script src="/scripts/site-ux-v4.js?v=20261015-navfix1"></script>
 <script src="/scripts/app-demo.js?v=20261015a" defer></script>
-    <script src="/scripts/rebuild-images.js?v=20261015-navfix1"></script>
+    <script src="/scripts/rebuild-images.js?v=20261019-app-refresh"></script>
 </body>
 </html>
 

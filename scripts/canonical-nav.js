@@ -807,7 +807,7 @@
             '<div class="tds-contact-header"><div class="tds-contact-title">Get in touch</div><div class="tds-contact-subtitle">Choose your preferred contact method</div></div>' +
             '<div class="tds-contact-options">' +
               '<a class="tds-contact-option" href="' + WHATSAPP_URL + '" target="_blank" rel="noopener noreferrer"><span class="tds-contact-icon">WA</span><span><span class="tds-contact-name">WhatsApp</span><span class="tds-contact-desc">Chat with the TeleDoctorSA team</span></span></a>' +
-              '<a class="tds-contact-option" href="tel:+27780336394"><span class="tds-contact-icon">TEL</span><span><span class="tds-contact-name">Call</span><span class="tds-contact-desc">+27 78 033 6394</span></span></a>' +
+              '<a class="tds-contact-option" href="tel:+27698317264"><span class="tds-contact-icon">TEL</span><span><span class="tds-contact-name">Call</span><span class="tds-contact-desc">069 831 7264</span></span></a>' +
               '<a class="tds-contact-option" href="mailto:info@teledoctorsa.co.za"><span class="tds-contact-icon">@</span><span><span class="tds-contact-name">Email</span><span class="tds-contact-desc">info@teledoctorsa.co.za</span></span></a>' +
             '</div>' +
           '</div>' +
@@ -818,7 +818,7 @@
             '<a href="' + WHATSAPP_URL + '" target="_blank" rel="noopener noreferrer">WA</a>' +
             '<a href="' + FACEBOOK_URL + '" target="_blank" rel="noopener noreferrer">FB</a>' +
             '<a href="' + INSTAGRAM_URL + '" target="_blank" rel="noopener noreferrer">IG</a>' +
-            '<a href="tel:+27780336394">Call</a>' +
+            '<a href="tel:+27698317264">Call</a>' +
           '</div>' +
         '</div>' +
       '</div>';

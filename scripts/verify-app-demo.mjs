@@ -14,6 +14,11 @@ const css = read('styles/app-demo.css');
 for (const [name, page] of [['/app', canonical], ['/app.html', legacy]]) {
   assert.match(page, /id="appDemoForm"/, name);
   assert.match(page, /href="#book-demo"/, name);
+  assert.match(page, /data-tds-custom-hero/, name);
+  assert.match(page, /class="app-capability(?:\s|")/g, name);
+  assert.match(page, /href="tel:\+27698317264"/, name);
+  assert.match(page, /\/styles\/app-editorial\.css/, name);
+  assert.doesNotMatch(page, /Â©|Â·|â€”|â€™|�/, name);
   assert.match(page, /https:\/\/demo-patient\.teledoctorsa\.co\.za\//, name);
   assert.match(page, /action="\/api\/leads\.php"/, name);
   assert.match(page, /\/styles\/app-demo\.css/, name);
@@ -31,4 +36,5 @@ assert.match(php, /if \(!\$sent\)/);
 assert.match(js, /fetch\(actionUrl/);
 assert.match(js, /fallbackWhatsApp/);
 assert.match(css, /@media\(max-width:580px\)/);
+assert.match(read('styles/app-editorial.css'), /\.app-capability-grid/);
 console.log('App demo marketing, booking funnel and lead endpoint static checks passed.');

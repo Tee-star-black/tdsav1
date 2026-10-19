@@ -8,10 +8,7 @@ assert.ok(publicPages.length >= 20, 'Expected static public website pages');
 
 for (const page of publicPages) {
   const html = read(page);
-  const loaderVersion = page === 'ecg247.html'
-    ? /<script\b[^>]*src=["']\/scripts\/rebuild-images\.js\?v=20261019-ecg-layout["']/i
-    : /<script\b[^>]*src=["']\/scripts\/rebuild-images\.js\?v=20261015-navfix1["']/i;
-  assert.match(html, loaderVersion, page + ' requires its versioned shared navigation loader');
+  assert.match(html, /<script\b[^>]*src=["']\/scripts\/rebuild-images\.js\?v=20261019-app-refresh["']/i, page + ' requires updated canonical nav and footer');
   assert.doesNotMatch(html, /<script\b[^>]*src=["']\/?scripts\/editorial-mega-menu\.js/i, page + ' should not load a competing navbar');
   if (/scripts\/site-ux-v4\.js/.test(html)) {
     assert.match(html, /scripts\/site-ux-v4\.js\?v=20261015-navfix1/, page + ' requires the patched scroll script');
@@ -27,6 +24,8 @@ assert.match(back, /var MOBILE_MAX = 1100/);
 assert.match(canonical, /backdrop-filter: none !important/);
 assert.match(canonical, /overflow: visible !important/);
 assert.match(shared, /__TDS_LOCAL_ROUTE_BRIDGE__/);
+assert.match(canonical, /tel:\+27698317264/);
+assert.doesNotMatch(canonical, /tel:\+27780336394/);
 assert.match(shared, /'\/our-services': '\/our-services\.html'/);
 assert.match(shared, /'\/app': '\/teledoctorsa-app\.html'/);
 assert.match(shared, /'\/patients': 'https:\/\/demo-patient\.teledoctorsa\.co\.za\/'/);
