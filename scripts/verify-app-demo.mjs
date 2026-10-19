@@ -19,7 +19,7 @@ for (const [name, page] of [['/app', canonical], ['/app.html', legacy]]) {
   assert.match(page, /class="app-story app-chapters"/, name);
   assert.match(page, /class="app-arrival-overview"/, name);
   assert.match(page, /Your care, in one place\./, name);
-  assert.doesNotMatch(page, /<em>|<\\/em>|Playfair Display|app-arrival-phone|app-portal-window|Illustrative layout, not an actual patient record/i, name);
+  assert.doesNotMatch(page, /<em\b|Playfair Display|app-arrival-phone|app-portal-window|Illustrative layout, not an actual patient record/i, name);
   assert.equal((page.match(/class="app-chapter"/g) || []).length, 3, name + ' has three feature groups');
   assert.equal((page.match(/class="app-capability"/g) || []).length, 6, name + ' has six unboxed details');
   assert.match(page, /href="tel:\+27698317264"/, name);
@@ -44,5 +44,5 @@ assert.match(js, /fallbackWhatsApp/);
 assert.match(css, /@media\(max-width:580px\)/);
 assert.match(read('styles/app-editorial.css'), /\.app-chapter-features/);
 assert.match(read('styles/app-editorial.css'), /\.app-arrival-layout/);
-assert.doesNotMatch(read('styles/app-editorial.css'), /Playfair|font-style:\\s*italic|app-portal-window|app-arrival-phone/i);
+assert.doesNotMatch(read('styles/app-editorial.css'), /Playfair|font-style:\s*italic|app-portal-window|app-arrival-phone/i);
 console.log('App demo marketing, booking funnel and lead endpoint static checks passed.');
