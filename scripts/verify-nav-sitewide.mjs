@@ -8,7 +8,10 @@ assert.ok(publicPages.length >= 20, 'Expected static public website pages');
 
 for (const page of publicPages) {
   const html = read(page);
-  assert.match(html, /<script\b[^>]*src=["']\/scripts\/rebuild-images\.js\?v=20261015-navfix1["']/i, page + ' requires cache-busted shared nav');
+  const loaderVersion = page === 'ecg247.html'
+    ? /<script\b[^>]*src=["']\/scripts\/rebuild-images\.js\?v=20261019-ecg-layout["']/i
+    : /<script\b[^>]*src=["']\/scripts\/rebuild-images\.js\?v=20261015-navfix1["']/i;
+  assert.match(html, loaderVersion, page + ' requires its versioned shared navigation loader');
   assert.doesNotMatch(html, /<script\b[^>]*src=["']\/?scripts\/editorial-mega-menu\.js/i, page + ' should not load a competing navbar');
   if (/scripts\/site-ux-v4\.js/.test(html)) {
     assert.match(html, /scripts\/site-ux-v4\.js\?v=20261015-navfix1/, page + ' requires the patched scroll script');
