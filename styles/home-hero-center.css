@@ -83,7 +83,7 @@ html body .core-highlights-slider .core-proof-chip {
   html body .core-highlights-slider {
     background-image:
       linear-gradient(rgba(15, 23, 42, .88), rgba(15, 23, 42, .91)),
-      url('/images/rebuild/01-clinical-team-at-work.jpg') !important;
+      url('/images/rebuild/hero-clinician.png') !important;
     background-position: 60% center !important;
   }
 
