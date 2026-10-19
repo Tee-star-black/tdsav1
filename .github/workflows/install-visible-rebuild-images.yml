@@ -4,6 +4,9 @@ on:
   push:
     paths:
       - 'scripts/rebuild-images.js'
+      - 'scripts/rebuild-images-core.js'
+      - 'styles/ecg247-refresh.css'
+      - 'scripts/verify-ecg-layout.mjs'
       - 'scripts/canonical-nav.js'
       - 'scripts/nav-back-controls.js'
       - 'scripts/editorial-mega-menu.js'
