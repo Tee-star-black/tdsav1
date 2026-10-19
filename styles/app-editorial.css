@@ -446,7 +446,7 @@ body > section.app-story.app-chapters {
 .app-chapter-index small {
   display: block;
   color: #6c7c89;
-  font-size: .63rem;
+  font-size: .72rem;
   font-weight: 800;
   line-height: 1.55;
   letter-spacing: .13em;
@@ -467,7 +467,7 @@ body > section.app-story.app-chapters {
   margin: 0;
   line-height: 1.75;
   color: #6b7a8b;
-  font-size: .94rem;
+  font-size: 1.02rem;
 }
 .app-chapter-features {
   display: grid;
@@ -488,10 +488,10 @@ body > section.app-story.app-chapters {
   gap: 10px;
   align-items: center;
   color: #a85f35;
-  font-size: .62rem;
+  font-size: .73rem;
   line-height: 1.45;
   font-weight: 800;
-  letter-spacing: .11em;
+  letter-spacing: .09em;
   margin-bottom: 21px;
 }
 .app-capability-marker svg {
@@ -510,8 +510,8 @@ body > section.app-story.app-chapters {
 }
 .app-chapter-features .app-capability p {
   color: #617387;
-  font-size: .91rem;
-  line-height: 1.83;
+  font-size: 1.02rem;
+  line-height: 1.77;
   margin: 0;
 }
 .app-chapters-footer {
@@ -524,7 +524,7 @@ body > section.app-story.app-chapters {
 .app-chapters-footer p {
   color: #6a7d8f;
   line-height: 1.7;
-  font-size: .86rem;
+  font-size: .96rem;
   max-width: 58ch;
   margin: 0;
 }
@@ -587,7 +587,7 @@ body > section.app-journey-section {
 }
 .app-device-symbol svg { width: 23px; height: 23px; stroke-width: 1.6; }
 .app-device-item h3 { color: var(--app-ink); font-weight: 800; font-size: 1.08rem; margin: 3px 0 9px; line-height: 1.35; }
-.app-device-item p { margin: 0; color: #5c6d7e; font-size: .88rem; line-height: 1.75; }
+.app-device-item p { margin: 0; color: #5c6d7e; font-size: .99rem; line-height: 1.75; }
 .app-journey-list {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -611,7 +611,7 @@ body > section.app-journey-section {
   margin-bottom: 30px;
 }
 .app-journey-list h3 { color: #192d42; margin: 0 0 11px; font-size: 1.18rem; font-weight: 800; line-height: 1.3; }
-.app-journey-list p { color: #607287; margin: 0; font-size: .92rem; line-height: 1.8; }
+.app-journey-list p { color: #607287; margin: 0; font-size: 1rem; line-height: 1.8; }
 body > section.app-sales-book { padding: clamp(77px, 9vw, 120px) 0 !important; }
 .app-sales-book-copy h2 { font-size: clamp(2.3rem, 3.5vw, 3.85rem) !important; line-height: 1.14 !important; }
 
