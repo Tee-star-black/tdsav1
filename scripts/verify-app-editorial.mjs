@@ -1,4 +1,5 @@
 import { chromium } from 'playwright';
+import { mkdirSync } from 'node:fs';
 
 const BASE_URL = process.env.TDSA_TEST_BASE_URL || 'http://127.0.0.1:4173';
 const pages = ['teledoctorsa-app.html', 'app.html'];
@@ -82,6 +83,16 @@ try {
             !result.guidedDemo || !result.phoneLink || !result.leadForm ||
             result.duplicatedGenericVisual !== 0) {
           throw new Error('App visual/functional regression: ' + JSON.stringify(result));
+        }
+
+        // Save real Chromium renders for design review. No patient data is used.
+        if (file === 'teledoctorsa-app.html' && ['desktop', 'mobile'].includes(viewport.label)) {
+          mkdirSync('artifacts', { recursive: true });
+          await page.screenshot({
+            path: 'artifacts/app-care-journey-' + viewport.label + '.png',
+            fullPage: true,
+            animations: 'disabled'
+          });
         }
 
         await page.locator('.app-arrival a[href="#book-demo"]').click();
