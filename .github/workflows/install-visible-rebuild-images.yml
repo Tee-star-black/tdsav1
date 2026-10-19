@@ -161,6 +161,7 @@ jobs:
           sleep 2
           node scripts/verify-navbar.mjs
           node scripts/verify-home-hero.mjs
+          node scripts/verify-ecg-layout.mjs
 
       - name: Commit normalized HTML
         if: github.ref == 'refs/heads/main'
