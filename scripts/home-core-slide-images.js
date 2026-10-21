@@ -542,7 +542,7 @@
       var maxScroll = Math.max(0, rail.scrollWidth - rail.clientWidth);
       rail.scrollTo({
         left: Math.max(0, Math.min(left, maxScroll)),
-        behavior: reduced ? 'instant' : 'smooth'
+        behavior: reduced ? 'auto' : 'smooth'
       });
       current = target;
       if (count) {
