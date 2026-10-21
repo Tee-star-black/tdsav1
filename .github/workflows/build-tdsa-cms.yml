@@ -1,0 +1,41 @@
+name: Build TeleDoctorSA CMS image
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: tdsa-cms-image-build
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: cms-staging
+    steps:
+      - uses: actions/checkout@v4
+      - name: Authenticate to Google Cloud (Workload Identity Federation)
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_BUILD_SERVICE_ACCOUNT }}
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@v2
+      - name: Configure Docker authentication
+        run: gcloud auth configure-docker africa-south1-docker.pkg.dev --quiet
+      - name: Build CMS image
+        env:
+          IMAGE: africa-south1-docker.pkg.dev/teledoctor-it/tdsa-blog-cms/cms
+        run: |
+          docker build -f blog-cms/Dockerfile -t "$IMAGE:${GITHUB_SHA}" .
+      - name: Push CMS image
+        env:
+          IMAGE: africa-south1-docker.pkg.dev/teledoctor-it/tdsa-blog-cms/cms
+        run: docker push "$IMAGE:${GITHUB_SHA}"
+      - name: Output immutable image reference
+        env:
+          IMAGE: africa-south1-docker.pkg.dev/teledoctor-it/tdsa-blog-cms/cms
+        run: echo "Built image $IMAGE:${GITHUB_SHA}" >> "$GITHUB_STEP_SUMMARY"
