@@ -25,12 +25,21 @@ on:
       - 'scripts/footer-full-bleed-guard.js'
       - 'styles/center-alignment.css'
       - 'styles/home-hero-center.css'
+      - 'styles/home-experience.css'
+      - 'styles/mobile-navigation.css'
+      - 'scripts/home-core-slide-images.js'
+      - 'scripts/verify-home-interactions.mjs'
       - '*.html'
       - '.github/workflows/install-visible-rebuild-images.yml'
   workflow_dispatch:
 
 permissions:
   contents: write
+
+# Older pushes must not race to update the same HTML files in main.
+concurrency:
+  group: tdsa-shared-experience-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   install:
