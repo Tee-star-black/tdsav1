@@ -793,6 +793,10 @@
         '<span></span><span></span><span></span>' +
       '</button>' +
       '<div id="tdsNavLinks">' +
+        '<div id="tdsMobileMenuHeader">' +
+          '<div class="tds-mobile-menu-heading"><span>TELEDOCTORSA</span><strong>Explore</strong></div>' +
+          '<button id="tdsMobileMenuClose" type="button" aria-label="Close navigation menu">' + svg('M5 5l14 14M19 5 5 19') + '</button>' +
+        '</div>' +
         '<div class="tds-offer-dropdown">' +
           '<button id="tdsOfferTrigger" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="tdsOfferPanel">What We Offer ' + chevron() + '</button>' +
           '<div id="tdsOfferPanel" aria-label="What We Offer">' + megaMenuMarkup() + '</div>' +
@@ -815,9 +819,9 @@
         '<div id="tdsMobileConnect">' +
           '<span class="tds-mobile-connect-label">Connect with TeleDoctorSA</span>' +
           '<div class="tds-mobile-connect-row">' +
-            '<a href="' + WHATSAPP_URL + '" target="_blank" rel="noopener noreferrer">WA</a>' +
-            '<a href="' + FACEBOOK_URL + '" target="_blank" rel="noopener noreferrer">FB</a>' +
-            '<a href="' + INSTAGRAM_URL + '" target="_blank" rel="noopener noreferrer">IG</a>' +
+            '<a href="' + WHATSAPP_URL + '" target="_blank" rel="noopener noreferrer">WhatsApp</a>' +
+            '<a href="' + FACEBOOK_URL + '" target="_blank" rel="noopener noreferrer">Facebook</a>' +
+            '<a href="' + INSTAGRAM_URL + '" target="_blank" rel="noopener noreferrer">Instagram</a>' +
             '<a href="tel:+27698317264">Call</a>' +
           '</div>' +
         '</div>' +
@@ -888,6 +892,7 @@
     nav.insertAdjacentElement('afterend', backdrop);
 
     var menuButton = nav.querySelector('#tdsNavMenuButton');
+    var closeButton = nav.querySelector('#tdsMobileMenuClose');
     var links = nav.querySelector('#tdsNavLinks');
     var offerTrigger = nav.querySelector('#tdsOfferTrigger');
     var offerPanel = nav.querySelector('#tdsOfferPanel');
@@ -908,18 +913,28 @@
       contactButton.setAttribute('aria-expanded', open ? 'true' : 'false');
     }
 
-    function setMobileMenu(open) {
+    function setMobileMenu(open, restoreFocus) {
       if (!isMobile() && open) return;
       links.classList.toggle('is-open', !!open);
       menuButton.classList.toggle('is-open', !!open);
       backdrop.classList.toggle('is-open', !!open);
       document.body.classList.toggle('tds-nav-open', !!open);
+      document.documentElement.classList.toggle('tds-nav-open', !!open);
       menuButton.setAttribute('aria-expanded', open ? 'true' : 'false');
       menuButton.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
       backdrop.setAttribute('aria-hidden', open ? 'false' : 'true');
-      if (!open) {
+      if (open) {
+        links.setAttribute('role', 'dialog');
+        links.setAttribute('aria-modal', 'true');
+        links.setAttribute('aria-label', 'Primary navigation menu');
+        window.requestAnimationFrame(function () { closeButton.focus(); });
+      } else {
+        links.removeAttribute('role');
+        links.removeAttribute('aria-modal');
+        links.removeAttribute('aria-label');
         setOffer(false);
         setContact(false);
+        if (restoreFocus) menuButton.focus();
       }
     }
 
@@ -927,6 +942,10 @@
       event.preventDefault();
       event.stopPropagation();
       setMobileMenu(!links.classList.contains('is-open'));
+    });
+
+    closeButton.addEventListener('click', function () {
+      setMobileMenu(false, true);
     });
 
     offerTrigger.addEventListener('click', function (event) {
@@ -944,7 +963,7 @@
     });
 
     backdrop.addEventListener('click', function () {
-      setMobileMenu(false);
+      setMobileMenu(false, true);
     });
 
     nav.querySelectorAll('a[href]').forEach(function (link) {
@@ -965,10 +984,25 @@
     });
 
     document.addEventListener('keydown', function (event) {
+      if (event.key === 'Tab' && isMobile() && links.classList.contains('is-open')) {
+        var focusables = Array.prototype.slice.call(links.querySelectorAll('a[href], button:not([disabled])'))
+          .filter(function (element) { return element.getClientRects().length > 0; });
+        if (focusables.length) {
+          var first = focusables[0];
+          var last = focusables[focusables.length - 1];
+          if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+          } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
+          }
+        }
+        return;
+      }
       if (event.key !== 'Escape') return;
       if (links.classList.contains('is-open')) {
-        setMobileMenu(false);
-        menuButton.focus();
+        setMobileMenu(false, true);
       } else {
         setOffer(false);
         setContact(false);
