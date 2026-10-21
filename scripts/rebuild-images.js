@@ -19,7 +19,7 @@
     document.head.appendChild(link);
   }
 
-  var release = '20261021-mobile-carousel';
+  var release = '20261021-mobile-refinement';
   // Local static servers do not read production .htaccess URL rewrites.
   // This delegated bridge keeps all public-page navigation working in VS Code Live Server
   // and python -m http.server, including links created by the canonical nav and footer.
@@ -86,3 +86,4 @@
   loadStyleOnce('tds-unified-footer-style', '/styles/unified-footer.css?v=20261015-navfix1');
   loadOnce('tds-canonical-footer-loader', '/scripts/canonical-footer.js?v=20261019-app-refresh');
 })();
+

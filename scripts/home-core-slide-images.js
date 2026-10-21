@@ -358,12 +358,13 @@
     var focused = false;
     var inView = true;
     var manuallyPaused = false;
+    var explicitlyPlaying = false;
     var motionPreference = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
 
     slider.style.setProperty('--core-slide-duration', DELAY + 'ms');
 
     function mayPlay() {
-      return panels.length > 1 && !manuallyPaused && !hovered && !focused &&
+      return panels.length > 1 && !manuallyPaused && (explicitlyPlaying || (!hovered && !focused)) &&
         inView && !document.hidden && !(motionPreference && motionPreference.matches);
     }
 
@@ -423,19 +424,24 @@
 
     if (toggle) toggle.addEventListener('click', function () {
       manuallyPaused = !manuallyPaused;
+      explicitlyPlaying = !manuallyPaused;
       syncAutoplay();
     });
 
-    slider.addEventListener('mouseenter', function () {
+    slider.addEventListener('pointerenter', function (event) {
+      if (event.pointerType !== 'mouse') return;
+      explicitlyPlaying = false;
       hovered = true;
       syncAutoplay();
     });
-    slider.addEventListener('mouseleave', function () {
+    slider.addEventListener('pointerleave', function (event) {
+      if (event.pointerType !== 'mouse') return;
       hovered = false;
       syncAutoplay();
     });
     slider.addEventListener('focusin', function (event) {
-      // Keyboard focus pauses motion; a touch tap must not leave it stopped forever.
+      explicitlyPlaying = false;
+      // Pause for keyboard reading, without trapping touch users in a paused state.
       focused = !!(event.target && event.target.matches && event.target.matches(':focus-visible'));
       syncAutoplay();
     });

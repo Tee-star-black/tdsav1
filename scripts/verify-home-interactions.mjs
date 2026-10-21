@@ -181,10 +181,17 @@ assert.equal(pending.size, 0, 'Paused state cancels the timer');
 toggle.fire('click');
 assert.equal(toggle.textContent, 'Pause');
 assert.ok(pending.size > 0, 'Resume restarts auto rotation');
-carousel.fire('mouseenter');
+carousel.fire('pointerenter', { pointerType: 'mouse' });
 assert.equal(pending.size, 0, 'Hover pauses rotation');
-carousel.fire('mouseleave');
+carousel.fire('pointerleave', { pointerType: 'mouse' });
 assert.ok(pending.size > 0, 'Leaving hover resumes rotation');
+carousel.fire('pointerenter', { pointerType: 'touch' });
+assert.ok(pending.size > 0, 'Touch must not leave a sticky hover pause');
+carousel.fire('focusin', { target: { matches: () => true } });
+assert.equal(pending.size, 0);
+toggle.fire('click');
+toggle.fire('click');
+assert.ok(pending.size > 0, 'Explicit Play resumes while its button retains focus');
 motion.matches = true;
 motion.handlers.change();
 assert.equal(pending.size, 0, 'Reduced motion disables autoplay');
@@ -210,3 +217,4 @@ assert.equal(careForward.disabled, true, 'At end of rail next is disabled');
 assert.equal(careCount.textContent, '04 / 04');
 
 console.log('PASS: autoplay, arrows, dots, pause, reduced-motion, tab visibility, care rail, mobile nav hooks');
+

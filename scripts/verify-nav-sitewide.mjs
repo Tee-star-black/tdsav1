@@ -8,7 +8,7 @@ assert.ok(publicPages.length >= 20, 'Expected static public website pages');
 
 for (const page of publicPages) {
   const html = read(page);
-  assert.match(html, /<script\b[^>]*src=["']\/scripts\/rebuild-images\.js\?v=20261019-app-refresh["']/i, page + ' requires updated canonical nav and footer');
+  assert.match(html, /<script\b[^>]*src=["']\/scripts\/rebuild-images\.js\?v=20261021-mobile-refinement["']/i, page + ' requires updated canonical nav and footer');
   assert.doesNotMatch(html, /<script\b[^>]*src=["']\/?scripts\/editorial-mega-menu\.js/i, page + ' should not load a competing navbar');
   if (/scripts\/site-ux-v4\.js/.test(html)) {
     assert.match(html, /scripts\/site-ux-v4\.js\?v=20261015-navfix1/, page + ' requires the patched scroll script');
@@ -36,3 +36,4 @@ assert.match(logoCss, /background: transparent !important;/);
 assert.doesNotMatch(logoCss, /background: #fff !important;/);
 
 console.log('PASS: ' + publicPages.length + ' public pages use versioned shared navigation and the footer logo has no white badge.');
+

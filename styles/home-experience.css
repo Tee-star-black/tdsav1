@@ -602,6 +602,56 @@ html body #services .care-rail-arrow svg {
   }
 }
 
+/* Overlap slides in one measured grid: crossfade without moving the page below. */
+html body .core-highlights-slider .core-slide-stage {
+  display: grid;
+  width: min(1060px, 100%);
+  min-width: 0;
+  margin: 0 auto;
+  isolation: isolate;
+}
+html body .core-highlights-slider .core-slide-stage > .core-slide,
+html body .core-highlights-slider .core-slide-stage > .core-slide[hidden],
+html body .core-highlights-slider .core-slide-stage > .core-slide[aria-hidden="true"] {
+  display: grid !important;
+  grid-area: 1 / 1;
+  align-self: stretch;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  animation: none !important;
+  transition: opacity 550ms ease, visibility 550ms !important;
+}
+html body .core-highlights-slider .core-slide-stage > .core-slide.active:not([hidden]) {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 1;
+}
+/* Visual progress bars retain a comfortable finger-sized hit area. */
+html body .core-highlights-slider .core-slider-dots .core-slide-dot {
+  height: 44px !important;
+  min-height: 44px !important;
+  background: transparent !important;
+  position: relative;
+}
+html body .core-highlights-slider .core-slider-dots .core-slide-dot::before {
+  content: '';
+  position: absolute;
+  inset: 20px 0;
+  background: rgba(255,255,255,.35);
+}
+html body .core-highlights-slider .core-slider-dots .core-slide-dot::after {
+  top: 20px !important;
+  bottom: auto !important;
+  height: 4px !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  html body .core-highlights-slider .core-slide-stage > .core-slide {
+    transition: none !important;
+  }
+}
+
 /* Legacy animated section decoration was layered over the rail and intercepted
    pointer/touch events. Keep visual decoration behind functional controls. */
 html body #services::before,
@@ -615,3 +665,4 @@ html body #services .services-grid {
   position: relative !important;
   z-index: 2 !important;
 }
+

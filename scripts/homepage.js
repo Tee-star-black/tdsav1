@@ -14,10 +14,10 @@
             });
         });
         // Initialize Icons
-        lucide.createIcons();
+        if (window.lucide) window.lucide.createIcons();
 
         // Initialize Scroll Animations with premium settings
-        AOS.init({
+        if (window.AOS) window.AOS.init({
             duration: 1000,
             once: true,
             easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
@@ -366,11 +366,12 @@
                         const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - navHeight;
                         window.scrollTo({
                             top: targetPosition,
-                            behavior: 'smooth'
+                            behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
                         });
                         // On mobile, close nav menu after click
-                        if (window.innerWidth <= 900 && navLinks.classList.contains('active')) {
-                            toggleMobileMenu();
+                        const menu = document.getElementById('tdsNavLinks');
+                        if (menu && menu.classList.contains('is-open')) {
+                            document.getElementById('tdsMobileMenuClose')?.click();
                         }
                     }
                 }
@@ -812,3 +813,4 @@
                 closeLegalModal();
             }
         });
+
