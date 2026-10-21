@@ -1,0 +1,108 @@
+name: Deploy TeleDoctorSA website to cPanel
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/deploy-tdsa-production.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tdsa-cpanel-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Validate and publish production site
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout approved main branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Validate public website and lead form
+        shell: bash
+        run: |
+          set -euo pipefail
+          php -l api/leads.php
+          node --check scripts/app-demo.js
+          node scripts/verify-app-demo.mjs
+
+      - name: Assemble webroot release without private build files
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          mkdir -p release
+          cp -p .htaccess release/.htaccess
+          for file in *.html *.css *.js *.php *.txt *.xml *.svg *.webmanifest *.png *.jpg *.jpeg *.webp *.ico *.woff *.woff2 *.ttf; do
+            if [[ -f "$file" ]]; then cp -p "$file" release/; fi
+          done
+          for dir in api app ecg247 ehr images styles; do
+            if [[ -d "$dir" ]]; then cp -a "$dir" "release/$dir"; fi
+          done
+          mkdir -p release/scripts
+          for file in scripts/*.js; do
+            if [[ -f "$file" ]]; then cp -p "$file" release/scripts/; fi
+          done
+          test -f release/index.html
+          test -f release/teledoctorsa-app.html
+          test -f release/api/leads.php
+          test -f release/.htaccess
+          echo "Public release assembled: $(find release -type f | wc -l) files"
+          echo "The existing /blog CMS content and other server-only files will not be deleted."
+
+      - name: Confirm existing cPanel FTP secrets
+        shell: bash
+        env:
+          FTP_HOST: ${{ secrets.TDSA_FTP_HOST }}
+          FTP_USERNAME: ${{ secrets.TDSA_FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.TDSA_FTP_PASSWORD }}
+          FTP_REMOTE_ROOT: ${{ secrets.TDSA_FTP_REMOTE_ROOT }}
+        run: |
+          set -euo pipefail
+          for var in FTP_HOST FTP_USERNAME FTP_PASSWORD FTP_REMOTE_ROOT; do
+            if [[ -z "${!var:-}" ]]; then
+              echo "::error title=Hosting credential missing::Configure the repository secret for $var before deploying."
+              exit 1
+            fi
+          done
+
+      - name: Publish website over encrypted FTP
+        shell: bash
+        env:
+          FTP_HOST: ${{ secrets.TDSA_FTP_HOST }}
+          FTP_USERNAME: ${{ secrets.TDSA_FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.TDSA_FTP_PASSWORD }}
+          FTP_REMOTE_ROOT: ${{ secrets.TDSA_FTP_REMOTE_ROOT }}
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq lftp
+          lftp -c "
+            set cmd:fail-exit yes;
+            set net:max-retries 2;
+            set net:timeout 20;
+            set ftp:ssl-allow yes;
+            set ftp:ssl-force yes;
+            set ssl:verify-certificate yes;
+            open -u \"$FTP_USERNAME\",\"$FTP_PASSWORD\" \"$FTP_HOST\";
+            mirror --reverse --all --verbose --parallel=2 --no-perms release \"$FTP_REMOTE_ROOT\";
+            bye;
+          "
+
+      - name: Smoke test main production pages
+        shell: bash
+        run: |
+          set -euo pipefail
+          for route in / /app /ecg247 /contact-us; do
+            curl --fail --location --silent --show-error --retry 3 --retry-delay 3 --max-time 25 "https://teledoctorsa.co.za${route}?release=${GITHUB_SHA:0:8}" --output /dev/null
+            echo "Live route OK: $route"
+          done
+          status="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' --max-time 25 https://teledoctorsa.co.za/api/leads.php)"
+          if [[ "$status" != "405" ]]; then
+            echo "::warning title=Lead endpoint response::Expected HTTP 405 to GET on /api/leads.php, got $status."
+          fi
