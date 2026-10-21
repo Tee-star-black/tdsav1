@@ -37,6 +37,7 @@ async function inspectHero(page, mobile) {
       titleAlign: getComputedStyle(title).textAlign,
       copyAlign: getComputedStyle(copy).textAlign,
       actionsJustify: actionStyles.justifyContent,
+      actionsDisplay: actionStyles.display,
       actionsDirection: actionStyles.flexDirection,
       titleCenterDelta: Math.abs(titleCenter - viewportCenter),
       heroWithinViewport: heroRect.left >= -1 && heroRect.right <= window.innerWidth + 1,
@@ -48,6 +49,7 @@ async function inspectHero(page, mobile) {
           height: rect.height,
           left: rect.left,
           right: rect.right,
+          top: rect.top,
           visible: rect.width > 0 && rect.height > 0 && getComputedStyle(button).visibility !== 'hidden',
         };
       }),
@@ -76,16 +78,31 @@ function assertHero(result, mobile) {
   }
 
   if (mobile) {
-    if (result.actionsDirection !== 'column') {
-      throw new Error(`Mobile hero buttons are not stacked: ${result.actionsDirection}`);
+    const isCompactGrid = result.actionsDisplay === 'grid';
+    if (!isCompactGrid && result.actionsDirection !== 'column') {
+      throw new Error('Mobile hero CTAs must use an accessible compact grid or a stacked layout');
     }
     for (const button of result.buttonMetrics) {
-      if (button.height < 44) throw new Error(`Mobile CTA is below 44px touch height: ${button.height}px`);
-      if (button.width < result.actionsWidth - 4) {
-        throw new Error(`Mobile CTA is not full width: ${button.width}px of ${result.actionsWidth}px`);
+      if (button.height < 44) throw new Error('Mobile CTA is below 44px touch height: ' + button.height + 'px');
+      if (button.left < -1 || button.right > 391) throw new Error('Mobile CTA overflows the viewport');
+    }
+    if (isCompactGrid) {
+      const [primary, second, third, last] = result.buttonMetrics;
+      if (!primary || !second || !third || !last) throw new Error('Expected four care actions');
+      if (primary.width < result.actionsWidth - 4 || last.width < result.actionsWidth - 4) {
+        throw new Error('Primary and contact CTAs should occupy the full mobile row');
       }
-      if (button.left < -1 || button.right > 391) {
-        throw new Error('Mobile CTA overflows the viewport');
+      if (second.width > result.actionsWidth * .6 || third.width > result.actionsWidth * .6) {
+        throw new Error('Middle care CTAs should share a compact row');
+      }
+      if (Math.abs(second.top - third.top) > 4) {
+        throw new Error('Middle care CTAs are not aligned on one row');
+      }
+    } else {
+      for (const button of result.buttonMetrics) {
+        if (button.width < result.actionsWidth - 4) {
+          throw new Error('Stacked CTA is not full width');
+        }
       }
     }
   }
