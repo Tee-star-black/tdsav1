@@ -13,6 +13,12 @@ on:
       - "scripts/verify-app-editorial.mjs"
       - "styles/app-demo.css"
       - "styles/app-editorial.css"
+      - "scripts/home-core-slide-images.js"
+      - "scripts/canonical-nav.js"
+      - "scripts/rebuild-images.js"
+      - "scripts/verify-home-interactions.mjs"
+      - "styles/home-experience.css"
+      - "styles/mobile-navigation.css"
       - ".github/workflows/app-lead-checks.yml"
   push:
     branches: [main]
@@ -27,6 +33,12 @@ on:
       - "scripts/verify-app-editorial.mjs"
       - "styles/app-demo.css"
       - "styles/app-editorial.css"
+      - "scripts/home-core-slide-images.js"
+      - "scripts/canonical-nav.js"
+      - "scripts/rebuild-images.js"
+      - "scripts/verify-home-interactions.mjs"
+      - "styles/home-experience.css"
+      - "styles/mobile-navigation.css"
       - ".github/workflows/app-lead-checks.yml"
 
 permissions:
@@ -45,6 +57,12 @@ jobs:
           node --check scripts/app-demo.js
       - name: Check marketing pages and lead funnel wiring
         run: node scripts/verify-app-demo.mjs
+      - name: Check mobile menu and homepage interaction regressions
+        run: |
+          node --check scripts/canonical-nav.js
+          node --check scripts/home-core-slide-images.js
+          node --check scripts/rebuild-images.js
+          node scripts/verify-home-interactions.mjs
       - name: Check basic HTTP failures without sending any lead email
         shell: bash
         run: |
