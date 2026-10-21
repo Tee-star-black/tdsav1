@@ -416,6 +416,9 @@
                 <button class="core-slider-arrow" type="button" data-core-slider-next aria-label="Show next highlight">
                     <i data-lucide="arrow-right" style="width: 18px; height: 18px;" aria-hidden="true"></i>
                 </button>
+                <span class="core-slider-counter" data-core-slider-counter aria-hidden="true">01 / 04</span>
+                <button class="core-slider-pause" type="button" data-core-slider-toggle aria-label="Pause automatic highlights" aria-pressed="false">Pause</button>
+                <span class="core-slider-announcement" data-core-slider-live aria-live="polite" aria-atomic="true"></span>
             </div>
         </div>
     </section>
@@ -478,7 +481,19 @@
             <p style="max-width: 800px; margin: 16px auto 0; color: var(--slate-gray); font-size: 1.1rem;">Pick the route that matches your need today. Each path explains the service, who it helps, and the next step to take.</p>
         </div>
 
-        <div class="services-grid">
+        <div class="care-rail-tools" aria-label="Care path navigation">
+            <span class="care-rail-hint">Swipe to explore your options</span>
+            <div class="care-rail-navigation">
+                <span class="care-rail-count" data-care-rail-count aria-live="polite">01 / 04</span>
+                <button class="care-rail-arrow" type="button" data-care-rail-prev aria-label="Previous care path">
+                    <i data-lucide="arrow-left" aria-hidden="true"></i>
+                </button>
+                <button class="care-rail-arrow" type="button" data-care-rail-next aria-label="Next care path">
+                    <i data-lucide="arrow-right" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+        <div class="services-grid" id="carePathRail" role="region" aria-label="Care path options" tabindex="0">
             <!-- Service 1: Electronic Health Records (EHR) -->
             <div class="card">
                 <div class="card-img animated-card-img" style="background: linear-gradient(135deg, #0F172A 0%, #1e293b 100%); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
