@@ -601,3 +601,17 @@ html body #services .care-rail-arrow svg {
     scroll-behavior: auto !important;
   }
 }
+
+/* Legacy animated section decoration was layered over the rail and intercepted
+   pointer/touch events. Keep visual decoration behind functional controls. */
+html body #services::before,
+html body #services::after {
+  pointer-events: none !important;
+}
+
+html body #services .services-header,
+html body #services .care-rail-tools,
+html body #services .services-grid {
+  position: relative !important;
+  z-index: 2 !important;
+}
