@@ -434,8 +434,9 @@
       hovered = false;
       syncAutoplay();
     });
-    slider.addEventListener('focusin', function () {
-      focused = true;
+    slider.addEventListener('focusin', function (event) {
+      // Keyboard focus pauses motion; a touch tap must not leave it stopped forever.
+      focused = !!(event.target && event.target.matches && event.target.matches(':focus-visible'));
       syncAutoplay();
     });
     slider.addEventListener('focusout', function (event) {
