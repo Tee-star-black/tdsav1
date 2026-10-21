@@ -122,6 +122,51 @@ try {
   const mobileResult = await inspectHero(mobile, true);
   assertHero(mobileResult, true);
   console.log('PASS homepage hero mobile centering and CTA optimisation');
+
+  // Regression: the highlighted care must actually rotate without clicking arrows.
+  await mobile.waitForFunction(() => (
+    document.querySelector('.core-highlights-slider')?.dataset.tdsCarouselReady === 'true' &&
+    document.querySelector('[data-core-slider-counter]')?.textContent.trim() === '01 / 04'
+  ), null, { timeout: 5000 });
+  await mobile.waitForFunction(() =>
+    document.querySelector('[data-core-slider-counter]')?.textContent.trim() === '02 / 04',
+    null, { timeout: 9000 });
+  console.log('PASS homepage highlight automatically advances');
+
+  // Regression: on a narrow phone this must be a genuinely scrollable rail.
+  await mobile.waitForFunction(() =>
+    Boolean(document.getElementById('tds-home-experience-refinement')),
+    null, { timeout: 5000 });
+  const careRail = await mobile.evaluate(() => {
+    const rail = document.getElementById('carePathRail');
+    if (!rail) throw new Error('Care path rail is absent');
+    const style = getComputedStyle(rail);
+    return {
+      total: rail.scrollWidth,
+      visible: rail.clientWidth,
+      overflow: style.overflowX,
+      touch: style.touchAction
+    };
+  });
+  if (careRail.total <= careRail.visible + 50 || careRail.overflow !== 'auto') {
+    throw new Error('Care cards are not horizontally scrollable: ' + JSON.stringify(careRail));
+  }
+  await mobile.locator('[data-care-rail-next]').click();
+  await mobile.waitForFunction(() => document.getElementById('carePathRail').scrollLeft > 35, null, {
+    timeout: 3000
+  });
+  await mobile.locator('[data-care-rail-prev]').click();
+  await mobile.waitForFunction(() => document.getElementById('carePathRail').scrollLeft < 5, null, {
+    timeout: 3000
+  });
+  console.log('PASS care path mobile rail scrolls in both directions');
+
+  await mobile.locator('#tdsNavMenuButton').click();
+  await mobile.locator('#tdsMobileMenuClose').click();
+  if (await mobile.locator('#tdsNavMenuButton').getAttribute('aria-expanded') !== 'false') {
+    throw new Error('Mobile menu close control did not collapse the drawer');
+  }
+  console.log('PASS mobile navigation close control');
   await mobile.close();
 } finally {
   await browser.close();
