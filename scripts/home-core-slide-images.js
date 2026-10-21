@@ -331,55 +331,247 @@
     });
   }
 
-  function enableCoreSwipe() {
+  // The carousel has one owner: it controls visibility, dots, swipe and autoplay.
+  // Previous scripts only switched the first slide's visibility and never advanced it.
+  function initCarousel() {
     var slider = document.querySelector('.core-highlights-slider');
-    if (!slider || slider.dataset.tdsSwipeReady === 'true') return;
-    slider.dataset.tdsSwipeReady = 'true';
+    if (!slider || slider.dataset.tdsCarouselReady === 'true') return;
 
-    var startX = 0;
-    var startY = 0;
+    var panels = Array.prototype.slice.call(slider.querySelectorAll('.core-slide'));
+    var dots = Array.prototype.slice.call(slider.querySelectorAll('[data-core-slide-to]'));
+    var previous = slider.querySelector('[data-core-slider-prev]');
+    var next = slider.querySelector('[data-core-slider-next]');
+    var toggle = slider.querySelector('[data-core-slider-toggle]');
+    var counter = slider.querySelector('[data-core-slider-counter]');
+    var live = slider.querySelector('[data-core-slider-live]');
+    if (!panels.length) return;
 
-    slider.addEventListener('touchstart', function (event) {
-      if (!event.touches || !event.touches.length) return;
-      startX = event.touches[0].clientX;
-      startY = event.touches[0].clientY;
-    }, { passive: true });
+    slider.dataset.tdsCarouselReady = 'true';
+    slider.setAttribute('aria-roledescription', 'carousel');
 
-    slider.addEventListener('touchend', function (event) {
-      if (!event.changedTouches || !event.changedTouches.length) return;
+    var DELAY = 6500;
+    var current = Math.max(0, panels.findIndex(function (panel) {
+      return panel.classList.contains('active');
+    }));
+    var timer = null;
+    var hovered = false;
+    var focused = false;
+    var inView = true;
+    var manuallyPaused = false;
+    var motionPreference = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
 
-      var dx = event.changedTouches[0].clientX - startX;
-      var dy = event.changedTouches[0].clientY - startY;
+    slider.style.setProperty('--core-slide-duration', DELAY + 'ms');
 
-      if (Math.abs(dx) < 45 || Math.abs(dx) <= Math.abs(dy)) return;
+    function mayPlay() {
+      return panels.length > 1 && !manuallyPaused && !hovered && !focused &&
+        inView && !document.hidden && !(motionPreference && motionPreference.matches);
+    }
 
-      var control = document.querySelector(dx < 0 ? '[data-core-slider-next]' : '[data-core-slider-prev]');
-      if (control) control.click();
-    }, { passive: true });
+    function syncAutoplay() {
+      if (timer !== null) {
+        window.clearTimeout(timer);
+        timer = null;
+      }
+      var playing = mayPlay();
+      slider.classList.toggle('is-paused', !playing);
+      if (toggle) {
+        toggle.textContent = manuallyPaused ? 'Play' : 'Pause';
+        toggle.setAttribute('aria-pressed', manuallyPaused ? 'true' : 'false');
+        toggle.setAttribute('aria-label', manuallyPaused ? 'Resume automatic highlights' : 'Pause automatic highlights');
+      }
+      if (playing) {
+        timer = window.setTimeout(function () {
+          show(current + 1, false);
+        }, DELAY);
+      }
+    }
+
+    function show(index, announce) {
+      current = (index + panels.length) % panels.length;
+      panels.forEach(function (panel, i) {
+        var selected = i === current;
+        panel.hidden = !selected;
+        panel.classList.toggle('active', selected);
+        panel.setAttribute('aria-hidden', selected ? 'false' : 'true');
+        if ('inert' in panel) panel.inert = !selected;
+      });
+      dots.forEach(function (button, i) {
+        var selected = i === current;
+        button.classList.toggle('active', selected);
+        button.setAttribute('aria-current', selected ? 'true' : 'false');
+        button.setAttribute('aria-pressed', selected ? 'true' : 'false');
+      });
+      if (counter) {
+        counter.textContent =
+          String(current + 1).padStart(2, '0') + ' / ' + String(panels.length).padStart(2, '0');
+      }
+      if (live) {
+        // Announce only deliberate navigation, not every automatic rotation.
+        live.textContent = announce ?
+          'Highlight ' + (current + 1) + ' of ' + panels.length + ': ' +
+          (panels[current].querySelector('.core-slide-heading') || {}).textContent : '';
+      }
+      syncAutoplay();
+    }
+
+    if (previous) previous.addEventListener('click', function () { show(current - 1, true); });
+    if (next) next.addEventListener('click', function () { show(current + 1, true); });
+
+    dots.forEach(function (button, i) {
+      button.addEventListener('click', function () { show(i, true); });
+    });
+
+    if (toggle) toggle.addEventListener('click', function () {
+      manuallyPaused = !manuallyPaused;
+      syncAutoplay();
+    });
+
+    slider.addEventListener('mouseenter', function () {
+      hovered = true;
+      syncAutoplay();
+    });
+    slider.addEventListener('mouseleave', function () {
+      hovered = false;
+      syncAutoplay();
+    });
+    slider.addEventListener('focusin', function () {
+      focused = true;
+      syncAutoplay();
+    });
+    slider.addEventListener('focusout', function (event) {
+      if (!slider.contains(event.relatedTarget)) {
+        focused = false;
+        syncAutoplay();
+      }
+    });
+    document.addEventListener('visibilitychange', syncAutoplay);
+
+    if (motionPreference) {
+      if (motionPreference.addEventListener) motionPreference.addEventListener('change', syncAutoplay);
+      else if (motionPreference.addListener) motionPreference.addListener(syncAutoplay);
+    }
+    if ('IntersectionObserver' in window) {
+      var visibilityObserver = new IntersectionObserver(function (entries) {
+        inView = !!(entries[0] && entries[0].isIntersecting);
+        syncAutoplay();
+      }, { threshold: 0.15 });
+      visibilityObserver.observe(slider);
+    }
+
+    var touchStartX = 0;
+    var touchStartY = 0;
+    var touching = false;
+    // Listen on cards, not the hero links; a swipe must never steal a CTA click.
+    panels.forEach(function (panel) {
+      panel.addEventListener('touchstart', function (event) {
+        if (!event.touches || event.touches.length !== 1) return;
+        touching = true;
+        touchStartX = event.touches[0].clientX;
+        touchStartY = event.touches[0].clientY;
+      }, { passive: true });
+
+      panel.addEventListener('touchend', function (event) {
+        if (!touching || !event.changedTouches || !event.changedTouches.length) return;
+        touching = false;
+        var dx = event.changedTouches[0].clientX - touchStartX;
+        var dy = event.changedTouches[0].clientY - touchStartY;
+        if (Math.abs(dx) > 48 && Math.abs(dx) > Math.abs(dy) * 1.4) {
+          show(current + (dx < 0 ? 1 : -1), true);
+        }
+      }, { passive: true });
+
+      panel.addEventListener('touchcancel', function () { touching = false; }, { passive: true });
+    });
+
+    show(current, false);
   }
 
-  function ensureSingleVisibleSlide() {
-    var coreSlides = Array.prototype.slice.call(document.querySelectorAll('.core-slide'));
-    if (!coreSlides.length) return;
+  // The care paths are real horizontally scrollable cards, not an animation.
+  // Explicit controls also make the rail usable with a mouse or keyboard.
+  function initCarePathRail() {
+    var rail = document.getElementById('carePathRail');
+    var previous = document.querySelector('[data-care-rail-prev]');
+    var next = document.querySelector('[data-care-rail-next]');
+    var count = document.querySelector('[data-care-rail-count]');
+    if (!rail || !previous || !next || rail.dataset.tdsCareRailReady === 'true') return;
 
-    var active = coreSlides.find(function (slide) {
-      return slide.classList.contains('active') || slide.getAttribute('aria-hidden') === 'false';
-    }) || coreSlides[0];
+    var cards = Array.prototype.slice.call(rail.querySelectorAll('.card'));
+    if (cards.length < 2) return;
+    rail.dataset.tdsCareRailReady = 'true';
 
-    coreSlides.forEach(function (slide) {
-      var visible = slide === active;
-      slide.hidden = !visible;
-      slide.setAttribute('aria-hidden', visible ? 'false' : 'true');
-      slide.classList.toggle('active', visible);
+    var current = 0;
+    var pending = false;
+    var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function getInset() {
+      return parseFloat(window.getComputedStyle(rail).paddingLeft) || 0;
+    }
+
+    function update() {
+      pending = false;
+      var start = rail.getBoundingClientRect().left + getInset();
+      var closest = Infinity;
+      cards.forEach(function (card, i) {
+        var distance = Math.abs(card.getBoundingClientRect().left - start);
+        if (distance < closest) {
+          closest = distance;
+          current = i;
+        }
+      });
+      var maxScroll = Math.max(0, rail.scrollWidth - rail.clientWidth);
+      var scrollable = maxScroll > 4;
+      if (scrollable && rail.scrollLeft >= maxScroll - 4) current = cards.length - 1;
+      if (count) {
+        count.textContent =
+          String(current + 1).padStart(2, '0') + ' / ' + String(cards.length).padStart(2, '0');
+      }
+      previous.disabled = !scrollable || rail.scrollLeft <= 4;
+      next.disabled = !scrollable || rail.scrollLeft >= maxScroll - 4;
+    }
+
+    function requestUpdate() {
+      if (pending) return;
+      pending = true;
+      window.requestAnimationFrame(update);
+    }
+
+    function go(step) {
+      var target = Math.max(0, Math.min(cards.length - 1, current + step));
+      var left = cards[target].getBoundingClientRect().left -
+        rail.getBoundingClientRect().left + rail.scrollLeft - getInset();
+      var maxScroll = Math.max(0, rail.scrollWidth - rail.clientWidth);
+      rail.scrollTo({
+        left: Math.max(0, Math.min(left, maxScroll)),
+        behavior: reduced ? 'instant' : 'smooth'
+      });
+      current = target;
+      if (count) {
+        count.textContent =
+          String(current + 1).padStart(2, '0') + ' / ' + String(cards.length).padStart(2, '0');
+      }
+    }
+
+    previous.addEventListener('click', function () { go(-1); });
+    next.addEventListener('click', function () { go(1); });
+    rail.addEventListener('scroll', requestUpdate, { passive: true });
+    window.addEventListener('resize', requestUpdate, { passive: true });
+    rail.addEventListener('keydown', function (event) {
+      if (event.target !== rail) return;
+      if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+        event.preventDefault();
+        go(event.key === 'ArrowRight' ? 1 : -1);
+      }
     });
+    update();
+    window.addEventListener('load', requestUpdate, { once: true });
   }
 
   function init() {
     addStyles();
     applyImages();
     normalizeBookingLinks();
-    enableCoreSwipe();
-    ensureSingleVisibleSlide();
+    initCarousel();
+    initCarePathRail();
 
     var attempts = 0;
     var timer = window.setInterval(function () {
