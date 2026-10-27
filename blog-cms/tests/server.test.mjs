@@ -49,3 +49,31 @@ test('production bootstrap never grants unauthenticated administrator access',as
     await rm(directory,{recursive:true,force:true});
   }
 });
+
+
+test('disabled scheduler does not publish due stories when server starts',async()=>{
+  const directory=await mkdtemp(path.join(tmpdir(),'cms-scheduler-disabled-'));
+  const data=JSON.parse(await readFile('data/seed.json','utf8'));
+  data.articles[0]={...data.articles[0],status:'Scheduled',publishedAt:'',scheduledAt:'2020-01-01T00:00:00Z'};
+  const store=path.join(directory,'store.json');
+  await writeFile(store,JSON.stringify(data));
+  const child=spawn(process.execPath,['server/server.mjs'],{
+    env:{...process.env,PORT:'8813',CMS_BACKEND:'local',CMS_ACCESS_TOKEN:'test-access',CMS_LOCAL_STORE:store,CMS_DEPLOY_WEBHOOK_URL:'',CMS_SCHEDULE_WORKER_ENABLED:'false'},
+    stdio:'pipe'
+  });
+  const origin='http://127.0.0.1:8813';
+  try{
+    let ready=false;
+    for(let i=0;i<80;i++){
+      try{if((await fetch(origin+'/api/health')).ok){ready=true;break;}}catch{}
+      await new Promise(r=>setTimeout(r,50));
+    }
+    assert.ok(ready,'CMS should start with scheduler disabled');
+    await new Promise(r=>setTimeout(r,200));
+    assert.equal((await fetch(origin+'/api/public/articles/'+data.articles[0].slug)).status,404);
+  }finally{
+    child.kill();
+    await new Promise(r=>child.once('exit',r));
+    await rm(directory,{recursive:true,force:true});
+  }
+});
