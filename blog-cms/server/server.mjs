@@ -74,7 +74,7 @@ async function currentCmsUser(req){
   if(sessionUser)return sessionUser;
   const hasUsers=await auth.hasUsers();
   if(accessToken&&isAuthorized(req))return {id:'legacy-token',name:'Legacy CMS Access',email:'',role:'admin',legacy:true};
-  if(!hasUsers&&!accessToken)return {id:'development',name:'Local Development',email:'',role:'admin',development:true};
+  if(!hasUsers&&!accessToken&&process.env.NODE_ENV!=='production'&&repo.backendName==='local'&&auth.backendName==='file'&&['127.0.0.1','localhost'].includes(host))return {id:'development',name:'Local Development',email:'',role:'admin',development:true};
   return null;
 }
 
