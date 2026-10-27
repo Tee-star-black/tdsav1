@@ -3,6 +3,7 @@ import {fileURLToPath} from 'node:url';
 import {SanityRepository} from '../server/sanity-repository.mjs';
 import {PostgresRepository} from '../server/postgres-repository.mjs';
 import {getPgPool} from '../server/postgres.mjs';
+import {ensureArticleCoverInStorage} from './import-cover-media.mjs';
 
 const here=path.dirname(fileURLToPath(import.meta.url));
 const cmsRoot=path.resolve(here,'..');
@@ -33,6 +34,7 @@ for(const item of media){
   const dataUrl=`data:${mimeType};base64,${Buffer.from(await response.arrayBuffer()).toString('base64')}`;
   const uploaded=await target.uploadMedia({name:item.name,alt:item.alt||item.name,tag:item.tag||'Migrated',dataUrl});
   mediaMap.set(item.id,uploaded);
+  existingMedia.push(uploaded);
   console.log(`Migrated media: ${item.name}`);
 }
 
@@ -40,7 +42,7 @@ let migrated=0;
 for(const sourceArticle of articles){
   const duplicate=(await pool.query('SELECT id FROM cms_articles WHERE slug=$1 LIMIT 1',[sourceArticle.slug])).rows[0];
   if(duplicate){console.log(`Skipped existing article: ${sourceArticle.slug}`);continue;}
-  const mapped=sourceArticle.coverImage?.assetId?mediaMap.get(sourceArticle.coverImage.assetId):null;
+  const mapped=await ensureArticleCoverInStorage(sourceArticle,{mediaMap,existingMedia,target});
   const article={...sourceArticle,id:'',revision:'',coverImage:mapped?{assetId:mapped.id,url:mapped.url,alt:sourceArticle.coverImage.alt||mapped.alt}:sourceArticle.coverImage};
   await target.saveArticle(article);
   migrated++;
