@@ -1,0 +1,13 @@
+# Build the TeleDoctorSA CMS container from the repository root.
+# blog-cms/Dockerfile copies site-level assets, so use "." as Docker context.
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -f
+      - blog-cms/Dockerfile
+      - -t
+      - africa-south1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/tdsa-blog-cms:$BUILD_ID
+      - .
+images:
+  - africa-south1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/tdsa-blog-cms:$BUILD_ID
