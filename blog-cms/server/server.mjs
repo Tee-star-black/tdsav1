@@ -388,7 +388,7 @@ server.listen(port,host,()=>{
   console.log(`Auth backend: ${auth.backendName||'file'}`);
   auth.hasUsers().then(hasUsers=>console.log(`CMS auth: ${hasUsers?'staff accounts enabled':accessToken?'legacy token enabled':'disabled (development mode)'}`)).catch(console.error);
   console.log(`Public blog: http://${host}:${port}/blog/`);
-  publishDueScheduled().catch(console.error);
+  if(scheduleWorkerEnabled)publishDueScheduled().catch(console.error);
 });
 if(scheduleWorkerEnabled)setInterval(()=>publishDueScheduled().catch(console.error),30000).unref();
 
