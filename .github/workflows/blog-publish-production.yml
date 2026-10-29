@@ -4,6 +4,12 @@ on:
   repository_dispatch:
     types: [blog_publish]
   workflow_dispatch:
+    inputs:
+      deploy:
+        description: Deploy generated content to the public site (unchecked = build only)
+        required: false
+        type: boolean
+        default: false
 
 concurrency:
   group: production-blog-publish
@@ -11,6 +17,7 @@ concurrency:
 
 permissions:
   contents: read
+  id-token: write
 
 jobs:
   build-and-publish:
@@ -30,27 +37,57 @@ jobs:
         working-directory: blog-cms
         run: npm install --include=dev --no-audit --no-fund
 
-      - name: Require PostgreSQL-backed CMS API endpoint
+      - name: Validate private CMS API integration configuration
         env:
           CMS_PUBLIC_API_URL: ${{ vars.CMS_PUBLIC_API_URL }}
+          CMS_RUN_AUDIENCE: ${{ vars.CMS_RUN_AUDIENCE }}
+          CMS_GCP_WIF_PROVIDER: ${{ vars.CMS_GCP_WIF_PROVIDER }}
+          CMS_GCP_INVOKER_SA: ${{ vars.CMS_GCP_INVOKER_SA }}
         run: |
-          if [ -z "$CMS_PUBLIC_API_URL" ]; then
-            echo "::error::Set CMS_PUBLIC_API_URL before deploying. No fallback content is allowed."
-            exit 1
-          fi
+          for value in "$CMS_PUBLIC_API_URL" "$CMS_RUN_AUDIENCE" "$CMS_GCP_WIF_PROVIDER" "$CMS_GCP_INVOKER_SA"; do
+            if [ -z "$value" ]; then
+              echo "::error::Configure CMS_PUBLIC_API_URL, CMS_RUN_AUDIENCE, CMS_GCP_WIF_PROVIDER and CMS_GCP_INVOKER_SA in repository Actions variables."
+              exit 1
+            fi
+          done
+          case "$CMS_PUBLIC_API_URL" in
+            https://*) ;;
+            *) echo "::error::CMS_PUBLIC_API_URL must use HTTPS."; exit 1 ;;
+          esac
 
-      - name: Build Blog & Insights from CMS public API
+      - name: Authenticate to private Cloud Run CMS via Workload Identity Federation
+        id: cms-auth
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: teledoctor-it
+          workload_identity_provider: ${{ vars.CMS_GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.CMS_GCP_INVOKER_SA }}
+          token_format: id_token
+          id_token_audience: ${{ vars.CMS_RUN_AUDIENCE }}
+          create_credentials_file: false
+
+      - name: Build Blog & Insights from Cloud SQL content
         working-directory: blog-cms
         env:
           CMS_PUBLIC_API_URL: ${{ vars.CMS_PUBLIC_API_URL }}
+          CMS_PUBLIC_API_TOKEN: ${{ steps.cms-auth.outputs.id_token }}
         run: npm run build:blog
 
+      - name: Verify static blog output
+        run: |
+          test -s blog/index.html
+          test -s blog/feed.json
+          test -s sitemap.xml
+          echo "Static blog build succeeded. Deployment requested: ${{ github.event_name == 'repository_dispatch' || inputs.deploy }}"
+
       - name: Install FTP client
+        if: ${{ github.event_name == 'repository_dispatch' || inputs.deploy }}
         run: |
           sudo apt-get update
           sudo apt-get install -y lftp
 
       - name: Deploy generated blog to public_html
+        if: ${{ github.event_name == 'repository_dispatch' || inputs.deploy }}
         env:
           FTP_HOST: ${{ secrets.TDSA_FTP_HOST }}
           FTP_USERNAME: ${{ secrets.TDSA_FTP_USERNAME }}
@@ -75,6 +112,7 @@ jobs:
           "
 
       - name: Verify live blog
+        if: ${{ github.event_name == 'repository_dispatch' || inputs.deploy }}
         run: |
           curl --fail --retry 5 --retry-delay 5 https://teledoctorsa.co.za/blog/ > /dev/null
           curl --fail --retry 5 --retry-delay 5 https://teledoctorsa.co.za/blog/feed.json > /dev/null
