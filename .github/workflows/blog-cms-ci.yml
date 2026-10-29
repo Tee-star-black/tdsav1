@@ -32,7 +32,7 @@ jobs:
       - name: Ensure legacy CMS sources and secrets are absent
         working-directory: .
         run: |
-          if git grep -in -e Sanity -e SANITY_ -- blog-cms .github/workflows/blog-publish-production.yml; then
+          if git grep -in -e Sanity -e SANITY_ -- blog-cms; then
             echo "::error::Legacy CMS dependency remains in active code or documentation."
             exit 1
           fi
@@ -47,6 +47,8 @@ jobs:
         run: npm run check
       - name: Run workflow regressions
         run: npm run check:workflow
+      - name: Run Cloud Run publisher tests
+        run: npm run check:publisher
       - name: Run editor DOM integration tests
         run: npm run check:editor
       - name: Run staff authentication tests
