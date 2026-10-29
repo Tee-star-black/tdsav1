@@ -56,6 +56,22 @@ test('editor publishes content, previews the cover and withdraws to draft',async
   [...$('#articleList').querySelectorAll('[data-edit]')].find(el=>el.textContent.includes('Editor publication test')).click();$('#saveDraft').click();await until(()=>!$('#editorDialog').open);
   rows=(await(await fetch(origin+'/api/public/articles')).json()).articles;assert.ok(!rows.some(a=>a.title==='Editor publication test'));
 });
+test('editor publishes a complete text-only article with no media uploads',async()=>{
+  const {$,fill}=await open();
+  $('[data-action="new"]').click();
+  fill('#articleTitle','Text-only editorial article');
+  fill('#articleExcerpt','This article is intentionally published with no image attachment.');
+  fill('#articleBody','Our publishing workflow supports complete stories without a cover image. The author can write, review and publish directly to PostgreSQL without calling an external image service.');
+  fill('#articleCategory','Health Education');
+  fill('#articleStatus','Published');
+  $('#saveArticle').click();
+  await until(()=>!$('#editorDialog').open);
+  const published=(await(await fetch(origin+'/api/public/articles')).json()).articles;
+  const article=published.find(a=>a.title==='Text-only editorial article');
+  assert.ok(article);
+  assert.equal(article.coverImage.url,'');
+});
+
 test('stale-save errors preserve the open editor and its recovery copy',async()=>{
   const {$,fill,w}=await open();$('[data-action="new"]').click();fill('#articleTitle','Concurrent editor test');$('#saveArticle').click();await until(()=>!$('#editorDialog').open);
   const edit=[...$('#articleList').querySelectorAll('[data-edit]')].find(el=>el.textContent.includes('Concurrent editor test'));edit.click();
