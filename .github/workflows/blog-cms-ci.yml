@@ -70,7 +70,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cms-responsive-screenshots
-          path: blog-cms/.qa-screenshots/
+          path: blog-cms/qa-screenshots/
           if-no-files-found: ignore
       - name: Build production CMS/publisher container
         working-directory: .
