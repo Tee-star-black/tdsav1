@@ -16,6 +16,12 @@ if(args.some(arg=>!['--apply','--dry-run'].includes(arg))||args.includes('--appl
 }
 const apply=args.includes('--apply');
 if(!process.env.DATABASE_URL&&!process.env.PGHOST)throw new Error('Set DATABASE_URL or PG* to connect to the target CMS database.');
+// The TDSA production dataset contains articles with dotted document IDs.
+// Anonymous Sanity requests silently omit those records, so a read token
+// must be present before even previewing the migration.
+if(!String(process.env.SANITY_READ_TOKEN||process.env.SANITY_WRITE_TOKEN||'').trim()){
+  throw new Error('Set SANITY_READ_TOKEN to a Sanity Viewer API token; anonymous access omits private dotted-ID articles.');
+}
 
 const pool=getPgPool();
 // Explicitly refuse media writes: this temporary cutover has NO GCS access.
@@ -33,6 +39,12 @@ try{
     target.listCategories(),
     target.listArticles()
   ]);
+  // This specific TDSA record exists only for authenticated source queries.
+  // If it is absent, a token may be invalid or not authorized to read it.
+  const requiredSlug='how-telemedicine-is-changing-everyday-healthcare';
+  if(source.projectId==='glz6ptd8'&&source.dataset==='production'&&!sourceArticles.some(article=>article.slug===requiredSlug)){
+    throw new Error(`Sanity source is incomplete: missing restricted article ${requiredSlug}. No changes made. Verify the Viewer token.`);
+  }
   const plan=planTextOnlyMigration({sourceCategories,sourceArticles,targetCategories,targetArticles});
 
   console.log(`Sanity source: ${source.projectId}/${source.dataset}`);
@@ -43,6 +55,9 @@ try{
   console.log('Media records and GCS uploads: 0');
   if(plan.downgradedPlaceholders.length){
     console.log(`Placeholder articles imported as Draft: ${plan.downgradedPlaceholders.join(', ')}`);
+  }
+  if(plan.downgradedPrivateArticles.length){
+    console.log(`Private-ID articles imported as Draft: ${plan.downgradedPrivateArticles.join(', ')}`);
   }
   for(const article of plan.articlesToCreate){
     console.log(`  ${article.status.padEnd(9)} ${article.slug}${article.coverImage.url?' (external cover URL)':''}`);
