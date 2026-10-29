@@ -32,6 +32,7 @@ export function planTextOnlyMigration({
   const articlesToCreate=[];
   const skippedArticles=[];
   const downgradedPlaceholders=[];
+  const downgradedPrivateArticles=[];
 
   for(const source of sourceArticles){
     const slug=slugify(source.slug||source.title||'');
@@ -42,13 +43,17 @@ export function planTextOnlyMigration({
     existingArticleSlugs.add(slug);
 
     const placeholder=PLACEHOLDER_ARTICLE_SLUGS.has(slug);
+    // Any Sanity _id containing a dot is restricted to authenticated readers,
+    // even when the editorial status says Published. Never expose it on import.
+    const restrictedSource=String(source.id||'').includes('.');
+    const forceDraft=placeholder||restrictedSource;
     const article=normalizeArticle({
       ...source,
       id:'',
       revision:'',
-      status:placeholder?'Draft':source.status,
-      featured:placeholder?false:source.featured,
-      publishedAt:placeholder?'':source.publishedAt,
+      status:forceDraft?'Draft':source.status,
+      featured:forceDraft?false:source.featured,
+      publishedAt:forceDraft?'':source.publishedAt,
       // No object is uploaded or inserted into cms_media. An external Sanity
       // CDN URL is usable now and can be replaced by GCS at the later cutover.
       coverImage:{
@@ -69,8 +74,9 @@ export function planTextOnlyMigration({
     }
 
     if(placeholder&&source.status==='Published')downgradedPlaceholders.push(slug);
+    if(restrictedSource&&source.status!=='Draft')downgradedPrivateArticles.push(slug);
     articlesToCreate.push(article);
   }
 
-  return {categoriesToCreate,articlesToCreate,skippedArticles,downgradedPlaceholders,errors};
+  return {categoriesToCreate,articlesToCreate,skippedArticles,downgradedPlaceholders,downgradedPrivateArticles,errors};
 }
