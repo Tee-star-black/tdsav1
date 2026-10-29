@@ -108,6 +108,13 @@ async function loadWorkspace({quiet=false,authRetry=true}={}){
   }
 
   render();
+  // Publishing text-only articles is available even while media storage is deferred.
+  const uploadsEnabled=state.health?.mediaUploadsEnabled!==false;
+  for(const selector of ['#uploadMediaBtn','#editorUpload']){
+    const control=$(selector);
+    if(control){control.disabled=!uploadsEnabled;control.title=uploadsEnabled?'':'Media uploads will be enabled after storage setup.';}
+  }
+  if(!uploadsEnabled)$('#mediaBackendLabel').textContent='Image uploads temporarily unavailable';
   try{
     const user=await api.me();
     state.currentUser=user;
