@@ -132,7 +132,7 @@ async function api(req,res,url){
     const config=googleStaffLogin.config();
     if(!config.enabled)return json(req,res,200,{enabled:false});
     res.setHeader('Set-Cookie',config.cookie);
-    return json(req,res,200,{enabled:true,clientId:config.clientId,csrfToken:config.csrfToken});
+    return json(req,res,200,{enabled:true,clientId:config.clientId,workspaceDomain:googleStaffLogin.workspaceDomain,csrfToken:config.csrfToken});
   }
 
   if(parts[0]==='auth'&&parts[1]==='google'&&parts.length===2&&req.method==='POST'){
