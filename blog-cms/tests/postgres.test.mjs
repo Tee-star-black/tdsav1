@@ -24,7 +24,7 @@ test('Postgres repository supports the editorial lifecycle with revisions',async
       title:'Cloud SQL editorial article',
       slug:'cloud-sql-editorial-article',
       excerpt:'A complete introduction for a production-ready CMS article.',
-      bodyText:'This article contains enough editorial body text to validate the complete Cloud SQL publication workflow for TeleDoctorSA without relying on Sanity as the permanent content database.',
+      bodyText:'This article contains enough editorial body text to validate the complete Cloud SQL publication workflow for TeleDoctorSA while keeping PostgreSQL as the single content database.',
       status:'Draft',
       category:'Health Education',
       author:'TeleDoctorSA Editorial',
