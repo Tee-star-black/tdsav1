@@ -85,3 +85,20 @@ test('review-stage articles can migrate without image uploads',()=>{
   assert.equal(plan.articlesToCreate[0].status,'Review');
   assert.equal(plan.articlesToCreate[0].coverImage.url,'');
 });
+
+
+test('restricted dotted-ID published article is imported as Draft to prevent accidental exposure',()=>{
+  const privateId='article.how-telemedicine-is-changing-everyday-healthcare';
+  const plan=planTextOnlyMigration({
+    sourceCategories:[category],
+    sourceArticles:[story({id:privateId,slug:'how-telemedicine-is-changing-everyday-healthcare'})]
+  });
+  assert.equal(plan.errors.length,0);
+  assert.deepEqual(plan.downgradedPrivateArticles,['how-telemedicine-is-changing-everyday-healthcare']);
+  assert.equal(plan.articlesToCreate.length,1);
+  const imported=plan.articlesToCreate[0];
+  assert.equal(imported.status,'Draft');
+  assert.equal(imported.featured,false);
+  assert.equal(imported.publishedAt,'');
+  assert.equal(imported.coverImage.url,'https://cdn.sanity.io/images/glz6ptd8/production/cover.jpg');
+});
