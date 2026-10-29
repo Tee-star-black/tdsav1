@@ -5,6 +5,7 @@ import {fileURLToPath} from 'node:url';
 import {timingSafeEqual} from 'node:crypto';
 import {createAuthStore} from './auth-factory.mjs';
 import {createRepository} from './repository.mjs';
+import {publishJobConfig,triggerPublishJob} from './publish-dispatch.mjs';
 
 const here=path.dirname(fileURLToPath(import.meta.url));
 const cmsRoot=path.resolve(here,'..');
@@ -26,8 +27,7 @@ const allowedOrigins=String(process.env.CMS_ALLOWED_ORIGINS||'')
   .split(',')
   .map(value=>value.trim())
   .filter(Boolean);
-const deployWebhook=String(process.env.CMS_DEPLOY_WEBHOOK_URL||'').trim();
-const deployWebhookToken=String(process.env.CMS_DEPLOY_WEBHOOK_TOKEN||'').trim();
+const publisher=publishJobConfig();
 const internalToken=String(process.env.CMS_INTERNAL_TOKEN||'').trim();
 // Keep production media writes off until GCS bucket IAM and public delivery are verified.
 const mediaUploadsEnabled=String(process.env.CMS_MEDIA_UPLOADS_ENABLED||(process.env.NODE_ENV==='production'?'false':'true')).toLowerCase()==='true';
@@ -106,31 +106,7 @@ async function body(req){
 }
 
 async function triggerDeploy(reason){
-  if(!deployWebhook)return {configured:false};
-  const controller=new AbortController();
-  const timeout=setTimeout(()=>controller.abort(),10000);
-  try{
-    const githubDispatch=/^https:\/\/api\.github\.com\/repos\/[^/]+\/[^/]+\/dispatches(?:\?.*)?$/.test(deployWebhook);
-    const payload={source:'teledoctorsa-blog-cms',reason,at:new Date().toISOString()};
-    const response=await fetch(deployWebhook,{
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        ...(githubDispatch?{'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}:{}),
-        ...(deployWebhookToken?{'Authorization':`Bearer ${deployWebhookToken}`}:{})
-      },
-      body:JSON.stringify(githubDispatch?{event_type:'blog_publish',client_payload:payload}:payload),
-      signal:controller.signal
-    });
-    if(!response.ok)throw new Error(`Deploy webhook returned HTTP ${response.status}.`);
-    console.log(`Triggered blog deployment: ${reason}`);
-    return {configured:true,ok:true};
-  }catch(error){
-    console.error('Blog deploy webhook failed:',error.message);
-    return {configured:true,ok:false,error:error.message};
-  }finally{
-    clearTimeout(timeout);
-  }
+  return triggerPublishJob(reason);
 }
 
 async function api(req,res,url){
@@ -147,7 +123,7 @@ async function api(req,res,url){
 
   const parts=url.pathname.replace(/^\/api\/?/,'').split('/').filter(Boolean);
   if(parts[0]==='health'&&req.method==='GET'){
-    return json(req,res,200,{...(await repo.health()),studioBuild:'2026.09.24.1',authBackend:auth.backendName||'file',authRequired:(await auth.hasUsers())||Boolean(accessToken),deployWebhookConfigured:Boolean(deployWebhook),mediaUploadsEnabled});
+    return json(req,res,200,{...(await repo.health()),studioBuild:'2026.09.24.1',authBackend:auth.backendName||'file',authRequired:(await auth.hasUsers())||Boolean(accessToken),publisherConfigured:Boolean(publisher.job),publisherMode:'cloud-run-job',mediaUploadsEnabled});
   }
 
   if(parts[0]==='auth'&&parts[1]==='login'&&req.method==='POST'){
@@ -324,10 +300,14 @@ async function publishDueScheduled(){
         await repo.recordAudit?.({actorUserId:'system',action:'article.scheduled_publish',entityType:'article',entityId:published.id,metadata:{slug:published.slug}});
         publishedCount++;
         console.log(`Published scheduled article: ${published.slug}`);
-        void triggerDeploy(`scheduled-article-published:${published.slug}`);
+        // Trigger a single publisher execution after all due articles have been committed.
       }catch(error){
         console.error(`Scheduled publication blocked for ${article.slug}:`,error.message);
       }
+    }
+    if(publishedCount>0){
+      const delivery=await triggerDeploy('scheduled-articles-published:'+publishedCount);
+      if(delivery.configured&&!delivery.ok)console.error('Scheduled articles saved, but live publishing was not queued.');
     }
     return publishedCount;
   }finally{
