@@ -9,6 +9,7 @@ Use this temporary cutover when the TeleDoctorSA CMS can write to Cloud SQL but 
 - Sanity article categories that do not already exist in the target database.
 - Articles not already present in the target, preserving their slug, status, body, excerpt, author, SEO, publication date and **existing external cover URL**.
 - Known placeholder stories `testtet` and `bdfjny-js-js` are copied **as drafts**, not published articles.
+- Any Sanity document whose `_id` contains a period is restricted to authenticated source readers and is imported **as a draft**, regardless of editorial status.
 - Articles already in Cloud SQL are skipped, not overwritten.
 
 It **does not** upload images, create `cms_media` records, call the GCS API, delete source records, or change the public website.
@@ -18,6 +19,8 @@ It **does not** upload images, create `cms_media` records, call the GCS API, del
 The command is **dry-run by default**. It validates article content, confirms category availability and prints the planned slugs and statuses before any writes.
 
 From `blog-cms/` with Node.js 22, installed production dependencies, Sanity read access and Cloud SQL environment variables configured:
+
+Use a **Sanity Viewer API token** in `SANITY_READ_TOKEN`; never commit or print the token. An anonymous Sanity query silently omits the private article `article.how-telemedicine-is-changing-everyday-healthcare`, so this migration refuses to run without authenticated source access and confirms that article is visible before modifying data.
 
 ```bash
 npm run migrate:sanity-text-only
@@ -36,6 +39,7 @@ The apply mode only creates categories/articles. It is retry-friendly: any exist
 ## Temporary operational limitations
 
 - Cover images still load from `cdn.sanity.io`. Do not retire the Sanity project or its image assets yet.
+- Private-ID Sanity articles remain Draft until editorial staff explicitly review and publish them on the destination CMS.
 - New image uploads remain unavailable until the CMS runtime has bucket write access.
 - New published articles must still satisfy the existing cover-image and editorial validation checks.
 - GitHub publishing, scheduler, production domain and public image delivery require separate acceptance tests.
