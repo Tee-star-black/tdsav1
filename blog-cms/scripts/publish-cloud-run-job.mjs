@@ -102,6 +102,8 @@ export async function runPublishingJob({
   pool=getPgPool(),
   run=spawnPublisherCommand,
   verify=verifyLiveBlog,
+  inspectFiles=requireBuiltFiles,
+  read=readFile,
   logger=console
 }={}){
   if(String(env.CMS_BACKEND||'').toLowerCase()!=='postgres')
@@ -118,8 +120,8 @@ export async function runPublishingJob({
     // re-exports the latest database state only AFTER obtaining the lock.
     await run(process.execPath,['scripts/export-content.mjs'],{cwd:root,env});
     await run(process.execPath,['scripts/build-blog.mjs'],{cwd:root,env});
-    await requireBuiltFiles();
-    const {articles}=JSON.parse(await readFile(path.join(root,'content/articles.json'),'utf8'));
+    await inspectFiles();
+    const {articles}=JSON.parse(await read(path.join(root,'content/articles.json'),'utf8'));
     if(!Array.isArray(articles))throw new Error('Published content export is invalid.');
     logger.log('Built static blog from Cloud SQL:',articles.length,'published articles.');
     if(dryRun){
