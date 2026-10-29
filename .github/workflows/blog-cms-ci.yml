@@ -57,4 +57,9 @@ jobs:
         run: npm run check:postgres
       - name: Generate static blog from local backend
         run: npm run build:blog:local
+      - name: Build production CMS/publisher container
+        working-directory: .
+        run: |
+          docker build -f blog-cms/Dockerfile -t tdsa-cms-publisher:ci .
+          docker run --rm --entrypoint sh tdsa-cms-publisher:ci -c "command -v lftp && test -s /app/sitemap.xml && node --check /app/blog-cms/scripts/publish-cloud-run-job.mjs"
 
