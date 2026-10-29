@@ -57,6 +57,11 @@
   window.TDSACmsApi={
     health:()=>request('/health'),
     login:(email,password)=>request('/auth/login',{method:'POST',body:JSON.stringify({email,password})}).then(r=>r.user),
+    googleConfig:()=>request('/auth/google/config'),
+    loginGoogle:(credential,csrfToken)=>request('/auth/google',{
+      method:'POST',
+      body:JSON.stringify({credential,csrfToken})
+    }).then(r=>r.user),
     logout:()=>request('/auth/logout',{method:'POST'}),
     me:()=>request('/auth/me').then(r=>r.user),
     changePassword:(currentPassword,newPassword)=>request('/auth/password',{method:'POST',body:JSON.stringify({currentPassword,newPassword})}),
