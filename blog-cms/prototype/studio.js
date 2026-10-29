@@ -508,7 +508,9 @@ $('#copyTemporaryPassword').addEventListener('click',async event=>{
 });
 
 const sidebar=$('#sidebar'),menuButton=$('#menuBtn'),sidebarBackdrop=$('#sidebarBackdrop'),sidebarClose=$('#sidebarClose');
-const mobileSidebar=window.matchMedia('(max-width:1100px)');
+const mobileSidebar=typeof window.matchMedia==='function'
+  ? window.matchMedia('(max-width:1100px)')
+  : {get matches(){return window.innerWidth<=1100;},addEventListener(){}};
 function setSidebarOpen(open){
   const shouldOpen=Boolean(open&&mobileSidebar.matches);
   sidebar.classList.toggle('open',shouldOpen);
