@@ -45,7 +45,27 @@ Do not depend on legacy CDN URLs: the new CMS does not import old test articles.
 
 ## 5. Publishing to the website
 
-The production build must fetch the PostgreSQL-backed CMS API. Configure `CMS_PUBLIC_API_URL` in GitHub Actions to an authenticated-as-designed, reachable public read API URL.
+The production build must fetch the PostgreSQL-backed CMS API. Cloud Run is private, so the GitHub Actions workflow obtains a short-lived **Google-signed identity token** with GitHub Workload Identity Federation, not a stored service account key. No anonymous Cloud Run access is needed.
+
+Configure repository **Settings > Secrets and variables > Actions > Variables**:
+
+| Variable | Value |
+| --- | --- |
+| `CMS_PUBLIC_API_URL` | HTTPS endpoint of the CMS revision to read. Use the `cms-test` tag URL only for a manual build-only test; set to the production service/domain URL after promotion. |
+| `CMS_RUN_AUDIENCE` | Cloud Run **service** URL from `gcloud run services describe tdsa-blog-cms --region africa-south1 --project teledoctor-it --format='value(status.url)'`. This is **not** the traffic-tag URL. |
+| `CMS_GCP_WIF_PROVIDER` | Full Workload Identity Provider resource, such as `projects/PROJECT_NUMBER/locations/global/workloadIdentityPools/github-actions/providers/PROVIDER_ID`. |
+| `CMS_GCP_INVOKER_SA` | Service account permitted to invoke the CMS Cloud Run service and be impersonated by this GitHub repository. |
+
+For service-account-mediated federation:
+- Bind the GitHub repository principal set to the chosen service account with `roles/iam.workloadIdentityUser`.
+- Give that service account `roles/run.invoker` on `tdsa-blog-cms` (not on every Cloud Run service).
+- Scope the WIF provider to `Tee-star-black/tdsav1`; do not use a JSON service account key.
+
+Run **Actions > Publish Blog to Production > Run workflow** with **deploy unchecked** first. This verifies authorized content retrieval and the static build without FTP deployment. The article source is the `cms-test` tagged revision until switched to the production service. Google Cloud Run validates a token with the stable service URL as its audience even when requesting a revision-specific traffic-tag URL. The token is never committed to the repository or printed in the build logs.
+
+Manual runs only deploy when `deploy` is checked. A trusted CMS `blog_publish` repository dispatch will deploy automatically after the webhook is configured. GitHub will refuse to build when the required WIF variables are missing or the CMS endpoint cannot be reached.
+
+
 
 ```sh
 cd blog-cms
