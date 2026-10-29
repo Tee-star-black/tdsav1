@@ -13,7 +13,7 @@ import {chromium} from 'playwright-core';
 
 const cmsRoot=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const siteRoot=path.resolve(cmsRoot,'..');
-const shotDir=path.join(cmsRoot,'.qa-screenshots');
+const shotDir=path.join(cmsRoot,'qa-screenshots');
 const scratch=await mkdtemp(path.join(tmpdir(),'tdsa-browser-qa-'));
 const cmsPort=8818;
 const cmsBase='http://127.0.0.1:'+cmsPort;
@@ -63,7 +63,8 @@ function browserExecutable(){
 }
 async function checkOverflow(page,label){
   const info=await page.evaluate(()=>({
-    viewport:innerWidth,body:document.body.scrollWidth,root:document.documentElement.scrollWidth
+    viewport:innerWidth,body:document.body.scrollWidth,root:document.documentElement.scrollWidth,
+    offenders:[...document.body.querySelectorAll('*')].filter(el=>{const r=el.getBoundingClientRect();const s=getComputedStyle(el);return s.display!=='none'&&s.visibility!=='hidden'&&r.width>0&&r.right>innerWidth+3&&r.left<innerWidth;}).slice(0,8).map(el=>({tag:el.tagName,id:el.id,className:typeof el.className==='string'?el.className:'',right:Math.round(el.getBoundingClientRect().right)}))
   }));
   assert.ok(Math.max(info.body,info.root)<=info.viewport+2,label+': horizontal overflow '+JSON.stringify(info));
 }
