@@ -29,6 +29,8 @@ const allowedOrigins=String(process.env.CMS_ALLOWED_ORIGINS||'')
 const deployWebhook=String(process.env.CMS_DEPLOY_WEBHOOK_URL||'').trim();
 const deployWebhookToken=String(process.env.CMS_DEPLOY_WEBHOOK_TOKEN||'').trim();
 const internalToken=String(process.env.CMS_INTERNAL_TOKEN||'').trim();
+// Keep production media writes off until GCS bucket IAM and public delivery are verified.
+const mediaUploadsEnabled=String(process.env.CMS_MEDIA_UPLOADS_ENABLED||(process.env.NODE_ENV==='production'?'false':'true')).toLowerCase()==='true';
 const scheduleWorkerEnabled=String(process.env.CMS_SCHEDULE_WORKER_ENABLED||'true').toLowerCase()!=='false';
 let scheduleSweepRunning=false;
 
@@ -145,7 +147,7 @@ async function api(req,res,url){
 
   const parts=url.pathname.replace(/^\/api\/?/,'').split('/').filter(Boolean);
   if(parts[0]==='health'&&req.method==='GET'){
-    return json(req,res,200,{...(await repo.health()),studioBuild:'2026.09.24.1',authBackend:auth.backendName||'file',authRequired:(await auth.hasUsers())||Boolean(accessToken),deployWebhookConfigured:Boolean(deployWebhook)});
+    return json(req,res,200,{...(await repo.health()),studioBuild:'2026.09.24.1',authBackend:auth.backendName||'file',authRequired:(await auth.hasUsers())||Boolean(accessToken),deployWebhookConfigured:Boolean(deployWebhook),mediaUploadsEnabled});
   }
 
   if(parts[0]==='auth'&&parts[1]==='login'&&req.method==='POST'){
@@ -271,6 +273,7 @@ async function api(req,res,url){
   if(parts[0]==='media'){
     if(parts.length===1&&req.method==='GET')return json(req,res,200,{media:await repo.listMedia()});
     if(parts.length===1&&req.method==='POST'){
+      if(!mediaUploadsEnabled)return json(req,res,503,{error:'Image uploads are temporarily disabled while media storage is being configured.'});
       const media=await repo.uploadMedia(await body(req));
       await repo.recordAudit?.({actorUserId:cmsUser.id,action:'media.upload',entityType:'media',entityId:media.id,metadata:{name:media.name}});
       return json(req,res,201,{media});
