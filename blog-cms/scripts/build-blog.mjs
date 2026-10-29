@@ -46,7 +46,8 @@ for(const result of checked){
     '@context':'https://schema.org','@type':'Article',headline:article.title,description:article.seoDescription||article.excerpt,
     datePublished:article.publishedAt,dateModified:article.updatedAt||article.publishedAt,
     author:{'@type':'Person',name:article.author},publisher:{'@type':'Organization',name:'TeleDoctorSA',url:site.baseUrl},
-    mainEntityOfPage:`${site.baseUrl}/blog/${article.slug}/`,image:article.coverImage.url
+    mainEntityOfPage:`${site.baseUrl}/blog/${article.slug}/`,
+    ...(article.coverImage.url?{image:article.coverImage.url}:{})
   }).replace(/</g,'\\u003c');
   articles.push(article);
 }
