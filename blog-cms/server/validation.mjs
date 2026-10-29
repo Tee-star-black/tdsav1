@@ -47,8 +47,7 @@ export function validateEditorialArticle(article,{forPublication=false}={}){
   if(forPublication||a.status==='Published'||a.status==='Scheduled'){
     if(a.excerpt.length<20)errors.push('Published stories need a short introduction of at least 20 characters.');
     if(a.bodyText.length<80)errors.push('Published stories need a complete article body.');
-    if(!a.coverImage.url&&!a.coverImage.assetId)errors.push('Published stories require a cover image.');
-    if(!a.coverImage.alt)errors.push('Published cover images require alternative text.');
+    if((a.coverImage.url||a.coverImage.assetId)&&!a.coverImage.alt)errors.push('An attached cover image requires alternative text.');
     if(a.clinicalReviewRequired&&a.clinicalReviewStatus!=='approved')errors.push('Clinical content must be approved before publication.');
   }
   return {ok:errors.length===0,errors,article:a};
