@@ -90,9 +90,13 @@ async function studio(width){
     await page.waitForFunction(()=>document.querySelector('#backendStatus')?.classList.contains('online'));
     await checkOverflow(page,'Studio '+width);
     await checkVisibleBounds(page,'.content','Studio '+width);
+    await checkVisibleBounds(page,'#articlesView .welcome .primary','New article action '+width);
+    const svgWidth=await page.locator('#articlesView .welcome .primary svg').evaluate(el=>el.getBoundingClientRect().width);
+    assert.ok(svgWidth<=24,'Action icon must remain compact, got '+svgWidth+' px');
     assert.equal(await page.locator('#loginGate').isVisible(),false,'Local dev should not be locked');
     if(width<=1100){
       await page.locator('#menuBtn').click();
+      await page.waitForFunction(()=>document.querySelector('#sidebar').getBoundingClientRect().left>=-2);
       assert.equal(await page.locator('#menuBtn').getAttribute('aria-expanded'),'true');
       await checkVisibleBounds(page,'#sidebar','Opened sidebar '+width);
       await page.locator('#sidebarBackdrop').click({position:{x:Math.min(width-18,330),y:370}});
@@ -125,6 +129,7 @@ async function publicPreview(width){
     await page.waitForSelector('#storyGrid .story-card',{timeout:20000});
     await checkOverflow(page,'Public preview '+width);
     assert.equal(await page.locator('.site-header nav a:visible').count(),4,'All public navigation links should remain reachable');
+    await page.evaluate(()=>scrollTo(0,0));
     await page.screenshot({path:path.join(shotDir,'cms-preview-'+width+'.png'),fullPage:true,animations:'disabled'});
     assert.deepEqual(errors,[],'Public preview '+width+' browser errors');
     console.log('PASS CMS preview',width);
@@ -143,6 +148,7 @@ async function staticBlog(width,base){
     assert.equal(await page.locator('.story-card:visible').count(),0,'Blog search filters stories');
     await page.locator('#blogSearch').fill('');
     assert.equal(await page.locator('.story-card:visible').count(),num,'Clearing search restores stories');
+    await page.evaluate(()=>scrollTo(0,0));
     await page.screenshot({path:path.join(shotDir,'blog-'+width+'.png'),fullPage:true,animations:'disabled'});
     await page.goto(base+'/blog/telemedicine-improves-access-to-care/',{waitUntil:'domcontentloaded'});
     await page.waitForSelector('.article-copy p');
