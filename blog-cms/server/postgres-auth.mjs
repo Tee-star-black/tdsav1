@@ -46,6 +46,30 @@ export class PostgresAuthStore{
     await this.pool.query('DELETE FROM cms_sessions WHERE user_id=$1',[id]);
     return {user:publicUser(updated),temporaryPassword};
   }
+  async findGoogleUser(email,googleSub){
+    const clean=cleanEmail(email),sub=String(googleSub||'');
+    if(!clean||!sub)return null;
+    const client=await this.pool.connect();
+    try{
+      await client.query('BEGIN');
+      const row=(await client.query('SELECT * FROM cms_users WHERE email=$1 AND active=TRUE FOR UPDATE',[clean])).rows[0];
+      if(!row){await client.query('ROLLBACK');return null;}
+      if(row.google_sub&&row.google_sub!==sub){
+        throw Object.assign(new Error('This CMS account is linked to a different Google identity.'),{statusCode:403});
+      }
+      if(!row.google_sub){
+        const changed=await client.query('UPDATE cms_users SET google_sub=$2,updated_at=NOW() WHERE id=$1 RETURNING *',[row.id,sub]);
+        await client.query('COMMIT');
+        return publicUser(changed.rows[0]);
+      }
+      await client.query('COMMIT');
+      return publicUser(row);
+    }catch(error){
+      await client.query('ROLLBACK').catch(()=>{});
+      if(error?.code==='23505')throw Object.assign(new Error('This Google identity is already linked to another CMS account.'),{statusCode:403});
+      throw error;
+    }finally{client.release();}
+  }
   async authenticate(email,password){
     const r=await this.pool.query('SELECT * FROM cms_users WHERE email=$1 AND active=TRUE LIMIT 1',[cleanEmail(email)]),row=r.rows[0];
     if(!row||!safeEqualHex(hashPassword(password,row.password_salt),row.password_hash))return null;return publicUser(row);

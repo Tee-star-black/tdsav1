@@ -271,3 +271,12 @@ a,button{touch-action:manipulation}
 .nav-icon svg{display:block;width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
 .primary .nav-icon{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;margin-right:7px}
 .welcome .primary{display:inline-flex;justify-content:center;align-items:center;width:max-content;max-width:100%;white-space:nowrap}
+
+
+/* Google Workspace sign-in is opt-in and shares the existing login card. */
+.google-auth{display:grid;gap:12px;margin:16px 0 7px;justify-items:center;min-width:0}
+.google-auth[hidden]{display:none}
+.login-divider{display:flex;align-items:center;gap:12px;width:100%;font:700 9px Manrope,sans-serif;letter-spacing:.13em;color:#899aa4}
+.login-divider::before,.login-divider::after{content:'';height:1px;flex:1;background:#e0e8eb}
+.google-button{display:flex;justify-content:center;align-items:center;width:100%;min-height:44px;max-width:100%;overflow:hidden}
+.google-auth p{font-size:11px;line-height:1.6;text-align:center;color:#627786;max-width:340px}

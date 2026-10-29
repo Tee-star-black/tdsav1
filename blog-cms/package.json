@@ -14,7 +14,7 @@
     "check:workflow": "node --test tests/workflow.test.mjs tests/server.test.mjs tests/text-only-render.test.mjs",
     "check:editor": "node --test tests/editor.test.mjs",
     "user:create": "node scripts/create-user.mjs",
-    "check:auth": "node --test tests/auth.test.mjs",
+    "check:auth": "node --test tests/auth.test.mjs tests/google-auth.test.mjs",
     "db:migrate": "node scripts/migrate-db.mjs",
     "check:postgres": "node --test tests/postgres.test.mjs",
     "build:blog:from-file": "node scripts/build-blog.mjs",
@@ -25,6 +25,7 @@
   "dependencies": {
     "nunjucks": "^3.2.4",
     "pg": "^8.16.3",
+    "google-auth-library": "^11.3.1",
     "@google-cloud/storage": "^7.17.2"
   },
   "devDependencies": {

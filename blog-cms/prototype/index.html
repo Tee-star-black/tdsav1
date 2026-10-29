@@ -25,6 +25,11 @@
         <div id="loginFeedback" class="login-feedback" role="alert" hidden></div>
         <button class="primary" id="loginSubmit" type="submit">Open Publishing Studio</button>
       </form>
+      <section class="google-auth" id="googleSignInSection" aria-label="Google Workspace sign-in" hidden>
+        <div class="login-divider"><span>OR SIGN IN WITH</span></div>
+        <div id="googleSignInButton" class="google-button"></div>
+        <p id="googleSignInMessage">Use your approved TeleDoctorSA Google Workspace account.</p>
+      </section>
       <small>Authorised TeleDoctorSA staff only.</small>
     </div>
   </section>
@@ -169,6 +174,7 @@
   <dialog id="previewDialog" aria-labelledby="previewTitle"><article class="preview-sheet"><header><button type="button" class="close" id="closePreview">×</button><span id="previewCategory">Category</span><h1 id="previewTitle">Untitled story</h1><p id="previewExcerpt"></p><small id="previewMeta"></small></header><img id="previewCover" alt="" hidden><div id="previewBody" class="preview-body"></div></article></dialog>
   <div class="toast" id="toast" role="status"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m4 12 5 5L20 6"/></svg></span><div><strong id="toastTitle">Saved</strong><small id="toastMessage">Your changes were saved.</small><a id="toastAction" href="#" target="_blank" rel="noopener" hidden>View on blog ↗</a></div></div>
   <script src="../client/cms-api.js?v=20260924-1"></script>
-  <script src="./studio.js?v=20261029-1"></script>
+  <script src="./studio.js?v=20261029-2"></script>
+  <script src="./google-signin.js?v=20261029-1"></script>
 </body>
 </html>

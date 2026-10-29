@@ -4,6 +4,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {timingSafeEqual} from 'node:crypto';
 import {createAuthStore} from './auth-factory.mjs';
+import {createGoogleStaffLogin} from './google-auth.mjs';
 import {createRepository} from './repository.mjs';
 import {publishJobConfig,triggerPublishJob} from './publish-dispatch.mjs';
 
@@ -23,6 +24,7 @@ const host=process.env.CMS_HOST||'127.0.0.1';
 const MAX_JSON_BYTES=9*1024*1024;
 const accessToken=String(process.env.CMS_ACCESS_TOKEN||'');
 const auth=createAuthStore();
+const googleStaffLogin=createGoogleStaffLogin({secure:auth.cookieSecure});
 const allowedOrigins=String(process.env.CMS_ALLOWED_ORIGINS||'')
   .split(',')
   .map(value=>value.trim())
@@ -124,6 +126,29 @@ async function api(req,res,url){
   const parts=url.pathname.replace(/^\/api\/?/,'').split('/').filter(Boolean);
   if(parts[0]==='health'&&req.method==='GET'){
     return json(req,res,200,{...(await repo.health()),studioBuild:'2026.09.24.1',authBackend:auth.backendName||'file',authRequired:(await auth.hasUsers())||Boolean(accessToken),publisherConfigured:Boolean(publisher.job),publisherMode:'cloud-run-job',mediaUploadsEnabled});
+  }
+
+  if(parts[0]==='auth'&&parts[1]==='google'&&parts[2]==='config'&&req.method==='GET'){
+    const config=googleStaffLogin.config();
+    if(!config.enabled)return json(req,res,200,{enabled:false});
+    res.setHeader('Set-Cookie',config.cookie);
+    return json(req,res,200,{enabled:true,clientId:config.clientId,workspaceDomain:googleStaffLogin.workspaceDomain,csrfToken:config.csrfToken});
+  }
+
+  if(parts[0]==='auth'&&parts[1]==='google'&&parts.length===2&&req.method==='POST'){
+    const verified=await googleStaffLogin.verify(await body(req),req);
+    const user=await auth.findGoogleUser(verified.email,verified.googleSub);
+    if(!user)return json(req,res,403,{error:'This Google Workspace account has not been approved for the Publishing Studio.'});
+    const session=await auth.createSession(user.id);
+    res.setHeader('Set-Cookie',[
+      auth.sessionCookie(session.token,Number(process.env.CMS_SESSION_HOURS||12)*3600),
+      googleStaffLogin.clearStateCookie()
+    ]);
+    await repo.recordAudit?.({
+      actorUserId:user.id,action:'user.login_google',entityType:'user',entityId:user.id,
+      metadata:{provider:'google_workspace'}
+    });
+    return json(req,res,200,{user});
   }
 
   if(parts[0]==='auth'&&parts[1]==='login'&&req.method==='POST'){

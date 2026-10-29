@@ -71,6 +71,20 @@ CMS_PUBLISH_REGION=africa-south1
 CMS_PUBLISH_JOB=
 ~~~
 
+## Optional Google Workspace sign-in
+
+Existing staff creation, random temporary passwords, self-service password
+changes, and administrator resets continue to work. Google sign-in is
+disabled until the OAuth web-client ID, Workspace hosted domain and
+`002_google_workspace_identity.sql` migration are configured.
+
+Google tokens are verified on the server and must match an existing active
+CMS staff account. Cloud Run IAM / IAP browser access is still a separate
+requirement; Google login does not bypass Cloud Run's private-service 403.
+
+See [Google Workspace rollout](docs/GOOGLE-WORKSPACE-SSO.md) for complete
+configuration and safe migration instructions.
+
 ## Static blog generation
 
 The generation script reads the configured CMS repository. On the publishing Cloud Run Job, CMS_BACKEND MUST be postgres. It reads the latest published articles directly from Cloud SQL.

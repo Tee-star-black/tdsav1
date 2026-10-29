@@ -113,6 +113,25 @@ export class AuthStore{
     return {user:publicUser(user),temporaryPassword};
   }
 
+  async findGoogleUser(email,googleSub){
+    const clean=cleanEmail(email),sub=String(googleSub||'');
+    if(!clean||!sub)return null;
+    const data=await this.#read();
+    const user=data.users.find(item=>item.email===clean&&item.active!==false);
+    if(!user)return null;
+    if(user.googleSub&&user.googleSub!==sub){
+      throw Object.assign(new Error('This CMS account is linked to a different Google identity.'),{statusCode:403});
+    }
+    if(data.users.some(item=>item.id!==user.id&&item.googleSub===sub)){
+      throw Object.assign(new Error('This Google identity is already linked to another CMS account.'),{statusCode:403});
+    }
+    if(!user.googleSub){
+      user.googleSub=sub;
+      user.updatedAt=new Date().toISOString();
+      await this.#write(data);
+    }
+    return publicUser(user);
+  }
   async authenticate(email,password){
     const data=await this.#read();
     const user=data.users.find(item=>item.email===cleanEmail(email)&&item.active!==false);
