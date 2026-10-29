@@ -10,7 +10,7 @@ test('server publishes due stories at startup, protects CMS data and rejects mis
   const data=JSON.parse(await readFile('data/seed.json','utf8'));
   data.articles[0]={...data.articles[0],status:'Scheduled',publishedAt:'',scheduledAt:'2020-01-01T00:00:00Z'};
   const store=path.join(directory,'store.json');await writeFile(store,JSON.stringify(data));
-  const child=spawn(process.execPath,['server/server.mjs'],{env:{...process.env,PORT:'8802',CMS_BACKEND:'local',CMS_ACCESS_TOKEN:'test-access',CMS_LOCAL_STORE:store,CMS_DEPLOY_WEBHOOK_URL:''},stdio:'pipe'});
+  const child=spawn(process.execPath,['server/server.mjs'],{env:{...process.env,PORT:'8802',CMS_BACKEND:'local',CMS_ACCESS_TOKEN:'test-access',CMS_LOCAL_STORE:store},stdio:'pipe'});
   const origin='http://127.0.0.1:8802';
   try{
     let published=false;
@@ -30,7 +30,7 @@ test('server publishes due stories at startup, protects CMS data and rejects mis
 
 test('production fails closed if configured for the local repository',async()=>{
   const child=spawn(process.execPath,['server/server.mjs'],{
-    env:{...process.env,NODE_ENV:'production',PORT:'8812',CMS_BACKEND:'local',CMS_AUTH_BACKEND:'file',CMS_ACCESS_TOKEN:'',CMS_DEPLOY_WEBHOOK_URL:''},
+    env:{...process.env,NODE_ENV:'production',PORT:'8812',CMS_BACKEND:'local',CMS_AUTH_BACKEND:'file',CMS_ACCESS_TOKEN:''},
     stdio:'pipe'
   });
   let stderr='';
@@ -48,7 +48,7 @@ test('disabled scheduler does not publish due stories when server starts',async(
   const store=path.join(directory,'store.json');
   await writeFile(store,JSON.stringify(data));
   const child=spawn(process.execPath,['server/server.mjs'],{
-    env:{...process.env,PORT:'8813',CMS_BACKEND:'local',CMS_ACCESS_TOKEN:'test-access',CMS_LOCAL_STORE:store,CMS_DEPLOY_WEBHOOK_URL:'',CMS_SCHEDULE_WORKER_ENABLED:'false'},
+    env:{...process.env,PORT:'8813',CMS_BACKEND:'local',CMS_ACCESS_TOKEN:'test-access',CMS_LOCAL_STORE:store,CMS_SCHEDULE_WORKER_ENABLED:'false'},
     stdio:'pipe'
   });
   const origin='http://127.0.0.1:8813';

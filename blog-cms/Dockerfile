@@ -1,11 +1,15 @@
 FROM node:22-alpine
 
+# Publisher task runs as a Cloud Run Job using encrypted FTP over TLS.
+RUN apk add --no-cache lftp ca-certificates
+
 WORKDIR /app/blog-cms
 COPY blog-cms/package*.json ./
 RUN npm install --omit=dev --no-audit --no-fund
 
 COPY blog-cms ./
 COPY images /app/images
+COPY sitemap.xml /app/sitemap.xml
 COPY telemedia-suite.html /app/telemedia-suite.html
 
 ENV NODE_ENV=production

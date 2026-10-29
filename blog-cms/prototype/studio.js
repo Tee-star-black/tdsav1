@@ -56,7 +56,7 @@ function notify(title,message,action=null){
   clearTimeout(notify.timer);
   notify.timer=setTimeout(()=>toast.classList.remove('show'),action?.href?9000:4200);
 }
-function deliveryMessage(delivery){if(!delivery)return '';if(!delivery.configured)return ' The live website still needs a build and deployment.';return delivery.ok?' A website rebuild was requested; live deployment is not yet verified.':' The website rebuild request failed. Retry deployment before expecting the live site to change.';}
+function deliveryMessage(delivery){if(!delivery)return '';if(!delivery.configured)return ' Live website publishing is not configured yet.';return delivery.ok?' A Cloud Run publishing job was queued; website delivery is not yet verified.':' The publishing job could not be queued. Your article was saved; retry website publishing after resolving the error.';}
 function errorMessage(error){return error?.details?.length?error.details.join(' '):error?.message||'Something went wrong.';}
 
 function setBackendStatus(mode,message){

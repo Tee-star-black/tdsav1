@@ -9,17 +9,18 @@
     "studio": "node server/server.mjs",
     "content:export": "node scripts/export-content.mjs",
     "content:validate": "node scripts/validate-content.mjs content/articles.json",
-    "build:blog": "npm run content:fetch-public && npm run build:blog:from-file",
+    "build:blog": "npm run content:export && npm run build:blog:from-file",
     "check": "node scripts/smoke-vertical.mjs",
-    "check:workflow": "node --test tests/workflow.test.mjs tests/server.test.mjs tests/text-only-render.test.mjs tests/public-content-fetch.test.mjs",
+    "check:workflow": "node --test tests/workflow.test.mjs tests/server.test.mjs tests/text-only-render.test.mjs",
     "check:editor": "node --test tests/editor.test.mjs",
     "user:create": "node scripts/create-user.mjs",
     "check:auth": "node --test tests/auth.test.mjs",
     "db:migrate": "node scripts/migrate-db.mjs",
-    "content:fetch-public": "node scripts/fetch-public-content.mjs",
     "check:postgres": "node --test tests/postgres.test.mjs",
     "build:blog:from-file": "node scripts/build-blog.mjs",
-    "build:blog:local": "npm run content:export && npm run build:blog:from-file"
+    "build:blog:local": "npm run content:export && npm run build:blog:from-file",
+    "publish:job": "node scripts/publish-cloud-run-job.mjs",
+    "check:publisher": "node --test tests/publish-dispatch.test.mjs tests/publish-job.test.mjs"
   },
   "dependencies": {
     "nunjucks": "^3.2.4",

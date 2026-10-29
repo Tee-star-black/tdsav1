@@ -1,73 +1,70 @@
 # TeleDoctorSA Publishing Studio — Production handover
 
-## Components
+## Architecture
 
-```text
-Staff -> Publishing Studio (Cloud Run)
-               |
-               +-- Cloud SQL PostgreSQL (articles, categories, users,
-               |   sessions, revisions, audit logs)
-               |
-               +-- GCS images (deferred; uploads disabled)
-               |
-               +-- Published-only JSON API
-                             |
-                        GitHub Actions
-                             |
-                       Static blog build
-                             |
-                     Host Africa / cPanel
-                             |
-                     teledoctorsa.co.za/blog/
-```
+~~~text
+Publishing Studio (Cloud Run service)
+           |
+           +-- Cloud SQL (articles/categories/staff/revisions/audit)
+           |
+           +-- Google Cloud Run Jobs API
+                            |
+                 Static publisher Cloud Run Job
+                            |
+                      Published-only SQL export
+                            |
+                      Static blog generator
+                            |
+                      Encrypted DirectAdmin FTPS
+                            |
+                   teledoctorsa.co.za/blog/
+~~~
 
-The platform operates independently of third-party CMS products. Existing source articles elsewhere were test-only and are not migrated.
+There is no legacy CMS dependency and no GitHub Actions workflow in the article publishing path. GitHub and Cloud Build remain for source development and container builds only.
 
-## Validated in Cloud SQL
+## Verified to date
 
-- The restricted `tdsa-cms-app` role has operational read/write table permissions.
-- The initial database migration `001_cms_core.sql` is applied.
-- The `publishing@teledoctorsa.co.za` administrator is active.
-- Administrator login, article draft creation/editing and refresh persistence were tested.
-- Category creation and Draft -> Review -> Draft workflow were tested.
-- The current Cloud SQL test article has recorded revision history.
+- Cloud SQL backend and Postgres staff authentication on the tagged CMS revision.
+- Database retains an administrator, two categories and a test article.
+- Text-only publish created a visible public API article.
+- Unpublish withdrew it from the public API.
+- The earlier CMS tagged revision was deployed with 0% production traffic.
 
-These manual checks were done on a test-tagged Cloud Run revision. A full end-to-end **production website** launch has not yet been verified.
+**This does not yet establish real website publishing.** The new Cloud Run Job needs Cloud-side deployment and acceptance; a merged commit does not deploy a job.
 
-## Production configuration
+## Publisher components
 
-```env
-NODE_ENV=production
-CMS_BACKEND=postgres
-CMS_AUTH_BACKEND=postgres
-CMS_MEDIA_UPLOADS_ENABLED=false
-CMS_SCHEDULE_WORKER_ENABLED=false
-CMS_COOKIE_SECURE=true
-```
+- CMS service: private, no external GitHub invoker grant.
+- Publisher job: runs a Node script in the same image with the Cloud SQL socket.
+- PostgreSQL advisory lock ensures multiple job executions produce files from the current database state in sequence.
+- The job defaults to dry run and uploads no files.
+- Once specifically enabled, the job transfers blog files via verified FTPS and checks the live feed.
+- The job does not use the CMS API and does not require Cloud Run service invocation rights.
 
-Pass Cloud SQL credentials and internal publishing token through Secret Manager. Configure access origins, HTTPS and a production domain.
+## Secrets and permissions
 
-## Publishing and scheduling
+- CMS runtime service identity needs permission run.jobs.run, granted through roles/run.invoker **on tdsa-blog-publisher only**.
+- Job service identity requires Cloud SQL Client and Secret Manager access to its database password secret and (later) restricted DirectAdmin FTPS secrets.
+- IAM assignments and job creation may require an administrator. Do not broaden a personal account's project-wide permissions.
+- No credentials in GitHub, command output, logs or the repository.
 
-- Public content comes from `/api/public/articles`.
-- The static site is generated with `npm run build:blog` and requires `CMS_PUBLIC_API_URL`.
-- Published changes can trigger `CMS_DEPLOY_WEBHOOK_URL` with its secured token.
-- Use Cloud Scheduler to invoke `POST /api/internal/publish-due` and maintain `CMS_SCHEDULE_WORKER_ENABLED=false` on Cloud Run.
+## Scheduled publishing
 
-GitHub must receive only the public published-content API data, not database credentials.
+Cloud Scheduler separately triggers the authenticated POST /api/internal/publish-due CMS endpoint. Keep CMS_SCHEDULE_WORKER_ENABLED=false in Cloud Run. The scheduler handler enqueues one publisher job after its due articles have been committed.
 
-## Image deferral
+## Launch controls
 
-Cover images are optional for publication. The static templates and browser preview handle text-only posts. Image uploads are disabled by default in production until bucket permissions, HTTPS delivery and end-to-end testing are completed. To resume uploads later, configure storage and explicitly enable `CMS_MEDIA_UPLOADS_ENABLED=true` on a tested revision.
+1. Build latest image and create the publisher job in dry-run mode.
+2. Verify dry-run export and static generation against Cloud SQL.
+3. Grant the CMS identity the narrow publisher-job invoker role.
+4. Deploy the updated CMS revision under cms-test with 0% normal production traffic.
+5. Verify publishing and withdrawal each queue successful jobs.
+6. Provision restricted FTPS secrets and verify the hosting target after taking a backup.
+7. Explicitly enable FTPS transfer, run a test deployment, and verify live feed matches Cloud SQL.
+8. Promote only the tested CMS revision, with rollback and monitoring prepared.
+9. Schedule Cloud Scheduler and run a scheduled-publication acceptance test.
+10. Revisit GCS image uploads and accessibility later.
 
-## Go-live gates
+See docs/CLOUD-RUN-PUBLISHER.md for commands and failure recovery.
 
-1. Build and deploy updated Cloud Run revision to test tag, still 0% main traffic.
-2. Test text-only publish/edit/withdrawal, staff auth and Cloud SQL revisions.
-3. Configure GitHub repository publishing dispatch, public CMS API URL and cPanel deployment.
-4. Test static build output on the website, including article SEO and feed.
-5. Configure Cloud Scheduler and test scheduled articles.
-6. Configure CMS domain, HTTPS and production monitoring.
-7. Promote a tested revision and retain rollback ability.
-
-Do not delete or overwrite existing Cloud SQL data. No legacy article migration is required.
+If an execution fails after opening an FTP connection, hosting may contain partially updated files. The transfer is not globally atomic. Restore hosting from backup if necessary and do not claim website delivery succeeded merely because the job was queued.

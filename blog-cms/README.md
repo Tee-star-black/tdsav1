@@ -1,118 +1,120 @@
 # TeleDoctorSA Publishing Studio
 
-TeleDoctorSA's in-house editorial system. Content and staff accounts are stored in **Cloud SQL PostgreSQL**, not in a third-party CMS.
+The in-house CMS stores published articles, drafts, categories, staff accounts, sessions, revisions and audit logs in **Cloud SQL PostgreSQL**. It is independent of third-party content management services.
 
 ## Architecture
 
-```text
-Publishing Studio and API (Cloud Run)
-     |
-     +-- Cloud SQL PostgreSQL
-     |     articles, categories, users, sessions, revisions and audit logs
-     |
-     +-- Google Cloud Storage (media; deferred)
-     |
-Published-only CMS API (/api/public/articles)
-     |
-GitHub Actions static site build
-     |
-Host Africa / cPanel -> https://teledoctorsa.co.za/blog/
-```
+~~~text
+Staff -> Publishing Studio on Cloud Run
+              |
+              +-- Cloud SQL PostgreSQL (content / staff accounts)
+              |
+              +-- Cloud Run Jobs API (native Google identity)
+                            |
+                     Publisher Cloud Run Job
+                            |
+                     Cloud SQL published-only export
+                            |
+                     Nunjucks static blog build
+                            |
+                     Verified FTPS to DirectAdmin
+                            |
+                     teledoctorsa.co.za/blog/
+~~~
 
-This repository does **not** import older third-party CMS test posts. Existing PostgreSQL content and the administrator account remain intact.
+**GitHub Actions is not used to publish or unpublish articles.** GitHub still hosts the source and can run automated code checks; Cloud Build builds the container image.
 
-## Current feature set
+The publisher job uses Cloud SQL directly, not the private CMS API. No GitHub service identity or public CMS invoker permission is needed.
 
-- Secure administrator/editor/reviewer staff logins and sessions
-- Drafts, review queue, approval checks, scheduled and published articles
-- Categories, featured stories, SEO metadata, revisions and audit logs
-- Article-only publishing while GCS image delivery is deferred
-- Conditional cover images: if an image is attached, alternative text is required
-- Public API, preview, generated blog pages, search, feeds and sitemap
-- Publish webhook and Cloud Scheduler-compatible endpoint
-- Media upload adapter, disabled in production by default until verified
+## Implemented
 
-## Development
+- Individual administrator/editor/reviewer accounts, hashed passwords, secure sessions
+- Draft -> Review -> Published, scheduled publishing and withdrawal
+- Clinical approval guardrails
+- Categories, SEO metadata, revisions and audit events
+- Text-only publication without GCS uploads
+- Published-only API and web preview
+- Static article templates, feed, search and sitemap
+- Cloud Run Job trigger using the CMS's service identity
+- Cloud Run Job static exporter / generator / FTPS uploader
+- PostgreSQL advisory lock serializing overlapping job executions
+- Dry-run by default; failed job submissions displayed to editors
+- Local editor, database, workflow and publisher tests
 
-```sh
+The media bucket and image uploads are deferred. A missing cover image is safe; attached images must have alternative text.
+
+## Local development
+
+~~~sh
 cd blog-cms
 npm install
 npm run dev
-```
+~~~
 
-Studio: `http://127.0.0.1:8790/prototype/`
+Studio: http://127.0.0.1:8790/prototype/
+Preview: http://127.0.0.1:8790/blog/
+Health: http://127.0.0.1:8790/api/health
 
-Preview: `http://127.0.0.1:8790/blog/`
+Default development backend: local. Production: PostgreSQL.
 
-Health: `http://127.0.0.1:8790/api/health`
-
-Local development uses `CMS_BACKEND=local` and file authentication. For PostgreSQL, set `CMS_BACKEND=postgres`, `CMS_AUTH_BACKEND=postgres`, and the usual `PG*` settings or `DATABASE_URL`. In production, use **PostgreSQL only**.
-
-## Production settings
-
-```env
+~~~env
 NODE_ENV=production
 CMS_BACKEND=postgres
 CMS_AUTH_BACKEND=postgres
 CMS_MEDIA_UPLOADS_ENABLED=false
 CMS_SCHEDULE_WORKER_ENABLED=false
 CMS_COOKIE_SECURE=true
-```
 
-The media adapter may remain configured as GCS, but publishing without a cover image works. The production upload endpoint responds with HTTP 503 until `CMS_MEDIA_UPLOADS_ENABLED=true` is explicitly set after the storage and public delivery acceptance checks.
+# Enable on the CMS service after a dry-run publisher job has been deployed
+CMS_PUBLISH_PROJECT=teledoctor-it
+CMS_PUBLISH_REGION=africa-south1
+CMS_PUBLISH_JOB=
+~~~
 
-Run database migrations when deploying new schema versions:
+## Static blog generation
 
-```sh
-npm run db:migrate
-```
+The generation script reads the configured CMS repository. On the publishing Cloud Run Job, CMS_BACKEND MUST be postgres. It reads the latest published articles directly from Cloud SQL.
 
-The existing admin account should be preserved; do not bootstrap another.
-
-## Public blog generation
-
-The public website is built from the PostgreSQL-backed CMS API. Production builds require:
-
-```env
-CMS_PUBLIC_API_URL=https://cms.teledoctorsa.co.za
-```
-
-Then:
-
-```sh
+~~~sh
 npm run build:blog
-```
+~~~
 
-This fetches `/api/public/articles` and generates the static blog. It intentionally **fails** if the API URL is missing rather than building old test data.
+To build from a local backend in development:
 
-To build from a local development repository:
-
-```sh
+~~~sh
 npm run build:blog:local
-```
+~~~
 
-This is for tests and development only. The public-site GitHub workflow must be configured with a reachable HTTPS CMS API endpoint before launch.
+## Cloud Run Publisher
 
-## Validation
+The publisher task is packaged in the same CMS Docker image. It runs as a **Cloud Run Job** with a different startup command; it does not start an HTTP server.
 
-```sh
+~~~sh
+npm run publish:job
+~~~
+
+The job requires Cloud SQL, PostgreSQL credentials, and optionally encrypted FTPS hosting secrets. It defaults to CMS_PUBLISH_DRY_RUN=true, **which never uploads to the website**. The CMS service needs roles/run.invoker on the publisher JOB only once the administrator has configured it.
+
+Read docs/CLOUD-RUN-PUBLISHER.md for the precise deployment commands, IAM and Secret Manager setup, manual dry-run acceptance, FTPS configuration and rollback.
+
+## Verification
+
+~~~sh
 npm run check
 npm run check:workflow
 npm run check:editor
 npm run check:auth
 npm run check:postgres
+npm run check:publisher
 npm run build:blog:local
-```
+~~~
 
-## Launch work still required
+## Current launch status
 
-The Cloud Run test revision is intentionally not promoted to production traffic. Complete:
+- Cloud SQL backend, staff login, article publish and withdrawal were tested on a tagged CMS revision.
+- The publishing job code and CI are in this repository; the GCP job itself still needs to be created/deployed.
+- An updated CMS revision must remain at 0% normal traffic until the publisher dry run and real hosting delivery have been verified.
+- Configure Cloud Scheduler for scheduled publishing separately.
+- Cloud Storage image writes remain deferred.
 
-1. Verify text-only publication and the public API on the new revision.
-2. Configure the website build to fetch content from the CMS public API.
-3. Configure the publishing dispatch webhook and website deployment credentials.
-4. Set up Cloud Scheduler for scheduled publishing.
-5. Configure the production CMS domain, HTTPS, access rules and monitoring.
-6. Later, complete GCS write permissions, public image delivery and media upload testing.
-
-See `docs/CLOUDSQL-CUTOVER.md` and `docs/PRODUCTION-HANDOVER.md` for launch details.
+Never confuse a successful article database mutation, a queued publishing job, and a verified live website deployment.
