@@ -249,7 +249,7 @@ function showView(name){
   $$('.view').forEach(v=>v.classList.toggle('active',v.id===`${name}View`));
   $$('[data-view]').forEach(n=>n.classList.toggle('active',n.dataset.view===name));
   if(name==='settings')void loadSettings();
-  if(innerWidth<=760)$('#sidebar').classList.remove('open');
+  if(typeof setSidebarOpen==='function')setSidebarOpen(false);
 }
 $$('[data-view]').forEach(el=>el.addEventListener('click',e=>{if(el.tagName==='A'&&el.getAttribute('href')!=='#')return;e.preventDefault();showView(el.dataset.view);}));
 $$('[data-status-view]').forEach(el=>el.addEventListener('click',()=>{showView('articles');activeFilter=el.dataset.statusView;page=1;$$('.tabs button').forEach(t=>t.classList.toggle('active',t.dataset.filter===activeFilter));renderArticles();}));
@@ -507,7 +507,23 @@ $('#copyTemporaryPassword').addEventListener('click',async event=>{
   catch{notify('Could not copy','Select the temporary password and copy it manually.');}
 });
 
-const sidebar=$('#sidebar');$('#menuBtn').addEventListener('click',()=>sidebar.classList.toggle('open'));document.addEventListener('click',event=>{if(innerWidth<=760&&sidebar.classList.contains('open')&&!sidebar.contains(event.target)&&event.target.id!=='menuBtn')sidebar.classList.remove('open');});
+const sidebar=$('#sidebar'),menuButton=$('#menuBtn'),sidebarBackdrop=$('#sidebarBackdrop'),sidebarClose=$('#sidebarClose');
+const mobileSidebar=typeof window.matchMedia==='function'
+  ? window.matchMedia('(max-width:1100px)')
+  : {get matches(){return window.innerWidth<=1100;},addEventListener(){}};
+function setSidebarOpen(open){
+  const shouldOpen=Boolean(open&&mobileSidebar.matches);
+  sidebar.classList.toggle('open',shouldOpen);
+  sidebarBackdrop.hidden=!shouldOpen;
+  menuButton.setAttribute('aria-expanded',String(shouldOpen));
+  menuButton.setAttribute('aria-label',shouldOpen?'Close navigation':'Open navigation');
+}
+menuButton.addEventListener('click',()=>setSidebarOpen(!sidebar.classList.contains('open')));
+sidebarClose.addEventListener('click',()=>setSidebarOpen(false));
+sidebarBackdrop.addEventListener('click',()=>setSidebarOpen(false));
+sidebar.querySelectorAll('.nav-item').forEach(item=>item.addEventListener('click',()=>setSidebarOpen(false)));
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&sidebar.classList.contains('open')){setSidebarOpen(false);menuButton.focus();}});
+mobileSidebar.addEventListener('change',()=>setSidebarOpen(false));
 
 async function startWorkspace(){
   const savedList=storedJson('tdsaCmsList');
