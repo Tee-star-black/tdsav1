@@ -29,6 +29,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Inventory legacy CMS references
+        run: |
+          echo 'Files referencing Sanity:'
+          git grep -il -e Sanity -e SANITY_ -- blog-cms .github/workflows || true
+          echo 'Sanity configuration files:'
+          git ls-files 'blog-cms/sanity/**' || true
+        working-directory: .
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
