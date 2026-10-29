@@ -41,7 +41,7 @@
       window.google.accounts.id.initialize({
         client_id:config.clientId,
         nonce:config.csrfToken,
-        hd:'teledoctorsa.co.za',
+        hd:config.workspaceDomain,
         ux_mode:'popup',
         auto_select:false,
         callback:async response=>{
