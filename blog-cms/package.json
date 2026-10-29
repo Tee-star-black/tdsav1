@@ -11,7 +11,7 @@
     "content:validate": "node scripts/validate-content.mjs content/articles.json",
     "build:blog": "npm run content:fetch-public && npm run build:blog:from-file",
     "check": "node scripts/smoke-vertical.mjs",
-    "check:workflow": "node --test tests/workflow.test.mjs tests/server.test.mjs",
+    "check:workflow": "node --test tests/workflow.test.mjs tests/server.test.mjs tests/text-only-render.test.mjs",
     "check:editor": "node --test tests/editor.test.mjs",
     "user:create": "node scripts/create-user.mjs",
     "check:auth": "node --test tests/auth.test.mjs",
