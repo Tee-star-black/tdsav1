@@ -7,7 +7,7 @@ const here=path.dirname(fileURLToPath(import.meta.url));
 const cmsRoot=path.resolve(here,'..');
 
 export function createAuthStore(){
-  const contentBackend=String(process.env.CMS_BACKEND||'local').toLowerCase();
+  const contentBackend=String(process.env.CMS_BACKEND||(process.env.NODE_ENV==='production'?'postgres':'local')).toLowerCase();
   const mode=String(process.env.CMS_AUTH_BACKEND||(contentBackend==='postgres'?'postgres':'file')).toLowerCase();
   const common={sessionHours:Number(process.env.CMS_SESSION_HOURS||12),cookieSecure:String(process.env.CMS_COOKIE_SECURE||'').toLowerCase()==='true'};
   if(mode==='postgres')return new PostgresAuthStore(common);

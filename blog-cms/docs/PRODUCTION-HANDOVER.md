@@ -1,172 +1,73 @@
-# TeleDoctorSA Publishing Studio - Production Handover
+# TeleDoctorSA Publishing Studio — Production handover
 
-## Final architecture
+## Components
 
-The target production path is:
-
-```
-cms.teledoctorsa.co.za
-        |
-        v
-Google Cloud Run
-        |
-        +--> Cloud SQL PostgreSQL
-        |      articles, categories, users, sessions,
-        |      revisions and audit records
-        |
-        +--> Google Cloud Storage
-               editorial images
-
-Published content
-        |
-        v
-CMS public read API
-        |
-        v
-GitHub Actions static build
-        |
-        v
-Host Africa / cPanel
-        |
-        v
-teledoctorsa.co.za/blog/
+```text
+Staff -> Publishing Studio (Cloud Run)
+               |
+               +-- Cloud SQL PostgreSQL (articles, categories, users,
+               |   sessions, revisions, audit logs)
+               |
+               +-- GCS images (deferred; uploads disabled)
+               |
+               +-- Published-only JSON API
+                             |
+                        GitHub Actions
+                             |
+                       Static blog build
+                             |
+                     Host Africa / cPanel
+                             |
+                     teledoctorsa.co.za/blog/
 ```
 
-Sanity remains available only as a temporary migration/fallback source until the Cloud SQL cutover has been verified.
+The platform operates independently of third-party CMS products. Existing source articles elsewhere were test-only and are not migrated.
 
-## Public content
+## Validated in Cloud SQL
 
-- Blog & Insights: `https://teledoctorsa.co.za/blog/`
-- Article URLs: `https://teledoctorsa.co.za/blog/<slug>/`
-- TeleMedia Suite remains the media/press destination and can surface featured Blog & Insights stories.
+- The restricted `tdsa-cms-app` role has operational read/write table permissions.
+- The initial database migration `001_cms_core.sql` is applied.
+- The `publishing@teledoctorsa.co.za` administrator is active.
+- Administrator login, article draft creation/editing and refresh persistence were tested.
+- Category creation and Draft -> Review -> Draft workflow were tested.
+- The current Cloud SQL test article has recorded revision history.
 
-The generated blog includes canonical URLs, article metadata/schema, search/filter data, feed JSON and sitemap entries.
+These manual checks were done on a test-tagged Cloud Run revision. A full end-to-end **production website** launch has not yet been verified.
 
-## Publishing Studio
-
-Recommended URL:
-
-`https://cms.teledoctorsa.co.za`
-
-The Studio supports:
-
-- individual email/password sign-in;
-- HttpOnly sessions;
-- admin/editor/reviewer roles;
-- Account & staff management for administrators;
-- password changes;
-- drafts;
-- review status;
-- clinical-review publication guardrails;
-- categories;
-- media upload/reuse;
-- featured stories;
-- scheduling;
-- SEO title/description;
-- article preview;
-- optimistic concurrency protection;
-- article revision snapshots in PostgreSQL;
-- production audit events;
-- automatic live-site rebuild requests.
-
-## Production database
-
-Use:
+## Production configuration
 
 ```env
+NODE_ENV=production
 CMS_BACKEND=postgres
 CMS_AUTH_BACKEND=postgres
-```
-
-Run schema migrations before launch:
-
-```bash
-npm run db:migrate
-```
-
-The database schema is maintained in `blog-cms/db/migrations/`.
-
-## Production media
-
-Use:
-
-```env
-CMS_MEDIA_BACKEND=gcs
-GCS_BUCKET=<bucket>
-GCS_PUBLIC_BASE_URL=<public bucket/CDN URL>
-```
-
-Media bytes are stored in Cloud Storage. Cloud SQL stores only media metadata and URLs.
-
-## Staff accounts
-
-Bootstrap the first production admin on the configured production database:
-
-```bash
-npm run user:create -- --email publishing@teledoctorsa.co.za --name "TeleDoctorSA Publishing" --role admin
-```
-
-After that, administrators can create and remove staff accounts from **Account & staff** in the Publishing Studio.
-
-## Scheduled publishing
-
-Cloud Run should not be relied on as an always-awake timer.
-
-Set:
-
-```env
+CMS_MEDIA_UPLOADS_ENABLED=false
 CMS_SCHEDULE_WORKER_ENABLED=false
-CMS_INTERNAL_TOKEN=<secret>
+CMS_COOKIE_SECURE=true
 ```
 
-Use Cloud Scheduler to invoke:
+Pass Cloud SQL credentials and internal publishing token through Secret Manager. Configure access origins, HTTPS and a production domain.
 
-```
-POST /api/internal/publish-due
-```
+## Publishing and scheduling
 
-with the configured internal-token header.
+- Public content comes from `/api/public/articles`.
+- The static site is generated with `npm run build:blog` and requires `CMS_PUBLIC_API_URL`.
+- Published changes can trigger `CMS_DEPLOY_WEBHOOK_URL` with its secured token.
+- Use Cloud Scheduler to invoke `POST /api/internal/publish-due` and maintain `CMS_SCHEDULE_WORKER_ENABLED=false` on Cloud Run.
 
-## Live blog deployment
+GitHub must receive only the public published-content API data, not database credentials.
 
-The production GitHub workflow can fetch published content from:
+## Image deferral
 
-```
-https://cms.teledoctorsa.co.za/api/public/articles
-```
+Cover images are optional for publication. The static templates and browser preview handle text-only posts. Image uploads are disabled by default in production until bucket permissions, HTTPS delivery and end-to-end testing are completed. To resume uploads later, configure storage and explicitly enable `CMS_MEDIA_UPLOADS_ENABLED=true` on a tested revision.
 
-Set repository variable:
+## Go-live gates
 
-```
-CMS_PUBLIC_API_URL=https://cms.teledoctorsa.co.za
-```
+1. Build and deploy updated Cloud Run revision to test tag, still 0% main traffic.
+2. Test text-only publish/edit/withdrawal, staff auth and Cloud SQL revisions.
+3. Configure GitHub repository publishing dispatch, public CMS API URL and cPanel deployment.
+4. Test static build output on the website, including article SEO and feed.
+5. Configure Cloud Scheduler and test scheduled articles.
+6. Configure CMS domain, HTTPS and production monitoring.
+7. Promote a tested revision and retain rollback ability.
 
-The workflow then builds the static public blog and deploys the generated files to the existing cPanel host. GitHub does not need direct Cloud SQL credentials.
-
-## Existing-content migration
-
-Once Cloud SQL and the GCS bucket are available:
-
-```bash
-npm run db:migrate
-npm run migrate:sanity-to-postgres
-```
-
-Do not retire Sanity until content counts, media, drafts, published stories and public URLs have been checked.
-
-See `docs/CLOUDSQL-CUTOVER.md` for the ordered go-live procedure.
-
-## External access still required
-
-Code cannot complete these account-side operations by itself:
-
-- company Cloud SQL instance permission;
-- GCP project/service-account deployment permission;
-- Cloud Storage bucket permission;
-- Cloud Scheduler job creation;
-- DNS for `cms.teledoctorsa.co.za`;
-- cPanel/FTP credentials;
-- GitHub Actions secrets/variables;
-- creation/confirmation of official company email addresses.
-
-Everything else should be prepared in the repository before production cutover.
+Do not delete or overwrite existing Cloud SQL data. No legacy article migration is required.

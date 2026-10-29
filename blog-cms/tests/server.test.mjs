@@ -28,26 +28,16 @@ test('server publishes due stories at startup, protects CMS data and rejects mis
 });
 
 
-test('production bootstrap never grants unauthenticated administrator access',async()=>{
-  const directory=await mkdtemp(path.join(tmpdir(),'cms-production-auth-'));
-  const authFile=path.join(directory,'auth.json');
-  const child=spawn(process.execPath,['server/server.mjs'],{env:{...process.env,NODE_ENV:'production',PORT:'8812',CMS_BACKEND:'local',CMS_AUTH_BACKEND:'file',CMS_AUTH_FILE:authFile,CMS_ACCESS_TOKEN:'',CMS_DEPLOY_WEBHOOK_URL:'',CMS_SCHEDULE_WORKER_ENABLED:'false'},stdio:'pipe'});
-  const origin='http://127.0.0.1:8812';
-  try{
-    let ready=false;
-    for(let i=0;i<80;i++){
-      try{if((await fetch(origin+'/api/health')).ok){ready=true;break;}}catch{}
-      await new Promise(r=>setTimeout(r,50));
-    }
-    assert.ok(ready,'production CMS server should start');
-    assert.equal((await fetch(origin+'/api/articles')).status,401);
-    assert.equal((await fetch(origin+'/api/auth/me')).status,401);
-    assert.equal((await fetch(origin+'/api/public/articles')).status,200);
-  }finally{
-    child.kill();
-    await new Promise(r=>child.once('exit',r));
-    await rm(directory,{recursive:true,force:true});
-  }
+test('production fails closed if configured for the local repository',async()=>{
+  const child=spawn(process.execPath,['server/server.mjs'],{
+    env:{...process.env,NODE_ENV:'production',PORT:'8812',CMS_BACKEND:'local',CMS_AUTH_BACKEND:'file',CMS_ACCESS_TOKEN:'',CMS_DEPLOY_WEBHOOK_URL:''},
+    stdio:'pipe'
+  });
+  let stderr='';
+  child.stderr.on('data',chunk=>{stderr+=String(chunk);});
+  const exitCode=await new Promise((resolve,reject)=>{child.once('close',resolve);child.once('error',reject);});
+  assert.notEqual(exitCode,0,'production must not boot a local-file CMS');
+  assert.match(stderr,/Unsupported CMS_BACKEND/);
 });
 
 

@@ -30,27 +30,19 @@ jobs:
         working-directory: blog-cms
         run: npm install --include=dev --no-audit --no-fund
 
-      - name: Fetch published content from CMS API
-        if: ${{ vars.CMS_PUBLIC_API_URL != '' }}
+      - name: Require PostgreSQL-backed CMS API endpoint
+        env:
+          CMS_PUBLIC_API_URL: ${{ vars.CMS_PUBLIC_API_URL }}
+        run: |
+          if [ -z "$CMS_PUBLIC_API_URL" ]; then
+            echo "::error::Set CMS_PUBLIC_API_URL before deploying. No fallback content is allowed."
+            exit 1
+          fi
+
+      - name: Build Blog & Insights from CMS public API
         working-directory: blog-cms
         env:
           CMS_PUBLIC_API_URL: ${{ vars.CMS_PUBLIC_API_URL }}
-        run: npm run content:fetch-public
-
-      - name: Build Blog & Insights from CMS API
-        if: ${{ vars.CMS_PUBLIC_API_URL != '' }}
-        working-directory: blog-cms
-        run: npm run build:blog:from-file
-
-      - name: Build Blog & Insights from temporary Sanity fallback
-        if: ${{ vars.CMS_PUBLIC_API_URL == '' }}
-        working-directory: blog-cms
-        env:
-          CMS_BACKEND: sanity
-          SANITY_PROJECT_ID: glz6ptd8
-          SANITY_DATASET: production
-          SANITY_API_VERSION: 2026-09-01
-          SANITY_READ_TOKEN: ${{ secrets.SANITY_READ_TOKEN }}
         run: npm run build:blog
 
       - name: Install FTP client

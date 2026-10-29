@@ -12,7 +12,7 @@
   <meta property="og:title" content="{{ article.title }}">
   <meta property="og:description" content="{{ article.seoDescription or article.excerpt }}">
   <meta property="og:url" content="{{ site.baseUrl }}/blog/{{ article.slug }}/">
-  <meta property="og:image" content="{{ article.coverImage.url }}">
+  <meta property="og:image" content="{{ article.coverImage.url or site.baseUrl + '/android-chrome-512x512.png' }}">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,7 +26,7 @@
     <a class="article-back" href="/blog/">← Back to Blog & Insights</a>
     <article>
       <header class="article-header"><span class="eyebrow">{{ article.category }}</span><h1>{{ article.title }}</h1><p class="dek">{{ article.excerpt }}</p><div class="article-meta"><span>By {{ article.author }}</span><span>{{ article.publishedAt | truncate(10, true, '') }}</span></div></header>
-      <figure class="article-hero article-hero-image"><img src="{{ article.coverImage.url }}" alt="{{ article.coverImage.alt }}"><figcaption>{{ article.coverImage.alt }}</figcaption></figure>
+      {% if article.coverImage.url %}<figure class="article-hero article-hero-image"><img src="{{ article.coverImage.url }}" alt="{{ article.coverImage.alt }}"><figcaption>{{ article.coverImage.alt }}</figcaption></figure>{% endif %}
       <div class="article-layout">
         <aside class="article-aside"><span>SHARE</span><a href="https://www.linkedin.com/sharing/share-offsite/?url={{ site.baseUrl }}/blog/{{ article.slug }}/" target="_blank" rel="noopener">LinkedIn</a><a href="https://www.facebook.com/sharer/sharer.php?u={{ site.baseUrl }}/blog/{{ article.slug }}/" target="_blank" rel="noopener">Facebook</a></aside>
         <div class="article-copy">{% for paragraph in article.bodyParagraphs %}<p{% if loop.first %} class="article-lead"{% endif %}>{{ paragraph }}</p>{% endfor %}</div>

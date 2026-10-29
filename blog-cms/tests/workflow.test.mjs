@@ -4,7 +4,7 @@ import {mkdtemp,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
 import {validateEditorialArticle} from '../server/validation.mjs';
-import {SanityRepository} from '../server/sanity-repository.mjs';
+
 
 const directory=await mkdtemp(path.join(tmpdir(),'cms-workflow-'));
 process.env.CMS_LOCAL_STORE=path.join(directory,'store.json');
@@ -53,26 +53,13 @@ test('concurrent local writes retain every new draft and reject unknown categori
   await assert.rejects(repo.saveArticle({...draft,title:'Unknown category',category:'Missing'}),{statusCode:400});
 });
 
-test('Sanity creation returns the acknowledged mutation without an immediate article query',async()=>{
-  const calls=[];
-  const client={
-    async fetch(query){calls.push(query);if(query.includes('_type=="author"'))return {_id:'author-test'};if(query.includes('_type=="category"'))return {_id:'category-test'};return null;},
-    async create(doc,options){assert.equal(options.visibility,'sync');return {...doc,_rev:'revision-1'};}
-  };
-  const repo=new SanityRepository({client});const saved=await repo.saveArticle(draft);
-  assert.equal(saved.id,'article-a-draft-idea');assert.equal(saved.revision,'revision-1');assert.equal(saved.title,draft.title);
-  assert.equal(calls.filter(q=>q.includes('_id==$id')).length,0);
-});
-
-test('Sanity updates use a revision guard and explicitly remove a cleared cover',async()=>{
-  let unset, revision, fields;
-  const patch={ifRevisionId(value){revision=value;return this;},set(value){fields=value;return this;},unset(value){unset=value;return this;},async commit(options){assert.equal(options.visibility,'sync');return {_rev:'new-revision'};}};
-  const client={
-    async fetch(query){if(query.includes('_type=="author"'))return {_id:'author-test'};if(query.includes('_id==$id'))return {_id:'article-test',_rev:'old-revision',title:'Existing draft',slug:'existing-draft',editorialStatus:'Draft',body:[],coverImage:{assetId:'old-cover',url:'https://example.com/old.png'}};return null;},
-    patch(){return patch;}
-  };
-  const repo=new SanityRepository({client});
-  const saved=await repo.saveArticle({...draft,revision:'old-revision',coverImage:{}},'article-test');
-  assert.equal(revision,'old-revision');assert.ok(unset.includes('coverImage'));assert.equal(fields.editorialStatus,'Draft');assert.equal(saved.coverImage.url,'');assert.equal(saved.revision,'new-revision');
-  await assert.rejects(repo.saveArticle({...draft,revision:'stale'},'article-test'),{statusCode:409});
+test('published and scheduled text-only stories do not require an image',()=>{
+  const source={...complete,coverImage:{},clinicalReviewRequired:false,clinicalReviewStatus:'not_required'};
+  const published=validateEditorialArticle({...source,status:'Published'},{forPublication:true});
+  assert.equal(published.ok,true,published.errors.join(' '));
+  const scheduled=validateEditorialArticle({...source,status:'Scheduled',scheduledAt:new Date(Date.now()+3600000).toISOString()});
+  assert.equal(scheduled.ok,true,scheduled.errors.join(' '));
+  const withCover=validateEditorialArticle({...source,status:'Published',coverImage:{url:'https://example.com/cover.png',alt:''}});
+  assert.equal(withCover.ok,false);
+  assert.match(withCover.errors.join(' '),/alternative text/i);
 });

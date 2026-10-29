@@ -63,7 +63,7 @@ function setBackendStatus(mode,message){
   const el=$('#backendStatus');el.classList.remove('online','offline');if(mode)el.classList.add(mode);
   el.querySelector('b').textContent=message;
   $('#backendMetric').textContent=mode==='online'?(state.health?.backend||'API').toUpperCase():'OFF';
-  $('#backendMetricNote').textContent=mode==='online'?(state.health?.backend==='sanity'?`${state.health.projectId}/${state.health.dataset} · ${state.health.categoryCount??0} categories`:'Connected content service'):'Backend unavailable';
+  $('#backendMetricNote').textContent=mode==='online'?('Connected Cloud SQL content service'):'Backend unavailable';
 }
 
 async function loadWorkspace({quiet=false,authRetry=true}={}){
@@ -108,6 +108,13 @@ async function loadWorkspace({quiet=false,authRetry=true}={}){
   }
 
   render();
+  // Publishing text-only articles is available even while media storage is deferred.
+  const uploadsEnabled=state.health?.mediaUploadsEnabled!==false;
+  for(const selector of ['#uploadMediaBtn','#editorUpload']){
+    const control=$(selector);
+    if(control){control.disabled=!uploadsEnabled;control.title=uploadsEnabled?'':'Media uploads will be enabled after storage setup.';}
+  }
+  if(!uploadsEnabled)$('#mediaBackendLabel').textContent='Image uploads temporarily unavailable';
   try{
     const user=await api.me();
     state.currentUser=user;
@@ -325,8 +332,7 @@ function validateArticleClient(data){
   if(data.status==='Published'||data.status==='Scheduled'){
     if(data.excerpt.length<20)errors.push('Published stories need a short introduction of at least 20 characters.');
     if(data.bodyText.length<80)errors.push('Published stories need a complete article body of at least 80 characters.');
-    if(!data.coverImage.url&&!data.coverImage.assetId)errors.push('Published stories require a cover image.');
-    if(!data.coverImage.alt)errors.push('Published cover images require alternative text.');
+    if((data.coverImage.url||data.coverImage.assetId)&&!data.coverImage.alt)errors.push('An attached cover image needs alternative text.');
     if(data.clinicalReviewRequired&&data.clinicalReviewStatus!=='approved')errors.push('Clinical content must be approved before publication.');
   }
 

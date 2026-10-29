@@ -14,7 +14,7 @@ function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&l
 function formatDate(value){if(!value)return '';const d=new Date(value);return Number.isNaN(d.getTime())?'':new Intl.DateTimeFormat('en-ZA',{day:'numeric',month:'short',year:'numeric'}).format(d);}
 function categories(){return ['All',...new Set(stories.map(s=>s.category).filter(Boolean))];}
 function articleUrl(story){return `/blog/${encodeURIComponent(story.slug)}/`;}
-function storyImage(story,loading='lazy'){return story.coverImage?.url?`<img src="${esc(story.coverImage.url)}" alt="${esc(story.coverImage.alt||'')}" loading="${loading}">`:'';}
+function storyImage(story,loading='lazy'){return story.coverImage?.url?`<img src="${esc(story.coverImage.url)}" alt="${esc(story.coverImage.alt||'')}" loading="${loading}">`:'<span class="text-only-visual" aria-hidden="true">Blog & Insights</span>';}
 
 function renderChips(){
   chips.innerHTML=categories().map(c=>`<button class="${c===active?'active':''}" data-category="${esc(c)}">${esc(c)}</button>`).join('');

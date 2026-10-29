@@ -24,7 +24,7 @@ test('Postgres repository supports the editorial lifecycle with revisions',async
       title:'Cloud SQL editorial article',
       slug:'cloud-sql-editorial-article',
       excerpt:'A complete introduction for a production-ready CMS article.',
-      bodyText:'This article contains enough editorial body text to validate the complete Cloud SQL publication workflow for TeleDoctorSA without relying on Sanity as the permanent content database.',
+      bodyText:'This article contains enough editorial body text to validate the complete Cloud SQL publication workflow for TeleDoctorSA while keeping PostgreSQL as the single content database.',
       status:'Draft',
       category:'Health Education',
       author:'TeleDoctorSA Editorial',
@@ -39,6 +39,27 @@ test('Postgres repository supports the editorial lifecycle with revisions',async
     await assert.rejects(repo.saveArticle({...stale,title:'Stale edit'},stale.id),{statusCode:409});
     const revisions=await pool.query('SELECT COUNT(*)::int AS count FROM cms_article_revisions WHERE article_id=$1',[article.id]);
     assert.equal(revisions.rows[0].count,1);
+  }finally{await pool.end();}
+});
+
+test('Postgres publishes text-only articles without external media',async()=>{
+  const {pool,repo}=await setup();
+  try{
+    await repo.createCategory('Editorial');
+    const saved=await repo.saveArticle({
+      title:'PostgreSQL text only publication',
+      slug:'postgresql-text-only-publication',
+      excerpt:'A verified example of editorial publishing without cover imagery.',
+      bodyText:'The Publishing Studio can publish articles using PostgreSQL without relying on external image services. This content is valid without media assets while image storage is postponed.',
+      status:'Published',
+      category:'Editorial',
+      author:'TeleDoctorSA Editorial',
+      coverImage:{}
+    });
+    assert.equal(saved.status,'Published');
+    assert.equal(saved.coverImage.url,'');
+    assert.equal((await repo.getPublicArticleBySlug(saved.slug)).id,saved.id);
+    assert.equal((await repo.listMedia()).length,0);
   }finally{await pool.end();}
 });
 

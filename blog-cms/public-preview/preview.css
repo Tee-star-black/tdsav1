@@ -158,3 +158,9 @@ button,input{font:inherit}
   .site-footer{flex-wrap:wrap}
   .site-footer nav{width:100%;margin-left:0}
 }
+
+/* Editorial art direction for text-only stories while media is deferred. */
+.feature-media:not(.has-image):after,.story-visual:not(.has-image):after{display:none}
+.feature-media .text-only-visual,.story-visual .text-only-visual{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;font:800 clamp(17px,2vw,26px)/1.2 Manrope,sans-serif;letter-spacing:-.03em}
+.feature-media .text-only-visual{background:#17334a;color:#e4edf1}
+.story-visual .text-only-visual{background:#edf1f3;color:#244258}
