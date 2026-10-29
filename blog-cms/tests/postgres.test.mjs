@@ -42,6 +42,27 @@ test('Postgres repository supports the editorial lifecycle with revisions',async
   }finally{await pool.end();}
 });
 
+test('Postgres publishes text-only articles without external media',async()=>{
+  const {pool,repo}=await setup();
+  try{
+    await repo.createCategory('Editorial');
+    const saved=await repo.saveArticle({
+      title:'PostgreSQL text only publication',
+      slug:'postgresql-text-only-publication',
+      excerpt:'A verified example of editorial publishing without cover imagery.',
+      bodyText:'The Publishing Studio can publish articles using PostgreSQL without relying on external image services. This content is valid without media assets while image storage is postponed.',
+      status:'Published',
+      category:'Editorial',
+      author:'TeleDoctorSA Editorial',
+      coverImage:{}
+    });
+    assert.equal(saved.status,'Published');
+    assert.equal(saved.coverImage.url,'');
+    assert.equal((await repo.getPublicArticleBySlug(saved.slug)).id,saved.id);
+    assert.equal((await repo.listMedia()).length,0);
+  }finally{await pool.end();}
+});
+
 test('Postgres auth hashes credentials and persists sessions',async()=>{
   const {pool,auth}=await setup();
   const testPassword=['Correct','Horse','Battery','CMS','42'].join('-');
