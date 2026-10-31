@@ -34,7 +34,7 @@ The publisher job uses Cloud SQL directly, not the private CMS API. No GitHub se
 - Categories, SEO metadata, revisions and audit events
 - Text-only publication without GCS uploads
 - Published-only API and web preview
-- Static article templates, feed, search and sitemap
+- Static article templates, feed, search and standalone /blog/sitemap.xml (preserves existing root sitemap.xml by default)
 - Cloud Run Job trigger using the CMS's service identity
 - Cloud Run Job static exporter / generator / FTPS uploader
 - PostgreSQL advisory lock serializing overlapping job executions

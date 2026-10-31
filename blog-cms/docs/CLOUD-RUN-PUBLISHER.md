@@ -186,7 +186,16 @@ Execute the job, verify live /blog/feed.json and its article pages against
 Cloud SQL, test a withdrawal, and inspect the live sitemap. The lftp upload
 is not atomic: a failed transfer can leave a partial site and may require
 restoring the downloaded backup. The mirror --delete operates under /blog/
-only, but overwrites styles/blog.css, scripts/blog.js and sitemap.xml.
+only and writes styles/blog.css and scripts/blog.js. The job builds and
+uploads a standalone /blog/sitemap.xml. The **existing root sitemap.xml
+is preserved by default** to avoid overwriting newer live site entries.
+Submit /blog/sitemap.xml to Google Search Console when the blog launches.
+
+Only after inspecting and accepting a diff between the remote
+/public_html/sitemap.xml and the newly generated source template may an
+operator set CMS_PUBLISH_UPLOAD_ROOT_SITEMAP=true on the JOB, after taking
+a verified site backup. Otherwise leave it unset/false. No automatic
+root sitemap upload is necessary for the blog to work.
 
 ## Final go-live and rollback
 

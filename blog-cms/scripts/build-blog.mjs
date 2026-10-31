@@ -72,7 +72,21 @@ const start='    <!-- BLOG_CMS_START -->';
 const end='    <!-- BLOG_CMS_END -->';
 const cleaned=originalSitemap.replace(new RegExp(`\\n?${start}[\\s\\S]*?${end}\\n?`,'m'),'\n');
 const entries=[{loc:`${site.baseUrl}/blog/`,lastmod:new Date().toISOString().slice(0,10),changefreq:'weekly',priority:'0.8'},...articles.map(article=>({loc:`${site.baseUrl}/blog/${article.slug}/`,lastmod:String(article.updatedAt||article.publishedAt).slice(0,10),changefreq:'monthly',priority:'0.7'}))];
-const xml=`${start}\n${entries.map(entry=>`    <url>\n        <loc>${entry.loc}</loc>\n        <lastmod>${entry.lastmod}</lastmod>\n        <changefreq>${entry.changefreq}</changefreq>\n        <priority>${entry.priority}</priority>\n    </url>`).join('\n\n')}\n${end}`;
+const urlXml=entries.map(entry=>`    <url>
+        <loc>${entry.loc}</loc>
+        <lastmod>${entry.lastmod}</lastmod>
+        <changefreq>${entry.changefreq}</changefreq>
+        <priority>${entry.priority}</priority>
+    </url>`).join('\n\n');
+const xml=`${start}\n${urlXml}\n${end}`;
+const blogSitemap=`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urlXml}
+</urlset>
+`;
+await writeFile(path.join(outputDir,'sitemap.xml'),blogSitemap,'utf8');
+// Generate a merged root sitemap locally for optional manual release.
+// The publisher must not implicitly overwrite the site's live root sitemap.
 await writeFile(sitemapPath,cleaned.replace(/\s*<\/urlset>\s*$/,`\n\n${xml}\n\n</urlset>\n`),'utf8');
 
 console.log(`Built ${articles.length} blog article(s), interactions, feed, stylesheet, promoted local images and sitemap entries. Stale article output was removed first.`);
