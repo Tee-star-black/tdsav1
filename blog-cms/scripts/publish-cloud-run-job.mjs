@@ -62,7 +62,11 @@ export function buildFtpsScript(env=process.env){
     'mirror -R --delete --verbose blog '+lftpQuote(remotePath('/blog')),
     'put -O '+lftpQuote(remotePath('/styles'))+' styles/blog.css',
     'put -O '+lftpQuote(remotePath('/scripts'))+' scripts/blog.js',
-    'put -O '+lftpQuote(target||'/')+' sitemap.xml',
+    // The live root sitemap may differ from the repository snapshot. Opt in
+    // only after reviewing a fresh diff and taking a verified backup.
+    ...(String(env.CMS_PUBLISH_UPLOAD_ROOT_SITEMAP||'').toLowerCase()==='true'
+      ? ['put -O '+lftpQuote(target||'/')+' sitemap.xml']
+      : []),
     'bye'
   ].join('\n')+'\n';
 }
@@ -101,7 +105,7 @@ export async function verifyLiveBlog(slugs,{base='https://teledoctorsa.co.za',re
 }
 
 async function requireBuiltFiles(){
-  for(const relative of ['blog/index.html','blog/feed.json','sitemap.xml','styles/blog.css','scripts/blog.js']){
+  for(const relative of ['blog/index.html','blog/feed.json','blog/sitemap.xml','sitemap.xml','styles/blog.css','scripts/blog.js']){
     const file=path.join(siteRoot,relative);
     const info=await stat(file);
     if(!info.isFile()||info.size===0)throw new Error('Required generated file missing: '+relative);
