@@ -57,6 +57,11 @@ jobs:
         run: npm run check:postgres
       - name: Generate static blog from local backend
         run: npm run build:blog:local
+      - name: Verify standalone blog sitemap
+        run: |
+          test -s ../blog/sitemap.xml
+          grep -Fq 'https://teledoctorsa.co.za/blog/' ../blog/sitemap.xml
+          test -s ../sitemap.xml
       - name: Install browser QA dependencies
         run: |
           npm install --no-save --no-package-lock playwright-core@1.56.1 --no-audit --no-fund
