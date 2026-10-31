@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {buildFtpsScript,publishingDryRun,runPublishingJob,verifyLiveBlog} from '../scripts/publish-cloud-run-job.mjs';
+import {access,readFile,stat} from 'node:fs/promises';
+import path from 'node:path';
+import {buildFtpsScript,publishingDryRun,runLftpScript,runPublishingJob,verifyLiveBlog} from '../scripts/publish-cloud-run-job.mjs';
 
 const remoteEnv={
   CMS_FTP_HOST:'ftp.example.test',
@@ -66,6 +68,37 @@ test('cPanel jailed FTP account can publish to document-root / only when explici
   assert.throws(()=>buildFtpsScript({...cpanel,CMS_FTP_REMOTE_ROOT:'/../../public_html'}),/CMS_FTP_REMOTE_ROOT/);
 });
 
+test('FTPS command file is private, not passed via argv, and deleted after success',async()=>{
+  const secret='not-a-real-password-42';
+  let filePath='';
+  await runLftpScript('echo '+secret+'\nbye\n',{
+    run:async(file,args)=>{
+      assert.equal(file,'lftp');
+      assert.deepEqual(args.slice(0,2),['--norc','-f']);
+      assert.equal(args.length,3);
+      assert.doesNotMatch(args.join(' '),/not-a-real-password-42/);
+      filePath=args[2];
+      assert.equal(path.basename(filePath),'commands.lftp');
+      assert.equal((await stat(filePath)).mode&0o777,0o600);
+      assert.equal((await stat(path.dirname(filePath))).mode&0o777,0o700);
+      assert.match(await readFile(filePath,'utf8'),/not-a-real-password-42/);
+    }
+  });
+  await assert.rejects(access(filePath),{code:'ENOENT'});
+});
+
+test('FTPS command file is removed even after lftp fails',async()=>{
+  let filePath='';
+  await assert.rejects(runLftpScript('bye\n',{
+    run:async(file,args)=>{
+      assert.equal(file,'lftp');
+      filePath=args[2];
+      throw new Error('simulated FTPS network failure');
+    }
+  }),/simulated FTPS network failure/);
+  await assert.rejects(access(filePath),{code:'ENOENT'});
+});
+
 test('default publisher execution builds from PostgreSQL but cannot touch FTP',async()=>{
   const log=[];
   const out=await runPublishingJob({
@@ -96,8 +129,11 @@ test('live publisher holds advisory lock through upload and verification',async(
     run:async(file,args,options)=>{
       log.push(file+' '+args.join(' '));
       if(file==='lftp'){
-        assert.deepEqual(args,['-f','/dev/stdin']);
-        assert.match(options.stdin,/set ftp:ssl-force yes/);
+        assert.deepEqual(args.slice(0,2),['--norc','-f']);
+        assert.equal(args.length,3);
+        assert.match(await readFile(args[2],'utf8'),/set ftp:ssl-force yes/);
+        assert.match(await readFile(args[2],'utf8'),/mirror -R --delete/);
+        assert.doesNotMatch(args.join(' '),/secret-value/);
       }
     },
     inspectFiles:async()=>{},
