@@ -57,9 +57,12 @@ export function buildFtpsScript(env=process.env){
     'set ftp:ssl-protect-data yes',
     'set ftp:passive-mode yes',
     'open -u '+user+','+password+' '+lftpQuote('ftp://'+host),
-    'mkdir -p '+lftpQuote(remotePath('/blog')),
-    'mkdir -p '+lftpQuote(remotePath('/styles')),
-    'mkdir -p '+lftpQuote(remotePath('/scripts')),
+    // cPanel FTP replies 550 when MKD targets an existing directory; lftp
+    // mkdir -p -f treats existing directories as a successful no-op.
+    // Keep cmd:fail-exit for transfer errors (uploads still fail on denial).
+    'mkdir -p -f '+lftpQuote(remotePath('/blog')),
+    'mkdir -p -f '+lftpQuote(remotePath('/styles')),
+    'mkdir -p -f '+lftpQuote(remotePath('/scripts')),
     'mirror -R --delete --verbose blog '+lftpQuote(remotePath('/blog')),
     'put -O '+lftpQuote(remotePath('/styles'))+' styles/blog.css',
     'put -O '+lftpQuote(remotePath('/scripts'))+' scripts/blog.js',
@@ -81,6 +84,22 @@ export function buildFtpsProbeScript(env=process.env){
   if(commands.filter(line=>line.startsWith('open -u ')).length!==1)
     throw new Error('Expected one validated FTPS login command.');
   return [...commands,'cls -1 /index.html','cls -1 /sitemap.xml','cls -1 /','bye'].join('\n')+'\n';
+}
+
+// Regression probe: before issuing any MKD, prove all three target
+// directories already exist by listing each. Then exercise the exact
+// idempotent mkdir syntax in the deployed lftp against cPanel's 550 response.
+// With a known-existing root this does not create, upload or delete files.
+export function buildFtpsDirectoryProbeScript(env=process.env){
+  const commands=buildFtpsScript(env).split('\n');
+  const header=commands.filter(
+    line=>line.startsWith('set ')||line.startsWith('open -u ')
+  );
+  const mkdirs=commands.filter(line=>line.startsWith('mkdir -p -f '));
+  if(header.filter(line=>line.startsWith('open -u ')).length!==1||mkdirs.length!==3)
+    throw new Error('Invalid FTPS directory probe configuration.');
+  const dirs=mkdirs.map(line=>line.slice('mkdir -p -f '.length));
+  return [...header,...dirs.map(dir=>'cls -1 '+dir),...mkdirs,'bye'].join('\n')+'\n';
 }
 
 export function spawnPublisherCommand(binary,args,{cwd=root,env=process.env,stdin=''}={}){

@@ -193,6 +193,31 @@ such as index.html and sitemap.xml. No `mkdir`, `mirror`, `put`, delete,
 or upload is allowed in this probe. One-off `--args` overrides only that
 execution, not the configured publisher job.
 
+### cPanel existing directories (HTTP 200 /blog/ but missing feed)
+
+On the first live attempt, the hosting FTP server may reply
+`550 Can't create directory: File exists (/styles)` to `mkdir -p`
+when a directory already exists. With `set cmd:fail-exit yes`, this
+stops publishing after `/blog` may have been created. Revert the job to
+`CMS_PUBLISH_DRY_RUN=true` and do not assume an HTTP 200 on `/blog/`
+means content exists. Check `/blog/feed.json` and `/blog/sitemap.xml`.
+
+The publisher uses `mkdir -p -f` on `/blog`, `/styles`, `/scripts`
+to make subsequent publishing attempts idempotent on cPanel. Before
+enabling live publishing after a fix, use the dry-run-only directory probe:
+
+~~~bash
+gcloud run jobs execute tdsa-blog-publisher \
+  --project=teledoctor-it --region=africa-south1 \
+  --args=scripts/probe-ftps-directories.mjs --wait
+~~~
+
+The probe **first lists all three existing directories**; if any is
+missing it exits before issuing any `mkdir`. Only after confirming all
+are present will it issue `mkdir -p -f` against those known-existing
+paths to verify the hosting provider accepts the corrected command.
+It never mirrors, uploads, deletes, or modifies the site contents.
+
 The publisher and probe execute `lftp --norc -f` against a random
 temporary command file (private directory mode 0700, file mode 0600).
 This avoids reopening socket-backed `/dev/stdin` from Node's subprocesses

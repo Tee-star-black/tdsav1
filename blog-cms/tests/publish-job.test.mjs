@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {access,readFile,stat} from 'node:fs/promises';
 import path from 'node:path';
-import {buildFtpsProbeScript,buildFtpsScript,publishingDryRun,runLftpScript,runPublishingJob,verifyLiveBlog} from '../scripts/publish-cloud-run-job.mjs';
+import {buildFtpsDirectoryProbeScript,buildFtpsProbeScript,buildFtpsScript,publishingDryRun,runLftpScript,runPublishingJob,verifyLiveBlog} from '../scripts/publish-cloud-run-job.mjs';
 
 const remoteEnv={
   CMS_FTP_HOST:'ftp.example.test',
@@ -51,9 +51,10 @@ test('cPanel jailed FTP account can publish to document-root / only when explici
   assert.match(script,/set ftp:ssl-force yes/);
   assert.match(script,/set ftp:ssl-protect-data yes/);
   assert.match(script,/set ssl:verify-certificate yes/);
-  assert.match(script,/mkdir -p "\/blog"/);
-  assert.match(script,/mkdir -p "\/styles"/);
-  assert.match(script,/mkdir -p "\/scripts"/);
+  assert.match(script,/mkdir -p -f "\/blog"/);
+  assert.match(script,/mkdir -p -f "\/styles"/);
+  assert.match(script,/mkdir -p -f "\/scripts"/);
+  assert.doesNotMatch(script,/(?:^|\n)mkdir -p "[^"]+"/m);
   assert.match(script,/mirror -R --delete --verbose blog "\/blog"/);
   assert.match(script,/put -O "\/styles" styles\/blog\.css/);
   assert.match(script,/put -O "\/scripts" scripts\/blog\.js/);
@@ -76,6 +77,33 @@ test('read-only Cloud Run probe never contains FTP write commands',()=>{
   assert.match(script,/cls -1 \/sitemap\.xml/);
   assert.doesNotMatch(script,/(?:^|\n)(?:mkdir|mirror|put|rm|mput|mv|chmod|delete|rmdir|mrm)\b/m);
   assert.equal(script.split('\n').filter(line=>line.startsWith('open -u ')).length,1);
+});
+
+test('publisher directory creation is idempotent for existing cPanel folders',()=>{
+  const script=buildFtpsScript({...remoteEnv,CMS_FTP_REMOTE_ROOT:'/',CMS_FTP_JAILED_PUBLIC_HTML:'true'});
+  assert.match(script,/(?:^|\n)mkdir -p -f "\/blog"/);
+  assert.match(script,/(?:^|\n)mkdir -p -f "\/styles"/);
+  assert.match(script,/(?:^|\n)mkdir -p -f "\/scripts"/);
+  assert.doesNotMatch(script,/(?:^|\n)mkdir -p "(?:\/blog|\/styles|\/scripts)"/);
+  assert.match(script,/set cmd:fail-exit yes/);
+  assert.match(script,/set ssl:verify-certificate yes/);
+  assert.match(script,/set ftp:ssl-force yes/);
+  assert.match(script,/mirror -R --delete --verbose blog "\/blog"/);
+  assert.doesNotMatch(script,/put -O "\/" sitemap\.xml/);
+});
+
+test('directory preflight confirms existing paths before any attempted mkdir',()=>{
+  const env={...remoteEnv,CMS_FTP_REMOTE_ROOT:'/',CMS_FTP_JAILED_PUBLIC_HTML:'true'};
+  const script=buildFtpsDirectoryProbeScript(env);
+  const lines=script.split('\n').filter(Boolean);
+  const mkdirs=lines.filter(x=>x.startsWith('mkdir '));
+  const checks=lines.filter(x=>x.startsWith('cls -1 '));
+  assert.deepEqual(checks,['cls -1 "/blog"','cls -1 "/styles"','cls -1 "/scripts"']);
+  assert.deepEqual(mkdirs,['mkdir -p -f "/blog"','mkdir -p -f "/styles"','mkdir -p -f "/scripts"']);
+  assert.ok(lines.indexOf(checks[2])<lines.indexOf(mkdirs[0]));
+  assert.doesNotMatch(script,/(?:^|\n)(?:put|mirror|rm|mput|delete|rmdir|mrm)\b/m);
+  assert.match(script,/set ssl:verify-certificate yes/);
+  assert.match(script,/set ftp:ssl-force yes/);
 });
 
 test('FTPS command file is private, not passed via argv, and deleted after success',async()=>{
