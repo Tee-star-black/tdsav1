@@ -17,7 +17,7 @@ Staff -> Publishing Studio on Cloud Run
                             |
                      Nunjucks static blog build
                             |
-                     Verified FTPS to DirectAdmin
+                     Verified explicit FTPS to cPanel-hosted website
                             |
                      teledoctorsa.co.za/blog/
 ~~~
