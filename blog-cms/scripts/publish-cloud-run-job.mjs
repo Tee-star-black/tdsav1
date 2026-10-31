@@ -1,6 +1,7 @@
 import {spawn} from 'node:child_process';
-import {readFile,stat} from 'node:fs/promises';
+import {mkdtemp,readFile,rm,stat,writeFile} from 'node:fs/promises';
 import path from 'node:path';
+import {tmpdir} from 'node:os';
 import {fileURLToPath} from 'node:url';
 import {getPgPool} from '../server/postgres.mjs';
 
@@ -71,6 +72,17 @@ export function buildFtpsScript(env=process.env){
   ].join('\n')+'\n';
 }
 
+// Safe diagnostic script: connection settings plus read-only file listings.
+// It deliberately excludes mirror, mkdir, put and the sitemap upload.
+export function buildFtpsProbeScript(env=process.env){
+  const commands=buildFtpsScript(env).split('\n').filter(
+    line=>line.startsWith('set ')||line.startsWith('open -u ')
+  );
+  if(commands.filter(line=>line.startsWith('open -u ')).length!==1)
+    throw new Error('Expected one validated FTPS login command.');
+  return [...commands,'cls -1 /index.html','cls -1 /sitemap.xml','cls -1 /','bye'].join('\n')+'\n';
+}
+
 export function spawnPublisherCommand(binary,args,{cwd=root,env=process.env,stdin=''}={}){
   return new Promise((resolve,reject)=>{
     const child=spawn(binary,args,{cwd,env,stdio:['pipe','inherit','inherit']});
@@ -79,6 +91,20 @@ export function spawnPublisherCommand(binary,args,{cwd=root,env=process.env,stdi
     child.stdin.on('error',reject);
     child.stdin.end(stdin);
   });
+}
+
+// Node's child_process 'pipe' can be socket-backed, so lftp -f /dev/stdin
+// fails when it attempts to reopen FD 0. Use a private ephemeral command file
+// instead, without putting FTP credentials in process command-line arguments.
+export async function runLftpScript(script,{run=spawnPublisherCommand,env=process.env}={}){
+  const directory=await mkdtemp(path.join(tmpdir(),'tdsa-ftps-'));
+  const scriptPath=path.join(directory,'commands.lftp');
+  try{
+    await writeFile(scriptPath,script,{mode:0o600,flag:'wx'});
+    await run('lftp',['--norc','-f',scriptPath],{cwd:siteRoot,env});
+  }finally{
+    await rm(directory,{recursive:true,force:true});
+  }
 }
 
 export async function verifyLiveBlog(slugs,{base='https://teledoctorsa.co.za',request=fetch}={}){
@@ -143,7 +169,7 @@ export async function runPublishingJob({
       logger.log('DRY RUN: No files uploaded. Set CMS_PUBLISH_DRY_RUN=false after acceptance.');
       return {ok:true,dryRun:true,count:articles.length};
     }
-    await run('lftp',['-f','/dev/stdin'],{cwd:siteRoot,env,stdin:ftpScript});
+    await runLftpScript(ftpScript,{run,env});
     await verify(articles.map(article=>article.slug),{base:env.CMS_PUBLISH_VERIFY_BASE_URL||'https://teledoctorsa.co.za'});
     logger.log('Published static blog verified on live website:',articles.length,'articles.');
     return {ok:true,dryRun:false,count:articles.length};

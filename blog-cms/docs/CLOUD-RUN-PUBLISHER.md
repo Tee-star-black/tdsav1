@@ -173,6 +173,33 @@ gcloud run jobs update tdsa-blog-publisher \
 support works.** The successful earlier image
 0ae91108-6de9-45a0-8f67-3e40917865f8 does NOT support this flag.
 
+## Read-only FTPS diagnostic inside Cloud Run
+
+A successful `CMS_PUBLISH_DRY_RUN=true` execution does **not** test FTP.
+Use the dedicated `scripts/probe-ftps.mjs` entrypoint for a separate
+read-only FTPS test. It refuses to run unless the Cloud Run Job has
+`CMS_PUBLISH_DRY_RUN=true` and runs only TLS configuration, login and
+`cls` directory listings against the verified cPanel webroot:
+
+~~~bash
+gcloud run jobs execute tdsa-blog-publisher \
+  --project=teledoctor-it --region=africa-south1 \
+  --args=scripts/probe-ftps.mjs --wait
+~~~
+
+Inspect the execution logs for
+`SUCCESS: Cloud Run verified read-only FTPS access` and file listings
+such as index.html and sitemap.xml. No `mkdir`, `mirror`, `put`, delete,
+or upload is allowed in this probe. One-off `--args` overrides only that
+execution, not the configured publisher job.
+
+The publisher and probe execute `lftp --norc -f` against a random
+temporary command file (private directory mode 0700, file mode 0600).
+This avoids reopening socket-backed `/dev/stdin` from Node's subprocesses
+and avoids putting the FTP password on the process command line.
+The command file is deleted in a finally block, including on failures.
+Cloud Run's filesystem is ephemeral. Never log this file's contents.
+
 Only after verified remote path, valid TLS, backups, fresh image, and an
 explicit decision to test a live publish should the job be changed:
 
