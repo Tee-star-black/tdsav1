@@ -9,7 +9,7 @@ GitHub remains the source-code repository and may run CI tests, but it is no lon
 3. The job connects directly to Cloud SQL and acquires a PostgreSQL advisory lock to serialize overlapping publishing executions.
 4. It exports only Published articles and rebuilds /blog/, article pages, feed, search index, CSS, JS and sitemap.
 5. By default it is a DRY RUN and does not connect to hosting.
-6. After acceptance, the job deploys to DirectAdmin over explicit FTP over TLS (FTPS). It checks the live feed against PostgreSQL, including withdrawal of the last article.
+6. After acceptance, the job deploys to cPanel over explicit FTP over TLS (FTPS). It checks the live feed against PostgreSQL, including withdrawal of the last article.
 
 The CMS reports a queued job, not a successful live deployment. Check Cloud Run Job executions and Cloud Logging. There is no automatic rollback if FTP delivery partially fails.
 
@@ -103,26 +103,78 @@ gcloud run deploy tdsa-blog-cms \
 
 Health should report publisherConfigured=true and publisherMode=cloud-run-job. Publish a temporary text-only article, confirm a dry-run job executes successfully, unpublish it and confirm another execution. No FTP, no GitHub Actions, no production traffic.
 
-## Step F: Configure DirectAdmin credentials for actual deployment
+## Step F: Configure cPanel FTPES (explicit FTPS) for actual deployment
 
-Confirm hosting supports explicit FTPS. Never disable TLS validation or switch to plaintext FTP. Take a hosting backup.
+**Do not turn off dry-run mode until this checklist passes.**
 
-Create these Secret Manager secrets through the Google Cloud console, without committing or displaying credential values:
+1. In **cPanel > Domains**, identify the actual **Document Root** for
+   teledoctorsa.co.za. The main domain may use public_html, but addon domains
+   can have a different directory. In **File Manager**, locate the existing
+   live /blog/, /styles/, /scripts/ and sitemap.xml files. Take an offline
+   backup of the current document root using **File Manager > Compress > Download**.
+   Back up the whole site before any --delete operation.
+2. In **cPanel > FTP Accounts**, create a **dedicated publisher account**, not
+   the primary cPanel account. Use a strong generated password. Set its
+   **Directory** to the exact domain document root (typically public_html for
+   the primary domain), NOT the automatically suggested subdirectory
+   public_html/<domain>/<account> and NOT just public_html/blog. The FTP account
+   must be jailed to this document root because the publisher also writes
+   /styles/blog.css, /scripts/blog.js and /sitemap.xml.
+3. In **FTP Accounts > Configure FTP Client**, identify the secure FTP server
+   hostname. cPanel warns that FTP does not support TLS SNI, so the FTP
+   hostname matching the server certificate may differ from the website domain.
+   Confirm **explicit FTP over TLS** is available (usually port 21). This
+   publisher does not support plaintext FTP or SFTP.
+4. **Read-only check:** log in using an FTPS client with certificate
+   verification enabled. Confirm remote path / corresponds to exactly the
+   selected website document root and contains the expected site files.
+   A dedicated cPanel FTP account jailed to public_html sees that directory
+   as /, even though File Manager displays /home/<cpanel-user>/public_html.
+   If this isn't true, stop. Do not guess, create nested public_html directories,
+   or disable certificate verification.
 
-- tdsa-blog-ftp-host: FTP hostname only, such as ftp.example.com.
-- tdsa-blog-ftp-user: restricted hosting username.
-- tdsa-blog-ftp-password: hosting account password.
-- tdsa-blog-ftp-root: absolute public_html directory such as /domains/teledoctorsa.co.za/public_html.
+Create the same four **Secret Manager** secrets used by the publisher job;
+never store values in Git, Cloud Shell history, chat or public logs:
 
-The job's service identity needs Secret Manager Secret Accessor on each of those specific secrets. Attach them to the job, not to the CMS service:
+- tdsa-blog-ftp-host: FTPS **server hostname** (not a URL).
+- tdsa-blog-ftp-user: dedicated full FTP username, often account@domain.
+- tdsa-blog-ftp-password: dedicated generated account password.
+- tdsa-blog-ftp-root: **/** only if FTP login is verified to be jailed to
+  the correct document root (cPanel FTP Directory above).
+
+For a dedicated account jailed to the document root, set this additional
+**non-secret Cloud Run JOB** environment variable:
 
 ~~~bash
 gcloud run jobs update tdsa-blog-publisher \
   --project=teledoctor-it --region=africa-south1 \
-  --update-secrets=CMS_FTP_HOST=tdsa-blog-ftp-host:latest,CMS_FTP_USERNAME=tdsa-blog-ftp-user:latest,CMS_FTP_PASSWORD=tdsa-blog-ftp-password:latest,CMS_FTP_REMOTE_ROOT=tdsa-blog-ftp-root:latest
+  --update-env-vars=CMS_FTP_JAILED_PUBLIC_HTML=true,CMS_PUBLISH_DRY_RUN=true
 ~~~
 
-After verifying the destination and backup, explicitly turn on live publishing:
+The publisher validates that / is used only with this explicit flag.
+The flag is an operator assertion; code cannot verify the account's FTP
+jail by itself. If instead using a non-jailed FTP account where the domain
+root appears in FTP as /public_html or /domains/example/public_html, leave
+CMS_FTP_JAILED_PUBLIC_HTML unset and use the exact FTP-visible absolute path
+in tdsa-blog-ftp-root. Prefer the jailed dedicated account for least privilege.
+
+The Cloud Run job service identity needs Secret Manager Secret Accessor on
+**these four specific secrets**. Attach them to the publisher JOB, not to
+the CMS service. First keep uploads disabled:
+
+~~~bash
+gcloud run jobs update tdsa-blog-publisher \
+  --project=teledoctor-it --region=africa-south1 \
+  --update-secrets=CMS_FTP_HOST=tdsa-blog-ftp-host:latest,CMS_FTP_USERNAME=tdsa-blog-ftp-user:latest,CMS_FTP_PASSWORD=tdsa-blog-ftp-password:latest,CMS_FTP_REMOTE_ROOT=tdsa-blog-ftp-root:latest \
+  --update-env-vars=CMS_PUBLISH_DRY_RUN=true
+~~~
+
+**The publisher must be rebuilt from current main before this new /-jail
+support works.** The successful earlier image
+0ae91108-6de9-45a0-8f67-3e40917865f8 does NOT support this flag.
+
+Only after verified remote path, valid TLS, backups, fresh image, and an
+explicit decision to test a live publish should the job be changed:
 
 ~~~bash
 gcloud run jobs update tdsa-blog-publisher \
@@ -130,7 +182,11 @@ gcloud run jobs update tdsa-blog-publisher \
   --update-env-vars=CMS_PUBLISH_DRY_RUN=false
 ~~~
 
-Execute the job manually and inspect both its execution and the actual website. The job compares live /blog/feed.json article slugs to the database. If FTPS or remote paths are not supported, KEEP DRY RUN ON and adapt/test the transfer. The FTP publication is not globally atomic; a failed transfer may require restoring the hosting backup.
+Execute the job, verify live /blog/feed.json and its article pages against
+Cloud SQL, test a withdrawal, and inspect the live sitemap. The lftp upload
+is not atomic: a failed transfer can leave a partial site and may require
+restoring the downloaded backup. The mirror --delete operates under /blog/
+only, but overwrites styles/blog.css, scripts/blog.js and sitemap.xml.
 
 ## Final go-live and rollback
 
