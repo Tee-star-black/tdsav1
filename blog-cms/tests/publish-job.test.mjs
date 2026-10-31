@@ -26,7 +26,9 @@ test('FTP publisher forces encryption and never deletes outside /blog',()=>{
   assert.match(script,/set ssl:verify-certificate yes/);
   assert.match(script,/mirror -R --delete --verbose blog "\/domains\/teledoctorsa.co.za\/public_html\/blog"/);
   assert.doesNotMatch(script,/mirror -R --delete --verbose \.\s/);
-  assert.match(script,/sitemap\.xml/);
+  assert.doesNotMatch(script,/put -O .* sitemap\.xml/, 'Do not replace the live root sitemap by default.');
+  const optedIn=buildFtpsScript({...remoteEnv,CMS_PUBLISH_UPLOAD_ROOT_SITEMAP:'true'});
+  assert.match(optedIn,/put -O .* sitemap\.xml/);
 });
 
 test('FTP settings reject root, traversal and plaintext-untrusted host inputs',()=>{
@@ -53,7 +55,8 @@ test('cPanel jailed FTP account can publish to document-root / only when explici
   assert.match(script,/mirror -R --delete --verbose blog "\/blog"/);
   assert.match(script,/put -O "\/styles" styles\/blog\.css/);
   assert.match(script,/put -O "\/scripts" scripts\/blog\.js/);
-  assert.match(script,/put -O "\/" sitemap\.xml/);
+  assert.doesNotMatch(script,/put -O "\/" sitemap\.xml/);
+  assert.match(buildFtpsScript({...cpanel,CMS_PUBLISH_UPLOAD_ROOT_SITEMAP:'true'}),/put -O "\/" sitemap\.xml/);
   assert.doesNotMatch(script,/mirror -R --delete --verbose blog "\/"/);
   assert.doesNotMatch(script,/mirror -R --delete --verbose \. /);
 
