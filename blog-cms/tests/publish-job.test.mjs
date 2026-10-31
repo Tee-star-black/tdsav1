@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {access,readFile,stat} from 'node:fs/promises';
 import path from 'node:path';
-import {buildFtpsScript,publishingDryRun,runLftpScript,runPublishingJob,verifyLiveBlog} from '../scripts/publish-cloud-run-job.mjs';
+import {buildFtpsProbeScript,buildFtpsScript,publishingDryRun,runLftpScript,runPublishingJob,verifyLiveBlog} from '../scripts/publish-cloud-run-job.mjs';
 
 const remoteEnv={
   CMS_FTP_HOST:'ftp.example.test',
@@ -66,6 +66,16 @@ test('cPanel jailed FTP account can publish to document-root / only when explici
   assert.throws(()=>buildFtpsScript({...cpanel,CMS_FTP_JAILED_PUBLIC_HTML:'yes'}),/CMS_FTP_JAILED_PUBLIC_HTML/);
   assert.throws(()=>buildFtpsScript({...cpanel,CMS_FTP_REMOTE_ROOT:'/public_html'}),/CMS_FTP_REMOTE_ROOT/);
   assert.throws(()=>buildFtpsScript({...cpanel,CMS_FTP_REMOTE_ROOT:'/../../public_html'}),/CMS_FTP_REMOTE_ROOT/);
+});
+
+test('read-only Cloud Run probe never contains FTP write commands',()=>{
+  const script=buildFtpsProbeScript({...remoteEnv,CMS_FTP_REMOTE_ROOT:'/',CMS_FTP_JAILED_PUBLIC_HTML:'true'});
+  assert.match(script,/set ssl:verify-certificate yes/);
+  assert.match(script,/set ftp:ssl-force yes/);
+  assert.match(script,/cls -1 \/index\.html/);
+  assert.match(script,/cls -1 \/sitemap\.xml/);
+  assert.doesNotMatch(script,/(?:^|\n)(?:mkdir|mirror|put|rm|mput|mv|chmod|delete|rmdir|mrm)\b/m);
+  assert.equal(script.split('\n').filter(line=>line.startsWith('open -u ')).length,1);
 });
 
 test('FTPS command file is private, not passed via argv, and deleted after success',async()=>{
