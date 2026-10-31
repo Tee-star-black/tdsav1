@@ -107,7 +107,7 @@ The publisher task is packaged in the same CMS Docker image. It runs as a **Clou
 npm run publish:job
 ~~~
 
-The job requires Cloud SQL, PostgreSQL credentials, and optionally encrypted FTPS hosting secrets. It defaults to CMS_PUBLISH_DRY_RUN=true, **which never uploads to the website**. The CMS service needs roles/run.invoker on the publisher JOB only once the administrator has configured it.
+The job requires Cloud SQL, PostgreSQL credentials, and optionally explicit FTPS hosting secrets. On cPanel, use a dedicated FTP account restricted to the domain document root. See docs/CLOUD-RUN-PUBLISHER.md for jailed FTP root / support. It defaults to CMS_PUBLISH_DRY_RUN=true, **which never uploads to the website**. The CMS service needs roles/run.invoker on the publisher JOB only once the administrator has configured it.
 
 Read docs/CLOUD-RUN-PUBLISHER.md for the precise deployment commands, IAM and Secret Manager setup, manual dry-run acceptance, FTPS configuration and rollback.
 
