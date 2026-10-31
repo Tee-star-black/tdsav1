@@ -72,6 +72,17 @@ export function buildFtpsScript(env=process.env){
   ].join('\n')+'\n';
 }
 
+// Safe diagnostic script: connection settings plus read-only file listings.
+// It deliberately excludes mirror, mkdir, put and the sitemap upload.
+export function buildFtpsProbeScript(env=process.env){
+  const commands=buildFtpsScript(env).split('\n').filter(
+    line=>line.startsWith('set ')||line.startsWith('open -u ')
+  );
+  if(commands.filter(line=>line.startsWith('open -u ')).length!==1)
+    throw new Error('Expected one validated FTPS login command.');
+  return [...commands,'cls -1 /index.html','cls -1 /sitemap.xml','cls -1 /','bye'].join('\n')+'\n';
+}
+
 export function spawnPublisherCommand(binary,args,{cwd=root,env=process.env,stdin=''}={}){
   return new Promise((resolve,reject)=>{
     const child=spawn(binary,args,{cwd,env,stdio:['pipe','inherit','inherit']});
