@@ -82,4 +82,8 @@ jobs:
         run: |
           docker build -f blog-cms/Dockerfile -t tdsa-cms-publisher:ci .
           docker run --rm --entrypoint sh tdsa-cms-publisher:ci -c "command -v lftp && test -s /app/sitemap.xml && node --check /app/blog-cms/scripts/publish-cloud-run-job.mjs"
+          docker run --rm --entrypoint node tdsa-cms-publisher:ci \
+            --input-type=module \
+            -e 'import {runLftpScript} from "./scripts/publish-cloud-run-job.mjs"; await runLftpScript("set cmd:fail-exit yes\necho LFTP_SMOKE_OK\nbye\n");' \
+            | grep -F LFTP_SMOKE_OK
 
