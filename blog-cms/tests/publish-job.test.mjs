@@ -37,6 +37,32 @@ test('FTP settings reject root, traversal and plaintext-untrusted host inputs',(
   assert.throws(()=>buildFtpsScript({...remoteEnv,CMS_FTP_PASSWORD:'bad\npassword'}),/Invalid FTP setting/);
 });
 
+test('cPanel jailed FTP account can publish to document-root / only when explicitly enabled',()=>{
+  const cpanel={...remoteEnv,
+    CMS_FTP_REMOTE_ROOT:'/',
+    CMS_FTP_JAILED_PUBLIC_HTML:'true'
+  };
+  const script=buildFtpsScript(cpanel);
+  assert.match(script,/open -u "editor","secret-value"/);
+  assert.match(script,/set ftp:ssl-force yes/);
+  assert.match(script,/set ftp:ssl-protect-data yes/);
+  assert.match(script,/set ssl:verify-certificate yes/);
+  assert.match(script,/mkdir -p "\/blog"/);
+  assert.match(script,/mkdir -p "\/styles"/);
+  assert.match(script,/mkdir -p "\/scripts"/);
+  assert.match(script,/mirror -R --delete --verbose blog "\/blog"/);
+  assert.match(script,/put -O "\/styles" styles\/blog\.css/);
+  assert.match(script,/put -O "\/scripts" scripts\/blog\.js/);
+  assert.match(script,/put -O "\/" sitemap\.xml/);
+  assert.doesNotMatch(script,/mirror -R --delete --verbose blog "\/"/);
+  assert.doesNotMatch(script,/mirror -R --delete --verbose \. /);
+
+  assert.throws(()=>buildFtpsScript({...cpanel,CMS_FTP_JAILED_PUBLIC_HTML:'false'}),/CMS_FTP_JAILED_PUBLIC_HTML/);
+  assert.throws(()=>buildFtpsScript({...cpanel,CMS_FTP_JAILED_PUBLIC_HTML:'yes'}),/CMS_FTP_JAILED_PUBLIC_HTML/);
+  assert.throws(()=>buildFtpsScript({...cpanel,CMS_FTP_REMOTE_ROOT:'/public_html'}),/CMS_FTP_REMOTE_ROOT/);
+  assert.throws(()=>buildFtpsScript({...cpanel,CMS_FTP_REMOTE_ROOT:'/../../public_html'}),/CMS_FTP_REMOTE_ROOT/);
+});
+
 test('default publisher execution builds from PostgreSQL but cannot touch FTP',async()=>{
   const log=[];
   const out=await runPublishingJob({

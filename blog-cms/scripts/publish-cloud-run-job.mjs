@@ -28,14 +28,25 @@ export function buildFtpsScript(env=process.env){
     throw new Error('CMS_FTP_HOST must be an FTP hostname (optionally with a port).');
   const user=lftpQuote(env.CMS_FTP_USERNAME);
   const password=lftpQuote(env.CMS_FTP_PASSWORD);
-  const remote=String(env.CMS_FTP_REMOTE_ROOT||'').replace(/\/+$/,'');
-  if(!remote.startsWith('/')||remote==='/'
-    || !remote.split('/').includes('public_html')
-    || !/^\/[A-Za-z0-9._/-]+$/.test(remote)
-    || remote.split('/').some(segment=>segment==='..'||segment==='.')){
-    throw new Error('CMS_FTP_REMOTE_ROOT must be an absolute public_html directory without traversal.');
+  const configuredRoot=String(env.CMS_FTP_REMOTE_ROOT||'').trim();
+  const ftpAccountJailed=String(env.CMS_FTP_JAILED_PUBLIC_HTML||'').trim().toLowerCase()==='true';
+  const remote=configuredRoot==='/'?'/':configuredRoot.replace(/\/+$/,'');
+  const remoteIsExplicitPublicHtml=remote!=='/'
+    && remote.startsWith('/')
+    && remote.split('/').includes('public_html')
+    && /^\/[A-Za-z0-9._/-]+$/.test(remote)
+    && !remote.split('/').some(segment=>segment==='..'||segment==='.');
+  if(remote==='/'){
+    if(!ftpAccountJailed){
+      throw new Error('CMS_FTP_REMOTE_ROOT=/ requires CMS_FTP_JAILED_PUBLIC_HTML=true and a verified FTP account restricted to the website document root.');
+    }
+  }else if(!remoteIsExplicitPublicHtml||ftpAccountJailed){
+    throw new Error('CMS_FTP_REMOTE_ROOT must contain public_html, or be / with CMS_FTP_JAILED_PUBLIC_HTML=true for a restricted cPanel FTP account.');
   }
-  const target=remote.replace(/\/+/g,'/');
+  // A cPanel FTP account whose home directory is public_html sees it as '/'.
+  // Keep deletions confined to /blog and never mirror the entire document root.
+  const target=remote==='/'?'':remote.replace(/\/+/g,'/');
+  const remotePath=(suffix)=>target+suffix;
   return [
     'set cmd:fail-exit yes',
     'set net:max-retries 2',
@@ -45,13 +56,13 @@ export function buildFtpsScript(env=process.env){
     'set ftp:ssl-protect-data yes',
     'set ftp:passive-mode yes',
     'open -u '+user+','+password+' '+lftpQuote('ftp://'+host),
-    'mkdir -p '+lftpQuote(target+'/blog'),
-    'mkdir -p '+lftpQuote(target+'/styles'),
-    'mkdir -p '+lftpQuote(target+'/scripts'),
-    'mirror -R --delete --verbose blog '+lftpQuote(target+'/blog'),
-    'put -O '+lftpQuote(target+'/styles')+' styles/blog.css',
-    'put -O '+lftpQuote(target+'/scripts')+' scripts/blog.js',
-    'put -O '+lftpQuote(target)+' sitemap.xml',
+    'mkdir -p '+lftpQuote(remotePath('/blog')),
+    'mkdir -p '+lftpQuote(remotePath('/styles')),
+    'mkdir -p '+lftpQuote(remotePath('/scripts')),
+    'mirror -R --delete --verbose blog '+lftpQuote(remotePath('/blog')),
+    'put -O '+lftpQuote(remotePath('/styles'))+' styles/blog.css',
+    'put -O '+lftpQuote(remotePath('/scripts'))+' scripts/blog.js',
+    'put -O '+lftpQuote(target||'/')+' sitemap.xml',
     'bye'
   ].join('\n')+'\n';
 }
