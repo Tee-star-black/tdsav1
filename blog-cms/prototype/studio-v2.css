@@ -42,7 +42,11 @@
 .temporary-password>span{display:block;font-size:9px;letter-spacing:.12em;font-weight:800;color:#177d84}
 .temporary-password strong{display:block;font:700 18px/1.3 'DM Sans';letter-spacing:.04em;margin:8px 0;word-break:break-all;color:#17314b}
 .temporary-password p{font-size:10px;line-height:1.5;color:var(--muted);margin:0 0 12px}
-.staff-list{display:grid;margin-top:20px;border-top:1px solid var(--line)}
+.staff-list-heading{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-top:22px}
+.staff-list-heading strong{font:700 13px Manrope;color:#142a40}
+.staff-list-heading button{padding:9px 12px;border:1px solid var(--line);background:#fff;color:#304b60;font-size:11px;font-weight:700;cursor:pointer}
+.staff-list-heading button:hover,.staff-list-heading button:focus-visible{border-color:#178e96;color:#096976}
+.staff-list{display:grid;margin-top:12px;border-top:1px solid var(--line)}
 .staff-row{display:grid;grid-template-columns:minmax(0,1fr) 100px 118px;gap:14px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
 .staff-row h3{font:700 12px Manrope;margin:0 0 3px}
 .staff-row p{font-size:10px;color:var(--muted);margin:0}
