@@ -1,5 +1,6 @@
 const api=window.TDSACmsApi;
 let state={articles:[],categories:[],media:[],health:null,currentUser:null,users:[]};
+let staffListState='idle',staffListError='';
 let activeFilter='all';
 let editingId=null;
 let editingRevision='', editorBaseline='', saving=false, page=1;
@@ -215,7 +216,9 @@ function renderSettings(){
 
 function renderStaffList(){
   const target=$('#staffList');if(!target)return;
-  if(!state.users.length){target.innerHTML='<div class="media-empty">No staff accounts loaded.</div>';return;}
+  if(staffListState==='loading'){target.innerHTML='<div class="media-empty" role="status">Loading staff accounts...</div>';return;}
+  if(staffListState==='error'){target.innerHTML='<div class="media-empty" role="alert">Unable to load staff accounts: '+escapeHtml(staffListError)+'. Select Refresh accounts to retry.</div>';return;}
+  if(!state.users.length){target.innerHTML='<div class="media-empty">No staff accounts found.</div>';return;}
   target.innerHTML=state.users.map(user=>`<article class="staff-row"><div><h3>${escapeHtml(user.name)}</h3><p>${escapeHtml(user.email)}</p></div><span>${escapeHtml(user.role)}</span><div class="staff-actions"><button type="button" data-user-reset="${escapeHtml(user.id)}" aria-label="Reset password for ${escapeHtml(user.name)}">Reset</button><button class="remove" type="button" data-user-remove="${escapeHtml(user.id)}" ${user.id===state.currentUser?.id?'disabled title="This is your signed-in account"':''} aria-label="Remove ${escapeHtml(user.name)}">×</button></div></article>`).join('');
   $$('[data-user-reset]').forEach(button=>button.addEventListener('click',async()=>{
     const user=state.users.find(item=>item.id===button.dataset.userReset);if(!user)return;
@@ -241,8 +244,15 @@ function renderStaffList(){
 async function loadSettings(){
   renderSettings();
   if(state.currentUser?.role!=='admin'||state.currentUser?.development||state.currentUser?.legacy)return;
-  try{state.users=await api.listUsers();renderStaffList();}
-  catch(error){notify('Staff accounts unavailable',errorMessage(error));}
+  staffListState='loading';renderStaffList();
+  try{
+    const users=await api.listUsers();
+    if(!Array.isArray(users))throw new Error('Unexpected staff account response.');
+    state.users=users;staffListState='ready';staffListError='';renderStaffList();
+  }catch(error){
+    staffListState='error';staffListError=errorMessage(error);renderStaffList();
+    notify('Staff accounts unavailable',staffListError);
+  }
 }
 
 function showView(name){
@@ -425,6 +435,7 @@ async function signOut(){
   currentUserEl.hidden=true;
   if(sidebarCurrentUserEl)sidebarCurrentUserEl.textContent='TeleDoctorSA staff';
   state={articles:[],categories:[],media:[],health:null,currentUser:null,users:[]};
+  staffListState='idle';staffListError='';
   render();
   showLogin('You have signed out.');
   signOutBtn.disabled=false;
@@ -470,14 +481,15 @@ $('#editorAddCategory').addEventListener('click',()=>addCategory(true));
 
 $('#passwordForm').addEventListener('submit',async event=>{
   event.preventDefault();
+  const form=event.currentTarget;
   const current=$('#currentPassword').value,newPassword=$('#newPassword').value,confirmPassword=$('#confirmPassword').value,box=$('#passwordFeedback');
   box.hidden=true;
   if(newPassword!==confirmPassword){box.textContent='The new passwords do not match.';box.hidden=false;return;}
   if(newPassword.length<10){box.textContent='Use a password of at least 10 characters.';box.hidden=false;return;}
-  const button=event.currentTarget.querySelector('button[type="submit"]');button.disabled=true;
+  const button=form.querySelector('button[type="submit"]');button.disabled=true;
   try{
     await api.changePassword(current,newPassword);
-    event.currentTarget.reset();
+    form.reset();
     state.currentUser=null;
     currentUserEl.hidden=true;
     showLogin('Password changed. Sign in again with your new password.');
@@ -487,23 +499,42 @@ $('#passwordForm').addEventListener('submit',async event=>{
 
 $('#staffForm').addEventListener('submit',async event=>{
   event.preventDefault();
-  const button=event.currentTarget.querySelector('button[type="submit"]');button.disabled=true;
+  // DOM Event.currentTarget is cleared once the submit event dispatch returns.
+  // Keep the form reference before awaiting the server response.
+  const form=event.currentTarget;
+  const button=form.querySelector('button[type="submit"]');button.disabled=true;
   try{
     const result=await api.createUser({name:$('#staffName').value.trim(),email:$('#staffEmail').value.trim(),role:$('#staffRole').value});
-    event.currentTarget.reset();
-    const box=$('#temporaryPasswordBox');
+    form.reset();
     $('#temporaryPassword').textContent=result.temporaryPassword||'Password supplied separately';
-    box.hidden=false;
-    state.users=await api.listUsers();
+    $('#temporaryPasswordBox').hidden=false;
+    // Show the confirmed account immediately. A subsequent list-request failure
+    // must never be reported as a failed account creation or hide the password.
+    state.users=[...state.users.filter(user=>user.id!==result.user.id),result.user]
+      .sort((a,b)=>a.name.localeCompare(b.name));
+    staffListState='ready';staffListError='';
     renderStaffList();
     notify('Staff account created',`${result.user.name} can now use the Publishing Studio.`);
-  }catch(error){notify('Account not created',errorMessage(error));}
-  finally{button.disabled=false;}
+    try{
+      const users=await api.listUsers();
+      if(!Array.isArray(users))throw new Error('Unexpected staff account response.');
+      state.users=users;renderStaffList();
+    }catch(error){
+      notify('Account created; list not refreshed','The new account was saved. Select Refresh accounts to reload the full list.');
+    }
+  }catch(error){
+    if(error?.status===409){
+      await loadSettings();
+      notify('Account already exists','This email is already registered. Find the account below and use Reset to issue a new temporary password.');
+    }else notify('Account not created',errorMessage(error));
+  }finally{button.disabled=false;}
 });
+$('#refreshStaffBtn').addEventListener('click',()=>{void loadSettings();});
 
 $('#copyTemporaryPassword').addEventListener('click',async event=>{
+  const button=event.currentTarget;
   const value=$('#temporaryPassword').textContent;
-  try{await navigator.clipboard.writeText(value);event.currentTarget.textContent='Copied';setTimeout(()=>event.currentTarget.textContent='Copy password',1600);}
+  try{await navigator.clipboard.writeText(value);button.textContent='Copied';setTimeout(()=>button.textContent='Copy password',1600);}
   catch{notify('Could not copy','Select the temporary password and copy it manually.');}
 });
 
