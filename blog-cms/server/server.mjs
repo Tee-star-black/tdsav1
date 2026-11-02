@@ -123,6 +123,13 @@ async function triggerDeploy(reason){
 }
 
 async function api(req,res,url){
+  if(!['GET','HEAD','OPTIONS'].includes(req.method)){
+    const origin=String(req.headers.origin||'');
+    const fetchSite=String(req.headers['sec-fetch-site']||'');
+    if(fetchSite==='cross-site'||(origin&&new URL(origin).host!==String(req.headers.host||''))){
+      return json(req,res,403,{error:'Cross-origin modification denied.'});
+    }
+  }
   if(req.method==='OPTIONS'){
     const headers=originHeaders(req);
     if(req.headers.origin&&allowedOrigins.length&&Object.keys(headers).length===0)return json(req,res,403,{error:'Origin not allowed.'});
@@ -136,7 +143,7 @@ async function api(req,res,url){
 
   const parts=url.pathname.replace(/^\/api\/?/,'').split('/').filter(Boolean);
   if(parts[0]==='health'&&req.method==='GET'){
-    return json(req,res,200,{...(await repo.health()),studioBuild:'2026.09.24.1',authBackend:auth.backendName||'file',authRequired:(await auth.hasUsers())||Boolean(accessToken),publisherConfigured:Boolean(publisher.job),publisherMode:'cloud-run-job',mediaUploadsEnabled});
+    return json(req,res,200,{ok:true});
   }
 
   if(parts[0]==='auth'&&parts[1]==='google'&&parts[2]==='config'&&req.method==='GET'){
@@ -368,8 +375,10 @@ async function serveFile(res,filePath){
   try{
     const info=await stat(filePath);
     if(info.isDirectory())filePath=path.join(filePath,'index.html');
+    const extension=path.extname(filePath).toLowerCase();
+    if(!Object.hasOwn(MIME,extension))throw new Error('Blocked file type');
     const data=await readFile(filePath);
-    res.writeHead(200,{'Content-Type':MIME[path.extname(filePath).toLowerCase()]||'application/octet-stream','Cache-Control':'no-store'});
+    res.writeHead(200,{'Content-Type':MIME[extension],'Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','X-Frame-Options':'DENY'});
     res.end(data);
   }catch{
     res.writeHead(404,{'Content-Type':'text/plain; charset=utf-8'});
@@ -385,12 +394,13 @@ function safeResolve(base,relative){
 const server=http.createServer(async(req,res)=>{
   try{
     const url=new URL(req.url,`http://${req.headers.host||'127.0.0.1'}`);
+    if(url.pathname.split('/').some(segment=>segment.startsWith('.'))||/%2e|%2f|%5c/i.test(req.url||''))return json(req,res,404,{error:'Not found.'});
     if(url.pathname.startsWith('/api/'))return await api(req,res,url);
     if(url.pathname==='/')return redirect(res,'/prototype/');
     if(await devBlog(req,res,url))return;
     if(url.pathname==='/prototype')return redirect(res,'/prototype/');
     if(url.pathname==='/public-preview')return redirect(res,'/public-preview/');
-    if(url.pathname.startsWith('/uploads/'))return serveFile(res,path.join(cmsRoot,'server',url.pathname));
+    if(url.pathname.startsWith('/uploads/'))return json(req,res,404,{error:'Not found.'});
     if(url.pathname.startsWith('/prototype/')){
       const target=safeResolve(path.join(cmsRoot,'prototype'),url.pathname.replace('/prototype',''));
       return target?serveFile(res,target):json(req,res,400,{error:'Invalid path.'});
@@ -404,8 +414,12 @@ const server=http.createServer(async(req,res)=>{
       return target?serveFile(res,target):json(req,res,400,{error:'Invalid path.'});
     }
     if(url.pathname.split('/').some(segment=>segment.startsWith('.'))||url.pathname.startsWith('/blog-cms/'))return json(req,res,404,{error:'Not found.'});
-    const siteTarget=safeResolve(siteRoot,url.pathname);
-    if(siteTarget)return serveFile(res,siteTarget);
+    const publicPrefixes=['/images/','/styles/','/scripts/','/assets/','/fonts/'];
+    const rootAssets=new Set(['/favicon.ico','/favicon.png','/apple-touch-icon.png','/android-chrome-512x512.png','/robots.txt']);
+    if(publicPrefixes.some(prefix=>url.pathname.startsWith(prefix))||rootAssets.has(url.pathname)){
+      const siteTarget=safeResolve(siteRoot,url.pathname);
+      if(siteTarget)return serveFile(res,siteTarget);
+    }
     res.writeHead(404);
     res.end('Not found');
   }catch(error){
