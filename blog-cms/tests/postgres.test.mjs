@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {newDb} from 'pg-mem';
 import {PostgresRepository} from '../server/postgres-repository.mjs';
+import {createPgPool} from '../server/postgres.mjs';
 import {PostgresAuthStore} from '../server/postgres-auth.mjs';
 
 async function setup(){
@@ -81,4 +82,19 @@ test('Postgres auth hashes credentials and persists sessions',async()=>{
     assert.notEqual(stored.password_hash,testPassword);
     assert.ok(stored.password_salt);
   }finally{await pool.end();}
+});
+
+
+test('PostgreSQL pool uses conservative defaults and handles idle client errors',async()=>{
+  const previous=process.env.PGPOOL_MAX;
+  delete process.env.PGPOOL_MAX;
+  const pool=createPgPool();
+  try{
+    assert.equal(pool.options.max,5);
+    assert.ok(pool.listenerCount('error')>0);
+  }finally{
+    await pool.end();
+    if(previous===undefined)delete process.env.PGPOOL_MAX;
+    else process.env.PGPOOL_MAX=previous;
+  }
 });
