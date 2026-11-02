@@ -26,7 +26,7 @@ const MAX_JSON_BYTES=9*1024*1024;
 const loginAttempts=new Map();
 const LOGIN_WINDOW_MS=15*60*1000;
 const LOGIN_LIMIT=8;
-function loginKey(req,email){return `${req.socket.remoteAddress||'unknown'}:${String(email||'').trim().toLowerCase()}`;}
+function loginKey(req,email){return String(email||'').trim().toLowerCase().slice(0,254);}
 function loginBlocked(key){const now=Date.now();const record=loginAttempts.get(key);if(!record||now-record.start>LOGIN_WINDOW_MS){loginAttempts.set(key,{start:now,count:0});return false;}return record.count>=LOGIN_LIMIT;}
 function recordLoginFailure(key){const record=loginAttempts.get(key);if(record)record.count++;if(loginAttempts.size>20000){for(const [k,v] of loginAttempts){if(Date.now()-v.start>LOGIN_WINDOW_MS)loginAttempts.delete(k);}if(loginAttempts.size>20000)loginAttempts.clear();}}
 function clearLoginFailure(key){loginAttempts.delete(key);}
@@ -126,7 +126,9 @@ async function api(req,res,url){
   if(!['GET','HEAD','OPTIONS'].includes(req.method)){
     const origin=String(req.headers.origin||'');
     const fetchSite=String(req.headers['sec-fetch-site']||'');
-    if(fetchSite==='cross-site'||(origin&&new URL(origin).host!==String(req.headers.host||''))){
+    let originHost='';
+    try{if(origin)originHost=new URL(origin).host;}catch{return json(req,res,403,{error:'Cross-origin modification denied.'});}
+    if(fetchSite==='cross-site'||(origin&&originHost!==String(req.headers.host||''))){
       return json(req,res,403,{error:'Cross-origin modification denied.'});
     }
   }
@@ -424,7 +426,8 @@ const server=http.createServer(async(req,res)=>{
     res.end('Not found');
   }catch(error){
     console.error(error);
-    json(req,res,error.statusCode||500,{error:error.message||'Unexpected server error.',details:error.details||[]});
+    const status=Number.isInteger(error.statusCode)&&error.statusCode>=400&&error.statusCode<500?error.statusCode:500;
+    json(req,res,status,{error:status===500?'Internal server error.':(error.message||'Request rejected.'),...(status!==500&&error.details?{details:error.details}:{})});
   }
 });
 
