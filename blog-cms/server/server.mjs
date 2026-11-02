@@ -131,7 +131,11 @@ async function api(req,res,url){
     const fetchSite=String(req.headers['sec-fetch-site']||'');
     let originHost='';
     try{if(origin)originHost=new URL(origin).host;}catch{return json(req,res,403,{error:'Cross-origin modification denied.'});}
-    if(fetchSite==='cross-site'||(origin&&originHost!==String(req.headers.host||''))){
+    // Cloud Run and Cloud Shell reverse proxies may rewrite Host while the browser
+    // still makes a genuine same-origin request. Sec-Fetch-Site is browser-managed.
+    // Preserve strict Host comparison when that signal is absent.
+    const browserSameOrigin=fetchSite==='same-origin';
+    if(fetchSite==='cross-site'||(origin&&!browserSameOrigin&&originHost!==String(req.headers.host||''))){
       return json(req,res,403,{error:'Cross-origin modification denied.'});
     }
   }
