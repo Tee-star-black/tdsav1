@@ -320,3 +320,14 @@ img{max-width:100%;height:auto}
  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
  .story-card:hover{transform:none}
 }
+
+/* Editorial publication: monochrome foundations, minimal accents, crisp surfaces */
+:root{--ink:#1b252a;--ink-soft:#3f4a50;--muted:#67747c;--line:#e0e4e5;--paper:#fff;--canvas:#fafafa;--orange:#285c62;--orange-soft:#f0f4f3;--navy:#172d32;--cream:#fafafa}
+body{font-family:'DM Sans',Arial,sans-serif}
+h1,h2,h3{letter-spacing:-.035em}
+.site-header{background:#fff;box-shadow:none}
+.site-header nav a.active,.site-header nav a:hover{border-bottom-color:#285c62}
+.publication-masthead{background:#fff}
+button,input,select,textarea,.article-card,.story-card,.feature-card{border-radius:2px!important}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #285c62;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
