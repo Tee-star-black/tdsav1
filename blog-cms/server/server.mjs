@@ -6,6 +6,7 @@ import {timingSafeEqual} from 'node:crypto';
 import {createAuthStore} from './auth-factory.mjs';
 import {createGoogleStaffLogin} from './google-auth.mjs';
 import {createRepository} from './repository.mjs';
+import {getPgPool} from './postgres.mjs';
 import {publishJobConfig,triggerPublishJob} from './publish-dispatch.mjs';
 
 const here=path.dirname(fileURLToPath(import.meta.url));
@@ -194,6 +195,18 @@ async function api(req,res,url){
   if(parts[0]==='auth'&&parts[1]==='me'&&req.method==='GET'){
     const user=await currentCmsUser(req);
     return user?json(req,res,200,{user}):json(req,res,401,{error:'CMS sign-in is required.'});
+  }
+
+  if(parts[0]==='internal'&&parts[1]==='db-ready'&&parts.length===2&&req.method==='GET'){
+    if(!internalToken||!secretMatches(internalToken,req.headers['x-cms-internal-token']))return json(req,res,401,{error:'Internal authentication required.'});
+    if(repo.backendName!=='postgres'||auth.backendName!=='postgres')return json(req,res,503,{ok:false});
+    try{
+      await getPgPool().query({text:'SELECT 1',query_timeout:3000});
+      return json(req,res,200,{ok:true});
+    }catch(error){
+      console.error('CMS database readiness failed:',error?.code||error?.message||'connection failed');
+      return json(req,res,503,{ok:false});
+    }
   }
 
   if(parts[0]==='internal'&&parts[1]==='publish-due'&&req.method==='POST'){
