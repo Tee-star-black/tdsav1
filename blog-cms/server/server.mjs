@@ -6,6 +6,7 @@ import {timingSafeEqual} from 'node:crypto';
 import {createAuthStore} from './auth-factory.mjs';
 import {createGoogleStaffLogin} from './google-auth.mjs';
 import {createRepository} from './repository.mjs';
+import {getPgPool} from './postgres.mjs';
 import {publishJobConfig,triggerPublishJob} from './publish-dispatch.mjs';
 
 const here=path.dirname(fileURLToPath(import.meta.url));
@@ -22,6 +23,14 @@ const repo=createRepository();
 const port=Number(process.env.PORT||8790);
 const host=process.env.CMS_HOST||'127.0.0.1';
 const MAX_JSON_BYTES=9*1024*1024;
+// Per-instance defence in depth. Put a shared rate limiter at the edge before public launch.
+const loginAttempts=new Map();
+const LOGIN_WINDOW_MS=15*60*1000;
+const LOGIN_LIMIT=8;
+function loginKey(req,email){return String(email||'').trim().toLowerCase().slice(0,254);}
+function loginBlocked(key){const now=Date.now();const record=loginAttempts.get(key);if(!record||now-record.start>LOGIN_WINDOW_MS){loginAttempts.set(key,{start:now,count:0});return false;}return record.count>=LOGIN_LIMIT;}
+function recordLoginFailure(key){const record=loginAttempts.get(key);if(record)record.count++;if(loginAttempts.size>20000){for(const [k,v] of loginAttempts){if(Date.now()-v.start>LOGIN_WINDOW_MS)loginAttempts.delete(k);}if(loginAttempts.size>20000)loginAttempts.clear();}}
+function clearLoginFailure(key){loginAttempts.delete(key);}
 const accessToken=String(process.env.CMS_ACCESS_TOKEN||'');
 const auth=createAuthStore();
 const googleStaffLogin=createGoogleStaffLogin({secure:auth.cookieSecure});
@@ -48,6 +57,11 @@ function originHeaders(req){
 
 function json(req,res,status,payload){
   res.writeHead(status,{
+    'Content-Security-Policy':"default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'",
+    'Permissions-Policy':'camera=(), microphone=(), geolocation=()',
+    'X-Content-Type-Options':'nosniff',
+    'Referrer-Policy':'no-referrer',
+    'X-Frame-Options':'DENY',
     'Content-Type':'application/json; charset=utf-8',
     ...originHeaders(req),
     'Access-Control-Allow-Headers':'Content-Type, Authorization',
@@ -112,6 +126,19 @@ async function triggerDeploy(reason){
 }
 
 async function api(req,res,url){
+  if(!['GET','HEAD','OPTIONS'].includes(req.method)){
+    const origin=String(req.headers.origin||'');
+    const fetchSite=String(req.headers['sec-fetch-site']||'');
+    let originHost='';
+    try{if(origin)originHost=new URL(origin).host;}catch{return json(req,res,403,{error:'Cross-origin modification denied.'});}
+    // Cloud Run and Cloud Shell reverse proxies may rewrite Host while the browser
+    // still makes a genuine same-origin request. Sec-Fetch-Site is browser-managed.
+    // Preserve strict Host comparison when that signal is absent.
+    const browserSameOrigin=fetchSite==='same-origin';
+    if(fetchSite==='cross-site'||(origin&&!browserSameOrigin&&originHost!==String(req.headers.host||''))){
+      return json(req,res,403,{error:'Cross-origin modification denied.'});
+    }
+  }
   if(req.method==='OPTIONS'){
     const headers=originHeaders(req);
     if(req.headers.origin&&allowedOrigins.length&&Object.keys(headers).length===0)return json(req,res,403,{error:'Origin not allowed.'});
@@ -125,7 +152,7 @@ async function api(req,res,url){
 
   const parts=url.pathname.replace(/^\/api\/?/,'').split('/').filter(Boolean);
   if(parts[0]==='health'&&req.method==='GET'){
-    return json(req,res,200,{...(await repo.health()),studioBuild:'2026.09.24.1',authBackend:auth.backendName||'file',authRequired:(await auth.hasUsers())||Boolean(accessToken),publisherConfigured:Boolean(publisher.job),publisherMode:'cloud-run-job',mediaUploadsEnabled});
+    return json(req,res,200,{ok:true});
   }
 
   if(parts[0]==='auth'&&parts[1]==='google'&&parts[2]==='config'&&req.method==='GET'){
@@ -153,8 +180,11 @@ async function api(req,res,url){
 
   if(parts[0]==='auth'&&parts[1]==='login'&&req.method==='POST'){
     const input=await body(req);
+    const key=loginKey(req,input.email);
+    if(loginBlocked(key))return json(req,res,429,{error:'Too many sign-in attempts. Try again later.'});
     const user=await auth.authenticate(input.email,input.password);
-    if(!user)return json(req,res,401,{error:'Email or password is incorrect.'});
+    if(!user){recordLoginFailure(key);return json(req,res,401,{error:'Email or password is incorrect.'});}
+    clearLoginFailure(key);
     const session=await auth.createSession(user.id);
     res.setHeader('Set-Cookie',auth.sessionCookie(session.token,Number(process.env.CMS_SESSION_HOURS||12)*3600));
     return json(req,res,200,{user});
@@ -169,6 +199,18 @@ async function api(req,res,url){
   if(parts[0]==='auth'&&parts[1]==='me'&&req.method==='GET'){
     const user=await currentCmsUser(req);
     return user?json(req,res,200,{user}):json(req,res,401,{error:'CMS sign-in is required.'});
+  }
+
+  if(parts[0]==='internal'&&parts[1]==='db-ready'&&parts.length===2&&req.method==='GET'){
+    if(!internalToken||!secretMatches(internalToken,req.headers['x-cms-internal-token']))return json(req,res,401,{error:'Internal authentication required.'});
+    if(repo.backendName!=='postgres'||auth.backendName!=='postgres')return json(req,res,503,{ok:false});
+    try{
+      await getPgPool().query({text:'SELECT 1',query_timeout:3000});
+      return json(req,res,200,{ok:true});
+    }catch(error){
+      console.error('CMS database readiness failed:',error?.code||error?.message||'connection failed');
+      return json(req,res,503,{ok:false});
+    }
   }
 
   if(parts[0]==='internal'&&parts[1]==='publish-due'&&req.method==='POST'){
@@ -228,7 +270,10 @@ async function api(req,res,url){
   if(parts[0]==='articles'){
     if(parts.length===1&&req.method==='GET')return json(req,res,200,{articles:await repo.listArticles()});
     if(parts.length===1&&req.method==='POST'){
-      const article=await repo.saveArticle({...await body(req),actorUserId:cmsUser.id});
+      if(!requireRole(cmsUser,res,req,['admin','editor']))return;
+      const input=await body(req);
+      if(['Published','Scheduled'].includes(input.status)&&!requireRole(cmsUser,res,req,['admin']))return;
+      const article=await repo.saveArticle({...input,actorUserId:cmsUser.id});
       await repo.recordAudit?.({actorUserId:cmsUser.id,action:'article.create',entityType:'article',entityId:article.id,metadata:{slug:article.slug,status:article.status}});
       const delivery=article.status==='Published'?await triggerDeploy(`article-published:${article.slug}`):null;
       return json(req,res,201,{article,delivery});
@@ -240,14 +285,18 @@ async function api(req,res,url){
       return article?json(req,res,200,{article}):json(req,res,404,{error:'Article not found.'});
     }
     if(id&&req.method==='PUT'){
+      if(!requireRole(cmsUser,res,req,['admin','editor']))return;
       const before=await repo.getArticle(id);
       if(!before)return json(req,res,404,{error:'Article not found.'});
-      const article=await repo.saveArticle({...await body(req),actorUserId:cmsUser.id},id);
+      const input=await body(req);
+      if((before.status==='Published'||before.status==='Scheduled'||['Published','Scheduled'].includes(input.status))&&!requireRole(cmsUser,res,req,['admin']))return;
+      const article=await repo.saveArticle({...input,actorUserId:cmsUser.id},id);
       await repo.recordAudit?.({actorUserId:cmsUser.id,action:'article.update',entityType:'article',entityId:article.id,metadata:{slug:article.slug,status:article.status,previousStatus:before.status}});
       const delivery=article.status==='Published'||before?.status==='Published'?await triggerDeploy(`article-updated:${article.slug}`):null;
       return json(req,res,200,{article,delivery});
     }
     if(id&&req.method==='DELETE'){
+      if(!requireRole(cmsUser,res,req,['admin']))return;
       const before=await repo.getArticle(id);
       if(!before)return json(req,res,404,{error:'Article not found.'});
       const result=await repo.deleteArticle(id);
@@ -260,11 +309,13 @@ async function api(req,res,url){
   if(parts[0]==='categories'){
     if(parts.length===1&&req.method==='GET')return json(req,res,200,{categories:await repo.listCategories()});
     if(parts.length===1&&req.method==='POST'){
+      if(!requireRole(cmsUser,res,req,['admin']))return;
       const category=await repo.createCategory((await body(req)).name);
       await repo.recordAudit?.({actorUserId:cmsUser.id,action:'category.create',entityType:'category',entityId:category.id,metadata:{name:category.name}});
       return json(req,res,201,{category});
     }
     if(parts[1]&&req.method==='DELETE'){
+      if(!requireRole(cmsUser,res,req,['admin']))return;
       const id=decodeURIComponent(parts[1]);const result=await repo.deleteCategory(id);
       await repo.recordAudit?.({actorUserId:cmsUser.id,action:'category.delete',entityType:'category',entityId:id});
       return json(req,res,200,result);
@@ -274,6 +325,7 @@ async function api(req,res,url){
   if(parts[0]==='media'){
     if(parts.length===1&&req.method==='GET')return json(req,res,200,{media:await repo.listMedia()});
     if(parts.length===1&&req.method==='POST'){
+      if(!requireRole(cmsUser,res,req,['admin','editor']))return;
       if(!mediaUploadsEnabled)return json(req,res,503,{error:'Image uploads are temporarily disabled while media storage is being configured.'});
       const media=await repo.uploadMedia(await body(req));
       await repo.recordAudit?.({actorUserId:cmsUser.id,action:'media.upload',entityType:'media',entityId:media.id,metadata:{name:media.name}});
@@ -344,8 +396,10 @@ async function serveFile(res,filePath){
   try{
     const info=await stat(filePath);
     if(info.isDirectory())filePath=path.join(filePath,'index.html');
+    const extension=path.extname(filePath).toLowerCase();
+    if(!Object.hasOwn(MIME,extension))throw new Error('Blocked file type');
     const data=await readFile(filePath);
-    res.writeHead(200,{'Content-Type':MIME[path.extname(filePath).toLowerCase()]||'application/octet-stream','Cache-Control':'no-store'});
+    res.writeHead(200,{'Content-Type':MIME[extension],'Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','X-Frame-Options':'DENY','Permissions-Policy':'camera=(), microphone=(), geolocation=()'});
     res.end(data);
   }catch{
     res.writeHead(404,{'Content-Type':'text/plain; charset=utf-8'});
@@ -361,12 +415,13 @@ function safeResolve(base,relative){
 const server=http.createServer(async(req,res)=>{
   try{
     const url=new URL(req.url,`http://${req.headers.host||'127.0.0.1'}`);
+    if(url.pathname.split('/').some(segment=>segment.startsWith('.'))||/%2e|%2f|%5c/i.test(req.url||''))return json(req,res,404,{error:'Not found.'});
     if(url.pathname.startsWith('/api/'))return await api(req,res,url);
     if(url.pathname==='/')return redirect(res,'/prototype/');
     if(await devBlog(req,res,url))return;
     if(url.pathname==='/prototype')return redirect(res,'/prototype/');
     if(url.pathname==='/public-preview')return redirect(res,'/public-preview/');
-    if(url.pathname.startsWith('/uploads/'))return serveFile(res,path.join(cmsRoot,'server',url.pathname));
+    if(url.pathname.startsWith('/uploads/'))return json(req,res,404,{error:'Not found.'});
     if(url.pathname.startsWith('/prototype/')){
       const target=safeResolve(path.join(cmsRoot,'prototype'),url.pathname.replace('/prototype',''));
       return target?serveFile(res,target):json(req,res,400,{error:'Invalid path.'});
@@ -380,13 +435,18 @@ const server=http.createServer(async(req,res)=>{
       return target?serveFile(res,target):json(req,res,400,{error:'Invalid path.'});
     }
     if(url.pathname.split('/').some(segment=>segment.startsWith('.'))||url.pathname.startsWith('/blog-cms/'))return json(req,res,404,{error:'Not found.'});
-    const siteTarget=safeResolve(siteRoot,url.pathname);
-    if(siteTarget)return serveFile(res,siteTarget);
+    const publicPrefixes=['/images/','/styles/','/scripts/','/assets/','/fonts/'];
+    const rootAssets=new Set(['/favicon.ico','/favicon.png','/apple-touch-icon.png','/android-chrome-512x512.png','/robots.txt']);
+    if(publicPrefixes.some(prefix=>url.pathname.startsWith(prefix))||rootAssets.has(url.pathname)){
+      const siteTarget=safeResolve(siteRoot,url.pathname);
+      if(siteTarget)return serveFile(res,siteTarget);
+    }
     res.writeHead(404);
     res.end('Not found');
   }catch(error){
     console.error(error);
-    json(req,res,error.statusCode||500,{error:error.message||'Unexpected server error.',details:error.details||[]});
+    const status=Number.isInteger(error.statusCode)&&error.statusCode>=400&&error.statusCode<500?error.statusCode:500;
+    json(req,res,status,{error:status===500?'Internal server error.':(error.message||'Request rejected.'),...(status!==500&&error.details?{details:error.details}:{})});
   }
 });
 
