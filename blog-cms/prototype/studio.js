@@ -11,7 +11,7 @@ function storeJson(key,value){try{sessionStorage.setItem(key,JSON.stringify(valu
 function clearRecovery(){try{sessionStorage.removeItem(recoveryKey);}catch{}}
 function feedback(message=''){const el=$('#editorFeedback');el.textContent=message;el.hidden=!message;}
 function isDirty(){return editor.open&&JSON.stringify(editorData())!==editorBaseline;}
-function rememberEditor(){if(isDirty()){const stored=storeJson(recoveryKey,{id:editingId,revision:editingRevision,data:editorData()});$('#saveState').textContent=stored?'Unsaved changes · recovery copy in this tab':'Unsaved changes';}}
+function rememberEditor(){if(isDirty()){const stored=storeJson(recoveryKey,{ownerId:state.currentUser?.id||null,id:editingId,revision:editingRevision,data:editorData()});$('#saveState').textContent=stored?'Unsaved changes · recovery copy in this tab':'Unsaved changes';}}
 function closeEditor(){if(saving)return;if(isDirty()&&!confirm('Discard these unsaved changes?'))return;clearRecovery();editor.close();}
 
 
@@ -428,6 +428,10 @@ loginForm.addEventListener('submit',async event=>{
   }
 });
 async function signOut(){
+  // Clear confidential unsaved drafts before another staff member uses this browser tab.
+  clearRecovery();
+  if(editor.open)editor.close();
+  if(preview.open)preview.close();
   signOutBtn.disabled=true;
   if(sidebarSignOutBtn)sidebarSignOutBtn.disabled=true;
   try{await api.logout();}catch{}
@@ -572,6 +576,7 @@ async function startWorkspace(){
   if(savedList){page=savedList.page||1;activeFilter=['all','Draft','Review','Published','Scheduled'].includes(savedList.activeFilter)?savedList.activeFilter:'all';search.value=savedList.query||'';categoryFilter.value=state.categories.some(c=>c.name===savedList.category)?savedList.category:'all';sortFilter.value=savedList.sort||'newest';$$('.tabs button').forEach(t=>t.classList.toggle('active',t.dataset.filter===activeFilter));renderArticles();}
   const recovery=storedJson(recoveryKey);
   if(!recovery?.data)return;
+  if(!recovery.ownerId||recovery.ownerId!==state.currentUser?.id){clearRecovery();return;}
   if(!confirm('Restore the unsaved article from this tab?')){clearRecovery();return;}
   const data=recovery.data;openEditor();editingId=recovery.id;editingRevision=recovery.revision||'';
   const fields={Title:'title',Excerpt:'excerpt',Body:'bodyText',Status:'status',Category:'category',Author:'author',Slug:'slug',SeoTitle:'seoTitle',SeoDescription:'seoDescription',ClinicalStatus:'clinicalReviewStatus'};
