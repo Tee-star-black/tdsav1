@@ -22,6 +22,14 @@ const repo=createRepository();
 const port=Number(process.env.PORT||8790);
 const host=process.env.CMS_HOST||'127.0.0.1';
 const MAX_JSON_BYTES=9*1024*1024;
+// Per-instance defence in depth. Put a shared rate limiter at the edge before public launch.
+const loginAttempts=new Map();
+const LOGIN_WINDOW_MS=15*60*1000;
+const LOGIN_LIMIT=8;
+function loginKey(req,email){return `${req.socket.remoteAddress||'unknown'}:${String(email||'').trim().toLowerCase()}`;}
+function loginBlocked(key){const now=Date.now();const record=loginAttempts.get(key);if(!record||now-record.start>LOGIN_WINDOW_MS){loginAttempts.set(key,{start:now,count:0});return false;}return record.count>=LOGIN_LIMIT;}
+function recordLoginFailure(key){const record=loginAttempts.get(key);if(record)record.count++;if(loginAttempts.size>20000){for(const [k,v] of loginAttempts){if(Date.now()-v.start>LOGIN_WINDOW_MS)loginAttempts.delete(k);}if(loginAttempts.size>20000)loginAttempts.clear();}}
+function clearLoginFailure(key){loginAttempts.delete(key);}
 const accessToken=String(process.env.CMS_ACCESS_TOKEN||'');
 const auth=createAuthStore();
 const googleStaffLogin=createGoogleStaffLogin({secure:auth.cookieSecure});
@@ -48,6 +56,9 @@ function originHeaders(req){
 
 function json(req,res,status,payload){
   res.writeHead(status,{
+    'X-Content-Type-Options':'nosniff',
+    'Referrer-Policy':'no-referrer',
+    'X-Frame-Options':'DENY',
     'Content-Type':'application/json; charset=utf-8',
     ...originHeaders(req),
     'Access-Control-Allow-Headers':'Content-Type, Authorization',
@@ -153,8 +164,11 @@ async function api(req,res,url){
 
   if(parts[0]==='auth'&&parts[1]==='login'&&req.method==='POST'){
     const input=await body(req);
+    const key=loginKey(req,input.email);
+    if(loginBlocked(key))return json(req,res,429,{error:'Too many sign-in attempts. Try again later.'});
     const user=await auth.authenticate(input.email,input.password);
-    if(!user)return json(req,res,401,{error:'Email or password is incorrect.'});
+    if(!user){recordLoginFailure(key);return json(req,res,401,{error:'Email or password is incorrect.'});}
+    clearLoginFailure(key);
     const session=await auth.createSession(user.id);
     res.setHeader('Set-Cookie',auth.sessionCookie(session.token,Number(process.env.CMS_SESSION_HOURS||12)*3600));
     return json(req,res,200,{user});
@@ -228,7 +242,10 @@ async function api(req,res,url){
   if(parts[0]==='articles'){
     if(parts.length===1&&req.method==='GET')return json(req,res,200,{articles:await repo.listArticles()});
     if(parts.length===1&&req.method==='POST'){
-      const article=await repo.saveArticle({...await body(req),actorUserId:cmsUser.id});
+      if(!requireRole(cmsUser,res,req,['admin','editor']))return;
+      const input=await body(req);
+      if(['Published','Scheduled'].includes(input.status)&&!requireRole(cmsUser,res,req,['admin']))return;
+      const article=await repo.saveArticle({...input,actorUserId:cmsUser.id});
       await repo.recordAudit?.({actorUserId:cmsUser.id,action:'article.create',entityType:'article',entityId:article.id,metadata:{slug:article.slug,status:article.status}});
       const delivery=article.status==='Published'?await triggerDeploy(`article-published:${article.slug}`):null;
       return json(req,res,201,{article,delivery});
@@ -240,14 +257,18 @@ async function api(req,res,url){
       return article?json(req,res,200,{article}):json(req,res,404,{error:'Article not found.'});
     }
     if(id&&req.method==='PUT'){
+      if(!requireRole(cmsUser,res,req,['admin','editor']))return;
       const before=await repo.getArticle(id);
       if(!before)return json(req,res,404,{error:'Article not found.'});
-      const article=await repo.saveArticle({...await body(req),actorUserId:cmsUser.id},id);
+      const input=await body(req);
+      if((before.status==='Published'||before.status==='Scheduled'||['Published','Scheduled'].includes(input.status))&&!requireRole(cmsUser,res,req,['admin']))return;
+      const article=await repo.saveArticle({...input,actorUserId:cmsUser.id},id);
       await repo.recordAudit?.({actorUserId:cmsUser.id,action:'article.update',entityType:'article',entityId:article.id,metadata:{slug:article.slug,status:article.status,previousStatus:before.status}});
       const delivery=article.status==='Published'||before?.status==='Published'?await triggerDeploy(`article-updated:${article.slug}`):null;
       return json(req,res,200,{article,delivery});
     }
     if(id&&req.method==='DELETE'){
+      if(!requireRole(cmsUser,res,req,['admin']))return;
       const before=await repo.getArticle(id);
       if(!before)return json(req,res,404,{error:'Article not found.'});
       const result=await repo.deleteArticle(id);
@@ -260,11 +281,13 @@ async function api(req,res,url){
   if(parts[0]==='categories'){
     if(parts.length===1&&req.method==='GET')return json(req,res,200,{categories:await repo.listCategories()});
     if(parts.length===1&&req.method==='POST'){
+      if(!requireRole(cmsUser,res,req,['admin']))return;
       const category=await repo.createCategory((await body(req)).name);
       await repo.recordAudit?.({actorUserId:cmsUser.id,action:'category.create',entityType:'category',entityId:category.id,metadata:{name:category.name}});
       return json(req,res,201,{category});
     }
     if(parts[1]&&req.method==='DELETE'){
+      if(!requireRole(cmsUser,res,req,['admin']))return;
       const id=decodeURIComponent(parts[1]);const result=await repo.deleteCategory(id);
       await repo.recordAudit?.({actorUserId:cmsUser.id,action:'category.delete',entityType:'category',entityId:id});
       return json(req,res,200,result);
@@ -274,6 +297,7 @@ async function api(req,res,url){
   if(parts[0]==='media'){
     if(parts.length===1&&req.method==='GET')return json(req,res,200,{media:await repo.listMedia()});
     if(parts.length===1&&req.method==='POST'){
+      if(!requireRole(cmsUser,res,req,['admin','editor']))return;
       if(!mediaUploadsEnabled)return json(req,res,503,{error:'Image uploads are temporarily disabled while media storage is being configured.'});
       const media=await repo.uploadMedia(await body(req));
       await repo.recordAudit?.({actorUserId:cmsUser.id,action:'media.upload',entityType:'media',entityId:media.id,metadata:{name:media.name}});
