@@ -331,3 +331,29 @@ h1,h2,h3{letter-spacing:-.035em}
 button,input,select,textarea,.article-card,.story-card,.feature-card{border-radius:2px!important}
 a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #285c62;outline-offset:3px}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* Journal edition: typography-driven hierarchy, spacious and deliberately minimal */
+.blog-public{background:#fff;color:#1b292e}
+.site-header{height:82px;background:#fff;border-bottom:1px solid #e3e7e7}
+.publication-masthead{padding-block:18px;background:#fff;border-bottom:1px solid #dfe5e4}
+.publication-label{font-weight:700;letter-spacing:.19em;color:#315c5f}
+.publication-masthead>p{max-width:440px;font-size:12px;line-height:1.65;color:#78858a}
+.blog-public .hero{background:#fff;gap:clamp(30px,4vw,72px);padding-top:clamp(48px,6vw,106px);padding-bottom:clamp(50px,7vw,110px);border-bottom:1px solid #e0e5e4}
+.blog-public .hero-copy{max-width:670px}
+.blog-public .hero .eyebrow{font-size:10px;letter-spacing:.2em;font-weight:700;color:#296164}
+.blog-public .hero h1{font-family:'DM Sans',Arial,sans-serif;font-size:clamp(48px,6.4vw,100px);font-weight:600;line-height:.99;letter-spacing:-.075em;margin:26px 0}
+.blog-public .hero-copy>p{font-size:clamp(15px,1.25vw,19px);font-weight:400;line-height:1.75;max-width:490px;color:#66777d}
+.blog-public .feature-card{box-shadow:none;border:1px solid #e0e5e5;border-radius:0!important;background:#fafbfb}
+.blog-public .feature-copy h2{font-family:'DM Sans',Arial,sans-serif;font-weight:600;letter-spacing:-.05em}
+.blog-public .feature-copy>span,.blog-public .eyebrow{letter-spacing:.15em}
+.blog-public .toolbar{background:#fff;border-bottom:1px solid #e4e7e7}
+.blog-public .content-wrap{padding-top:clamp(58px,6vw,100px)}
+.blog-public .section-heading h2{font-family:'DM Sans',Arial,sans-serif;font-size:clamp(32px,3.5vw,54px);font-weight:600;letter-spacing:-.055em}
+.blog-public .story-grid{gap:clamp(24px,2.8vw,42px)}
+.blog-public .story-card{border-radius:0!important;box-shadow:none!important;border:0!important;border-top:1px solid #dce2e2!important;background:#fff!important}
+.blog-public .story-card:hover{transform:none!important}
+.blog-public .story-body h3{font-family:'DM Sans',Arial,sans-serif;letter-spacing:-.045em;line-height:1.2}
+.blog-public .editorial-footer-callout{background:#f5f7f6;color:#1e3034;border:0}
+.blog-public .editorial-footer-callout h2{font-family:'DM Sans',Arial,sans-serif;font-weight:600;letter-spacing:-.05em}
+@media(max-width:750px){.blog-public .hero{padding-top:46px;padding-bottom:56px}.blog-public .hero h1{font-size:clamp(48px,12vw,74px)}.publication-masthead>p{display:none}}
+@media(prefers-reduced-motion:reduce){.blog-public *{animation:none!important;transition-duration:.01ms!important}}
