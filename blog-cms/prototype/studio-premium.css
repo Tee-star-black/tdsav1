@@ -280,3 +280,16 @@ a,button{touch-action:manipulation}
 .login-divider::before,.login-divider::after{content:'';height:1px;flex:1;background:#e0e8eb}
 .google-button{display:flex;justify-content:center;align-items:center;width:100%;min-height:44px;max-width:100%;overflow:hidden}
 .google-auth p{font-size:11px;line-height:1.6;text-align:center;color:#627786;max-width:340px}
+
+/* Editorial system refresh: restrained type, crisp geometry, precise rhythm */
+:root{--ink:#17242c;--muted:#64717a;--line:#dce2e4;--canvas:#f8f9f9;--nav:#ffffff;--accent:#145d63;--shadow:0 10px 30px rgba(15,31,38,.035)}
+body{font-family:'DM Sans',Arial,sans-serif;letter-spacing:-.005em}
+.sidebar{box-shadow:none;border-right:1px solid #dfe4e6;background:#fff}
+.nav-item,.nav-item.active,.nav-item:hover{border-radius:2px;box-shadow:none}
+.nav-item.active{background:#eff4f3;color:#194e52;border-left:2px solid #194e52}
+button,input,select,textarea,.card,.panel,.stat-card,.login-card{border-radius:2px!important}
+button{transition:background-color .14s ease,color .14s ease,border-color .14s ease}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid #15666c;outline-offset:3px}
+.login-card{box-shadow:0 20px 65px rgba(23,37,43,.08);border:1px solid #dce2e4}
+h1,h2,h3{letter-spacing:-.035em}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
