@@ -5,7 +5,8 @@
 import assert from 'node:assert/strict';
 import {spawn,execFileSync} from 'node:child_process';
 import {createServer} from 'node:http';
-import {readFile,mkdir,mkdtemp,rm} from 'node:fs/promises';
+import {readFile,writeFile,mkdir,mkdtemp,rm} from 'node:fs/promises';
+import nunjucks from 'nunjucks';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -39,12 +40,25 @@ async function startCms(){
   fail('CMS health endpoint timed out: '+stderr.slice(-1800));
 }
 async function startStatic(){
+  // Render deterministic, text-only fixtures into the scratch directory.
+  // Never depend on production content or write into the website's /blog tree.
+  const article={title:'Telemedicine improves access to care',slug:'telemedicine-improves-access-to-care',excerpt:'A practical editorial overview of how virtual consultations widen access to healthcare.',category:'Digital Health',author:'TeleDoctorSA Editorial',publishedAt:'2026-10-29T08:00:00.000Z',updatedAt:'2026-10-29T08:00:00.000Z',featured:true,clinicalReviewRequired:false,coverImage:{url:'',alt:''},bodyText:'Telemedicine supports patients who cannot easily reach a clinic.\n\nDigital consultations improve access to qualified healthcare professionals.',bodyParagraphs:['Telemedicine supports patients who cannot easily reach a clinic.','Digital consultations improve access to qualified healthcare professionals.'],schemaJson:JSON.stringify({'@context':'https://schema.org','@type':'Article'})};
+  const env=nunjucks.configure(path.join(cmsRoot,'templates'),{autoescape:true,noCache:true});
+  const site={name:'TeleDoctorSA',baseUrl:'https://teledoctorsa.co.za'};
+  const blogDir=path.join(scratch,'blog');
+  await mkdir(path.join(blogDir,article.slug),{recursive:true});
+  await writeFile(path.join(blogDir,'index.html'),env.render('index.njk',{articles:[article],categories:[article.category],featured:article,site}));
+  await writeFile(path.join(blogDir,article.slug,'index.html'),env.render('article.njk',{article,site}));
+  await writeFile(path.join(blogDir,'search-index.json'),JSON.stringify([{title:article.title,slug:article.slug,excerpt:article.excerpt,category:article.category,author:article.author,publishedAt:article.publishedAt,featured:true,coverImage:article.coverImage}]));
   staticServer=createServer(async(req,res)=>{
     try{
       const requested=decodeURIComponent(new URL(req.url,'http://localhost').pathname);
       if(requested.includes('\0')){res.writeHead(400);res.end();return;}
       let file=path.resolve(siteRoot,'.'+requested);
-      if(!file.startsWith(siteRoot+path.sep)){res.writeHead(403);res.end();return;}
+      if(requested==='/blog/'||requested.startsWith('/blog/'))file=path.resolve(scratch,'.'+requested);
+      if(requested==='/styles/blog.css')file=path.join(cmsRoot,'assets','blog.css');
+      if(requested==='/scripts/blog.js')file=path.join(cmsRoot,'assets','blog.js');
+      if(!file.startsWith(siteRoot+path.sep)&&!file.startsWith(scratch+path.sep)){res.writeHead(403);res.end();return;}
       if(requested.endsWith('/')||!path.extname(file))file=path.join(file,'index.html');
       const content=await readFile(file);
       res.writeHead(200,{'Content-Type':mime[path.extname(file)]||'application/octet-stream'});
