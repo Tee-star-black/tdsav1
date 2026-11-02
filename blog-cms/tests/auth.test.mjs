@@ -11,13 +11,21 @@ test('staff account login uses an HttpOnly session and logout invalidates it',as
   const authFile=path.join(directory,'auth.json');
   const auth=new AuthStore({filePath:authFile});
   await auth.createUser({email:'editor@teledoctorsa.co.za',name:'Editorial User',role:'editor',password:'TestingPassword123!'});
-  const child=spawn(process.execPath,['server/server.mjs'],{env:{...process.env,PORT:'8804',CMS_BACKEND:'local',CMS_ACCESS_TOKEN:'',CMS_AUTH_FILE:authFile,CMS_DEPLOY_WEBHOOK_URL:''},stdio:'pipe'});
+  const child=spawn(process.execPath,['server/server.mjs'],{env:{...process.env,PORT:'8804',CMS_BACKEND:'local',CMS_ACCESS_TOKEN:'',CMS_INTERNAL_TOKEN:'local-test-internal-token',CMS_AUTH_FILE:authFile,CMS_DEPLOY_WEBHOOK_URL:''},stdio:'pipe'});
   const origin='http://127.0.0.1:8804';
   try{
     let ready=false;
     for(let i=0;i<80;i++){try{if((await fetch(origin+'/api/health')).ok){ready=true;break;}}catch{}await new Promise(r=>setTimeout(r,50));}
     assert.ok(ready);
     assert.equal((await fetch(origin+'/api/articles')).status,401);
+    // Database readiness must never be public, and local storage is not PostgreSQL.
+    const noTokenReady=await fetch(origin+'/api/internal/db-ready');
+    assert.equal(noTokenReady.status,401);
+    const wrongTokenReady=await fetch(origin+'/api/internal/db-ready',{headers:{'x-cms-internal-token':'incorrect'}});
+    assert.equal(wrongTokenReady.status,401);
+    const localReady=await fetch(origin+'/api/internal/db-ready',{headers:{'x-cms-internal-token':'local-test-internal-token'}});
+    assert.equal(localReady.status,503);
+    assert.deepEqual(await localReady.json(),{ok:false});
 
     const bad=await fetch(origin+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:'editor@teledoctorsa.co.za',password:'wrong-password'})});
     assert.equal(bad.status,401);
