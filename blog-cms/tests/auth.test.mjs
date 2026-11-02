@@ -80,6 +80,20 @@ test('staff account login uses an HttpOnly session and logout invalidates it',as
     assert.equal(crossSite.status,403);
     const malformed=await fetch(origin+'/api/auth/password',{method:'POST',headers:{Cookie:replacementCookie,Origin:'not-a-valid-origin','Content-Type':'application/json'},body:'{}'});
     assert.equal(malformed.status,403);
+    // Reverse proxies can change Host, even when the browser confirms same-origin.
+    const forwardedLogin=await fetch(origin+'/api/auth/login',{
+      method:'POST',
+      headers:{Origin:'https://cms.example.invalid','Sec-Fetch-Site':'same-origin','Content-Type':'application/json'},
+      body:JSON.stringify({email:'editor@teledoctorsa.co.za',password:'invalid'})
+    });
+    assert.equal(forwardedLogin.status,401);
+    const fakeCrossSite=await fetch(origin+'/api/auth/login',{
+      method:'POST',
+      headers:{Origin:'https://cms.example.invalid','Sec-Fetch-Site':'cross-site','Content-Type':'application/json'},
+      body:JSON.stringify({email:'editor@teledoctorsa.co.za',password:'invalid'})
+    });
+    assert.equal(fakeCrossSite.status,403);
+
     assert.doesNotMatch(await malformed.text(),/stack|SyntaxError|TypeError/i);
     const missingPrivate=await fetch(origin+'/server/postgres-auth.mjs');
     assert.equal(missingPrivate.status,404);
