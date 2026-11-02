@@ -56,6 +56,8 @@ function originHeaders(req){
 
 function json(req,res,status,payload){
   res.writeHead(status,{
+    'Content-Security-Policy':"default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'",
+    'Permissions-Policy':'camera=(), microphone=(), geolocation=()',
     'X-Content-Type-Options':'nosniff',
     'Referrer-Policy':'no-referrer',
     'X-Frame-Options':'DENY',
@@ -380,7 +382,7 @@ async function serveFile(res,filePath){
     const extension=path.extname(filePath).toLowerCase();
     if(!Object.hasOwn(MIME,extension))throw new Error('Blocked file type');
     const data=await readFile(filePath);
-    res.writeHead(200,{'Content-Type':MIME[extension],'Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','X-Frame-Options':'DENY'});
+    res.writeHead(200,{'Content-Type':MIME[extension],'Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','X-Frame-Options':'DENY','Permissions-Policy':'camera=(), microphone=(), geolocation=()'});
     res.end(data);
   }catch{
     res.writeHead(404,{'Content-Type':'text/plain; charset=utf-8'});
