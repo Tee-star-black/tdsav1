@@ -62,6 +62,12 @@ test('staff account login uses an HttpOnly session and logout invalidates it',as
     assert.equal((await fetch(origin+'/server/server.mjs')).status,404);
     const healthData=await (await fetch(origin+'/api/health')).json();
     assert.deepEqual(healthData,{ok:true});
+    const apiResponse=await fetch(origin+'/api/auth/me');
+    assert.match(apiResponse.headers.get('content-security-policy')||'',/default-src 'none'/);
+    assert.match(apiResponse.headers.get('permissions-policy')||'',/camera=\(\)/);
+    const sensitiveJson=await fetch(origin+'/prototype/../../package.json');
+    assert.notEqual(sensitiveJson.status,200);
+
     const crossSite=await fetch(origin+'/api/auth/password',{method:'POST',headers:{Cookie:replacementCookie,Origin:'https://malicious.invalid','Content-Type':'application/json'},body:'{}'});
     assert.equal(crossSite.status,403);
     const malformed=await fetch(origin+'/api/auth/password',{method:'POST',headers:{Cookie:replacementCookie,Origin:'not-a-valid-origin','Content-Type':'application/json'},body:'{}'});
