@@ -48,6 +48,23 @@ test('staff account login uses an HttpOnly session and logout invalidates it',as
 
     const users=await fetch(origin+'/api/users',{headers:{Cookie:replacementCookie}});
     assert.equal(users.status,403);
+    // A signed-in editor must never manage staff, publish, delete, or administer categories.
+    const denialCases=[
+      ['/api/articles','POST',JSON.stringify({title:'Unauthorized publication',status:'Published'})],
+      ['/api/articles/unowned','DELETE',undefined],
+      ['/api/categories','POST',JSON.stringify({name:'Unauthorized category'})],
+    ];
+    for(const [route,method,requestBody] of denialCases){
+      const blocked=await fetch(origin+route,{method,headers:{Cookie:replacementCookie,'Content-Type':'application/json'},body:requestBody});
+      assert.equal(blocked.status,403,method+' '+route);
+    }
+    assert.equal((await fetch(origin+'/.env')).status,404);
+    assert.equal((await fetch(origin+'/server/server.mjs')).status,404);
+    const healthData=await (await fetch(origin+'/api/health')).json();
+    assert.deepEqual(healthData,{ok:true});
+    const crossSite=await fetch(origin+'/api/auth/password',{method:'POST',headers:{Cookie:replacementCookie,Origin:'https://malicious.invalid','Content-Type':'application/json'},body:'{}'});
+    assert.equal(crossSite.status,403);
+
 
     const logout=await fetch(origin+'/api/auth/logout',{method:'POST',headers:{Cookie:replacementCookie}});
     assert.equal(logout.status,200);
