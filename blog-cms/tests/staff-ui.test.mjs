@@ -32,7 +32,10 @@ async function adminStudio(){
   w.TDSACmsApi={
     health:async()=>({backend:'postgres',ok:true,authRequired:true,mediaUploadsEnabled:false}),
     listArticles:async()=>[],
-    listCategories:async()=>[],
+    listCategories:async()=>[
+      {id:'cat-health',name:'Health Education',slug:'health-education'},
+      {id:'cat-digital',name:'Digital Health',slug:'digital-health'}
+    ],
     listMedia:async()=>[],
     me:async()=>admin,
     listUsers:async()=>{
@@ -180,4 +183,26 @@ test('administrator can review effective permissions and change a staff role',as
   assert.equal(user.role,'reviewer');
   assert.equal($('[data-staff-role="staff-1"]').value,'reviewer');
   assert.equal($('[data-staff-role="admin-1"]').disabled,true);
+});
+
+test('category and role event handlers bind without crashing workspace rendering',async()=>{
+  const ctx=await adminStudio();
+  const {$,w}=ctx;
+  assert.equal($('#categoryGrid').querySelectorAll('.category-card').length,2);
+  assert.equal($('#staffList').querySelectorAll('[data-staff-role]').length,2);
+  $('[data-view="categories"]').click();
+  const remove=$('[data-category-remove="cat-digital"]');
+  assert.ok(remove);
+  assert.equal(remove.disabled,false);
+  remove.click();
+  assert.equal($('#categoryDeleteDialog').open,true);
+  assert.match($('#categoryDeleteDescription').textContent,/Digital Health/);
+  $('#categoryDeleteCancel').click();
+  assert.equal($('#categoryDeleteDialog').open,false);
+  assert.equal(w.document.querySelectorAll('.category-card').length,2);
+});
+
+test('Studio must never call forEach on a single DOM query result',()=>{
+  const offenders=script.split('\n').filter(line=>/(?<!\$)\$\([^\n]*?\)\.forEach\(/.test(line));
+  assert.deepEqual(offenders,[],'Use $$(selector) when iterating multiple elements.');
 });
