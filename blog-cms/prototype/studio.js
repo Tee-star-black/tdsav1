@@ -275,7 +275,7 @@ function renderCategories(){
     const published=state.articles.filter(a=>a.category===c.name&&a.status==='Published').length;
     return `<article class="category-card"><div class="category-symbol">${escapeHtml(c.name.slice(0,2).toUpperCase())}</div><div><h3>${escapeHtml(c.name)}</h3><p>${total} ${total===1?'story':'stories'} · ${published} published</p></div><button type="button" data-category-remove="${escapeHtml(c.id)}" ${!canManage||total?'disabled title="Only administrators can delete an unused category"':''} aria-label="Delete ${escapeHtml(c.name)}">Delete</button></article>`;
   }).join('');
-  $('[data-category-remove]').forEach(button=>button.addEventListener('click',()=>{
+  $$('[data-category-remove]').forEach(button=>button.addEventListener('click',()=>{
     const category=state.categories.find(item=>item.id===button.dataset.categoryRemove);
     if(!category)return;
     categoryToDelete=category.id;
@@ -308,12 +308,12 @@ function renderStaffList(){
     const roles=['admin','editor','reviewer'].map(role=>`<option value="${role}" ${user.role===role?'selected':''}>${role==='admin'?'Administrator':role==='editor'?'Editor':'Reviewer'}</option>`).join('');
     return `<article class="staff-row"><div class="staff-identity"><h3>${escapeHtml(user.name)}</h3><p>${escapeHtml(user.email)}</p></div><div class="staff-role-editor"><label class="sr-only" for="staff-role-${escapeHtml(user.id)}">Role for ${escapeHtml(user.name)}</label><select id="staff-role-${escapeHtml(user.id)}" data-staff-role="${escapeHtml(user.id)}" ${own?'disabled title="You cannot change your own role"':''}>${roles}</select><button type="button" data-staff-role-update="${escapeHtml(user.id)}" disabled>Save role</button></div><div class="staff-actions"><button type="button" data-user-reset="${escapeHtml(user.id)}" aria-label="Reset password for ${escapeHtml(user.name)}">Reset</button><button class="remove" type="button" data-user-remove="${escapeHtml(user.id)}" ${own?'disabled title="This is your signed-in account"':''} aria-label="Remove ${escapeHtml(user.name)}">×</button></div></article>`;
   }).join('');
-  $('[data-staff-role]').forEach(select=>select.addEventListener('change',()=>{
+  $$('[data-staff-role]').forEach(select=>select.addEventListener('change',()=>{
     const user=state.users.find(item=>item.id===select.dataset.staffRole);
     const button=select.closest('.staff-role-editor').querySelector('[data-staff-role-update]');
     button.disabled=!user||select.value===user.role;
   }));
-  $('[data-staff-role-update]').forEach(button=>button.addEventListener('click',async()=>{
+  $$('[data-staff-role-update]').forEach(button=>button.addEventListener('click',async()=>{
     const user=state.users.find(item=>item.id===button.dataset.staffRoleUpdate);
     const select=button.closest('.staff-role-editor').querySelector('[data-staff-role]');
     if(!user||user.id===state.currentUser?.id||select.value===user.role)return;
