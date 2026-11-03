@@ -206,3 +206,54 @@ test('Studio must never call forEach on a single DOM query result',()=>{
   const offenders=script.split('\n').filter(line=>/(?<!\$)\$\((?:'[^']*'|"[^"]*")\)\.forEach\(/.test(line));
   assert.deepEqual(offenders,[],'Use $$(selector) when iterating multiple elements.');
 });
+
+test('login password visibility toggle is keyboard-accessible and does not clear credentials',async()=>{
+  const {$}=await adminStudio();
+  const input=$('#loginPassword');
+  const toggle=$('#toggleLoginPassword');
+  input.value='NotARealPasswordForThisTest';
+  assert.equal(input.type,'password');
+  assert.equal(toggle.getAttribute('aria-label'),'Show password');
+  assert.equal(toggle.getAttribute('aria-pressed'),'false');
+  toggle.click();
+  assert.equal(input.type,'text');
+  assert.equal(input.value,'NotARealPasswordForThisTest');
+  assert.equal(toggle.getAttribute('aria-label'),'Hide password');
+  assert.equal(toggle.getAttribute('aria-pressed'),'true');
+  assert.equal(toggle.querySelector('.password-icon-show').hidden,true);
+  toggle.click();
+  assert.equal(input.type,'password');
+  assert.equal(toggle.getAttribute('aria-pressed'),'false');
+  assert.equal(toggle.querySelector('.password-icon-hide').hidden,true);
+});
+
+test('backend diagnostics are not exposed as a visible status banner',async()=>{
+  const {$}=await adminStudio();
+  assert.ok($('#backendStatus'));
+  assert.equal($('#backendStatus').classList.contains('sr-only'),true);
+  assert.doesNotMatch($('#backendStatus').textContent,/postgres|backend connected|secured/i);
+  assert.ok($('#backendStatus').classList.contains('online'));
+  assert.ok($('#loginGate').querySelector('.login-stage'));
+});
+
+test('dynamic editorial login highlights are selectable and preserve sign-in fields',async()=>{
+  const {$}=await adminStudio();
+  const email=$('#loginEmail'),password=$('#loginPassword');
+  const firstTitle=$('#loginStoryTitle').textContent;
+  email.value='editor@example.invalid';password.value='OnlyAVisualTest';
+  assert.equal($('[data-login-story="0"]').getAttribute('aria-pressed'),'true');
+  $('[data-login-story="1"]').click();
+  assert.match($('#loginStoryTitle').textContent,/clarity/i);
+  assert.notEqual($('#loginStoryTitle').textContent,firstTitle);
+  assert.equal($('#loginStoryCount').textContent,'02 / 03');
+  assert.equal($('[data-login-story="1"]').getAttribute('aria-pressed'),'true');
+  assert.equal($('[data-login-story="0"]').getAttribute('aria-pressed'),'false');
+  $('[data-login-story="2"]').click();
+  assert.equal($('#loginStoryCount').textContent,'03 / 03');
+  $('[data-login-story="0"]').click();
+  assert.equal($('#loginStoryTitle').textContent,firstTitle);
+  assert.equal(email.value,'editor@example.invalid');
+  assert.equal(password.value,'OnlyAVisualTest');
+  assert.equal($('#loginGate').querySelectorAll('.login-aura').length,3);
+  assert.ok($('#loginGate').querySelector('.login-glass-workflow'));
+});
