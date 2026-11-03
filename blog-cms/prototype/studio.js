@@ -106,10 +106,96 @@ $('#toggleLoginPassword').addEventListener('click',()=>{
   setLoginPasswordVisible(loginPassword.type==='password');
   loginPassword.focus({preventScroll:true});
 });
+
+// Editorial highlights are presentation-only. No credentials, API calls or
+// authentication decisions are involved in the animation.
+const loginHighlights=[
+  {
+    title:'Good information is part of good healthcare.',
+    description:'A considered space to create, review and share trusted health insights.'
+  },
+  {
+    title:'Write with clarity. Publish with confidence.',
+    description:'Save your ideas, refine every detail and move stories through a clear editorial workflow.'
+  },
+  {
+    title:'One place for every important story.',
+    description:'From first draft to publication, keep your team’s knowledge organised and accessible.'
+  }
+];
+const loginTitle=$('#loginStoryTitle');
+const loginDescription=$('#loginStoryDescription');
+const loginStoryCount=$('#loginStoryCount');
+const loginStoryCopy=$('.login-story-transitions');
+const loginStoryButtons=$$('[data-login-story]');
+let loginHighlightIndex=0;
+let loginHighlightTimer=0;
+function setLoginHighlight(index){
+  if(!Number.isInteger(index)||index<0||index>=loginHighlights.length)return;
+  loginHighlightIndex=index;
+  const highlight=loginHighlights[index];
+  loginTitle.textContent=highlight.title;
+  loginDescription.textContent=highlight.description;
+  loginStoryCount.textContent=String(index+1).padStart(2,'0')+' / 03';
+  loginStoryButtons.forEach(button=>{
+    const selected=Number(button.dataset.loginStory)===index;
+    button.setAttribute('aria-pressed',String(selected));
+    button.classList.toggle('is-current',selected);
+  });
+  loginStoryCopy.classList.remove('is-updating');
+  // Restart a short decorative fade without changing focus or announcing
+  // every automatically rotated message to assistive technology.
+  void loginStoryCopy.offsetWidth;
+  loginStoryCopy.classList.add('is-updating');
+}
+const reducedLoginMotion=()=>typeof window.matchMedia==='function'
+  &&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function stopLoginRotation(){
+  if(loginHighlightTimer)window.clearInterval(loginHighlightTimer);
+  loginHighlightTimer=0;
+}
+function syncLoginRotation(){
+  stopLoginRotation();
+  if(loginGate.hidden||document.hidden||reducedLoginMotion())return;
+  loginHighlightTimer=window.setInterval(()=>{
+    if(loginGate.hidden||document.hidden){stopLoginRotation();return;}
+    setLoginHighlight((loginHighlightIndex+1)%loginHighlights.length);
+  },8500);
+}
+loginStoryButtons.forEach(button=>button.addEventListener('click',()=>{
+  setLoginHighlight(Number(button.dataset.loginStory));
+  syncLoginRotation();
+}));
+document.addEventListener('visibilitychange',syncLoginRotation);
+
+// A tiny pointer response gives depth to the backdrop on desktop.
+// Touch devices use the calm CSS scene, and reduced-motion users get no drift.
+let loginPointerFrame=0;
+let loginPointerX=0,loginPointerY=0;
+const parallaxEligible=()=>typeof window.matchMedia==='function'
+  &&window.matchMedia('(pointer: fine)').matches&&!reducedLoginMotion();
+loginGate.addEventListener('pointermove',event=>{
+  if(loginGate.hidden||!parallaxEligible()||typeof window.requestAnimationFrame!=='function')return;
+  const bounds=loginGate.getBoundingClientRect();
+  if(!bounds.width||!bounds.height)return;
+  loginPointerX=Math.max(-1,Math.min(1,((event.clientX-bounds.left)/bounds.width-.5)*2));
+  loginPointerY=Math.max(-1,Math.min(1,((event.clientY-bounds.top)/bounds.height-.5)*2));
+  if(loginPointerFrame)return;
+  loginPointerFrame=window.requestAnimationFrame(()=>{
+    loginGate.style.setProperty('--login-parallax-x',(loginPointerX*13).toFixed(1)+'px');
+    loginGate.style.setProperty('--login-parallax-y',(loginPointerY*9).toFixed(1)+'px');
+    loginPointerFrame=0;
+  });
+});
+loginGate.addEventListener('pointerleave',()=>{
+  loginGate.style.setProperty('--login-parallax-x','0px');
+  loginGate.style.setProperty('--login-parallax-y','0px');
+});
 function showLogin(message='Sign in to continue.'){
   loginGate.hidden=false;
   document.body.classList.add('studio-locked');
   setLoginPasswordVisible(false);
+  syncLoginRotation();
   const isPrompt=!message||message==='Sign in to continue.';
   loginFeedback.textContent=isPrompt?'':message;
   loginFeedback.hidden=isPrompt;
@@ -118,6 +204,7 @@ function showLogin(message='Sign in to continue.'){
 }
 function hideLogin(){
   loginGate.hidden=true;
+  stopLoginRotation();
   document.body.classList.remove('studio-locked');
   loginFeedback.hidden=true;
   signOutBtn.hidden=false;
