@@ -132,6 +132,46 @@ async function studio(width){
     if(width===390)await page.screenshot({path:path.join(shotDir,'studio-editor-390.png'),fullPage:false,animations:'disabled'});
     await page.locator('#closeEditor').click();
     assert.equal(await page.locator('#editorDialog').isVisible(),false);
+
+    // Preview the login layout in development without authenticating or changing records.
+    await page.evaluate(()=>{
+      document.querySelector('#loginGate').hidden=false;
+      document.body.classList.add('studio-locked');
+    });
+    await checkVisibleBounds(page,'.login-stage','Login stage '+width);
+    await checkVisibleBounds(page,'.login-card','Login form '+width);
+    await checkVisibleBounds(page,'#toggleLoginPassword','Password toggle '+width);
+    await checkOverflow(page,'Login '+width);
+
+    const visibility=page.locator('#toggleLoginPassword');
+    const password=page.locator('#loginPassword');
+    await password.fill('Visual-QA-Password-Only');
+    assert.equal(await password.getAttribute('type'),'password');
+    const buttonBounds=await visibility.boundingBox();
+    assert.ok(buttonBounds.width>=44&&buttonBounds.height>=44,'Password toggle must be touch-friendly');
+    await visibility.click();
+    assert.equal(await password.getAttribute('type'),'text');
+    assert.equal(await visibility.getAttribute('aria-label'),'Hide password');
+    await visibility.click();
+    assert.equal(await password.getAttribute('type'),'password');
+    assert.equal(await visibility.getAttribute('aria-label'),'Show password');
+    if(width===390||width===768){
+      await page.screenshot({path:path.join(shotDir,'cms-login-'+width+'.png'),fullPage:false,animations:'disabled'});
+    }
+    await page.evaluate(()=>{
+      document.querySelector('#loginGate').hidden=true;
+      document.body.classList.remove('studio-locked');
+    });
+    if(width<=1100){
+      const menuBounds=await page.locator('#menuBtn').boundingBox();
+      assert.ok(menuBounds.width>=44&&menuBounds.height>=44,'Mobile menu must have a 44px touch target');
+      await page.locator('#menuBtn').click();
+      const icon=page.locator('#sidebar [data-view="categories"] svg').first();
+      assert.ok(await icon.isVisible(),'Category icon should render on mobile');
+      assert.equal(await icon.evaluate(el=>getComputedStyle(el).pointerEvents),'none');
+      await page.locator('#sidebar [data-view="categories"]').click();
+      assert.equal(await page.locator('#categoriesView').isVisible(),true);
+    }
     assert.deepEqual(errors,[],'Studio '+width+' browser errors');
     console.log('PASS Studio',width);
   }finally{await context.close();}
