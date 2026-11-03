@@ -267,10 +267,13 @@ function renderMedia(){
 }
 
 function renderCategories(){
+  const canManage=state.currentUser?.role==='admin'||Boolean(state.currentUser?.development);
+  $('#addCategory').hidden=!canManage;
+  $('#editorAddCategory').hidden=!canManage;
   $('#categoryGrid').innerHTML=state.categories.map(c=>{
     const total=state.articles.filter(a=>a.category===c.name).length;
     const published=state.articles.filter(a=>a.category===c.name&&a.status==='Published').length;
-    return `<article class="category-card"><div class="category-symbol">${escapeHtml(c.name.slice(0,2).toUpperCase())}</div><div><h3>${escapeHtml(c.name)}</h3><p>${total} ${total===1?'story':'stories'} · ${published} published</p></div><button type="button" data-category-remove="${escapeHtml(c.id)}" ${total?'disabled title="Move articles before deleting this category"':''} aria-label="Delete ${escapeHtml(c.name)}">Delete</button></article>`;
+    return `<article class="category-card"><div class="category-symbol">${escapeHtml(c.name.slice(0,2).toUpperCase())}</div><div><h3>${escapeHtml(c.name)}</h3><p>${total} ${total===1?'story':'stories'} · ${published} published</p></div><button type="button" data-category-remove="${escapeHtml(c.id)}" ${!canManage||total?'disabled title="Only administrators can delete an unused category"':''} aria-label="Delete ${escapeHtml(c.name)}">Delete</button></article>`;
   }).join('');
   $('[data-category-remove]').forEach(button=>button.addEventListener('click',()=>{
     const category=state.categories.find(item=>item.id===button.dataset.categoryRemove);
