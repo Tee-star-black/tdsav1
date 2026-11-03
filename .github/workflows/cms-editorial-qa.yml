@@ -50,3 +50,11 @@ jobs:
       - name: Publisher tests (dry-run, no live deployment)
         working-directory: blog-cms
         run: npm run check:publisher
+      - name: Install browser QA tooling
+        working-directory: blog-cms
+        run: |
+          npm install --no-save --no-audit --no-fund playwright
+          npx playwright install --with-deps chromium
+      - name: Responsive viewport and mobile icon QA
+        working-directory: blog-cms
+        run: node tests/responsive-browser.mjs
