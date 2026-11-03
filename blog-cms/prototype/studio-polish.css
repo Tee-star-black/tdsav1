@@ -488,3 +488,10 @@ button svg,.nav-icon svg,a svg{pointer-events:none}
   .login-panel{background:rgba(249,255,252,.98)!important}
   .login-glass-workflow{background:rgba(255,255,255,.24)}
 }
+
+/* Rerun this short transition when a visitor selects another editorial headline. */
+.login-story-transitions{animation:none}
+.login-story-transitions.is-updating{animation:login-reveal .52s cubic-bezier(.2,.7,.2,1) both}
+@media(prefers-reduced-motion:reduce){
+  .login-story-transitions.is-updating{animation:none!important}
+}
