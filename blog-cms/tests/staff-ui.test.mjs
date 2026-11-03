@@ -206,3 +206,32 @@ test('Studio must never call forEach on a single DOM query result',()=>{
   const offenders=script.split('\n').filter(line=>/(?<!\$)\$\((?:'[^']*'|"[^"]*")\)\.forEach\(/.test(line));
   assert.deepEqual(offenders,[],'Use $$(selector) when iterating multiple elements.');
 });
+
+test('login password visibility toggle is keyboard-accessible and does not clear credentials',async()=>{
+  const {$}=await adminStudio();
+  const input=$('#loginPassword');
+  const toggle=$('#toggleLoginPassword');
+  input.value='NotARealPasswordForThisTest';
+  assert.equal(input.type,'password');
+  assert.equal(toggle.getAttribute('aria-label'),'Show password');
+  assert.equal(toggle.getAttribute('aria-pressed'),'false');
+  toggle.click();
+  assert.equal(input.type,'text');
+  assert.equal(input.value,'NotARealPasswordForThisTest');
+  assert.equal(toggle.getAttribute('aria-label'),'Hide password');
+  assert.equal(toggle.getAttribute('aria-pressed'),'true');
+  assert.equal(toggle.querySelector('.password-icon-show').hidden,true);
+  toggle.click();
+  assert.equal(input.type,'password');
+  assert.equal(toggle.getAttribute('aria-pressed'),'false');
+  assert.equal(toggle.querySelector('.password-icon-hide').hidden,true);
+});
+
+test('backend diagnostics are not exposed as a visible status banner',async()=>{
+  const {$}=await adminStudio();
+  assert.ok($('#backendStatus'));
+  assert.equal($('#backendStatus').classList.contains('sr-only'),true);
+  assert.doesNotMatch($('#backendStatus').textContent,/postgres|backend connected|secured/i);
+  assert.ok($('#backendStatus').classList.contains('online'));
+  assert.ok($('#loginGate').querySelector('.login-stage'));
+});
