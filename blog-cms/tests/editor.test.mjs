@@ -80,10 +80,10 @@ test('stale-save errors preserve the open editor and its recovery copy',async()=
   const id=edit.dataset.edit;const current=(await(await fetch(origin+'/api/articles/'+id)).json()).article;
   await fetch(origin+'/api/articles/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({...current,title:'Newer remote title'})});
   fill('#articleTitle','My unsaved title');$('#saveArticle').click();await until(()=>!$('#editorFeedback').hidden);
-  assert.ok($('#editorDialog').open);assert.equal($('#articleTitle').value,'My unsaved title');assert.ok($('#editorFeedback').textContent.includes('changed since'));assert.ok(w.sessionStorage.getItem('tdsaCmsEditorRecovery').includes('My unsaved title'));
+  assert.ok($('#editorDialog').open);assert.equal($('#articleTitle').value,'My unsaved title');assert.ok($('#editorFeedback').textContent.includes('changed since'));assert.ok(w.localStorage.getItem('tdsaCmsEditorRecovery').includes('My unsaved title'));
 });
 test('category creation within the editor retains writing and assigns the new category',async()=>{
-  const {$,fill,w}=await open();$('[data-action="new"]').click();fill('#articleTitle','In editor category test');fill('#articleBody','Keep this text while adding a category.');w.prompt=()=> 'Editorial test category';$('#editorAddCategory').click();await until(()=>$('#articleCategory').value==='Editorial test category');
+  const {$,fill,w}=await open();$('[data-action="new"]').click();fill('#articleTitle','In editor category test');fill('#articleBody','Keep this text while adding a category.');$('#editorAddCategory').click();assert.ok($('#categoryDialog').open);fill('#categoryNameInput','Editorial test category');$('#categoryForm').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));await until(()=>$('#articleCategory').value==='Editorial test category');
   assert.equal($('#articleBody').value,'Keep this text while adding a category.');$('#saveArticle').click();await until(()=>!$('#editorDialog').open);assert.ok($('#articleList').textContent.includes('Editorial test category'));
 });
 
@@ -98,7 +98,7 @@ test('new drafts save automatically to CMS before explicit Save is clicked',asyn
     const json=await response.json();
     return json.articles.some(item=>item.title==='Automatic saving protects writing'&&item.status==='Draft');
   });
-  assert.match($('#saveState').textContent,/saved in CMS/i);
+  await until(()=>/saved in CMS/i.test($('#saveState').textContent));
   assert.ok($('#editorDialog').open);
   assert.ok($('#deleteArticle').hidden===false);
 });
