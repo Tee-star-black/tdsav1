@@ -92,11 +92,27 @@ const list=$('#articleList'),empty=$('#emptyState'),count=$('#resultCount'),sear
 const editor=$('#editorDialog'),preview=$('#previewDialog');
 const loginGate=$('#loginGate'),loginForm=$('#loginForm'),loginEmail=$('#loginEmail'),loginPassword=$('#loginPassword'),loginFeedback=$('#loginFeedback'),loginSubmit=$('#loginSubmit'),signOutBtn=$('#signOutBtn'),sidebarSignOutBtn=$('#sidebarSignOutBtn'),currentUserEl=$('#currentUser'),sidebarCurrentUserEl=$('#sidebarCurrentUser');
 
+function setLoginPasswordVisible(visible){
+  const button=$('#toggleLoginPassword');
+  loginPassword.type=visible?'text':'password';
+  button.setAttribute('aria-pressed',String(visible));
+  const label=visible?'Hide password':'Show password';
+  button.setAttribute('aria-label',label);
+  button.title=label;
+  button.querySelector('.password-icon-show').hidden=visible;
+  button.querySelector('.password-icon-hide').hidden=!visible;
+}
+$('#toggleLoginPassword').addEventListener('click',()=>{
+  setLoginPasswordVisible(loginPassword.type==='password');
+  loginPassword.focus({preventScroll:true});
+});
 function showLogin(message='Sign in to continue.'){
   loginGate.hidden=false;
   document.body.classList.add('studio-locked');
-  loginFeedback.textContent=message;
-  loginFeedback.hidden=!message;
+  setLoginPasswordVisible(false);
+  const isPrompt=!message||message==='Sign in to continue.';
+  loginFeedback.textContent=isPrompt?'':message;
+  loginFeedback.hidden=isPrompt;
   signOutBtn.hidden=true;
   setTimeout(()=>loginEmail.focus(),0);
 }
@@ -138,7 +154,7 @@ function setBackendStatus(mode,message){
 }
 
 async function loadWorkspace({quiet=false,authRetry=true}={}){
-  if(!quiet)setBackendStatus('','Connecting backend…');
+  if(!quiet)setBackendStatus('','Checking Studio connection…');
 
   const requests=[
     ['health',api.health()],
@@ -171,11 +187,9 @@ async function loadWorkspace({quiet=false,authRetry=true}={}){
   };
 
   if(values.health){
-    const secured=values.health.authRequired?' · secured':'';
-    const message=failures.length?`${values.health.backend} connected · partial data`:`${values.health.backend} backend connected${secured}`;
-    setBackendStatus('online',message);
+    setBackendStatus('online',failures.length?'Studio ready · some data unavailable':'Studio ready');
   }else{
-    setBackendStatus('offline','Backend unavailable');
+    setBackendStatus('offline','Studio connection unavailable');
   }
 
   render();
@@ -191,7 +205,6 @@ async function loadWorkspace({quiet=false,authRetry=true}={}){
     state.currentUser=user;
     currentUserEl.textContent=user?.name||user?.email||'Staff';
     currentUserEl.hidden=false;
-    if(sidebarCurrentUserEl)sidebarCurrentUserEl.textContent=user?.name||user?.email||'TeleDoctorSA staff';
     if(sidebarCurrentUserEl)sidebarCurrentUserEl.textContent=user?.name||user?.email||'TeleDoctorSA staff';
   }catch{
     state.currentUser=null;
@@ -522,7 +535,7 @@ loginForm.addEventListener('submit',async event=>{
   const password=loginPassword.value;
   if(!email||!password){showLogin('Enter your email address and password.');return;}
   loginSubmit.disabled=true;
-  loginSubmit.textContent='Signing in…';
+  $('#loginSubmitText').textContent='Signing in…';
   loginFeedback.hidden=true;
   try{
     const user=await api.login(email,password);
@@ -537,7 +550,7 @@ loginForm.addEventListener('submit',async event=>{
     loginPassword.select();
   }finally{
     loginSubmit.disabled=false;
-    loginSubmit.textContent='Open Publishing Studio';
+    $('#loginSubmitText').textContent='Sign in to Publishing Studio';
   }
 });
 async function signOut(){
