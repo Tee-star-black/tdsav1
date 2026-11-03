@@ -180,7 +180,7 @@ async function loadWorkspace({quiet=false,authRetry=true}={}){
 
   render();
   // Publishing text-only articles is available even while media storage is deferred.
-  const uploadsEnabled=state.health?.mediaUploadsEnabled!==false;
+  const uploadsEnabled=state.health?.mediaUploadsEnabled===true;
   for(const selector of ['#uploadMediaBtn','#editorUpload']){
     const control=$(selector);
     if(control){control.disabled=!uploadsEnabled;control.title=uploadsEnabled?'':'Media uploads will be enabled after storage setup.';}
