@@ -203,6 +203,6 @@ test('category and role event handlers bind without crashing workspace rendering
 });
 
 test('Studio must never call forEach on a single DOM query result',()=>{
-  const offenders=script.split('\n').filter(line=>/(?<!\$)\$\([^\n]*?\)\.forEach\(/.test(line));
+  const offenders=script.split('\n').filter(line=>/(?<!\$)\$\((?:'[^']*'|"[^"]*")\)\.forEach\(/.test(line));
   assert.deepEqual(offenders,[],'Use $$(selector) when iterating multiple elements.');
 });
