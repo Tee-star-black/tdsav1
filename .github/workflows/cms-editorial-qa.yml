@@ -1,0 +1,52 @@
+name: CMS editorial QA
+
+on:
+  pull_request:
+    paths:
+      - "blog-cms/**"
+      - "index.html"
+      - "robots.txt"
+      - "scripts/blog-news.js"
+      - "scripts/canonical-nav.js"
+      - "scripts/rebuild-images.js"
+      - "styles/blog-news.css"
+      - ".github/workflows/cms-editorial-qa.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  cms:
+    name: Validate Publishing Studio
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "22"
+      - name: JavaScript syntax
+        run: |
+          node --check blog-cms/prototype/studio.js
+          node --check blog-cms/client/cms-api.js
+          node --check scripts/blog-news.js
+          node --check scripts/canonical-nav.js
+          node --check scripts/rebuild-images.js
+      - name: Install CMS test dependencies
+        working-directory: blog-cms
+        run: npm install --no-audit --no-fund
+      - name: Auth and role tests
+        working-directory: blog-cms
+        run: npm run check:auth
+      - name: Database tests
+        working-directory: blog-cms
+        run: npm run check:postgres
+      - name: Editor and account UI tests
+        working-directory: blog-cms
+        run: npm run check:editor
+      - name: Editorial workflow tests
+        working-directory: blog-cms
+        run: npm run check:workflow
+      - name: Publisher tests (dry-run, no live deployment)
+        working-directory: blog-cms
+        run: npm run check:publisher

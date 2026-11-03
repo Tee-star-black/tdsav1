@@ -6,13 +6,84 @@ let editingId=null;
 let editingRevision='', editorBaseline='', saving=false, page=1;
 const pageSize=10;
 const recoveryKey='tdsaCmsEditorRecovery';
-function storedJson(key){try{return JSON.parse(sessionStorage.getItem(key)||'null');}catch{return null;}}
-function storeJson(key,value){try{sessionStorage.setItem(key,JSON.stringify(value));return true;}catch{return false;}}
-function clearRecovery(){try{sessionStorage.removeItem(recoveryKey);}catch{}}
+let autoSaveTimer=null,autoSaveInFlight=null,autoSaveConflict=false;
+const AUTO_SAVE_DELAY_MS=1500;
+function storageForKey(key){return key===recoveryKey?localStorage:sessionStorage;}
+function storedJson(key){try{return JSON.parse(storageForKey(key).getItem(key)||sessionStorage.getItem(key)||'null');}catch{return null;}}
+function storeJson(key,value){try{storageForKey(key).setItem(key,JSON.stringify(value));return true;}catch{return false;}}
+function clearRecovery(){try{localStorage.removeItem(recoveryKey);sessionStorage.removeItem(recoveryKey);}catch{}}
 function feedback(message=''){const el=$('#editorFeedback');el.textContent=message;el.hidden=!message;}
 function isDirty(){return editor.open&&JSON.stringify(editorData())!==editorBaseline;}
-function rememberEditor(){if(isDirty()){const stored=storeJson(recoveryKey,{ownerId:state.currentUser?.id||null,id:editingId,revision:editingRevision,data:editorData()});$('#saveState').textContent=stored?'Unsaved changes · recovery copy in this tab':'Unsaved changes';}}
-function closeEditor(){if(saving)return;if(isDirty()&&!confirm('Discard these unsaved changes?'))return;clearRecovery();editor.close();}
+function draftComparable(data){const copy={...data};delete copy.revision;return JSON.stringify(copy);}
+function canAutoSaveDraft(data=editorData()){
+  const existing=state.articles.find(article=>article.id===editingId);
+  return !autoSaveConflict&&data.status==='Draft'&&(!existing||existing.status==='Draft')&&!validateArticleClient(data);
+}
+function queueDraftAutosave(){
+  clearTimeout(autoSaveTimer);
+  if(!editor.open||saving)return;
+  const data=editorData();
+  if(data.status==='Draft'&&!autoSaveConflict&&data.title.length<5){
+    $('#saveState').textContent='Add a title (5+ characters) to enable automatic saving';
+    return;
+  }
+  if(!canAutoSaveDraft(data))return;
+  $('#saveState').textContent='Autosave pending…';
+  autoSaveTimer=setTimeout(()=>void persistDraft(),AUTO_SAVE_DELAY_MS);
+}
+function rememberEditor(){
+  if(!isDirty())return;
+  const stored=storeJson(recoveryKey,{ownerId:state.currentUser?.id||null,id:editingId,revision:editingRevision,data:editorData()});
+  $('#saveState').textContent=stored?'Unsaved changes · recovery copy on this computer':'Unsaved changes';
+  queueDraftAutosave();
+}
+async function persistDraft(){
+  if(!editor.open||saving||autoSaveConflict)return;
+  if(autoSaveInFlight){autoSaveTimer=setTimeout(()=>void persistDraft(),AUTO_SAVE_DELAY_MS);return;}
+  const data=editorData();
+  if(!canAutoSaveDraft(data))return;
+  const snapshot=draftComparable(data);
+  $('#saveState').textContent='Saving draft to CMS…';
+  autoSaveInFlight=editingId?api.updateArticle(editingId,data):api.createArticle(data);
+  try{
+    const saved=await autoSaveInFlight;
+    if(!saved?.id)throw new Error('CMS did not confirm the draft save.');
+    editingId=saved.id;editingRevision=saved.revision||'';
+    const index=state.articles.findIndex(item=>item.id===saved.id);
+    if(index>=0)state.articles[index]=saved;else state.articles.unshift(saved);
+    $('#deleteArticle').hidden=false;
+    $('#editorEyebrow').textContent='DRAFT · AUTOSAVED';
+    if(draftComparable(editorData())===snapshot){
+      editorBaseline=JSON.stringify(editorData());
+      clearRecovery();
+      $('#saveState').textContent='Draft safely saved in CMS · '+new Date().toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'});
+    }else{
+      // Keystrokes made during a request remain in the recovery copy and
+      // are written in the next autosave with the new revision.
+      storeJson(recoveryKey,{ownerId:state.currentUser?.id||null,id:editingId,revision:editingRevision,data:editorData()});
+      $('#saveState').textContent='Changes pending…';
+      clearTimeout(autoSaveTimer);
+      autoSaveTimer=setTimeout(()=>void persistDraft(),AUTO_SAVE_DELAY_MS);
+    }
+    renderArticles();
+  }catch(error){
+    if(error?.status===409){
+      autoSaveConflict=true;
+      $('#saveState').textContent='Another session updated this draft · manual review required';
+      notify('Draft save conflict','Your recovery copy is preserved. Reopen the latest article version before saving.');
+    }else{
+      $('#saveState').textContent='Autosave unavailable · recovery stored on this computer';
+    }
+  }finally{
+    autoSaveInFlight=null;
+  }
+}
+function closeEditor(){
+  if(saving||autoSaveInFlight){notify('Saving draft','Please wait for the current draft save to finish.');return;}
+  clearTimeout(autoSaveTimer);
+  if(isDirty()&&!confirm('Discard these unsaved changes?')){queueDraftAutosave();return;}
+  clearRecovery();editor.close();
+}
 
 
 const $=selector=>document.querySelector(selector);
@@ -63,8 +134,7 @@ function errorMessage(error){return error?.details?.length?error.details.join(' 
 function setBackendStatus(mode,message){
   const el=$('#backendStatus');el.classList.remove('online','offline');if(mode)el.classList.add(mode);
   el.querySelector('b').textContent=message;
-  $('#backendMetric').textContent=mode==='online'?(state.health?.backend||'API').toUpperCase():'OFF';
-  $('#backendMetricNote').textContent=mode==='online'?('Connected Cloud SQL content service'):'Backend unavailable';
+  // Connection status remains in the top bar, not a duplicate dashboard tile.
 }
 
 async function loadWorkspace({quiet=false,authRetry=true}={}){
@@ -110,7 +180,7 @@ async function loadWorkspace({quiet=false,authRetry=true}={}){
 
   render();
   // Publishing text-only articles is available even while media storage is deferred.
-  const uploadsEnabled=state.health?.mediaUploadsEnabled!==false;
+  const uploadsEnabled=state.health?.mediaUploadsEnabled===true;
   for(const selector of ['#uploadMediaBtn','#editorUpload']){
     const control=$(selector);
     if(control){control.disabled=!uploadsEnabled;control.title=uploadsEnabled?'':'Media uploads will be enabled after storage setup.';}
@@ -197,8 +267,22 @@ function renderMedia(){
 }
 
 function renderCategories(){
-  $('#categoryGrid').innerHTML=state.categories.map(c=>{const total=state.articles.filter(a=>a.category===c.name).length,published=state.articles.filter(a=>a.category===c.name&&a.status==='Published').length;return `<article class="category-card"><div class="category-symbol">${escapeHtml(c.name.slice(0,2).toUpperCase())}</div><div><h3>${escapeHtml(c.name)}</h3><p>${total} ${total===1?'story':'stories'} · ${published} published</p></div><button data-category-remove="${escapeHtml(c.id)}" ${total?'disabled title="Move articles before deleting this category"':''}>×</button></article>`;}).join('');
-  $$('[data-category-remove]').forEach(b=>b.addEventListener('click',async()=>{try{await api.deleteCategory(b.dataset.categoryRemove);state.categories=state.categories.filter(c=>c.id!==b.dataset.categoryRemove);render();notify('Category removed','The category was removed from the content service.');}catch(error){notify('Category not removed',errorMessage(error));}}));
+  const canManage=state.currentUser?.role==='admin'||Boolean(state.currentUser?.development);
+  $('#addCategory').hidden=!canManage;
+  $('#editorAddCategory').hidden=!canManage;
+  $('#categoryGrid').innerHTML=state.categories.map(c=>{
+    const total=state.articles.filter(a=>a.category===c.name).length;
+    const published=state.articles.filter(a=>a.category===c.name&&a.status==='Published').length;
+    return `<article class="category-card"><div class="category-symbol">${escapeHtml(c.name.slice(0,2).toUpperCase())}</div><div><h3>${escapeHtml(c.name)}</h3><p>${total} ${total===1?'story':'stories'} · ${published} published</p></div><button type="button" data-category-remove="${escapeHtml(c.id)}" ${!canManage||total?'disabled title="Only administrators can delete an unused category"':''} aria-label="Delete ${escapeHtml(c.name)}">Delete</button></article>`;
+  }).join('');
+  $$('[data-category-remove]').forEach(button=>button.addEventListener('click',()=>{
+    const category=state.categories.find(item=>item.id===button.dataset.categoryRemove);
+    if(!category)return;
+    categoryToDelete=category.id;
+    $('#categoryDeleteDescription').textContent=`Delete “${category.name}”? This cannot be undone. A category must be empty before it can be removed.`;
+    $('#categoryDeleteError').hidden=true;
+    $('#categoryDeleteDialog').showModal();
+  }));
 }
 
 function render(){hydrateCategories();renderArticles();renderMedia();renderCategories();renderSettings();}
@@ -219,7 +303,32 @@ function renderStaffList(){
   if(staffListState==='loading'){target.innerHTML='<div class="media-empty" role="status">Loading staff accounts...</div>';return;}
   if(staffListState==='error'){target.innerHTML='<div class="media-empty" role="alert">Unable to load staff accounts: '+escapeHtml(staffListError)+'. Select Refresh accounts to retry.</div>';return;}
   if(!state.users.length){target.innerHTML='<div class="media-empty">No staff accounts found.</div>';return;}
-  target.innerHTML=state.users.map(user=>`<article class="staff-row"><div><h3>${escapeHtml(user.name)}</h3><p>${escapeHtml(user.email)}</p></div><span>${escapeHtml(user.role)}</span><div class="staff-actions"><button type="button" data-user-reset="${escapeHtml(user.id)}" aria-label="Reset password for ${escapeHtml(user.name)}">Reset</button><button class="remove" type="button" data-user-remove="${escapeHtml(user.id)}" ${user.id===state.currentUser?.id?'disabled title="This is your signed-in account"':''} aria-label="Remove ${escapeHtml(user.name)}">×</button></div></article>`).join('');
+  target.innerHTML=state.users.map(user=>{
+    const own=user.id===state.currentUser?.id;
+    const roles=['admin','editor','reviewer'].map(role=>`<option value="${role}" ${user.role===role?'selected':''}>${role==='admin'?'Administrator':role==='editor'?'Editor':'Reviewer'}</option>`).join('');
+    return `<article class="staff-row"><div class="staff-identity"><h3>${escapeHtml(user.name)}</h3><p>${escapeHtml(user.email)}</p></div><div class="staff-role-editor"><label class="sr-only" for="staff-role-${escapeHtml(user.id)}">Role for ${escapeHtml(user.name)}</label><select id="staff-role-${escapeHtml(user.id)}" data-staff-role="${escapeHtml(user.id)}" ${own?'disabled title="You cannot change your own role"':''}>${roles}</select><button type="button" data-staff-role-update="${escapeHtml(user.id)}" disabled>Save role</button></div><div class="staff-actions"><button type="button" data-user-reset="${escapeHtml(user.id)}" aria-label="Reset password for ${escapeHtml(user.name)}">Reset</button><button class="remove" type="button" data-user-remove="${escapeHtml(user.id)}" ${own?'disabled title="This is your signed-in account"':''} aria-label="Remove ${escapeHtml(user.name)}">×</button></div></article>`;
+  }).join('');
+  $$('[data-staff-role]').forEach(select=>select.addEventListener('change',()=>{
+    const user=state.users.find(item=>item.id===select.dataset.staffRole);
+    const button=select.closest('.staff-role-editor').querySelector('[data-staff-role-update]');
+    button.disabled=!user||select.value===user.role;
+  }));
+  $$('[data-staff-role-update]').forEach(button=>button.addEventListener('click',async()=>{
+    const user=state.users.find(item=>item.id===button.dataset.staffRoleUpdate);
+    const select=button.closest('.staff-role-editor').querySelector('[data-staff-role]');
+    if(!user||user.id===state.currentUser?.id||select.value===user.role)return;
+    const role=select.value;
+    button.disabled=true;select.disabled=true;
+    try{
+      const updated=await api.updateUserRole(user.id,role);
+      state.users=state.users.map(item=>item.id===updated.id?updated:item);
+      renderStaffList();
+      notify('Permissions updated',`${updated.name} now has ${updated.role} access. Their previous sessions have been signed out.`);
+    }catch(error){
+      button.disabled=false;select.disabled=false;
+      notify('Role not updated',errorMessage(error));
+    }
+  }));
   $$('[data-user-reset]').forEach(button=>button.addEventListener('click',async()=>{
     const user=state.users.find(item=>item.id===button.dataset.userReset);if(!user)return;
     if(!confirm(`Reset the password for ${user.name}? Their current sessions will be signed out.`))return;
@@ -275,13 +384,14 @@ function syncConditionalFields(){
 }
 
 function resetEditor(){
+  clearTimeout(autoSaveTimer);autoSaveConflict=false;
   editingId=null;editingRevision='';feedback();$('#editorForm').reset();$('#articleAuthor').value='TeleDoctorSA Editorial';$('#articleStatus').value='Draft';$('#editorEyebrow').textContent='NEW STORY';$('#editorHeading').textContent='Start with the idea.';$('#saveState').textContent='Not saved';$('#articleSlug').value='';$('#articleSlug').dataset.touched='';$('#excerptCount').textContent='0';$('#deleteArticle').hidden=true;hydrateCategories();hydrateMediaSelect();syncConditionalFields();
 }
 
 function toLocalDateTime(value){if(!value)return '';const d=new Date(value);if(Number.isNaN(d.getTime()))return '';const local=new Date(d.getTime()-d.getTimezoneOffset()*60000);return local.toISOString().slice(0,16);}
 
 function openEditor(id){
-  if(saving)return;
+  if(saving||autoSaveInFlight)return;
   resetEditor();
   if(id){
     const a=state.articles.find(item=>item.id===id);if(!a)return;editingId=id;editingRevision=a.revision||'';
@@ -351,6 +461,8 @@ function validateArticleClient(data){
 
 async function saveStory(forcedStatus){
   if(saving)return;
+  clearTimeout(autoSaveTimer);
+  if(autoSaveInFlight){await autoSaveInFlight.catch(()=>{});clearTimeout(autoSaveTimer);}
   const data=editorData();if(forcedStatus)data.status=forcedStatus;
   const error=validateArticleClient(data);if(error){feedback(error);return;}
   const previous=state.articles.find(a=>a.id===editingId);
@@ -381,7 +493,8 @@ $('#saveArticle').addEventListener('click',()=>saveStory());
 $('#saveDraft').addEventListener('click',()=>saveStory('Draft'));
 
 $('#deleteArticle').addEventListener('click',async()=>{
-  if(saving||!editingId)return;
+  if(saving||autoSaveInFlight||!editingId)return;
+  clearTimeout(autoSaveTimer);
   const article=state.articles.find(item=>item.id===editingId);
   if(!article)return;
   if(!confirm(`Delete “${article.title}”? This removes it from the content backend and, if published, from the public feed.`))return;
@@ -428,6 +541,8 @@ loginForm.addEventListener('submit',async event=>{
   }
 });
 async function signOut(){
+  clearTimeout(autoSaveTimer);
+  if(autoSaveInFlight)await autoSaveInFlight.catch(()=>{});
   // Clear confidential unsaved drafts before another staff member uses this browser tab.
   clearRecovery();
   if(editor.open)editor.close();
@@ -469,17 +584,47 @@ async function uploadMedia(event){
 }
 $('#mediaFileInput').addEventListener('change',uploadMedia);
 $('#editorFileInput').addEventListener('change',uploadMedia);
-async function addCategory(inEditor=false){
-  const name=prompt('Category name');if(!name?.trim())return;
-  const button=$(inEditor?'#editorAddCategory':'#addCategory');button.disabled=true;
-  try{
-    const category=await api.createCategory(name.trim());if(!state.categories.some(c=>c.id===category.id))state.categories.push(category);
-    state.categories.sort((a,b)=>a.name.localeCompare(b.name));render();
-    if(inEditor){$('#articleCategory').value=category.name;feedback();rememberEditor();}
-    else notify('Category added',`${category.name} is now available to the editor.`);
-  }catch(error){if(inEditor)feedback(errorMessage(error));else notify('Category not added',errorMessage(error));}
-  finally{button.disabled=false;}
+let categoryCreateInEditor=false;
+let categoryToDelete='';
+function addCategory(inEditor=false){
+  categoryCreateInEditor=Boolean(inEditor);
+  $('#categoryForm').reset();
+  $('#categoryFormError').hidden=true;
+  $('#categoryDialog').showModal();
+  $('#categoryNameInput').focus();
 }
+$('#categoryCancel').addEventListener('click',()=>$('#categoryDialog').close());
+$('#categoryDeleteCancel').addEventListener('click',()=>$('#categoryDeleteDialog').close());
+$('#categoryForm').addEventListener('submit',async event=>{
+  event.preventDefault();
+  const name=$('#categoryNameInput').value.trim();
+  const button=$('#categorySubmit'),error=$('#categoryFormError');
+  if(name.length<2){error.textContent='Enter at least two characters.';error.hidden=false;return;}
+  button.disabled=true;error.hidden=true;
+  try{
+    const category=await api.createCategory(name);
+    if(!state.categories.some(item=>item.id===category.id))state.categories.push(category);
+    state.categories.sort((a,b)=>a.name.localeCompare(b.name));
+    $('#categoryDialog').close();render();
+    if(categoryCreateInEditor){$('#articleCategory').value=category.name;feedback();rememberEditor();}
+    notify('Category added',`${category.name} is ready for use.`);
+  }catch(err){error.textContent=errorMessage(err);error.hidden=false;}
+  finally{button.disabled=false;}
+});
+$('#categoryDeleteConfirm').addEventListener('click',async()=>{
+  const id=categoryToDelete;
+  const button=$('#categoryDeleteConfirm'),error=$('#categoryDeleteError');
+  if(!id)return;
+  button.disabled=true;error.hidden=true;
+  try{
+    await api.deleteCategory(id);
+    state.categories=state.categories.filter(item=>item.id!==id);
+    categoryToDelete='';
+    $('#categoryDeleteDialog').close();render();
+    notify('Category removed','The empty category was deleted.');
+  }catch(err){error.textContent=errorMessage(err);error.hidden=false;}
+  finally{button.disabled=false;}
+});
 $('#addCategory').addEventListener('click',()=>addCategory());
 $('#editorAddCategory').addEventListener('click',()=>addCategory(true));
 
@@ -577,7 +722,7 @@ async function startWorkspace(){
   const recovery=storedJson(recoveryKey);
   if(!recovery?.data)return;
   if(!recovery.ownerId||recovery.ownerId!==state.currentUser?.id){clearRecovery();return;}
-  if(!confirm('Restore the unsaved article from this tab?')){clearRecovery();return;}
+  if(!confirm('Restore the recovery copy of this article from your last session?')){clearRecovery();return;}
   const data=recovery.data;openEditor();editingId=recovery.id;editingRevision=recovery.revision||'';
   const fields={Title:'title',Excerpt:'excerpt',Body:'bodyText',Status:'status',Category:'category',Author:'author',Slug:'slug',SeoTitle:'seoTitle',SeoDescription:'seoDescription',ClinicalStatus:'clinicalReviewStatus'};
   for(const [suffix,key] of Object.entries(fields))$('#article'+suffix).value=data[key]||'';

@@ -28,11 +28,14 @@ async function adminStudio(){
 
   const admin={id:'admin-1',email:'admin@example.invalid',name:'CMS Administrator',role:'admin'};
   const users=[admin,{id:'staff-1',email:'existing@example.invalid',name:'Existing Editor',role:'editor'}];
-  let listFailure=false,createCalls=0,changeCalls=0,resetCalls=0;
+  let listFailure=false,createCalls=0,changeCalls=0,resetCalls=0,roleCalls=0;
   w.TDSACmsApi={
     health:async()=>({backend:'postgres',ok:true,authRequired:true,mediaUploadsEnabled:false}),
     listArticles:async()=>[],
-    listCategories:async()=>[],
+    listCategories:async()=>[
+      {id:'cat-health',name:'Health Education',slug:'health-education'},
+      {id:'cat-digital',name:'Digital Health',slug:'digital-health'}
+    ],
     listMedia:async()=>[],
     me:async()=>admin,
     listUsers:async()=>{
@@ -52,6 +55,7 @@ async function adminStudio(){
       return {user,temporaryPassword:'temporary-password-123'};
     },
     resetUserPassword:async()=>{await Promise.resolve();resetCalls++;return {temporaryPassword:'replacement-password-456'};},
+    updateUserRole:async(id,role)=>{await Promise.resolve();roleCalls++;const item=users.find(user=>user.id===id);item.role=role;return {...item};},
     changePassword:async()=>{await Promise.resolve();changeCalls++;return {ok:true};},
     setAccessToken:()=>{}
   };
@@ -63,7 +67,7 @@ async function adminStudio(){
   return {
     w,$,users,
     setListFailure:value=>{listFailure=value;},
-    get calls(){return {createCalls,changeCalls,resetCalls};}
+    get calls(){return {createCalls,changeCalls,resetCalls,roleCalls};}
   };
 }
 
@@ -162,4 +166,43 @@ test('copy temporary password does not reference cleared async event.currentTarg
   $('#copyTemporaryPassword').click();
   await until(()=>$('#copyTemporaryPassword').textContent==='Copied');
   assert.equal(copied,'temp-password-test');
+});
+
+
+test('administrator can review effective permissions and change a staff role',async()=>{
+  const ctx=await adminStudio();
+  const {$}=ctx;
+  const user=ctx.users.find(item=>item.id==='staff-1');
+  const selector=$('[data-staff-role="staff-1"]');
+  assert.equal(selector.value,'editor');
+  assert.ok($('.role-guide').textContent.includes('Publish, schedule'));
+  selector.value='reviewer';
+  selector.dispatchEvent(new ctx.w.Event('change',{bubbles:true}));
+  $('[data-staff-role-update="staff-1"]').click();
+  await until(()=>ctx.calls.roleCalls===1);
+  assert.equal(user.role,'reviewer');
+  assert.equal($('[data-staff-role="staff-1"]').value,'reviewer');
+  assert.equal($('[data-staff-role="admin-1"]').disabled,true);
+});
+
+test('category and role event handlers bind without crashing workspace rendering',async()=>{
+  const ctx=await adminStudio();
+  const {$,w}=ctx;
+  assert.equal($('#categoryGrid').querySelectorAll('.category-card').length,2);
+  assert.equal($('#staffList').querySelectorAll('[data-staff-role]').length,2);
+  $('[data-view="categories"]').click();
+  const remove=$('[data-category-remove="cat-digital"]');
+  assert.ok(remove);
+  assert.equal(remove.disabled,false);
+  remove.click();
+  assert.equal($('#categoryDeleteDialog').open,true);
+  assert.match($('#categoryDeleteDescription').textContent,/Digital Health/);
+  $('#categoryDeleteCancel').click();
+  assert.equal($('#categoryDeleteDialog').open,false);
+  assert.equal(w.document.querySelectorAll('.category-card').length,2);
+});
+
+test('Studio must never call forEach on a single DOM query result',()=>{
+  const offenders=script.split('\n').filter(line=>/(?<!\$)\$\((?:'[^']*'|"[^"]*")\)\.forEach\(/.test(line));
+  assert.deepEqual(offenders,[],'Use $$(selector) when iterating multiple elements.');
 });

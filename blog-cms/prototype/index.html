@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./studio.css?v=20260924-1">
   <link rel="stylesheet" href="./studio-v2.css?v=20260924-1">
-  <link rel="stylesheet" href="./studio-premium.css?v=20261102-2">
+  <link rel="stylesheet" href="./studio-premium.css?v=20261103-ux1">
 </head>
 <body>
   <section class="login-gate" id="loginGate" hidden>
@@ -53,7 +53,7 @@
         <button class="nav-item" data-status-view="Published"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m4 12 5 5L20 6"/></svg></span>Published</button>
         <button class="nav-item" data-status-view="Scheduled"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="17" rx="2"/><path d="M8 2v4M16 2v4M4 10h16M9 15h3v3"/></svg></span>Scheduled</button>
         <p>Website</p>
-        <a class="nav-item" href="/blog/" target="_blank" rel="noopener"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 5h6v6M19 5l-9 9"/><path d="M19 13v5a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5"/></svg></span>Blog & Insights</a>
+        <a class="nav-item" href="https://teledoctorsa.co.za/blog/" target="_blank" rel="noopener noreferrer"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 5h6v6M19 5l-9 9"/><path d="M19 13v5a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5"/></svg></span>Blog & Insights</a>
         <a class="nav-item" href="/telemedia-suite" target="_blank" rel="noopener"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 5h6v6M19 5l-9 9"/><path d="M19 13v5a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5"/></svg></span>TeleMedia Suite</a>
       </nav>
       <div class="sidebar-account" aria-label="Signed-in account">
@@ -82,7 +82,7 @@
             <article><span class="stat-label">01 / Published</span><strong id="publishedMetric">0</strong><small>Live stories</small></article>
             <article><span class="stat-label">02 / Review</span><strong id="reviewMetric">0</strong><small>Awaiting approval</small></article>
             <article><span class="stat-label">03 / Drafts</span><strong id="draftMetric">0</strong><small>In progress</small></article>
-            <article><span class="stat-label">04 / Service</span><strong id="backendMetric">API</strong><small id="backendMetricNote">Connecting…</small></article>
+            
           </section>
           <section class="workspace-grid">
             <div class="article-panel">
@@ -118,7 +118,7 @@
             </article>
 
             <article class="settings-card" id="staffAdminPanel" hidden>
-              <div class="settings-heading"><div><span class="eyebrow">ADMINISTRATION</span><h2>Staff accounts</h2><p>Create individual Publishing Studio accounts and remove access when required.</p></div><span class="settings-role">ADMIN ONLY</span></div>
+              <div class="settings-heading"><div><span class="eyebrow">ADMINISTRATION</span><h2>Staff accounts</h2><p>Create accounts, review effective permissions and change staff roles without deleting users.</p></div><span class="settings-role">ADMIN ONLY</span></div>
               <form id="staffForm" class="staff-create-form">
                 <label>Name<input id="staffName" required placeholder="Staff member name"></label>
                 <label>Email<input id="staffEmail" type="email" required placeholder="name@teledoctorsa.co.za"></label>
@@ -133,6 +133,7 @@
               </div>
               <div class="staff-list-heading"><strong>Existing staff</strong><button class="secondary" id="refreshStaffBtn" type="button">Refresh accounts</button></div>
               <div class="staff-list" id="staffList" aria-live="polite"></div>
+              <details class="role-guide"><summary>Review role permissions</summary><div class="role-guide-table" aria-label="CMS staff role permissions"><table><thead><tr><th>Permission</th><th>Admin</th><th>Editor</th><th>Reviewer</th></tr></thead><tbody><tr><td>Read articles and categories</td><td>Yes</td><td>Yes</td><td>Yes</td></tr><tr><td>Create and update drafts</td><td>Yes</td><td>Yes</td><td>No</td></tr><tr><td>Upload media (when enabled)</td><td>Yes</td><td>Yes</td><td>No</td></tr><tr><td>Publish, schedule, withdraw and delete</td><td>Yes</td><td>No</td><td>No</td></tr><tr><td>Manage categories and staff</td><td>Yes</td><td>No</td><td>No</td></tr></tbody></table></div><p>Changing a role signs that staff member out so new permissions take effect at next login.</p></details>
             </article>
           </div>
         </section>
@@ -142,7 +143,7 @@
 
   <dialog id="editorDialog" aria-labelledby="editorHeading">
     <form class="editor-modal" id="editorForm">
-      <header><div><span class="eyebrow" id="editorEyebrow">NEW STORY</span><h2 id="editorHeading">Start with the idea.</h2><p id="editorSubheading">Save your draft first, then send it for review or publish when ready.</p></div><button type="button" class="close" id="closeEditor" aria-label="Close">×</button></header>
+      <header><div><span class="eyebrow" id="editorEyebrow">NEW STORY</span><h2 id="editorHeading">Start with the idea.</h2><p id="editorSubheading">Drafts save automatically while you type. Review and publish when ready.</p></div><button type="button" class="close" id="closeEditor" aria-label="Close">×</button></header>
       <div class="editor-body"><div class="editor-layout">
         <div class="editor-main">
           <label>Article title<input id="articleTitle" required maxlength="120" placeholder="Give the story a clear, useful title"></label>
@@ -168,10 +169,13 @@
     </form>
   </dialog>
 
+  <dialog id="categoryDialog" class="cms-form-dialog" aria-labelledby="categoryDialogHeading"><form id="categoryForm" class="cms-dialog-panel"><header><span class="eyebrow">CONTENT TAXONOMY</span><h2 id="categoryDialogHeading">Create category</h2><p>Organise editorial stories without leaving the Studio.</p></header><label for="categoryNameInput">Category name</label><input id="categoryNameInput" name="category" type="text" minlength="2" maxlength="80" autocomplete="off" required placeholder="e.g. Digital health"><p id="categoryFormError" class="cms-dialog-error" role="alert" hidden></p><footer><button id="categoryCancel" type="button" class="secondary">Cancel</button><button id="categorySubmit" type="submit" class="primary">Create category</button></footer></form></dialog>
+  <dialog id="categoryDeleteDialog" class="cms-form-dialog" aria-labelledby="categoryDeleteHeading"><div class="cms-dialog-panel"><header><span class="eyebrow">REMOVE CATEGORY</span><h2 id="categoryDeleteHeading">Delete category?</h2><p id="categoryDeleteDescription">This action cannot be undone.</p></header><p id="categoryDeleteError" class="cms-dialog-error" role="alert" hidden></p><footer><button type="button" id="categoryDeleteCancel" class="secondary">Cancel</button><button type="button" id="categoryDeleteConfirm" class="danger">Delete category</button></footer></div></dialog>
+
   <dialog id="previewDialog" aria-labelledby="previewTitle"><article class="preview-sheet"><header><button type="button" class="close" id="closePreview">×</button><span id="previewCategory">Category</span><h1 id="previewTitle">Untitled story</h1><p id="previewExcerpt"></p><small id="previewMeta"></small></header><img id="previewCover" alt="" hidden><div id="previewBody" class="preview-body"></div></article></dialog>
   <div class="toast" id="toast" role="status"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m4 12 5 5L20 6"/></svg></span><div><strong id="toastTitle">Saved</strong><small id="toastMessage">Your changes were saved.</small><a id="toastAction" href="#" target="_blank" rel="noopener" hidden>View on blog ↗</a></div></div>
   <script src="../client/cms-api.js?v=20260924-1"></script>
-  <script src="./studio.js?v=20261029-2"></script>
+  <script src="./studio.js?v=20261103-ux1"></script>
   <script src="./google-signin.js?v=20261029-1"></script>
 </body>
 </html>

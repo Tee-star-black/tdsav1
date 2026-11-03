@@ -18,7 +18,9 @@ try{
   const dom=new JSDOM(html,{url:origin+'/prototype/',runScripts:'outside-only'}),w=dom.window;windows.push(w);
   w.fetch=(url,options)=>fetch(new URL(url,origin),options);w.AbortController=AbortController;w.confirm=()=>true;w.prompt=()=>null;
   w.HTMLDialogElement.prototype.showModal=function(){this.open=true;};w.HTMLDialogElement.prototype.close=function(){this.open=false;};
-  for(const [k,v] of Object.entries(storage))w.sessionStorage.setItem(k,v);
+  for(const [k,v] of Object.entries(storage)){
+    (k==='tdsaCmsEditorRecovery'?w.localStorage:w.sessionStorage).setItem(k,v);
+  }
   try{w.eval(api);w.eval(studio);}catch(error){console.error(error.name,error.message,error.stack);throw error;}await until(()=>w.document.querySelector('#backendStatus').classList.contains('online'));
   return {w,$:s=>w.document.querySelector(s),fill(s,value){const el=w.document.querySelector(s);el.value=value;el.dispatchEvent(new w.Event(el.tagName==='SELECT'?'change':'input',{bubbles:true}));}};
 }catch(error){throw new Error(error.message,{cause:error});}
@@ -40,9 +42,9 @@ test('inline validation, review submission, stable slug and return to draft',asy
 });
 test('unsaved close protection, recovery and form submission without reload',async()=>{
   const {w,$,fill}=await open();$('[data-action="new"]').click();fill('#articleTitle','Recover this writing');fill('#articleBody','Precious unsaved content');
-  w.confirm=()=>false;$('#closeEditor').click();assert.ok($('#editorDialog').open);const recovery=w.sessionStorage.getItem('tdsaCmsEditorRecovery');assert.ok(recovery.includes('Precious unsaved content'));
+  w.confirm=()=>false;$('#closeEditor').click();assert.ok($('#editorDialog').open);const recovery=w.localStorage.getItem('tdsaCmsEditorRecovery');assert.ok(recovery.includes('Precious unsaved content'));
   const recovered=await open({tdsaCmsEditorRecovery:recovery});await until(()=>recovered.$('#editorDialog').open);assert.equal(recovered.$('#articleBody').value,'Precious unsaved content');
-  const event=new recovered.w.Event('submit',{bubbles:true,cancelable:true});recovered.$('#editorForm').dispatchEvent(event);assert.equal(event.defaultPrevented,true);await until(()=>!recovered.$('#editorDialog').open);assert.equal(recovered.w.sessionStorage.getItem('tdsaCmsEditorRecovery'),null);
+  const event=new recovered.w.Event('submit',{bubbles:true,cancelable:true});recovered.$('#editorForm').dispatchEvent(event);assert.equal(event.defaultPrevented,true);await until(()=>!recovered.$('#editorDialog').open);assert.equal(recovered.w.localStorage.getItem('tdsaCmsEditorRecovery'),null);
 });
 test('pagination changes rows and restores the last page',async()=>{
   for(let i=0;i<12;i++)await fetch(origin+'/api/articles',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:`Pagination story ${i}`,status:'Draft'})});
@@ -78,9 +80,25 @@ test('stale-save errors preserve the open editor and its recovery copy',async()=
   const id=edit.dataset.edit;const current=(await(await fetch(origin+'/api/articles/'+id)).json()).article;
   await fetch(origin+'/api/articles/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({...current,title:'Newer remote title'})});
   fill('#articleTitle','My unsaved title');$('#saveArticle').click();await until(()=>!$('#editorFeedback').hidden);
-  assert.ok($('#editorDialog').open);assert.equal($('#articleTitle').value,'My unsaved title');assert.ok($('#editorFeedback').textContent.includes('changed since'));assert.ok(w.sessionStorage.getItem('tdsaCmsEditorRecovery').includes('My unsaved title'));
+  assert.ok($('#editorDialog').open);assert.equal($('#articleTitle').value,'My unsaved title');assert.ok($('#editorFeedback').textContent.includes('changed since'));assert.ok(w.localStorage.getItem('tdsaCmsEditorRecovery').includes('My unsaved title'));
 });
 test('category creation within the editor retains writing and assigns the new category',async()=>{
-  const {$,fill,w}=await open();$('[data-action="new"]').click();fill('#articleTitle','In editor category test');fill('#articleBody','Keep this text while adding a category.');w.prompt=()=> 'Editorial test category';$('#editorAddCategory').click();await until(()=>$('#articleCategory').value==='Editorial test category');
+  const {$,fill,w}=await open();$('[data-action="new"]').click();fill('#articleTitle','In editor category test');fill('#articleBody','Keep this text while adding a category.');$('#editorAddCategory').click();assert.ok($('#categoryDialog').open);fill('#categoryNameInput','Editorial test category');$('#categoryForm').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));await until(()=>$('#articleCategory').value==='Editorial test category');
   assert.equal($('#articleBody').value,'Keep this text while adding a category.');$('#saveArticle').click();await until(()=>!$('#editorDialog').open);assert.ok($('#articleList').textContent.includes('Editorial test category'));
+});
+
+
+test('new drafts save automatically to CMS before explicit Save is clicked',async()=>{
+  const {$,fill}=await open();
+  $('[data-action="new"]').click();
+  fill('#articleTitle','Automatic saving protects writing');
+  fill('#articleBody','This text should persist in the local CMS content store after the debounce interval, before the editor closes.');
+  await until(async()=>{
+    const response=await fetch(origin+'/api/articles');
+    const json=await response.json();
+    return json.articles.some(item=>item.title==='Automatic saving protects writing'&&item.status==='Draft');
+  });
+  await until(()=>/saved in CMS/i.test($('#saveState').textContent));
+  assert.ok($('#editorDialog').open);
+  assert.ok($('#deleteArticle').hidden===false);
 });

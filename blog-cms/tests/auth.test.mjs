@@ -69,7 +69,9 @@ test('staff account login uses an HttpOnly session and logout invalidates it',as
     assert.equal((await fetch(origin+'/.env')).status,404);
     assert.equal((await fetch(origin+'/server/server.mjs')).status,404);
     const healthData=await (await fetch(origin+'/api/health')).json();
-    assert.deepEqual(healthData,{ok:true});
+    assert.equal(healthData.ok,true);
+    assert.equal(healthData.backend,'local');
+    assert.equal(healthData.mediaUploadsEnabled,true);
     const apiResponse=await fetch(origin+'/api/auth/me');
     assert.match(apiResponse.headers.get('content-security-policy')||'',/default-src 'none'/);
     assert.match(apiResponse.headers.get('permissions-policy')||'',/camera=\(\)/);
@@ -110,4 +112,25 @@ test('staff account login uses an HttpOnly session and logout invalidates it',as
     await new Promise(r=>child.once('exit',r));
     await rm(directory,{recursive:true,force:true});
   }
+});
+
+
+test('administrators may change staff roles without deleting accounts, preserving last admin',async()=>{
+  const directory=await mkdtemp(path.join(tmpdir(),'cms-roles-'));
+  const auth=new AuthStore({filePath:path.join(directory,'auth.json')});
+  try{
+    const admin=(await auth.createUser({name:'Primary Admin',email:'lead@example.invalid',role:'admin',password:'ValidPasswordPrimary123'})).user;
+    const second=(await auth.createUser({name:'Second Admin',email:'second@example.invalid',role:'admin',password:'ValidPasswordSecond123'})).user;
+    const editor=(await auth.createUser({name:'Editorial Staff',email:'writer@example.invalid',role:'editor',password:'ValidPasswordEditor123'})).user;
+    const session=await auth.createSession(editor.id);
+    await assert.rejects(auth.updateUserRole(editor.id,'superadmin',admin.id),{statusCode:400});
+    await assert.rejects(auth.updateUserRole(admin.id,'editor',admin.id),{statusCode:409});
+    const changed=await auth.updateUserRole(editor.id,'reviewer',admin.id);
+    assert.equal(changed.role,'reviewer');
+    assert.equal(await auth.sessionUserFromRequest({headers:{cookie:'tdsa_cms_session='+session.token}}),null);
+    assert.equal((await auth.authenticate('writer@example.invalid','ValidPasswordEditor123')).role,'reviewer');
+    await auth.updateUserRole(second.id,'editor',admin.id);
+    await assert.rejects(auth.updateUserRole(admin.id,'editor',second.id),{statusCode:409});
+    assert.equal((await auth.listUsers()).length,3);
+  }finally{await rm(directory,{recursive:true,force:true});}
 });

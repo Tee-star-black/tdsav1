@@ -1,0 +1,23 @@
+/* TeleDoctorSA homepage editorial feed. No gradients, overlays or layout shifts without content. */
+.tdsa-home-insights[hidden], .tdsa-news-announcement[hidden]{display:none!important}
+.tdsa-home-insights{background:#fff;border-block:1px solid #dfe5e6;padding:clamp(56px,7vw,96px) clamp(20px,6vw,88px);font-family:'Plus Jakarta Sans',Arial,sans-serif;color:#172930}
+.tdsa-insights-heading{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-bottom:30px}
+.tdsa-insights-heading .eyebrow{font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#286368}
+.tdsa-insights-heading h2{font-size:clamp(30px,3.2vw,48px);letter-spacing:-.055em;line-height:1.16;margin:12px 0 0}
+.tdsa-insights-heading>a{font-size:13px;text-decoration:none;font-weight:750;border-bottom:1px solid #344c50;padding-bottom:6px;white-space:nowrap}
+.tdsa-insights-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.tdsa-insight-card{border:1px solid #dfe5e6;background:#fff;padding:clamp(20px,2vw,30px);display:flex;flex-direction:column;min-width:0}
+.tdsa-insight-meta{font-size:10px;letter-spacing:.09em;text-transform:uppercase;font-weight:750;color:#3d7176;margin:0 0 20px}
+.tdsa-insight-card h3{font-size:clamp(19px,1.7vw,25px);line-height:1.3;letter-spacing:-.04em;margin:0 0 15px}
+.tdsa-insight-card h3 a{color:inherit;text-decoration:none}
+.tdsa-insight-card h3 a:hover{text-decoration:underline}
+.tdsa-insight-excerpt{font-size:13px;line-height:1.75;color:#607078;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin:0 0 24px}
+.tdsa-insight-read{margin-top:auto;align-self:flex-start;border-bottom:1px solid currentColor;text-decoration:none;font-size:12px;font-weight:750;padding-bottom:5px;color:#174a4e}
+.tdsa-news-announcement{position:fixed;z-index:9999;right:22px;bottom:22px;width:min(370px,calc(100vw - 28px));background:#fff;border:1px solid #d4dfe1;box-shadow:0 10px 34px #1e34322d;padding:20px 42px 20px 22px;color:#182e33;font-family:'Plus Jakarta Sans',Arial,sans-serif}
+.tdsa-news-announcement>span{display:block;color:#2e7276;font-size:10px;letter-spacing:.18em;font-weight:800;margin-bottom:9px}
+.tdsa-news-announcement strong{display:block;font-size:15px;line-height:1.4;letter-spacing:-.025em}
+.tdsa-news-announcement>a{display:inline-block;margin-top:10px;color:#245b60;font-size:12px;font-weight:750;text-decoration:underline;text-underline-offset:3px}
+.tdsa-news-announcement button{position:absolute;top:8px;right:8px;background:transparent;border:0;width:30px;height:30px;font-size:21px;cursor:pointer;color:#405b5f}
+.tdsa-news-announcement button:focus-visible,.tdsa-home-insights a:focus-visible{outline:2px solid #2d7579;outline-offset:3px}
+@media(max-width:850px){.tdsa-insights-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.tdsa-insights-heading{align-items:start}}
+@media(max-width:610px){.tdsa-home-insights{padding:48px 20px}.tdsa-insights-heading{flex-direction:column;gap:18px}.tdsa-insights-grid{grid-template-columns:1fr}.tdsa-news-announcement{right:14px;bottom:14px;padding:16px 42px 16px 18px}}
