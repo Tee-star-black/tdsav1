@@ -143,6 +143,31 @@ async function studio(width){
     await checkVisibleBounds(page,'#toggleLoginPassword','Password toggle '+width);
     await checkOverflow(page,'Login '+width);
 
+    const glass=await page.locator('.login-panel').evaluate(el=>{
+      const style=getComputedStyle(el);
+      const ambient=document.querySelector('.login-atmosphere');
+      return {
+        background:style.backgroundColor,
+        blur:style.backdropFilter||style.webkitBackdropFilter,
+        ambientCount:ambient?.querySelectorAll('.login-aura').length||0
+      };
+    });
+    assert.equal(glass.ambientCount,3,'Animated background must provide visible depth');
+    assert.match(glass.background,/rgba\(/i,'Login panel must be translucent');
+    assert.match(glass.blur,/blur\(/i,'Login panel must have frosted glass blur');
+    const auraMotion=await page.locator('.login-aura-one').evaluate(el=>getComputedStyle(el).animationName);
+    assert.equal(auraMotion,'none','Reduced-motion settings must stop background animation');
+    if(width>=1024){
+      assert.ok(await page.locator('.login-glass-workflow').isVisible(),'Frosted editorial panel should be visible');
+      await page.locator('[data-login-story="1"]').click();
+      assert.match(await page.locator('#loginStoryTitle').textContent(),/clarity/i);
+      assert.equal(await page.locator('[data-login-story="1"]').getAttribute('aria-pressed'),'true');
+      await page.locator('[data-login-story="0"]').click();
+    }
+    if(width===1440){
+      await page.screenshot({path:path.join(shotDir,'cms-glass-login-desktop-1440.png'),fullPage:false,animations:'disabled'});
+    }
+
     const visibility=page.locator('#toggleLoginPassword');
     const password=page.locator('#loginPassword');
     await password.fill('Visual-QA-Password-Only');
