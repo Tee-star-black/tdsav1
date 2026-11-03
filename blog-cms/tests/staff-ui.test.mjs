@@ -28,7 +28,7 @@ async function adminStudio(){
 
   const admin={id:'admin-1',email:'admin@example.invalid',name:'CMS Administrator',role:'admin'};
   const users=[admin,{id:'staff-1',email:'existing@example.invalid',name:'Existing Editor',role:'editor'}];
-  let listFailure=false,createCalls=0,changeCalls=0,resetCalls=0;
+  let listFailure=false,createCalls=0,changeCalls=0,resetCalls=0,roleCalls=0;
   w.TDSACmsApi={
     health:async()=>({backend:'postgres',ok:true,authRequired:true,mediaUploadsEnabled:false}),
     listArticles:async()=>[],
@@ -52,6 +52,7 @@ async function adminStudio(){
       return {user,temporaryPassword:'temporary-password-123'};
     },
     resetUserPassword:async()=>{await Promise.resolve();resetCalls++;return {temporaryPassword:'replacement-password-456'};},
+    updateUserRole:async(id,role)=>{await Promise.resolve();roleCalls++;const item=users.find(user=>user.id===id);item.role=role;return {...item};},
     changePassword:async()=>{await Promise.resolve();changeCalls++;return {ok:true};},
     setAccessToken:()=>{}
   };
@@ -63,7 +64,7 @@ async function adminStudio(){
   return {
     w,$,users,
     setListFailure:value=>{listFailure=value;},
-    get calls(){return {createCalls,changeCalls,resetCalls};}
+    get calls(){return {createCalls,changeCalls,resetCalls,roleCalls};}
   };
 }
 
