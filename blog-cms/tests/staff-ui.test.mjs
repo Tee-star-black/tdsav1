@@ -164,3 +164,20 @@ test('copy temporary password does not reference cleared async event.currentTarg
   await until(()=>$('#copyTemporaryPassword').textContent==='Copied');
   assert.equal(copied,'temp-password-test');
 });
+
+
+test('administrator can review effective permissions and change a staff role',async()=>{
+  const ctx=await adminStudio();
+  const {$}=ctx;
+  const user=ctx.users.find(item=>item.id==='staff-1');
+  const selector=$('[data-staff-role="staff-1"]');
+  assert.equal(selector.value,'editor');
+  assert.ok($('.role-guide').textContent.includes('Publish, schedule'));
+  selector.value='reviewer';
+  selector.dispatchEvent(new ctx.w.Event('change',{bubbles:true}));
+  $('[data-staff-role-update="staff-1"]').click();
+  await until(()=>ctx.calls.roleCalls===1);
+  assert.equal(user.role,'reviewer');
+  assert.equal($('[data-staff-role="staff-1"]').value,'reviewer');
+  assert.equal($('[data-staff-role="admin-1"]').disabled,true);
+});
