@@ -9,6 +9,7 @@ Disallow: /payment
 
 # Sitemap location
 Sitemap: https://teledoctorsa.co.za/sitemap.xml
+Sitemap: https://teledoctorsa.co.za/blog/sitemap.xml
 
 # Crawl-delay for polite crawling (optional)
 Crawl-delay: 1
