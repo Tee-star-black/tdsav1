@@ -495,3 +495,21 @@ button svg,.nav-icon svg,a svg{pointer-events:none}
 @media(prefers-reduced-motion:reduce){
   .login-story-transitions.is-updating{animation:none!important}
 }
+
+/* Short mobile viewports should scroll; tall phones should centre the glass card,
+   never stretch it into a blank full-height slab. */
+@media(max-width:480px){
+  .login-gate{
+    display:flex!important;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+  }
+  .login-stage{
+    flex:0 0 auto;
+    min-height:0!important;
+    height:auto;
+    margin:auto 0;
+  }
+  .login-panel{min-height:0!important}
+}
