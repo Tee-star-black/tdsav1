@@ -18,7 +18,9 @@ try{
   const dom=new JSDOM(html,{url:origin+'/prototype/',runScripts:'outside-only'}),w=dom.window;windows.push(w);
   w.fetch=(url,options)=>fetch(new URL(url,origin),options);w.AbortController=AbortController;w.confirm=()=>true;w.prompt=()=>null;
   w.HTMLDialogElement.prototype.showModal=function(){this.open=true;};w.HTMLDialogElement.prototype.close=function(){this.open=false;};
-  for(const [k,v] of Object.entries(storage))w.sessionStorage.setItem(k,v);
+  for(const [k,v] of Object.entries(storage)){
+    (k==='tdsaCmsEditorRecovery'?w.localStorage:w.sessionStorage).setItem(k,v);
+  }
   try{w.eval(api);w.eval(studio);}catch(error){console.error(error.name,error.message,error.stack);throw error;}await until(()=>w.document.querySelector('#backendStatus').classList.contains('online'));
   return {w,$:s=>w.document.querySelector(s),fill(s,value){const el=w.document.querySelector(s);el.value=value;el.dispatchEvent(new w.Event(el.tagName==='SELECT'?'change':'input',{bubbles:true}));}};
 }catch(error){throw new Error(error.message,{cause:error});}
@@ -40,9 +42,9 @@ test('inline validation, review submission, stable slug and return to draft',asy
 });
 test('unsaved close protection, recovery and form submission without reload',async()=>{
   const {w,$,fill}=await open();$('[data-action="new"]').click();fill('#articleTitle','Recover this writing');fill('#articleBody','Precious unsaved content');
-  w.confirm=()=>false;$('#closeEditor').click();assert.ok($('#editorDialog').open);const recovery=w.sessionStorage.getItem('tdsaCmsEditorRecovery');assert.ok(recovery.includes('Precious unsaved content'));
+  w.confirm=()=>false;$('#closeEditor').click();assert.ok($('#editorDialog').open);const recovery=w.localStorage.getItem('tdsaCmsEditorRecovery');assert.ok(recovery.includes('Precious unsaved content'));
   const recovered=await open({tdsaCmsEditorRecovery:recovery});await until(()=>recovered.$('#editorDialog').open);assert.equal(recovered.$('#articleBody').value,'Precious unsaved content');
-  const event=new recovered.w.Event('submit',{bubbles:true,cancelable:true});recovered.$('#editorForm').dispatchEvent(event);assert.equal(event.defaultPrevented,true);await until(()=>!recovered.$('#editorDialog').open);assert.equal(recovered.w.sessionStorage.getItem('tdsaCmsEditorRecovery'),null);
+  const event=new recovered.w.Event('submit',{bubbles:true,cancelable:true});recovered.$('#editorForm').dispatchEvent(event);assert.equal(event.defaultPrevented,true);await until(()=>!recovered.$('#editorDialog').open);assert.equal(recovered.w.localStorage.getItem('tdsaCmsEditorRecovery'),null);
 });
 test('pagination changes rows and restores the last page',async()=>{
   for(let i=0;i<12;i++)await fetch(origin+'/api/articles',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:`Pagination story ${i}`,status:'Draft'})});
