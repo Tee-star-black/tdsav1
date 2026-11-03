@@ -311,3 +311,180 @@ button svg,.nav-icon svg,a svg{pointer-events:none}
   .topbar,.sidebar,.login-panel{background:#fff!important}
   .login-stage{background:#fff}
 }
+
+
+/* GLASS EDITION / visibly layered, lively login. Overrides earlier muted glass.
+   Purely cosmetic: form submission, credentials and staff access are unchanged. */
+.login-gate{
+  background:#153e45!important;
+  color:#18383a;
+  isolation:isolate;
+  --login-parallax-x:0px;
+  --login-parallax-y:0px;
+}
+.login-gate::before,.login-gate::after{display:none!important}
+.login-atmosphere{
+  position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;
+  transform:translate3d(var(--login-parallax-x),var(--login-parallax-y),0);
+  transition:transform .45s cubic-bezier(.2,.7,.2,1);
+}
+.login-atmosphere-grid{
+  position:absolute;inset:-12%;
+  background-image:linear-gradient(rgba(232,255,250,.058) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(232,255,250,.058) 1px,transparent 1px);
+  background-size:84px 84px;
+  transform:rotate(-8deg);
+  -webkit-mask-image:radial-gradient(ellipse at center,#000,transparent 85%);
+  mask-image:radial-gradient(ellipse at center,#000,transparent 85%);
+}
+.login-aura{
+  display:block;position:absolute;aspect-ratio:1;border-radius:50%;opacity:.85;
+  filter:blur(48px);will-change:transform;animation:login-drift 17s ease-in-out infinite alternate;
+}
+.login-aura-one{width:clamp(340px,44vw,700px);left:-10%;top:-27%;background:#79d8c4;opacity:.58;animation-duration:23s}
+.login-aura-two{width:clamp(310px,44vw,620px);right:-4%;top:12%;background:#b3d6e7;opacity:.84;animation-duration:19s;animation-delay:-8s}
+.login-aura-three{width:clamp(310px,40vw,570px);right:15%;bottom:-44%;background:#a5ecdc;opacity:.64;animation-duration:27s;animation-delay:-15s}
+.login-glass-orbit{
+  position:absolute;border-radius:50%;border:1px solid rgba(255,255,255,.18);
+  box-shadow:0 0 0 30px rgba(238,255,250,.025),0 0 0 74px rgba(238,255,250,.018);
+  opacity:.7;animation:login-orbit-pulse 12s ease-in-out infinite alternate;
+}
+.login-glass-orbit-one{width:min(55vw,600px);height:min(55vw,600px);top:-28%;right:-10%}
+.login-glass-orbit-two{width:min(42vw,475px);height:min(42vw,475px);bottom:-34%;left:-12%;animation-delay:-4s}
+.login-stage{
+  position:relative;z-index:1;overflow:hidden;
+  border:1px solid rgba(255,255,255,.53)!important;
+  background:rgba(234,251,247,.16)!important;
+  box-shadow:0 34px 100px rgba(2,26,32,.34),inset 0 1px 0 rgba(255,255,255,.5)!important;
+  -webkit-backdrop-filter:blur(24px) saturate(138%)!important;
+  backdrop-filter:blur(24px) saturate(138%)!important;
+}
+.login-stage::before{
+  content:'';position:absolute;inset:0;z-index:5;pointer-events:none;
+  border:1px solid rgba(255,255,255,.11);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.47),inset 1px 0 0 rgba(255,255,255,.2);
+}
+.login-story{
+  z-index:1;background:rgba(7,43,51,.57)!important;
+  border-right:1px solid rgba(255,255,255,.25);
+  -webkit-backdrop-filter:blur(20px) saturate(135%);
+  backdrop-filter:blur(20px) saturate(135%);
+}
+.login-story::before,.login-story::after{border-color:rgba(243,255,250,.18)}
+.login-story-copy{display:grid;gap:0}
+.login-story-index{color:#b4e7dc}
+.login-story-transitions{animation:login-reveal .52s cubic-bezier(.2,.7,.2,1) both}
+.login-story-copy h2{margin-top:17px;margin-bottom:22px}
+.login-story-copy p{color:#d2e8e2;max-width:430px}
+.login-story-controls{
+  display:flex;align-items:center;gap:12px;justify-content:space-between;
+  margin-top:28px;color:#daeae5;
+}
+.login-story-dots{display:flex;align-items:center;gap:2px}
+.login-story-dots button{
+  width:44px;height:44px;min-width:44px;min-height:44px;
+  position:relative;border:0;background:transparent;cursor:pointer;padding:0;
+  display:grid;place-items:center;color:inherit;
+}
+.login-story-dots button::before{
+  content:'';display:block;width:29px;height:3px;
+  background:rgba(226,252,245,.36);transition:background .25s,width .25s;
+}
+.login-story-dots button.is-current::before,
+.login-story-dots button[aria-pressed="true"]::before{width:36px;background:#d0fcf0}
+.login-story-dots button:hover::before{background:rgba(226,252,245,.82)}
+.login-story-dots button:focus-visible{outline:2px solid #dcfff2;outline-offset:0}
+.login-story-count{font-size:10px;letter-spacing:.16em;color:#c3e6df}
+.login-glass-workflow{
+  position:relative;z-index:1;display:grid;gap:16px;
+  margin:0 0 2px;padding:20px clamp(16px,2vw,25px);
+  border:1px solid rgba(242,255,252,.36);
+  background:rgba(243,255,252,.16);
+  -webkit-backdrop-filter:blur(28px) saturate(150%);
+  backdrop-filter:blur(28px) saturate(150%);
+  box-shadow:0 16px 35px rgba(0,22,30,.14),inset 0 1px 0 rgba(255,255,255,.3);
+  animation:login-floating-panel 9s ease-in-out infinite alternate;
+}
+.login-glass-workflow-head{
+  display:flex;align-items:center;gap:8px;font-size:9px;letter-spacing:.15em;
+  font-weight:750;color:#e3f9f4;
+}
+.login-glass-live{display:inline-block;width:7px;height:7px;border-radius:50%;background:#a2f7d9;box-shadow:0 0 0 3px rgba(162,247,217,.15)}
+.login-glass-sparkle{margin-left:auto;font-size:20px;line-height:1;color:rgba(237,255,249,.8)}
+.login-glass-workflow-steps{display:flex;gap:10px;align-items:center;justify-content:space-between}
+.login-glass-workflow-steps span:not(.login-glass-line){
+  font-size:11px;font-weight:600;white-space:nowrap;color:#f3fffb;letter-spacing:.01em;
+}
+.login-glass-workflow-steps b{font-size:9px;font-weight:600;color:#abe1d8;margin-right:4px}
+.login-glass-workflow-steps .login-glass-line{
+  flex:1;max-width:26px;height:1px;background:rgba(231,252,249,.47);
+}
+.login-panel{
+  position:relative;z-index:1;
+  background:rgba(247,254,251,.68)!important;
+  -webkit-backdrop-filter:blur(30px) saturate(145%)!important;
+  backdrop-filter:blur(30px) saturate(145%)!important;
+  box-shadow:inset 1px 0 0 rgba(255,255,255,.65);
+}
+.login-card .login-card-brand{border-bottom-color:rgba(39,91,88,.24)}
+.login-card .login-field>input,
+.login-card .login-password-control>input{
+  background:rgba(255,255,255,.66);
+  border-color:rgba(108,156,149,.46);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.8);
+}
+.login-card .login-field:focus-within>label{color:#115b56}
+.login-card .login-field:focus-within input{background:rgba(255,255,255,.93)}
+.login-card .primary#loginSubmit{
+  box-shadow:0 9px 22px rgba(16,71,69,.16);
+}
+.login-security{border-top-color:rgba(73,111,107,.22)}
+.login-story-foot{color:#d1e8e2}
+@keyframes login-drift{
+  0%{transform:translate3d(-1.5%,0,0) scale(.98)}
+  50%{transform:translate3d(3%,-4%,0) scale(1.08)}
+  100%{transform:translate3d(-2%,3%,0) scale(1.02)}
+}
+@keyframes login-orbit-pulse{
+  from{opacity:.25;transform:scale(.96)}
+  to{opacity:.75;transform:scale(1.04)}
+}
+@keyframes login-floating-panel{
+  from{transform:translate3d(0,0,0)}
+  to{transform:translate3d(0,-7px,0)}
+}
+@keyframes login-reveal{
+  from{opacity:0;transform:translate3d(0,10px,0)}
+  to{opacity:1;transform:translate3d(0,0,0)}
+}
+@media(max-width:1180px){
+  .login-story{padding:clamp(26px,3.3vw,45px)}
+  .login-story-copy h2{font-size:clamp(33px,3.4vw,50px)}
+}
+@media(max-width:980px){
+  .login-stage{width:min(560px,100%);grid-template-columns:minmax(0,1fr)}
+  .login-panel{background:rgba(248,255,252,.73)!important}
+  .login-glass-orbit-one{right:-38%;top:4%}
+  .login-aura-two{right:-28%}
+}
+@media(max-width:480px){
+  .login-gate{padding:12px 12px max(12px,env(safe-area-inset-bottom))}
+  .login-stage{min-width:0}
+  .login-panel{background:rgba(248,255,252,.81)!important}
+  .login-aura-one{width:320px;left:-65%;top:-15%;opacity:.4}
+  .login-aura-two{width:380px;right:-75%;top:14%;opacity:.9}
+  .login-aura-three{width:330px;right:-50%;bottom:-20%}
+}
+@media(prefers-reduced-motion:reduce){
+  .login-atmosphere,.login-aura,.login-glass-orbit,
+  .login-story-transitions,.login-glass-workflow{animation:none!important;transition:none!important}
+  .login-atmosphere{transform:none!important}
+  .login-stage{-webkit-backdrop-filter:blur(24px) saturate(138%)!important;backdrop-filter:blur(24px) saturate(138%)!important}
+  .login-panel{-webkit-backdrop-filter:blur(30px) saturate(145%)!important;backdrop-filter:blur(30px) saturate(145%)!important}
+}
+@supports not ((backdrop-filter:blur(8px)) or (-webkit-backdrop-filter:blur(8px))){
+  .login-stage{background:rgba(245,255,252,.91)!important}
+  .login-story{background:#194b51!important}
+  .login-panel{background:rgba(249,255,252,.98)!important}
+  .login-glass-workflow{background:rgba(255,255,255,.24)}
+}
