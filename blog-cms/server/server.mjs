@@ -65,7 +65,7 @@ function json(req,res,status,payload){
     'Content-Type':'application/json; charset=utf-8',
     ...originHeaders(req),
     'Access-Control-Allow-Headers':'Content-Type, Authorization',
-    'Access-Control-Allow-Methods':'GET,POST,PUT,DELETE,OPTIONS',
+    'Access-Control-Allow-Methods':'GET,POST,PUT,PATCH,DELETE,OPTIONS',
     'Cache-Control':'no-store'
   });
   res.end(JSON.stringify(payload));
@@ -145,14 +145,14 @@ async function api(req,res,url){
     res.writeHead(204,{
       ...headers,
       'Access-Control-Allow-Headers':'Content-Type, Authorization',
-      'Access-Control-Allow-Methods':'GET,POST,PUT,DELETE,OPTIONS'
+      'Access-Control-Allow-Methods':'GET,POST,PUT,PATCH,DELETE,OPTIONS'
     });
     return res.end();
   }
 
   const parts=url.pathname.replace(/^\/api\/?/,'').split('/').filter(Boolean);
   if(parts[0]==='health'&&req.method==='GET'){
-    return json(req,res,200,{ok:true});
+    return json(req,res,200,{ok:true,backend:repo.backendName,authRequired:true,mediaUploadsEnabled});
   }
 
   if(parts[0]==='auth'&&parts[1]==='google'&&parts[2]==='config'&&req.method==='GET'){
