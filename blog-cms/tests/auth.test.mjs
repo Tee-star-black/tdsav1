@@ -69,7 +69,9 @@ test('staff account login uses an HttpOnly session and logout invalidates it',as
     assert.equal((await fetch(origin+'/.env')).status,404);
     assert.equal((await fetch(origin+'/server/server.mjs')).status,404);
     const healthData=await (await fetch(origin+'/api/health')).json();
-    assert.deepEqual(healthData,{ok:true});
+    assert.equal(healthData.ok,true);
+    assert.equal(healthData.backend,'local');
+    assert.equal(healthData.mediaUploadsEnabled,true);
     const apiResponse=await fetch(origin+'/api/auth/me');
     assert.match(apiResponse.headers.get('content-security-policy')||'',/default-src 'none'/);
     assert.match(apiResponse.headers.get('permissions-policy')||'',/camera=\(\)/);
