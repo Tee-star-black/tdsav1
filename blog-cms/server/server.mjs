@@ -243,7 +243,8 @@ async function api(req,res,url){
       return json(req,res,201,result);
     }
     if(parts[1]&&parts[2]==='role'&&parts.length===3&&req.method==='PATCH'){
-      if(!requireRole(cmsUser,res,req,['admin'])||cmsUser.legacy||cmsUser.development)return;
+      if(!requireRole(cmsUser,res,req,['admin']))return;
+      if(cmsUser.legacy||cmsUser.development)return json(req,res,403,{error:'A named administrator session is required to change staff roles.'});
       const id=decodeURIComponent(parts[1]);
       const input=await body(req);
       const updated=await auth.updateUserRole(id,input.role,cmsUser.id);
