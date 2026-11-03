@@ -242,6 +242,14 @@ async function api(req,res,url){
       await repo.recordAudit?.({actorUserId:cmsUser.id,action:'user.create',entityType:'user',entityId:result.user.id,metadata:{email:result.user.email,role:result.user.role}});
       return json(req,res,201,result);
     }
+    if(parts[1]&&parts[2]==='role'&&parts.length===3&&req.method==='PATCH'){
+      if(!requireRole(cmsUser,res,req,['admin'])||cmsUser.legacy||cmsUser.development)return;
+      const id=decodeURIComponent(parts[1]);
+      const input=await body(req);
+      const updated=await auth.updateUserRole(id,input.role,cmsUser.id);
+      await repo.recordAudit?.({actorUserId:cmsUser.id,action:'user.role_change',entityType:'user',entityId:id,metadata:{role:updated.role}});
+      return json(req,res,200,{user:updated});
+    }
     if(parts[1]&&parts[2]==='reset-password'&&req.method==='POST'){
       if(!requireRole(cmsUser,res,req,['admin']))return;
       const id=decodeURIComponent(parts[1]);
