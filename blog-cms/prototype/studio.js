@@ -63,8 +63,7 @@ function errorMessage(error){return error?.details?.length?error.details.join(' 
 function setBackendStatus(mode,message){
   const el=$('#backendStatus');el.classList.remove('online','offline');if(mode)el.classList.add(mode);
   el.querySelector('b').textContent=message;
-  $('#backendMetric').textContent=mode==='online'?(state.health?.backend||'API').toUpperCase():'OFF';
-  $('#backendMetricNote').textContent=mode==='online'?('Connected Cloud SQL content service'):'Backend unavailable';
+  // Connection status remains in the top bar, not a duplicate dashboard tile.
 }
 
 async function loadWorkspace({quiet=false,authRetry=true}={}){
@@ -197,8 +196,19 @@ function renderMedia(){
 }
 
 function renderCategories(){
-  $('#categoryGrid').innerHTML=state.categories.map(c=>{const total=state.articles.filter(a=>a.category===c.name).length,published=state.articles.filter(a=>a.category===c.name&&a.status==='Published').length;return `<article class="category-card"><div class="category-symbol">${escapeHtml(c.name.slice(0,2).toUpperCase())}</div><div><h3>${escapeHtml(c.name)}</h3><p>${total} ${total===1?'story':'stories'} · ${published} published</p></div><button data-category-remove="${escapeHtml(c.id)}" ${total?'disabled title="Move articles before deleting this category"':''}>×</button></article>`;}).join('');
-  $$('[data-category-remove]').forEach(b=>b.addEventListener('click',async()=>{try{await api.deleteCategory(b.dataset.categoryRemove);state.categories=state.categories.filter(c=>c.id!==b.dataset.categoryRemove);render();notify('Category removed','The category was removed from the content service.');}catch(error){notify('Category not removed',errorMessage(error));}}));
+  $('#categoryGrid').innerHTML=state.categories.map(c=>{
+    const total=state.articles.filter(a=>a.category===c.name).length;
+    const published=state.articles.filter(a=>a.category===c.name&&a.status==='Published').length;
+    return `<article class="category-card"><div class="category-symbol">${escapeHtml(c.name.slice(0,2).toUpperCase())}</div><div><h3>${escapeHtml(c.name)}</h3><p>${total} ${total===1?'story':'stories'} · ${published} published</p></div><button type="button" data-category-remove="${escapeHtml(c.id)}" ${total?'disabled title="Move articles before deleting this category"':''} aria-label="Delete ${escapeHtml(c.name)}">Delete</button></article>`;
+  }).join('');
+  $('[data-category-remove]').forEach(button=>button.addEventListener('click',()=>{
+    const category=state.categories.find(item=>item.id===button.dataset.categoryRemove);
+    if(!category)return;
+    categoryToDelete=category.id;
+    $('#categoryDeleteDescription').textContent=`Delete “${category.name}”? This cannot be undone. A category must be empty before it can be removed.`;
+    $('#categoryDeleteError').hidden=true;
+    $('#categoryDeleteDialog').showModal();
+  }));
 }
 
 function render(){hydrateCategories();renderArticles();renderMedia();renderCategories();renderSettings();}
@@ -219,7 +229,32 @@ function renderStaffList(){
   if(staffListState==='loading'){target.innerHTML='<div class="media-empty" role="status">Loading staff accounts...</div>';return;}
   if(staffListState==='error'){target.innerHTML='<div class="media-empty" role="alert">Unable to load staff accounts: '+escapeHtml(staffListError)+'. Select Refresh accounts to retry.</div>';return;}
   if(!state.users.length){target.innerHTML='<div class="media-empty">No staff accounts found.</div>';return;}
-  target.innerHTML=state.users.map(user=>`<article class="staff-row"><div><h3>${escapeHtml(user.name)}</h3><p>${escapeHtml(user.email)}</p></div><span>${escapeHtml(user.role)}</span><div class="staff-actions"><button type="button" data-user-reset="${escapeHtml(user.id)}" aria-label="Reset password for ${escapeHtml(user.name)}">Reset</button><button class="remove" type="button" data-user-remove="${escapeHtml(user.id)}" ${user.id===state.currentUser?.id?'disabled title="This is your signed-in account"':''} aria-label="Remove ${escapeHtml(user.name)}">×</button></div></article>`).join('');
+  target.innerHTML=state.users.map(user=>{
+    const own=user.id===state.currentUser?.id;
+    const roles=['admin','editor','reviewer'].map(role=>`<option value="${role}" ${user.role===role?'selected':''}>${role==='admin'?'Administrator':role==='editor'?'Editor':'Reviewer'}</option>`).join('');
+    return `<article class="staff-row"><div class="staff-identity"><h3>${escapeHtml(user.name)}</h3><p>${escapeHtml(user.email)}</p></div><div class="staff-role-editor"><label class="sr-only" for="staff-role-${escapeHtml(user.id)}">Role for ${escapeHtml(user.name)}</label><select id="staff-role-${escapeHtml(user.id)}" data-staff-role="${escapeHtml(user.id)}" ${own?'disabled title="You cannot change your own role"':''}>${roles}</select><button type="button" data-staff-role-update="${escapeHtml(user.id)}" disabled>Save role</button></div><div class="staff-actions"><button type="button" data-user-reset="${escapeHtml(user.id)}" aria-label="Reset password for ${escapeHtml(user.name)}">Reset</button><button class="remove" type="button" data-user-remove="${escapeHtml(user.id)}" ${own?'disabled title="This is your signed-in account"':''} aria-label="Remove ${escapeHtml(user.name)}">×</button></div></article>`;
+  }).join('');
+  $('[data-staff-role]').forEach(select=>select.addEventListener('change',()=>{
+    const user=state.users.find(item=>item.id===select.dataset.staffRole);
+    const button=select.closest('.staff-role-editor').querySelector('[data-staff-role-update]');
+    button.disabled=!user||select.value===user.role;
+  }));
+  $('[data-staff-role-update]').forEach(button=>button.addEventListener('click',async()=>{
+    const user=state.users.find(item=>item.id===button.dataset.staffRoleUpdate);
+    const select=button.closest('.staff-role-editor').querySelector('[data-staff-role]');
+    if(!user||user.id===state.currentUser?.id||select.value===user.role)return;
+    const role=select.value;
+    button.disabled=true;select.disabled=true;
+    try{
+      const updated=await api.updateUserRole(user.id,role);
+      state.users=state.users.map(item=>item.id===updated.id?updated:item);
+      renderStaffList();
+      notify('Permissions updated',`${updated.name} now has ${updated.role} access. Their previous sessions have been signed out.`);
+    }catch(error){
+      button.disabled=false;select.disabled=false;
+      notify('Role not updated',errorMessage(error));
+    }
+  }));
   $$('[data-user-reset]').forEach(button=>button.addEventListener('click',async()=>{
     const user=state.users.find(item=>item.id===button.dataset.userReset);if(!user)return;
     if(!confirm(`Reset the password for ${user.name}? Their current sessions will be signed out.`))return;
@@ -469,17 +504,47 @@ async function uploadMedia(event){
 }
 $('#mediaFileInput').addEventListener('change',uploadMedia);
 $('#editorFileInput').addEventListener('change',uploadMedia);
-async function addCategory(inEditor=false){
-  const name=prompt('Category name');if(!name?.trim())return;
-  const button=$(inEditor?'#editorAddCategory':'#addCategory');button.disabled=true;
-  try{
-    const category=await api.createCategory(name.trim());if(!state.categories.some(c=>c.id===category.id))state.categories.push(category);
-    state.categories.sort((a,b)=>a.name.localeCompare(b.name));render();
-    if(inEditor){$('#articleCategory').value=category.name;feedback();rememberEditor();}
-    else notify('Category added',`${category.name} is now available to the editor.`);
-  }catch(error){if(inEditor)feedback(errorMessage(error));else notify('Category not added',errorMessage(error));}
-  finally{button.disabled=false;}
+let categoryCreateInEditor=false;
+let categoryToDelete='';
+function addCategory(inEditor=false){
+  categoryCreateInEditor=Boolean(inEditor);
+  $('#categoryForm').reset();
+  $('#categoryFormError').hidden=true;
+  $('#categoryDialog').showModal();
+  $('#categoryNameInput').focus();
 }
+$('#categoryCancel').addEventListener('click',()=>$('#categoryDialog').close());
+$('#categoryDeleteCancel').addEventListener('click',()=>$('#categoryDeleteDialog').close());
+$('#categoryForm').addEventListener('submit',async event=>{
+  event.preventDefault();
+  const name=$('#categoryNameInput').value.trim();
+  const button=$('#categorySubmit'),error=$('#categoryFormError');
+  if(name.length<2){error.textContent='Enter at least two characters.';error.hidden=false;return;}
+  button.disabled=true;error.hidden=true;
+  try{
+    const category=await api.createCategory(name);
+    if(!state.categories.some(item=>item.id===category.id))state.categories.push(category);
+    state.categories.sort((a,b)=>a.name.localeCompare(b.name));
+    $('#categoryDialog').close();render();
+    if(categoryCreateInEditor){$('#articleCategory').value=category.name;feedback();rememberEditor();}
+    notify('Category added',`${category.name} is ready for use.`);
+  }catch(err){error.textContent=errorMessage(err);error.hidden=false;}
+  finally{button.disabled=false;}
+});
+$('#categoryDeleteConfirm').addEventListener('click',async()=>{
+  const id=categoryToDelete;
+  const button=$('#categoryDeleteConfirm'),error=$('#categoryDeleteError');
+  if(!id)return;
+  button.disabled=true;error.hidden=true;
+  try{
+    await api.deleteCategory(id);
+    state.categories=state.categories.filter(item=>item.id!==id);
+    categoryToDelete='';
+    $('#categoryDeleteDialog').close();render();
+    notify('Category removed','The empty category was deleted.');
+  }catch(err){error.textContent=errorMessage(err);error.hidden=false;}
+  finally{button.disabled=false;}
+});
 $('#addCategory').addEventListener('click',()=>addCategory());
 $('#editorAddCategory').addEventListener('click',()=>addCategory(true));
 
