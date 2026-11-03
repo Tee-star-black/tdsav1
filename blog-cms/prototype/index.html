@@ -11,31 +11,67 @@
   <link rel="stylesheet" href="./studio.css?v=20260924-1">
   <link rel="stylesheet" href="./studio-v2.css?v=20260924-1">
   <link rel="stylesheet" href="./studio-premium.css?v=20261103-ux1">
+  <link rel="stylesheet" href="./studio-polish.css?v=20261103-glass1">
 </head>
 <body>
-  <section class="login-gate" id="loginGate" hidden>
-    <div class="login-card">
-      <img src="../../images/rebuild/logo.png" alt="TeleDoctorSA logo">
-      <span class="eyebrow">PUBLISHING STUDIO</span>
-      <h1>Welcome back.</h1>
-      <p>Sign in with your TeleDoctorSA Publishing Studio account.</p>
-      <form id="loginForm">
-        <label>Email address<input id="loginEmail" type="email" autocomplete="username" required placeholder="name@teledoctorsa.co.za"></label>
-        <label>Password<input id="loginPassword" type="password" autocomplete="current-password" required placeholder="Enter password"></label>
-        <div id="loginFeedback" class="login-feedback" role="alert" hidden></div>
-        <button class="primary" id="loginSubmit" type="submit">Open Publishing Studio</button>
-      </form>
-      <section class="google-auth" id="googleSignInSection" aria-label="Google Workspace sign-in" hidden>
-        <div class="login-divider"><span>OR SIGN IN WITH</span></div>
-        <div id="googleSignInButton" class="google-button"></div>
-        <p id="googleSignInMessage">Use your approved TeleDoctorSA Google Workspace account.</p>
-      </section>
-      <small>Authorised TeleDoctorSA staff only.</small>
+  <section class="login-gate" id="loginGate" aria-label="TeleDoctorSA Publishing Studio sign-in" hidden>
+    <div class="login-stage">
+      <aside class="login-story">
+        <div class="login-story-brand">
+          <span class="login-story-symbol" aria-hidden="true">
+            <svg viewBox="0 0 32 32" fill="none"><path d="M16 4v24M4 16h24" stroke="currentColor" stroke-width="3" stroke-linecap="square"/></svg>
+          </span>
+          <span>TELEDOCTORSA <span class="login-story-brand-sub">/ EDITORIAL</span></span>
+        </div>
+        <div class="login-story-copy">
+          <span class="login-story-index">CONNECTED CARE. CLEARER STORIES.</span>
+          <h2>Good information is part of good healthcare.</h2>
+          <p>A considered space to create, review and share trusted health insights.</p>
+        </div>
+        <div class="login-story-foot">
+          <span>01 <i></i> CREATE</span>
+          <span>02 <i></i> REVIEW</span>
+          <span>03 <i></i> PUBLISH</span>
+        </div>
+      </aside>
+      <div class="login-panel">
+        <div class="login-card">
+          <div class="login-card-brand"><img src="../../images/rebuild/logo.png" alt="TeleDoctorSA logo"><span>Publishing Studio</span></div>
+          <span class="eyebrow login-access-label">STAFF WORKSPACE / SECURE ACCESS</span>
+          <h1>Welcome back.</h1>
+          <p class="login-description">Your editorial workspace is ready. Sign in to continue.</p>
+          <form id="loginForm">
+            <div class="login-field">
+              <label for="loginEmail">Email address</label>
+              <input id="loginEmail" type="email" autocomplete="username" autocapitalize="none" spellcheck="false" required placeholder="name@teledoctorsa.co.za">
+            </div>
+            <div class="login-field">
+              <label for="loginPassword">Password</label>
+              <div class="login-password-control">
+                <input id="loginPassword" type="password" autocomplete="current-password" required placeholder="Enter your password">
+                <button type="button" id="toggleLoginPassword" class="password-visibility" aria-label="Show password" aria-controls="loginPassword" aria-pressed="false" title="Show password">
+                  <svg class="password-icon-show" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M2.5 12s3.4-6 9.5-6 9.5 6 9.5 6-3.4 6-9.5 6-9.5-6-9.5-6Z" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="2.6" stroke="currentColor" stroke-width="1.7"/></svg>
+                  <svg class="password-icon-hide" viewBox="0 0 24 24" fill="none" aria-hidden="true" hidden><path d="M3 3l18 18M10.5 6.2C15.9 5.4 19.6 10.2 21.5 12c-1.4 2.5-4.8 6-9.5 6a9.3 9.3 0 0 1-4.6-1.3M5.3 9C4.1 10 3.1 11.1 2.5 12c.9 1.7 2.7 3.6 5.2 4.9M10.6 10.6a2.7 2.7 0 0 0 3.8 3.8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </div>
+            </div>
+            <div id="loginFeedback" class="login-feedback" role="alert" hidden></div>
+            <button class="primary" id="loginSubmit" type="submit">Sign in to Publishing Studio <span aria-hidden="true">↗</span></button>
+          </form>
+          <section class="google-auth" id="googleSignInSection" aria-label="Google Workspace sign-in" hidden>
+            <div class="login-divider"><span>OR SIGN IN WITH</span></div>
+            <div id="googleSignInButton" class="google-button"></div>
+            <p id="googleSignInMessage">Use your approved TeleDoctorSA Google Workspace account.</p>
+          </section>
+          <div class="login-security"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none"><rect x="5" y="10" width="14" height="11" rx="1.5" stroke="currentColor" stroke-width="1.7"/><path d="M8 10V7a4 4 0 1 1 8 0v3" stroke="currentColor" stroke-width="1.7"/></svg><span>Authorised TeleDoctorSA staff only. Your account and work stay protected.</span></div>
+        </div>
+        <p class="login-panel-foot">TeleDoctorSA © 2026 <span aria-hidden="true">·</span> Publishing Studio</p>
+      </div>
     </div>
   </section>
   <div class="app-shell">
     <aside class="sidebar" id="sidebar" aria-label="Studio navigation">
-      <button type="button" class="sidebar-close" id="sidebarClose" aria-label="Close navigation">×</button>
+      <button type="button" class="sidebar-close" id="sidebarClose" aria-label="Close navigation"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 5l14 14M19 5 5 19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
       <a class="brand brand-official" href="#" data-view="articles" aria-label="TeleDoctorSA Publishing Studio home">
         <img class="brand-logo" src="../../images/rebuild/logo.png" alt="TeleDoctorSA logo">
         <span class="brand-studio-label">Publishing Studio</span>
@@ -62,7 +98,7 @@
           <strong id="sidebarCurrentUser">TeleDoctorSA staff</strong>
         </div>
         <button class="sidebar-signout" id="sidebarSignOutBtn" type="button">
-          <span aria-hidden="true">↪</span>
+          <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M9 4H5v16h4M14 7l5 5-5 5M19 12H9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
           Sign out
         </button>
       </div>
@@ -70,10 +106,10 @@
     <button type="button" class="sidebar-backdrop" id="sidebarBackdrop" aria-label="Close navigation" hidden></button>
     <main class="main">
       <header class="topbar">
-        <button type="button" class="menu" id="menuBtn" aria-label="Open navigation" aria-expanded="false" aria-controls="sidebar"><span aria-hidden="true">☰</span></button>
+        <button type="button" class="menu" id="menuBtn" aria-label="Open navigation" aria-expanded="false" aria-controls="sidebar"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
         <div class="topbar-context"><small>EDITORIAL / WORKSPACE</small><strong>Publishing Studio</strong></div>
         <div class="global-search"><span>⌕</span><input id="globalSearch" type="search" aria-label="Search stories, authors and categories" placeholder="Search stories, authors, categories…"></div>
-        <div class="environment" id="backendStatus"><span></span><b>Connecting backend…</b></div><span class="topbar-user" id="currentUser" hidden></span><button class="topbar-signout" id="signOutBtn" type="button" hidden>Sign out</button>
+        <span id="backendStatus" class="sr-only" role="status" aria-live="polite"><b>Connecting to Publishing Studio…</b></span><span class="topbar-user" id="currentUser" hidden></span><button class="topbar-signout" id="signOutBtn" type="button" hidden>Sign out</button>
       </header>
       <div class="content">
         <section id="articlesView" class="view active">
@@ -175,7 +211,7 @@
   <dialog id="previewDialog" aria-labelledby="previewTitle"><article class="preview-sheet"><header><button type="button" class="close" id="closePreview">×</button><span id="previewCategory">Category</span><h1 id="previewTitle">Untitled story</h1><p id="previewExcerpt"></p><small id="previewMeta"></small></header><img id="previewCover" alt="" hidden><div id="previewBody" class="preview-body"></div></article></dialog>
   <div class="toast" id="toast" role="status"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m4 12 5 5L20 6"/></svg></span><div><strong id="toastTitle">Saved</strong><small id="toastMessage">Your changes were saved.</small><a id="toastAction" href="#" target="_blank" rel="noopener" hidden>View on blog ↗</a></div></div>
   <script src="../client/cms-api.js?v=20260924-1"></script>
-  <script src="./studio.js?v=20261103-ux1"></script>
+  <script src="./studio.js?v=20261103-glass1"></script>
   <script src="./google-signin.js?v=20261029-1"></script>
 </body>
 </html>
