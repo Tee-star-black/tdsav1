@@ -320,3 +320,18 @@ img{max-width:100%;height:auto}
  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
  .story-card:hover{transform:none}
 }
+
+
+/* Consistent editorial footer for live static blog and Cloud Run preview */
+.journal-footer{background:#f6f8f7!important;color:#1b3136!important;border-top:1px solid #e0e7e7!important;display:block!important;padding:0!important;margin:0!important}
+.journal-footer-inner{max-width:1380px;margin:0 auto;display:grid;grid-template-columns:minmax(260px,1.8fr) repeat(3,minmax(145px,1fr));gap:clamp(28px,4vw,64px);padding:clamp(48px,6vw,80px) clamp(20px,6vw,88px)}
+.journal-footer .journal-footer-about img{display:block;width:150px;height:auto;max-height:56px;object-fit:contain;object-position:left}
+.journal-footer .journal-footer-about h2{font:600 clamp(23px,2.2vw,32px)/1.12 'DM Sans',sans-serif;letter-spacing:-.055em;margin:24px 0 14px}
+.journal-footer .journal-footer-about p{font-size:13px;line-height:1.75;color:#607075;max-width:330px}
+.journal-footer-inner>nav,.journal-footer-contact{display:flex;flex-direction:column;align-items:flex-start;gap:13px;margin:0!important}
+.journal-footer-inner strong{color:#1d3337;font-size:12px;font-weight:750;margin-bottom:7px;letter-spacing:.05em}
+.journal-footer-inner a,.journal-footer-inner span{font-size:12px;text-decoration:none;color:#52666b;line-height:1.55}
+.journal-footer-inner a:hover{text-decoration:underline;color:#134c51}
+.journal-footer .journal-footer-bottom{border-top:1px solid #e1e7e6;display:flex;justify-content:space-between;gap:20px;max-width:1380px;margin:0 auto;padding:22px clamp(20px,6vw,88px);font-size:11px;color:#68787c;line-height:1.6}
+@media(max-width:1020px){.journal-footer-inner{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.journal-footer-inner{grid-template-columns:1fr;gap:32px;padding:46px 20px}.journal-footer .journal-footer-bottom{padding:18px 20px;flex-direction:column;gap:8px}}
