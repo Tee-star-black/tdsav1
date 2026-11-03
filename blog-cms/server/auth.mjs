@@ -67,6 +67,22 @@ export class AuthStore{
     return data.users.map(publicUser).sort((a,b)=>a.name.localeCompare(b.name));
   }
 
+  async updateUserRole(id,role,currentUserId=''){
+    const allowed=new Set(['admin','editor','reviewer']);
+    if(!allowed.has(role))throw Object.assign(new Error('Invalid staff role.'),{statusCode:400});
+    const data=await this.#read();
+    const user=data.users.find(item=>item.id===id);
+    if(!user||user.active===false)throw Object.assign(new Error('Staff account not found.'),{statusCode:404});
+    if(user.role===role)return publicUser(user);
+    if(id===currentUserId)throw Object.assign(new Error('You cannot change your own administrator role.'),{statusCode:409});
+    if(user.role==='admin'&&role!=='admin'&&data.users.filter(item=>item.active!==false&&item.role==='admin').length<=1)
+      throw Object.assign(new Error('At least one active administrator must remain.'),{statusCode:409});
+    user.role=role;user.updatedAt=new Date().toISOString();
+    data.sessions=data.sessions.filter(session=>session.userId!==id);
+    await this.#write(data);
+    return publicUser(user);
+  }
+
   async createUser({email,name,role='editor',password}={}){
     const clean=cleanEmail(email);
     const display=String(name||'').trim();
