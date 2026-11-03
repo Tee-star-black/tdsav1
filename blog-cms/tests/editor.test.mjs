@@ -86,3 +86,19 @@ test('category creation within the editor retains writing and assigns the new ca
   const {$,fill,w}=await open();$('[data-action="new"]').click();fill('#articleTitle','In editor category test');fill('#articleBody','Keep this text while adding a category.');w.prompt=()=> 'Editorial test category';$('#editorAddCategory').click();await until(()=>$('#articleCategory').value==='Editorial test category');
   assert.equal($('#articleBody').value,'Keep this text while adding a category.');$('#saveArticle').click();await until(()=>!$('#editorDialog').open);assert.ok($('#articleList').textContent.includes('Editorial test category'));
 });
+
+
+test('new drafts save automatically to CMS before explicit Save is clicked',async()=>{
+  const {$,fill}=await open();
+  $('[data-action="new"]').click();
+  fill('#articleTitle','Automatic saving protects writing');
+  fill('#articleBody','This text should persist in the local CMS content store after the debounce interval, before the editor closes.');
+  await until(async()=>{
+    const response=await fetch(origin+'/api/articles');
+    const json=await response.json();
+    return json.articles.some(item=>item.title==='Automatic saving protects writing'&&item.status==='Draft');
+  });
+  assert.match($('#saveState').textContent,/saved in CMS/i);
+  assert.ok($('#editorDialog').open);
+  assert.ok($('#deleteArticle').hidden===false);
+});
