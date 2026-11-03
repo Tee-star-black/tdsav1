@@ -180,6 +180,9 @@ async function studio(width){
     await visibility.click();
     assert.equal(await password.getAttribute('type'),'password');
     assert.equal(await visibility.getAttribute('aria-label'),'Show password');
+    // Screenshots must show a blank form, not test-only password characters.
+    await password.fill('');
+    await password.evaluate(el=>el.blur());
     if(width===390||width===768){
       await page.screenshot({path:path.join(shotDir,'cms-login-'+width+'.png'),fullPage:false,animations:'disabled'});
     }
