@@ -14,6 +14,36 @@ export class PostgresAuthStore{
   }
   async hasUsers(){const r=await this.pool.query('SELECT EXISTS(SELECT 1 FROM cms_users WHERE active=TRUE) AS exists');return Boolean(r.rows[0]?.exists);}
   async listUsers(){const r=await this.pool.query('SELECT id,email,name,role,active,created_at,updated_at FROM cms_users ORDER BY name ASC');return r.rows.map(publicUser);}
+  async updateUserRole(id,role,currentUserId=''){
+    if(!new Set(['admin','editor','reviewer']).has(role))
+      throw Object.assign(new Error('Invalid staff role.'),{statusCode:400});
+    const client=await this.pool.connect();
+    try{
+      await client.query('BEGIN');
+      await client.query("SELECT pg_advisory_xact_lock(hashtext('cms_staff_role_change'))");
+      const result=await client.query('SELECT * FROM cms_users WHERE id=$1 AND active=TRUE FOR UPDATE',[id]);
+      const user=result.rows[0];
+      if(!user)throw Object.assign(new Error('Staff account not found.'),{statusCode:404});
+      if(user.role!==role){
+        if(id===currentUserId)
+          throw Object.assign(new Error('You cannot change your own administrator role.'),{statusCode:409});
+        if(user.role==='admin'&&role!=='admin'){
+          const count=await client.query("SELECT COUNT(*)::int AS count FROM cms_users WHERE active=TRUE AND role='admin'");
+          if(count.rows[0].count<=1)
+            throw Object.assign(new Error('At least one active administrator must remain.'),{statusCode:409});
+        }
+        await client.query('UPDATE cms_users SET role=$2,updated_at=NOW() WHERE id=$1',[id,role]);
+        await client.query('DELETE FROM cms_sessions WHERE user_id=$1',[id]);
+      }
+      const updated=await client.query('SELECT * FROM cms_users WHERE id=$1',[id]);
+      await client.query('COMMIT');
+      return publicUser(updated.rows[0]);
+    }catch(error){
+      await client.query('ROLLBACK').catch(()=>{});
+      throw error;
+    }finally{client.release();}
+  }
+
   async createUser({email,name,role='editor',password}={}){
     const clean=cleanEmail(email),display=String(name||'').trim(),allowed=new Set(['admin','editor','reviewer']);
     if(!/^\S+@\S+\.\S+$/.test(clean))throw Object.assign(new Error('Enter a valid email address.'),{statusCode:400});
