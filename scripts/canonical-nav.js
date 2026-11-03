@@ -804,6 +804,7 @@
         '<a href="/our-services">Services</a>' +
         '<a href="/about-us">About</a>' +
         '<a href="/telemedia-suite">TeleMedia Suite</a>' +
+        '<a href="/blog/">Blog &amp; Insights</a>' +
         '<a href="/contact-us">Contact</a>' +
         '<div id="tdsContact">' +
           '<button id="tdsContactButton" type="button" aria-expanded="false" aria-controls="tdsContactMenu">Contact us ' + chevron() + '</button>' +
