@@ -107,67 +107,8 @@ $('#toggleLoginPassword').addEventListener('click',()=>{
   loginPassword.focus({preventScroll:true});
 });
 
-// Editorial highlights are presentation-only. No credentials, API calls or
-// authentication decisions are involved in the animation.
-const loginHighlights=[
-  {
-    title:'Good information is part of good healthcare.',
-    description:'A considered space to create, review and share trusted health insights.'
-  },
-  {
-    title:'Write with clarity. Publish with confidence.',
-    description:'Save your ideas, refine every detail and move stories through a clear editorial workflow.'
-  },
-  {
-    title:'One place for every important story.',
-    description:'From first draft to publication, keep your team’s knowledge organised and accessible.'
-  }
-];
-const loginTitle=$('#loginStoryTitle');
-const loginDescription=$('#loginStoryDescription');
-const loginStoryCount=$('#loginStoryCount');
-const loginStoryCopy=$('.login-story-transitions');
-const loginStoryButtons=$$('[data-login-story]');
-let loginHighlightIndex=0;
-let loginHighlightTimer=0;
-function setLoginHighlight(index){
-  if(!Number.isInteger(index)||index<0||index>=loginHighlights.length)return;
-  loginHighlightIndex=index;
-  const highlight=loginHighlights[index];
-  loginTitle.textContent=highlight.title;
-  loginDescription.textContent=highlight.description;
-  loginStoryCount.textContent=String(index+1).padStart(2,'0')+' / 03';
-  loginStoryButtons.forEach(button=>{
-    const selected=Number(button.dataset.loginStory)===index;
-    button.setAttribute('aria-pressed',String(selected));
-    button.classList.toggle('is-current',selected);
-  });
-  loginStoryCopy.classList.remove('is-updating');
-  // Restart a short decorative fade without changing focus or announcing
-  // every automatically rotated message to assistive technology.
-  void loginStoryCopy.offsetWidth;
-  loginStoryCopy.classList.add('is-updating');
-}
-const reducedLoginMotion=()=>typeof window.matchMedia==='function'
-  &&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-function stopLoginRotation(){
-  if(loginHighlightTimer)window.clearInterval(loginHighlightTimer);
-  loginHighlightTimer=0;
-}
-function syncLoginRotation(){
-  stopLoginRotation();
-  if(loginGate.hidden||document.hidden||reducedLoginMotion())return;
-  loginHighlightTimer=window.setInterval(()=>{
-    if(loginGate.hidden||document.hidden){stopLoginRotation();return;}
-    setLoginHighlight((loginHighlightIndex+1)%loginHighlights.length);
-  },8500);
-}
-loginStoryButtons.forEach(button=>button.addEventListener('click',()=>{
-  setLoginHighlight(Number(button.dataset.loginStory));
-  syncLoginRotation();
-}));
-document.addEventListener('visibilitychange',syncLoginRotation);
-
+// Login is intentionally a single, distraction-free sign-in panel.
+const reducedLoginMotion=()=>typeof window.matchMedia==='function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 // A tiny pointer response gives depth to the backdrop on desktop.
 // Touch devices use the calm CSS scene, and reduced-motion users get no drift.
 let loginPointerFrame=0;
@@ -195,7 +136,6 @@ function showLogin(message='Sign in to continue.'){
   loginGate.hidden=false;
   document.body.classList.add('studio-locked');
   setLoginPasswordVisible(false);
-  syncLoginRotation();
   const isPrompt=!message||message==='Sign in to continue.';
   loginFeedback.textContent=isPrompt?'':message;
   loginFeedback.hidden=isPrompt;
@@ -204,7 +144,6 @@ function showLogin(message='Sign in to continue.'){
 }
 function hideLogin(){
   loginGate.hidden=true;
-  stopLoginRotation();
   document.body.classList.remove('studio-locked');
   loginFeedback.hidden=true;
   signOutBtn.hidden=false;
@@ -791,20 +730,58 @@ const sidebar=$('#sidebar'),menuButton=$('#menuBtn'),sidebarBackdrop=$('#sidebar
 const mobileSidebar=typeof window.matchMedia==='function'
   ? window.matchMedia('(max-width:1100px)')
   : {get matches(){return window.innerWidth<=1100;},addEventListener(){}};
+const sidebarPreferenceKey='tdsaCmsSidebarCollapsed';
+const sidebarNavItems=[...sidebar.querySelectorAll('.nav-item')];
+sidebarNavItems.forEach(item=>{
+  const text=[...item.childNodes].filter(node=>node.nodeType===3).map(node=>node.textContent.trim()).join(' ').trim();
+  if(text)item.setAttribute('title',text);
+});
+function setSidebarCollapsed(collapsed){
+  const active=Boolean(collapsed&&!mobileSidebar.matches);
+  document.body.classList.toggle('sidebar-collapsed',active);
+  menuButton.setAttribute('aria-expanded',String(!active));
+  menuButton.setAttribute('aria-label',active?'Expand navigation':'Collapse navigation');
+  menuButton.setAttribute('title',active?'Expand navigation':'Collapse navigation');
+  try{localStorage.setItem(sidebarPreferenceKey,active?'1':'0');}catch{}
+}
 function setSidebarOpen(open){
   const shouldOpen=Boolean(open&&mobileSidebar.matches);
   sidebar.classList.toggle('open',shouldOpen);
   sidebarBackdrop.hidden=!shouldOpen;
-  menuButton.setAttribute('aria-expanded',String(shouldOpen));
-  menuButton.setAttribute('aria-label',shouldOpen?'Close navigation':'Open navigation');
+  if(mobileSidebar.matches){
+    menuButton.setAttribute('aria-expanded',String(shouldOpen));
+    menuButton.setAttribute('aria-label',shouldOpen?'Close navigation':'Open navigation');
+  }
 }
-menuButton.addEventListener('click',()=>setSidebarOpen(!sidebar.classList.contains('open')));
+menuButton.addEventListener('click',()=>{
+  if(mobileSidebar.matches)setSidebarOpen(!sidebar.classList.contains('open'));
+  else setSidebarCollapsed(!document.body.classList.contains('sidebar-collapsed'));
+});
 sidebarClose.addEventListener('click',()=>setSidebarOpen(false));
 sidebarBackdrop.addEventListener('click',()=>setSidebarOpen(false));
-sidebar.querySelectorAll('.nav-item').forEach(item=>item.addEventListener('click',()=>setSidebarOpen(false)));
-document.addEventListener('keydown',event=>{if(event.key==='Escape'&&sidebar.classList.contains('open')){setSidebarOpen(false);menuButton.focus();}});
-mobileSidebar.addEventListener('change',()=>setSidebarOpen(false));
-
+sidebarNavItems.forEach(item=>item.addEventListener('click',()=>setSidebarOpen(false)));
+document.addEventListener('keydown',event=>{
+  if(event.key==='Escape'&&sidebar.classList.contains('open')){
+    setSidebarOpen(false);menuButton.focus();
+  }
+});
+mobileSidebar.addEventListener('change',()=>{
+  setSidebarOpen(false);
+  if(mobileSidebar.matches){
+    document.body.classList.remove('sidebar-collapsed');
+    menuButton.setAttribute('aria-label','Open navigation');
+    menuButton.setAttribute('aria-expanded','false');
+  }else{
+    let stored=false;
+    try{stored=localStorage.getItem(sidebarPreferenceKey)==='1';}catch{}
+    setSidebarCollapsed(stored);
+  }
+});
+if(!mobileSidebar.matches){
+  let stored=false;
+  try{stored=localStorage.getItem(sidebarPreferenceKey)==='1';}catch{}
+  setSidebarCollapsed(stored);
+}
 async function startWorkspace(){
   const savedList=storedJson('tdsaCmsList');
   try{
