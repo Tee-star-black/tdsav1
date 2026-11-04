@@ -123,6 +123,12 @@ async function studio(width){
       await page.locator('#sidebar .nav-item[data-view="articles"]').click();
     }else{
       assert.equal(await page.locator('#sidebar').isVisible(),true);
+      await page.locator('#menuBtn').click();
+      assert.equal(await page.locator('body').evaluate(el=>el.classList.contains('sidebar-collapsed')),true,'Desktop sidebar must collapse');
+      assert.equal(await page.locator('#menuBtn').getAttribute('aria-label'),'Expand navigation');
+      await checkOverflow(page,'Collapsed sidebar '+width);
+      await page.locator('#menuBtn').click();
+      assert.equal(await page.locator('body').evaluate(el=>el.classList.contains('sidebar-collapsed')),false,'Desktop sidebar must expand');
     }
     await page.screenshot({path:path.join(shotDir,'studio-'+width+'.png'),fullPage:true,animations:'disabled'});
     await page.locator('#articlesView .welcome [data-action="new"]').click();
@@ -157,13 +163,9 @@ async function studio(width){
     assert.match(glass.blur,/blur\(/i,'Login panel must have frosted glass blur');
     const auraMotion=await page.locator('.login-aura-one').evaluate(el=>getComputedStyle(el).animationName);
     assert.equal(auraMotion,'none','Reduced-motion settings must stop background animation');
-    if(width>=1024){
-      assert.ok(await page.locator('.login-glass-workflow').isVisible(),'Frosted editorial panel should be visible');
-      await page.locator('[data-login-story="1"]').click();
-      assert.match(await page.locator('#loginStoryTitle').textContent(),/clarity/i);
-      assert.equal(await page.locator('[data-login-story="1"]').getAttribute('aria-pressed'),'true');
-      await page.locator('[data-login-story="0"]').click();
-    }
+    assert.equal(await page.locator('.login-story').count(),0,'Editorial promo sidebar must be removed');
+    assert.equal(await page.locator('[data-login-story]').count(),0,'Login carousel controls must be removed');
+    assert.equal(await page.locator('link[rel="icon"]').count(),1,'Brand favicon must be configured');
     if(width===1440){
       await page.screenshot({path:path.join(shotDir,'cms-glass-login-desktop-1440.png'),fullPage:false,animations:'disabled'});
     }
