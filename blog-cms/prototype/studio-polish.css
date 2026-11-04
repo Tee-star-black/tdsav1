@@ -513,3 +513,45 @@ button svg,.nav-icon svg,a svg{pointer-events:none}
   }
   .login-panel{min-height:0!important}
 }
+
+/* Compact CMS controls, 2026-11-04 */
+@media(min-width:1101px){
+  .app-shell{transition:grid-template-columns .24s ease}
+  .menu{display:inline-flex!important;align-items:center;justify-content:center;flex:0 0 40px;cursor:pointer}
+  .sidebar{transition:padding .24s ease}
+  body.sidebar-collapsed .app-shell{grid-template-columns:72px minmax(0,1fr)!important}
+  body.sidebar-collapsed .sidebar{padding-inline:10px!important}
+  body.sidebar-collapsed .brand-official{padding-inline:0;align-items:center;justify-content:center;overflow:hidden}
+  body.sidebar-collapsed .brand-logo{width:48px;max-width:none;object-fit:contain}
+  body.sidebar-collapsed .brand-studio-label,
+  body.sidebar-collapsed .studio-build,
+  body.sidebar-collapsed .side-nav p,
+  body.sidebar-collapsed .sidebar-account-copy,
+  body.sidebar-collapsed .nav-item em{display:none!important}
+  body.sidebar-collapsed .side-nav .nav-item{width:48px;min-width:48px;justify-content:center;gap:0;padding:10px 0;font-size:0!important;overflow:hidden}
+  body.sidebar-collapsed .side-nav .nav-icon{flex:0 0 22px;min-width:22px}
+  body.sidebar-collapsed .sidebar-account{padding:14px 0 0}
+  body.sidebar-collapsed .sidebar-signout{font-size:0!important;padding:10px 0}
+  body.sidebar-collapsed .sidebar-signout .nav-icon{font-size:14px}
+}
+body{font-size:13px}
+.content{font-size:13px}
+.topbar-context strong{font-size:13px}
+.topbar-context small{font-size:10px}
+.side-nav .nav-item{font-size:12px;line-height:1.35}
+.content h1,.page-heading h1,.view-header h1{font-size:clamp(22px,2.1vw,29px);line-height:1.2}
+.content h2,.view h2{font-size:clamp(17px,1.65vw,21px);line-height:1.3}
+.content h3,.view h3{font-size:15px;line-height:1.4}
+.content p,.content label,.content td,.content th,.content input,.content select,.content textarea{font-size:13px}
+button{line-height:1.35}
+.login-stage{width:min(510px,calc(100vw - 32px))!important;max-width:100%;grid-template-columns:minmax(0,1fr)!important}
+.login-panel{width:100%;min-width:0;min-height:0!important;padding:clamp(24px,4vw,48px)!important}
+.login-card h1{font-size:clamp(26px,3vw,34px)!important;line-height:1.2}
+.login-description{font-size:13px!important}
+@media(max-width:1100px){
+  .app-shell{grid-template-columns:minmax(0,1fr)}
+  .menu{display:inline-flex!important;align-items:center;justify-content:center}
+}
+@media(prefers-reduced-motion:reduce){
+  .app-shell,.sidebar{transition:none!important}
+}
