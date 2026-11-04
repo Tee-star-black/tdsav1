@@ -236,24 +236,23 @@ test('backend diagnostics are not exposed as a visible status banner',async()=>{
   assert.ok($('#loginGate').querySelector('.login-stage'));
 });
 
-test('dynamic editorial login highlights are selectable and preserve sign-in fields',async()=>{
+test('compact login retains a clear sign-in flow and password visibility control',async()=>{
   const {$}=await adminStudio();
   const email=$('#loginEmail'),password=$('#loginPassword');
-  const firstTitle=$('#loginStoryTitle').textContent;
-  email.value='editor@example.invalid';password.value='OnlyAVisualTest';
-  assert.equal($('[data-login-story="0"]').getAttribute('aria-pressed'),'true');
-  $('[data-login-story="1"]').click();
-  assert.match($('#loginStoryTitle').textContent,/clarity/i);
-  assert.notEqual($('#loginStoryTitle').textContent,firstTitle);
-  assert.equal($('#loginStoryCount').textContent,'02 / 03');
-  assert.equal($('[data-login-story="1"]').getAttribute('aria-pressed'),'true');
-  assert.equal($('[data-login-story="0"]').getAttribute('aria-pressed'),'false');
-  $('[data-login-story="2"]').click();
-  assert.equal($('#loginStoryCount').textContent,'03 / 03');
-  $('[data-login-story="0"]').click();
-  assert.equal($('#loginStoryTitle').textContent,firstTitle);
+  assert.ok($('#loginGate').querySelector('.login-stage'));
+  assert.ok($('#loginGate').querySelector('.login-card-brand'));
+  assert.ok($('#loginGate').querySelector('.login-security'));
+  assert.equal($('#loginGate').querySelectorAll('[data-login-story]').length,0);
+  email.value='editor@example.invalid';
+  password.value='OnlyAVisualTest';
+  const toggle=$('#toggleLoginPassword');
+  assert.ok(toggle);
+  assert.equal(toggle.getAttribute('aria-pressed'),'false');
+  toggle.click();
+  assert.equal(password.type,'text');
+  assert.equal(toggle.getAttribute('aria-pressed'),'true');
+  toggle.click();
+  assert.equal(password.type,'password');
   assert.equal(email.value,'editor@example.invalid');
   assert.equal(password.value,'OnlyAVisualTest');
-  assert.equal($('#loginGate').querySelectorAll('.login-aura').length,3);
-  assert.ok($('#loginGate').querySelector('.login-glass-workflow'));
 });
