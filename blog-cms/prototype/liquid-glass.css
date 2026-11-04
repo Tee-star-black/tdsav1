@@ -1,0 +1,139 @@
+/* Liquid Glass-inspired interactions for TeleDoctorSA Studio.
+   Dynamic light, specular edges and gentle spring motion.
+   The article/content layer remains opaque and readable. */
+:root{
+  --lg-ink:#174f52;
+  --lg-ease:cubic-bezier(.22,1,.36,1);
+  --lg-surface:rgba(224,249,246,.66);
+  --lg-edge:rgba(255,255,255,.95);
+}
+/* These are functional controls, not permanent glass cards. */
+:is(.side-nav .nav-item,.topbar .menu,.sidebar-signout,.topbar-signout,
+    .content .primary,.content .secondary,.content .ghost,#loginSubmit){
+  --lg-x:50%;
+  --lg-y:50%;
+  position:relative;
+  isolation:isolate;
+  border-radius:8px!important;
+  transition:
+    transform .38s var(--lg-ease),
+    box-shadow .38s var(--lg-ease),
+    background-color .32s ease,
+    border-color .32s ease,
+    color .2s ease!important;
+}
+:is(.side-nav .nav-item,.topbar .menu,.sidebar-signout,.topbar-signout,
+    .content .primary,.content .secondary,.content .ghost,#loginSubmit)::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  pointer-events:none;
+  background:
+    radial-gradient(ellipse 95px 58px at var(--lg-x) var(--lg-y),
+      rgba(255,255,255,.96) 0%,rgba(255,255,255,.46) 34%,transparent 95%),
+    linear-gradient(115deg,rgba(255,255,255,.58),transparent 46%,rgba(255,255,255,.20) 78%,transparent);
+  opacity:0;
+  transform:scale(.96);
+  transition:opacity .28s ease,transform .43s var(--lg-ease);
+  mix-blend-mode:screen;
+}
+:is(.side-nav .nav-item,.topbar .menu,.sidebar-signout,.topbar-signout,
+    .content .primary,.content .secondary,.content .ghost,#loginSubmit)::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  border-radius:inherit;
+  box-shadow:
+    inset 0 1.5px 1px rgba(255,255,255,.99),
+    inset 1.5px 0 1px rgba(255,255,255,.68),
+    inset -1.5px -2px 2px rgba(29,113,114,.23),
+    inset 0 0 0 1px rgba(255,255,255,.64);
+  opacity:0;
+  transition:opacity .3s ease;
+}
+@media(hover:hover) and (pointer:fine){
+  :is(.side-nav .nav-item,.topbar .menu,.sidebar-signout,.topbar-signout,
+      .content .secondary,.content .ghost):hover:not(:disabled){
+    color:var(--lg-ink)!important;
+    background:
+      radial-gradient(ellipse at var(--lg-x) var(--lg-y),
+        rgba(253,255,255,.98),rgba(207,244,239,.78) 36%,rgba(188,229,225,.42) 78%),
+      linear-gradient(140deg,rgba(255,255,255,.66),rgba(210,240,236,.42))!important;
+    border-color:rgba(108,172,167,.45)!important;
+    -webkit-backdrop-filter:blur(13px) saturate(155%);
+    backdrop-filter:blur(13px) saturate(155%);
+    box-shadow:
+      0 12px 24px rgba(18,76,78,.14),
+      0 3px 8px rgba(34,92,92,.09),
+      inset 0 1px 0 rgba(255,255,255,.98),
+      inset 0 -1px 2px rgba(43,114,114,.15)!important;
+    transform:translateY(-2px) scale(1.015)!important;
+  }
+  .side-nav .nav-item:hover:not(:disabled){
+    transform:translateX(3px) scale(1.012)!important;
+  }
+  .side-nav .nav-item.active:hover{transform:none!important}
+  :is(.content .primary,#loginSubmit):hover:not(:disabled){
+    color:#fff!important;
+    background:
+      radial-gradient(ellipse at var(--lg-x) var(--lg-y),
+        rgba(137,227,216,.72),rgba(30,120,117,.9) 43%,rgba(17,76,79,.98) 100%)!important;
+    box-shadow:
+      0 14px 25px rgba(15,76,76,.22),
+      inset 0 2px 1px rgba(255,255,255,.49),
+      inset 0 -2px 3px rgba(4,52,52,.28)!important;
+    transform:translateY(-2px) scale(1.018)!important;
+  }
+  :is(.side-nav .nav-item,.topbar .menu,.sidebar-signout,.topbar-signout,
+      .content .primary,.content .secondary,.content .ghost,#loginSubmit):hover::before{
+    opacity:.69;
+    transform:scale(1);
+  }
+  :is(.side-nav .nav-item,.topbar .menu,.sidebar-signout,.topbar-signout,
+      .content .primary,.content .secondary,.content .ghost,#loginSubmit):hover::after{
+    opacity:1;
+  }
+}
+/* Touch devices have no hover; pressing still produces a visible lens. */
+@media(hover:none),(pointer:coarse){
+  :is(.side-nav .nav-item,.topbar .menu,.sidebar-signout,.topbar-signout,
+      .content .secondary,.content .ghost):active{
+    background:linear-gradient(145deg,rgba(249,255,254,.98),rgba(190,235,229,.82))!important;
+    box-shadow:inset 0 2px 4px rgba(22,102,103,.16),inset 0 0 0 1px rgba(255,255,255,.9)!important;
+  }
+  :is(.side-nav .nav-item,.topbar .menu,.sidebar-signout,.topbar-signout,
+      .content .primary,.content .secondary,.content .ghost,#loginSubmit):active::after{opacity:1}
+}
+/* Clear, legible selected and keyboard states. */
+.side-nav .nav-item.active{
+  border-radius:8px!important;
+  background:linear-gradient(130deg,#f0faf8,#e5f4f1)!important;
+  box-shadow:inset 0 0 0 1px rgba(48,116,113,.14);
+}
+:is(.side-nav .nav-item,.topbar .menu,.sidebar-signout,.topbar-signout,
+    .content .primary,.content .secondary,.content .ghost,#loginSubmit):focus-visible{
+  outline:2px solid #17686b!important;
+  outline-offset:3px;
+}
+/* Preserve performance and clarity for accessibility settings. */
+@media(prefers-reduced-motion:reduce){
+  :is(.side-nav .nav-item,.topbar .menu,.sidebar-signout,.topbar-signout,
+      .content .primary,.content .secondary,.content .ghost,#loginSubmit),
+  :is(.side-nav .nav-item,.topbar .menu,.sidebar-signout,.topbar-signout,
+      .content .primary,.content .secondary,.content .ghost,#loginSubmit)::before,
+  :is(.side-nav .nav-item,.topbar .menu,.sidebar-signout,.topbar-signout,
+      .content .primary,.content .secondary,.content .ghost,#loginSubmit)::after{
+    transition:none!important;
+    transform:none!important;
+  }
+}
+@media(prefers-reduced-transparency:reduce),(forced-colors:active){
+  :is(.side-nav .nav-item,.topbar .menu,.sidebar-signout,.topbar-signout,
+      .content .secondary,.content .ghost):hover:not(:disabled){
+    background:#e5f4f1!important;
+    -webkit-backdrop-filter:none!important;
+    backdrop-filter:none!important;
+  }
+}
