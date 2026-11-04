@@ -555,3 +555,31 @@ button{line-height:1.35}
 @media(prefers-reduced-motion:reduce){
   .app-shell,.sidebar{transition:none!important}
 }
+
+/* Quiet navigation affordance: no hamburger icon or boxed toolbar chrome. */
+.topbar .menu{
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  border-radius:2px!important;
+  color:#567078;
+  width:36px;
+  min-width:36px;
+  height:40px;
+  padding:8px;
+  transition:color .18s ease,background-color .18s ease;
+}
+.topbar .menu:hover{background:#f0f5f4!important;color:#164f54}
+.topbar .menu:focus-visible{outline:2px solid #15666c;outline-offset:2px}
+.topbar .menu svg{width:18px;height:18px;transition:transform .2s ease}
+@media(min-width:1101px){
+  .topbar .menu{flex:0 0 36px}
+  body:not(.sidebar-collapsed) .topbar .menu svg{transform:rotate(180deg)}
+}
+@media(max-width:1100px){
+  .topbar .menu{width:40px;min-width:40px;min-height:44px}
+  .sidebar.open~.main .topbar .menu svg{transform:rotate(180deg)}
+}
+@media(prefers-reduced-motion:reduce){
+  .topbar .menu,.topbar .menu svg{transition:none!important}
+}
